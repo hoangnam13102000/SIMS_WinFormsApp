@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SIMS_WinFormsApp
+namespace SIMS_WinFormsApp.Forms.Warehouse
 {
-    public partial class Form1 : Form
+    public partial class frmStockReconciliation : Form
     {
-        public Form1()
+        public frmStockReconciliation()
         {
             InitializeComponent();
         }
