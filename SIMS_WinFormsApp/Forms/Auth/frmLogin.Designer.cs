@@ -97,8 +97,8 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // Title
             this.lblTitle.AutoSize = false;
-            this.lblTitle.Location = new Point(0, y);
-            this.lblTitle.Size = new Size(cardWidth, 44);
+            this.lblTitle.Location = new Point(-5, y);   
+            this.lblTitle.Size = new Size(cardWidth + 5, 44);   
             this.lblTitle.Font = AppFonts.Title;
             this.lblTitle.ForeColor = AppColors.TextTitle;
             this.lblTitle.TextAlign = ContentAlignment.MiddleLeft;
@@ -117,8 +117,8 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.lblUsername.AutoSize = false;
             this.lblUsername.Location = new Point(0, y);
             this.lblUsername.Size = new Size(cardWidth, 20);
-            this.lblUsername.Font = AppFonts.BodyBold;
-            this.lblUsername.ForeColor = AppColors.TextPrimary;
+            this.lblUsername.Font = AppFonts.BodyBold;          
+            this.lblUsername.ForeColor = AppColors.TextPrimary; 
             y += 24;
 
             this.txtUsername.Location = new Point(0, y);
@@ -131,8 +131,8 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.lblPassword.AutoSize = false;
             this.lblPassword.Location = new Point(0, y);
             this.lblPassword.Size = new Size(cardWidth, 20);
-            this.lblPassword.Font = AppFonts.BodyBold;
-            this.lblPassword.ForeColor = AppColors.TextPrimary;
+            this.lblPassword.Font = AppFonts.BodyBold;          
+            this.lblPassword.ForeColor = AppColors.TextPrimary; 
             y += 24;
 
             this.txtPassword.Location = new Point(0, y);
@@ -156,6 +156,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.pnlOptionsRow.Controls.Add(this.chkRemember);
             this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
             this.pnlOptionsRow.Resize += (s, e) => AlignForgotPassword();
+            this.lnkForgotPassword.SizeChanged += (s, e) => AlignForgotPassword();
             y += 26 + 6;
 
             // Error label
@@ -190,11 +191,19 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.Controls.Add(this.pnlRight);
             this.Controls.Add(this.brandPanel);
 
-          
+
             this.pnlRight.Resize += (s, e) => CenterFormCard();
             CenterFormCard();
 
             this.ResumeLayout(false);
+        }
+
+        private void AlignForgotPassword()
+        {
+            if (pnlOptionsRow == null || lnkForgotPassword == null) return;
+
+            int x = System.Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
+            lnkForgotPassword.Location = new Point(x, lnkForgotPassword.Location.Y);
         }
 
         private void CenterFormCard()

@@ -12,36 +12,34 @@ namespace SIMS_WinFormsApp.UI.Controls
         private bool _isPressed;
 
         public int CornerRadius { get; set; } = AppRadius.Medium;
-
         public bool IsPrimary { get; set; } = true;
-
+        public Color? CustomAccentColor { get; set; }
         public DialogResult DialogResult { get; set; }
 
         public PrimaryButton()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
-                      ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw |
-                      ControlStyles.UserMouse, true);
-            BackColor = AppColors.White;
-            ForeColor = System.Drawing.Color.White;
+            SetStyle(
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.ResizeRedraw |
+                ControlStyles.UserMouse |
+                ControlStyles.SupportsTransparentBackColor |
+                ControlStyles.Selectable, true);
+
+            BackColor = Color.Transparent;
+            ForeColor = Color.White;
             Font = AppFonts.Button;
             Height = 46;
             Cursor = Cursors.Hand;
             TabStop = true;
-
-            MouseEnter += (s, e) => { _isHover = true; Invalidate(); };
-            MouseLeave += (s, e) => { _isHover = false; _isPressed = false; Invalidate(); };
-            MouseDown += (s, e) => { _isPressed = true; Invalidate(); };
-            MouseUp += (s, e) => { _isPressed = false; Invalidate(); };
         }
 
-        public void NotifyDefault(bool value)
-        {
-        }
+        public void NotifyDefault(bool value) { }
 
         public void PerformClick()
         {
-            if (!Enabled) return;
+            if (!Enabled || !Visible) return;
             OnClick(EventArgs.Empty);
         }
 
@@ -55,62 +53,103 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
+        protected override void OnMouseEnter(EventArgs e)
         {
-            base.OnMouseUp(e);
-            _isPressed = false;
-            if (e.Button == MouseButtons.Left)
-                PerformClick();
+            base.OnMouseEnter(e);
+            _isHover = true;
             Invalidate();
         }
 
-        protected override void OnPaintBackground(PaintEventArgs pevent)
+        protected override void OnMouseLeave(EventArgs e)
         {
-            pevent.Graphics.Clear(BackColor);
+            base.OnMouseLeave(e);
+            _isHover = false;
+            _isPressed = false;
+            Invalidate();
         }
+
+        // ===== CLICK NGAY TỪ MouseDown → hết phải bấm 2 lần =====
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left && Enabled)
+            {
+                _isPressed = true;
+                Focus();
+                Capture = true;          // giữ chuột
+                Invalidate();
+            }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                bool wasPressed = _isPressed;
+                _isPressed = false;
+                Capture = false;
+
+                if (wasPressed && ClientRectangle.Contains(e.Location) && Enabled)
+                    PerformClick();
+
+                Invalidate();
+            }
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            ApplyRoundedRegion();
+        }
+
+        private void ApplyRoundedRegion()
+        {
+            if (Width <= 0 || Height <= 0) return;
+            using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, Width, Height), CornerRadius))
+                Region = new Region(path);
+        }
+
         protected override bool ShowFocusCues => false;
+
+        protected override void OnPaintBackground(PaintEventArgs pevent) { }
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
             var g = pevent.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            // Vẽ full size, không chừa 1px
-            var rect = new Rectangle(0, 0, Width, Height);
-
-            Color fill;
-            Color border;
-            Color textColor;
+            Color accent = CustomAccentColor ?? AppColors.Accent;
+            Color fill, textColor;
 
             if (!Enabled)
             {
                 fill = AppColors.DisabledBtn;
-                border = AppColors.DisabledBtn;
                 textColor = Color.White;
             }
             else if (IsPrimary)
             {
-                fill = _isPressed ? Scale(AppColors.Accent, 0.85)
-                                  : (_isHover ? AppColors.AccentHover : AppColors.Accent);
-                border = fill;
+                fill = _isPressed ? Scale(accent, 0.85)
+                                  : (_isHover ? Scale(accent, 0.72) : accent);
                 textColor = Color.White;
             }
             else
             {
                 fill = _isHover ? AppColors.CancelHover : AppColors.CancelBg;
-                border = AppColors.Border;
                 textColor = AppColors.TextPrimary;
             }
 
-            var drawRect = new Rectangle(0, 0, Width, Height);
-
-            using (var path = AppRadius.GetRoundedPath(drawRect, CornerRadius))
+            var rect = new Rectangle(0, 0, Width, Height);
+            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius))
             using (var brush = new SolidBrush(fill))
-            using (var pen = new Pen(border))
             {
                 g.FillPath(brush, path);
                 if (!IsPrimary)
-                    g.DrawPath(pen, path);
+                {
+                    using (var pen = new Pen(AppColors.Border, 1f))
+                        g.DrawPath(pen, path);
+                }
             }
 
             TextRenderer.DrawText(g, Text, Font, ClientRectangle, textColor,
@@ -119,8 +158,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private static Color Scale(Color c, double factor)
         {
-            int Clamp(int v) => System.Math.Max(0, System.Math.Min(255, v));
-            return Color.FromArgb(Clamp((int)(c.R * factor)), Clamp((int)(c.G * factor)), Clamp((int)(c.B * factor)));
+            int Clamp(int v) => Math.Max(0, Math.Min(255, (int)(v * factor)));
+            return Color.FromArgb(Clamp(c.R), Clamp(c.G), Clamp(c.B));
         }
     }
 }

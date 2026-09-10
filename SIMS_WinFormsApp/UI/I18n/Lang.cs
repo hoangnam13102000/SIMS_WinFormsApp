@@ -68,7 +68,10 @@ namespace SIMS_WinFormsApp.UI.I18n
                         if (idx <= 0) continue;
 
                         var key = line.Substring(0, idx).Trim();
-                        var value = line.Substring(idx + 1).Trim();
+                        var value = line.Substring(idx + 1).Trim()
+                            .Replace("\\n", Environment.NewLine)
+                            .Replace("\\r", "\r")
+                            .Replace("\\t", "\t");
                         result[key] = value;
                     }
                 }

@@ -40,9 +40,12 @@ namespace SIMS_WinFormsApp.Forms.Auth
         {
             btnLogin.Click += async (s, e) => await DoLoginAsync();
             lnkForgotPassword.Click += (s, e) =>
-                MessageBox.Show(this, Lang.Get("login.forgotPassword.notice"), Lang.Get("login.forgotPassword"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            {
+                using (var dlg = new frmForgotPassword(txtUsername.Text.Trim()))
+                {
+                    dlg.ShowDialog(this);
+                }
+            };
         }
 
         private void OnLanguageChanged(object sender, EventArgs e) => RefreshTexts();
@@ -69,7 +72,6 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             chkRemember.Text = Lang.Get("login.rememberMe");
             lnkForgotPassword.Text = Lang.Get("login.forgotPassword");
-            AlignForgotPassword();
 
             btnLogin.Text = Lang.Get("login.submit");
 
@@ -83,13 +85,6 @@ namespace SIMS_WinFormsApp.Forms.Auth
                 Lang.Get("login.leftpanel.feature3")
             };
             brandPanel.FooterText = Lang.Get("app.copyright", DateTime.Now.Year);
-        }
-
-        private void AlignForgotPassword()
-        {
-            if (pnlOptionsRow == null || lnkForgotPassword == null) return;
-            lnkForgotPassword.Location = new System.Drawing.Point(
-                Math.Max(0, pnlOptionsRow.ClientSize.Width - lnkForgotPassword.Width), 4);
         }
 
         private void LoadRememberedUsername()

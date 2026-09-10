@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,6 +37,11 @@
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
     </Reference>
+    <Reference Include="FontAwesome.Sharp, Version=6.6.0.0, Culture=neutral, PublicKeyToken=d16d1e4e568ec10f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.Sharp.6.6.0\lib\net472\FontAwesome.Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
@@ -53,6 +59,15 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Resources.Extensions, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Resources.Extensions.4.7.1\lib\net461\System.Resources.Extensions.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.ProtectedData, Version=10.0.0.11, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.ProtectedData.10.0.11\lib\net462\System.Security.Cryptography.ProtectedData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,6 +77,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\DbHelper.cs" />
@@ -77,6 +93,18 @@
     </Compile>
     <Compile Include="Forms\Auth\frmChangePassword.Designer.cs">
       <DependentUpon>frmChangePassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Dashboard\ucDashboard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Dashboard\ucDashboard.Designer.cs">
+      <DependentUpon>ucDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Auth\frmForgotPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Auth\frmForgotPassword.Designer.cs">
+      <DependentUpon>frmForgotPassword.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Auth\frmLogin.cs">
       <SubType>Form</SubType>
@@ -101,6 +129,12 @@
     </Compile>
     <Compile Include="Forms\SystemMgmt\frmConnectionConfig.Designer.cs">
       <DependentUpon>frmConnectionConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\frmMailConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\frmMailConfig.Designer.cs">
+      <DependentUpon>frmMailConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SystemMgmt\frmMain.cs">
       <SubType>Form</SubType>
@@ -133,11 +167,17 @@
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsStore.cs" />
+    <Compile Include="Infrastructure\SecureConfigStore.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="MVP\Presenters\MainPresenter.cs" />
+    <Compile Include="MVP\Views\IMainView.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\Security\PasswordHasher.cs" />
+    <Compile Include="Services\Security\PasswordResetService.cs" />
+    <Compile Include="Services\Mail\MailSender.cs" />
     <Compile Include="Services\Session\UserSession.cs" />
     <Compile Include="UI\Controls\AuthBrandPanel.cs">
       <SubType>Component</SubType>
@@ -145,8 +185,17 @@
     <Compile Include="UI\Controls\ClickableLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Controls\HeaderSection.cs" />
+    <Compile Include="UI\Controls\NotificationDropdownControl.cs" />
+    <Compile Include="UI\Controls\PopupFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\StatCard.cs" />
     <Compile Include="UI\Controls\ModernCheckBox.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\ModernDropdownMenu.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\PrimaryButton.cs">
       <SubType>Component</SubType>
@@ -159,11 +208,27 @@
     </Compile>
     <Compile Include="UI\I18n\Lang.cs" />
     <Compile Include="UI\I18n\LanguageManager.cs" />
+    <Compile Include="UI\Layouts\FooterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Layouts\HeaderControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Layouts\MainLayoutControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Layouts\SidebarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Layouts\SidebarItemControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />
     <Compile Include="UI\Theme\AppRadius.cs" />
     <Compile Include="UI\Theme\AppSpacing.cs" />
+    <Compile Include="UI\Theme\LayoutColors.cs" />
     <Compile Include="UI\Theme\ThemeManager.cs" />
     <Compile Include="UI\Theme\ThemeMode.cs" />
     <EmbeddedResource Include="Forms\Auth\frmChangePassword.resx">
@@ -181,6 +246,18 @@
     </Compile>
     <EmbeddedResource Include="I18n\Resources\messages_en.properties" />
     <EmbeddedResource Include="I18n\Resources\messages_vi.properties" />
+    <EmbeddedResource Include="Resources\Fonts\Inter-Regular.ttf">
+      <LogicalName>SIMS_WinFormsApp.Fonts.Inter-Regular.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Fonts\Inter-Medium.ttf">
+      <LogicalName>SIMS_WinFormsApp.Fonts.Inter-Medium.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Fonts\Inter-SemiBold.ttf">
+      <LogicalName>SIMS_WinFormsApp.Fonts.Inter-SemiBold.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Fonts\Inter-Bold.ttf">
+      <LogicalName>SIMS_WinFormsApp.Fonts.Inter-Bold.ttf</LogicalName>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -197,7 +274,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

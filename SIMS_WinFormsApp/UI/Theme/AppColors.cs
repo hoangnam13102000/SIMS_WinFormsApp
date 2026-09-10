@@ -16,11 +16,15 @@ namespace SIMS_WinFormsApp.UI.Theme
         public static readonly Color DarkFooter = Color.FromArgb(140, 140, 152);
         public static readonly Color DarkFeatureText = Color.FromArgb(226, 232, 240);
 
+       
+
         // ===================== NỀN SÁNG (Light) =====================
         public static Color White;
         public static Color BgLight;
         public static Color BgLighter;
         public static Color PageBg;    // nền content area của các Form/Panel chính
+
+        public static Color ContentBackground;
 
         // ===================== VIỀN (Border) =====================
         public static Color Border;
@@ -34,6 +38,8 @@ namespace SIMS_WinFormsApp.UI.Theme
         public static Color TextDisabled;
         public static Color TextMutedAlt;   // slate-400 style, dùng cho icon/label phụ
         public static Color IconMuted;      // gray-400 style
+
+        public static Color HeaderText;
 
         // ===================== MÀU CHỦ ĐẠO (Accent - tím/indigo) =====================
         public static Color Accent;
@@ -106,6 +112,9 @@ namespace SIMS_WinFormsApp.UI.Theme
             TextDisabled = dark ? Color.FromArgb(120, 128, 140) : Color.FromArgb(150, 150, 150);
             TextMutedAlt = dark ? Color.FromArgb(200, 210, 225) : Color.FromArgb(148, 163, 184);
             IconMuted = dark ? Color.FromArgb(190, 198, 212) : Color.FromArgb(156, 163, 175);
+
+            ContentBackground = PageBg;
+            HeaderText = TextTitle;
 
             RecomputeAccentColors(dark);
 

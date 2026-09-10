@@ -2,6 +2,7 @@
 using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Indetity;
 using SIMS_WinFormsApp.Models;
+using SIMS_WinFormsApp.Services.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,59 @@ namespace SIMS_WinFormsApp.DAL
             }
         }
 
+        // Tra cứu tài khoản cho luồng quên mật khẩu: khớp CẢ username lẫn email.
+        // Không lấy theo username không thôi để tránh lộ thông tin qua timing/kết quả.
+        public User FindForPasswordReset(string username, string email)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email))
+                return null;
+
+            using (var db = new SimsDataContext())
+            {
+                var row = (
+                    from u in db.Users
+                    join r in db.Roles on u.RoleID equals r.RoleID
+                    where u.Username == username.Trim() && u.Email == email.Trim() && !u.IsDeleted
+                    select new { u, r }
+                ).FirstOrDefault();
+
+                return row == null ? null : Map(row.u, row.r);
+            }
+        }
+
+        public enum PasswordResetUpdateResult
+        {
+            Success,
+            UpdateFailed,
+            SameAsOldPassword,
+            AccountUnavailable
+        }
+
+        // Đặt lại mật khẩu từ luồng khôi phục (sau khi OTP đã verify): nhận mật khẩu
+        // gốc, tự hash. Kiểm tra không được trùng mật khẩu hiện tại + tài khoản phải
+        // đang ACTIVE và không bị khóa.
+        public PasswordResetUpdateResult ResetPasswordFromRecovery(int userId, string newRawPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newRawPassword))
+                return PasswordResetUpdateResult.UpdateFailed;
+
+            using (var db = new SimsDataContext())
+            {
+                var user = db.Users.FirstOrDefault(u => u.UserID == userId);
+                if (user == null) return PasswordResetUpdateResult.AccountUnavailable;
+
+                if (!string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase) || user.IsLocked)
+                    return PasswordResetUpdateResult.AccountUnavailable;
+
+                if (PasswordHasher.Verify(newRawPassword, user.PasswordHash))
+                    return PasswordResetUpdateResult.SameAsOldPassword;
+
+                user.PasswordHash = PasswordHasher.Hash(newRawPassword);
+                db.SubmitChanges();
+                return PasswordResetUpdateResult.Success;
+            }
+        }
+
         // Update via tracked entity + SubmitChanges instead of hand-written UPDATE ---
         public void RegisterFailedLogin(int userId, int lockThreshold = 5)
         {
@@ -69,7 +123,7 @@ namespace SIMS_WinFormsApp.DAL
             }
         }
 
-        // Doi mat khau (dung sau khi da xac thuc mat khau hien tai o Service) ---
+        // Đổi mật khẩu (dùng sau khi đã xác thực mật khẩu hiện tại ở Service) ---
         public void UpdatePassword(int userId, string newPasswordHash)
         {
             using (var db = new SimsDataContext())
