@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
@@ -28,14 +29,27 @@ namespace SIMS_WinFormsApp.UI.Controls
                 IconChar.AddressBook, "Khách hàng");
         }
 
+        /// <summary>Danh sách lựa chọn cho ComboBox lọc trạng thái tài khoản. Value khớp đúng
+        /// với giá trị cột Status lưu trong DB (xem UserRepository/frmUserManagement) — đổi ở
+        /// đây là đủ, không phải sửa gì trong BaseTable.</summary>
+        private static IList<FilterOption> AccountStatusOptions() => new[]
+        {
+            new FilterOption("Tất cả trạng thái", null),
+            new FilterOption("Đang hoạt động", "ACTIVE"),
+            new FilterOption("Vô hiệu hóa", "INACTIVE")
+        };
+
         private static Control Create(string title, string subtitle, IconChar icon, string roleFilter)
         {
             return new BaseTable(title, subtitle, icon,
                 new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa", "Thao tác" },
-                (pageIndex, pageSize, search) => LoadUsers(pageIndex, pageSize, search, roleFilter));
+                (pageIndex, pageSize, search, statusFilter) =>
+                    LoadUsers(pageIndex, pageSize, search, roleFilter, statusFilter),
+                AccountStatusOptions());
         }
 
-        private static TablePageResult LoadUsers(int pageIndex, int pageSize, string search, string roleFilter)
+        private static TablePageResult LoadUsers(int pageIndex, int pageSize, string search,
+            string roleFilter, string statusFilter)
         {
             using (var db = new SimsDataContext())
             {
@@ -45,6 +59,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                             select new { u, r };
                 if (!string.IsNullOrWhiteSpace(roleFilter))
                     query = query.Where(x => x.r.RoleName.Contains(roleFilter));
+                if (!string.IsNullOrWhiteSpace(statusFilter))
+                    query = query.Where(x => x.u.Status == statusFilter);
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     var term = search.Trim();

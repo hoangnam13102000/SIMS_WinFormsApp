@@ -36,6 +36,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="UI\Controls\BaseTable.cs" />
+    <Compile Include="UI\Controls\Filter\FilterComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Filter\FilterOption.cs" />
+    <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
+    <Compile Include="UI\Controls\Filter\IFilterView.cs" />
     <Compile Include="UI\Controls\ManagementTablePage.cs" />
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
@@ -197,9 +203,19 @@
     <!-- ✅ ĐÃ THÊM: HeaderSection.cs (bị thiếu trước đây) -->
     <Compile Include="UI\Controls\HeaderSection.cs" />
     <Compile Include="UI\Controls\NotificationDropdownControl.cs" />
+    <Compile Include="UI\Controls\Pagination\IPaginationView.cs" />
+    <Compile Include="UI\Controls\Pagination\PaginationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Pagination\PaginationPresenter.cs" />
     <Compile Include="UI\Controls\PopupFormBase.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Search\ISearchView.cs" />
+    <Compile Include="UI\Controls\Search\SearchBarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Search\SearchPresenter.cs" />
     <Compile Include="UI\Controls\StatCard.cs" />
     <Compile Include="UI\Controls\ModernCheckBox.cs">
       <SubType>Component</SubType>
