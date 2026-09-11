@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.MVP.Views;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
+using SIMS_WinFormsApp.UI.Controls;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
 {
@@ -17,6 +18,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly Func<string> _getDisplayName;
         private readonly Func<string> _getEmail;
         private readonly Func<string> _getRole;
+        private bool _isLoggingOut;
 
         public MainPresenter(
             IMainView view,
@@ -27,8 +29,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _getDisplayName = getDisplayName ?? (() => "Admin");
             _getEmail = getEmail ?? (() => "admin@sims.local");
-            // Đọc Role từ session hiện có (User.RoleName) — chỉ ĐỌC dữ liệu đã có sẵn để
-            // hiển thị lên Header dropdown, KHÔNG thêm logic nghiệp vụ/service mới nào.
             _getRole = getRole ?? (() => UserSession.Instance.CurrentUser?.RoleName ?? string.Empty);
             _view.ViewReady += OnViewReady;
             _view.LogoutRequested += OnLogoutRequested;
@@ -69,14 +69,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddSection("Báo cáo");
             layout.AddPage("report-revenue", "Doanh thu", CreatePlaceholder("Doanh thu", "Báo cáo doanh thu"), IconChar.ChartColumn);
             layout.AddPage("report-inventory", "Báo cáo kho", CreatePlaceholder("Báo cáo kho", "Xuất nhập tồn"), IconChar.ChartLine);
-            layout.AddSection("Hệ thống");
-            layout.AddPage("employees", "Nhân viên", CreatePlaceholder("Nhân viên", "Quản lý nhân viên"), IconChar.User);
-            layout.AddPage("customers", "Khách hàng", CreatePlaceholder("Khách hàng", "Danh sách khách"), IconChar.Users);
+            layout.AddSection("Người dùng");
+            layout.AddPage("accounts", "Tài khoản", ManagementTablePage.Accounts(), IconChar.UsersCog);
+            layout.AddPage("employees", "Nhân viên", ManagementTablePage.Employees(), IconChar.User);
+            layout.AddPage("customers", "Khách hàng", ManagementTablePage.Customers(), IconChar.AddressBook);
+            layout.AddSection("Hỗ trợ");
             layout.AddPage("shifts", "Ca làm việc", CreatePlaceholder("Ca làm việc", "Mở/đóng ca & đối soát"), IconChar.Stopwatch);
+            layout.AddSection("Hệ thống");
             layout.AddPage("settings", "Cài đặt", CreatePlaceholder("Cài đặt", "Cấu hình hệ thống"), IconChar.Gear);
-            layout.LogoutRequested += (_, __) => OnLogoutRequested(this, EventArgs.Empty);
-            layout.ProfileRequested += (_, __) => OnProfileRequested(this, EventArgs.Empty);
-            layout.PageChanged += (_, key) => _view.NavigateTo(key);
             return layout;
         }
 
@@ -120,17 +120,25 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         private void OnLogoutRequested(object sender, EventArgs e)
         {
+
+            if (_isLoggingOut) return;
+            _isLoggingOut = true;
+
             bool confirmed = _view.ConfirmLogout(
                 Lang.Get("main.logout.confirm.message"),
                 Lang.Get("main.logout.confirm.title"),
                 Lang.Get("main.logout.confirm.confirmButton"),
                 Lang.Get("main.logout.confirm.cancelButton"));
 
-            if (confirmed)
+            if (!confirmed)
             {
-                UserSession.Instance.SignOut();
-                _view.CloseView();
+                _isLoggingOut = false;
+                return;
             }
+
+            UserSession.Instance.SignOut();
+            _view.CloseView();
+         
         }
 
         private void OnProfileRequested(object sender, EventArgs e)

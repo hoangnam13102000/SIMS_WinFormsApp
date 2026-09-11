@@ -22,6 +22,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected PopupFormBase()
         {
+            // Đồng bộ quy ước AutoScaleMode.None với frmLogin/frmMain/BaseDialog -
+            // popup này (dropdown tài khoản, notification panel...) được tạo/đóng liên
+            // tục trong lúc MainForm đang chạy; nếu để mặc định (Font-based autoscale)
+            // nó cũng có thể góp phần làm lệch DPI context của tiến trình như BaseDialog.
+            AutoScaleMode = AutoScaleMode.None;
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.Manual;

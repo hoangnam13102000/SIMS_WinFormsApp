@@ -13,26 +13,30 @@ namespace SIMS_WinFormsApp
         [STAThread]
         static void Main()
         {
-            // DPI-awareness cho .NET Framework khai báo qua App.config
-            // (xem thẻ System.Windows.Forms.ApplicationConfigurationSection),
-            // không dùng Application.SetHighDpiMode (chỉ có ở .NET Core/.NET 5+).
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             ThemeManager.Instance.ApplyStartupTheme();
-            var languageManager = LanguageManager.Instance;
+            _ = LanguageManager.Instance;
 
             while (true)
             {
+
                 using (var loginForm = new frmLogin())
                 {
+                    loginForm.StartPosition = FormStartPosition.CenterScreen;
+                    loginForm.TopMost = true;
+                    loginForm.Load += (s, e) => loginForm.BeginInvoke(new Action(() => { loginForm.TopMost = false; }));
+
                     var loginResult = loginForm.ShowDialog();
                     if (loginResult != DialogResult.OK || !UserSession.Instance.IsLoggedIn)
-                        break; // thoát app
+                        break;
                 }
 
                 using (var mainForm = new frmMain())
                 {
+                    mainForm.StartPosition = FormStartPosition.CenterScreen;
+                    mainForm.Shown += (s, e) => { mainForm.Activate(); mainForm.BringToFront(); };
                     Application.Run(mainForm);
                 }
 

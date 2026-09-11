@@ -5,11 +5,11 @@ namespace SIMS_WinFormsApp.UI.Theme
     public static class LayoutColors
     {
         // ===== Kích thước đã điều chỉnh =====
-        public const int HeaderHeight = 100;        
+        public const int HeaderHeight = 104;        
         public const int FooterHeight = 36;
         public const int SidebarWidth = 260;
         public const int SidebarWidthCollapsed = 72;
-        public const int SidebarItemHeight = 50;
+        public const int SidebarItemHeight = 54;
 
         // ... Giữ nguyên toàn bộ màu sắc bên dưới ...
         public static readonly Color SidebarBg = Color.FromArgb(24, 26, 32);

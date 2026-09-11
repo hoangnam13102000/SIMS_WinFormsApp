@@ -8,7 +8,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
     {
         private System.ComponentModel.IContainer components = null;
 
-        private const int ContentWidth = 400;
+        private const int ContentWidth = 520;
 
         // ===== Step 1: Identify =====
         private Panel pnlStep1;
@@ -101,8 +101,8 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.SuspendLayout();
 
             // ===== frmForgotPassword =====
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(480, 640);
+            this.AutoScaleMode = AutoScaleMode.None;
+            this.ClientSize = new Size(600, 760);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
             this.MaximizeBox = false;
@@ -116,54 +116,56 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // ================= STEP 1 =================
             this.pnlStep1.Location = new Point(left, top);
-            this.pnlStep1.Size = new Size(ContentWidth, 540);
+            this.pnlStep1.Size = new Size(ContentWidth, 680);
             this.pnlStep1.BackColor = SIMS_WinFormsApp.UI.Theme.AppColors.White;
 
             int y1 = 0;
             this.lblStep1.AutoSize = false;
             this.lblStep1.Location = new Point(0, y1);
-            this.lblStep1.Size = new Size(ContentWidth, 18);
+            this.lblStep1.Size = new Size(ContentWidth, 24);
             this.lblStep1.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.SmallBold;
             this.lblStep1.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.Accent;
-            y1 += 24;
+            y1 += 30;
 
             this.lblTitle1.AutoSize = false;
             this.lblTitle1.Location = new Point(0, y1);
-            this.lblTitle1.Size = new Size(ContentWidth, 40);
+            this.lblTitle1.Size = new Size(ContentWidth, 72);
             this.lblTitle1.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.Title;
             this.lblTitle1.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextTitle;
-            y1 += 44;
+            y1 += 76;
 
             this.lblSubtitle1.AutoSize = false;
             this.lblSubtitle1.Location = new Point(0, y1);
-            this.lblSubtitle1.Size = new Size(ContentWidth, 40);
+            this.lblSubtitle1.Size = new Size(ContentWidth, 52);
             this.lblSubtitle1.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.Body;
             this.lblSubtitle1.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextMuted;
-            y1 += 52;
+            y1 += 60;
 
             this.lblUsernameLabel1.AutoSize = false;
             this.lblUsernameLabel1.Location = new Point(0, y1);
-            this.lblUsernameLabel1.Size = new Size(ContentWidth, 20);
+            this.lblUsernameLabel1.Size = new Size(ContentWidth, 32);
             this.lblUsernameLabel1.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.BodyBold;
             this.lblUsernameLabel1.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextPrimary;
-            y1 += 24;
+            this.lblUsernameLabel1.TextAlign = ContentAlignment.MiddleLeft;
+            y1 += 36;
 
             this.txtUsername1.Location = new Point(0, y1);
-            this.txtUsername1.Size = new Size(ContentWidth, 44);
+            this.txtUsername1.Size = new Size(ContentWidth, 52);
             this.txtUsername1.MaxLength = 50;
-            y1 += 44 + 16;
+            y1 += 52 + 16;
 
             this.lblEmailLabel1.AutoSize = false;
             this.lblEmailLabel1.Location = new Point(0, y1);
-            this.lblEmailLabel1.Size = new Size(ContentWidth, 20);
+            this.lblEmailLabel1.Size = new Size(ContentWidth, 32);
             this.lblEmailLabel1.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.BodyBold;
             this.lblEmailLabel1.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextPrimary;
-            y1 += 24;
+            this.lblEmailLabel1.TextAlign = ContentAlignment.MiddleLeft;
+            y1 += 36;
 
             this.txtEmail1.Location = new Point(0, y1);
-            this.txtEmail1.Size = new Size(ContentWidth, 44);
+            this.txtEmail1.Size = new Size(ContentWidth, 52);
             this.txtEmail1.MaxLength = 100;
-            y1 += 44 + 10;
+            y1 += 52 + 10;
 
             this.lblMessage1.AutoSize = false;
             this.lblMessage1.Location = new Point(0, y1);
@@ -192,24 +194,24 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // ================= STEP 2 =================
             this.pnlStep2.Location = new Point(left, top);
-            this.pnlStep2.Size = new Size(ContentWidth, 540);
+            this.pnlStep2.Size = new Size(ContentWidth, 680);
             this.pnlStep2.BackColor = SIMS_WinFormsApp.UI.Theme.AppColors.White;
             this.pnlStep2.Visible = false;
 
             int y2 = 0;
             this.lblStep2.AutoSize = false;
             this.lblStep2.Location = new Point(0, y2);
-            this.lblStep2.Size = new Size(ContentWidth, 18);
+            this.lblStep2.Size = new Size(ContentWidth, 24);
             this.lblStep2.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.SmallBold;
             this.lblStep2.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.Accent;
-            y2 += 24;
+            y2 += 30;
 
             this.lblTitle2.AutoSize = false;
             this.lblTitle2.Location = new Point(0, y2);
-            this.lblTitle2.Size = new Size(ContentWidth, 40);
+            this.lblTitle2.Size = new Size(ContentWidth, 72);
             this.lblTitle2.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.Title;
             this.lblTitle2.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextTitle;
-            y2 += 44;
+            y2 += 76;
 
             this.lblSentTo2.AutoSize = false;
             this.lblSentTo2.Location = new Point(0, y2);
@@ -220,15 +222,16 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             this.lblOtpLabel2.AutoSize = false;
             this.lblOtpLabel2.Location = new Point(0, y2);
-            this.lblOtpLabel2.Size = new Size(ContentWidth, 20);
+            this.lblOtpLabel2.Size = new Size(ContentWidth, 32);
             this.lblOtpLabel2.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.BodyBold;
             this.lblOtpLabel2.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextPrimary;
-            y2 += 24;
+            this.lblOtpLabel2.TextAlign = ContentAlignment.MiddleLeft;
+            y2 += 36;
 
             this.txtOtp2.Location = new Point(0, y2);
-            this.txtOtp2.Size = new Size(ContentWidth, 50);
+            this.txtOtp2.Size = new Size(ContentWidth, 52);
             this.txtOtp2.MaxLength = 6;
-            y2 += 50 + 10;
+            y2 += 52 + 10;
 
             this.lblMessage2.AutoSize = false;
             this.lblMessage2.Location = new Point(0, y2);
@@ -257,48 +260,50 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // ================= STEP 3 =================
             this.pnlStep3.Location = new Point(left, top);
-            this.pnlStep3.Size = new Size(ContentWidth, 540);
+            this.pnlStep3.Size = new Size(ContentWidth, 680);
             this.pnlStep3.BackColor = SIMS_WinFormsApp.UI.Theme.AppColors.White;
             this.pnlStep3.Visible = false;
 
             int y3 = 0;
             this.lblStep3.AutoSize = false;
             this.lblStep3.Location = new Point(0, y3);
-            this.lblStep3.Size = new Size(ContentWidth, 18);
+            this.lblStep3.Size = new Size(ContentWidth, 24);
             this.lblStep3.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.SmallBold;
             this.lblStep3.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.Accent;
-            y3 += 24;
+            y3 += 30;
 
             this.lblTitle3.AutoSize = false;
             this.lblTitle3.Location = new Point(0, y3);
-            this.lblTitle3.Size = new Size(ContentWidth, 40);
+            this.lblTitle3.Size = new Size(ContentWidth, 72);
             this.lblTitle3.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.Title;
             this.lblTitle3.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextTitle;
-            y3 += 44;
+            y3 += 76;
 
             this.lblNewPasswordLabel3.AutoSize = false;
             this.lblNewPasswordLabel3.Location = new Point(0, y3);
-            this.lblNewPasswordLabel3.Size = new Size(ContentWidth, 20);
+            this.lblNewPasswordLabel3.Size = new Size(ContentWidth, 32);
             this.lblNewPasswordLabel3.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.BodyBold;
             this.lblNewPasswordLabel3.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextPrimary;
-            y3 += 24;
+            this.lblNewPasswordLabel3.TextAlign = ContentAlignment.MiddleLeft;
+            y3 += 36;
 
             this.txtNewPassword3.Location = new Point(0, y3);
-            this.txtNewPassword3.Size = new Size(ContentWidth, 44);
+            this.txtNewPassword3.Size = new Size(ContentWidth, 52);
             this.txtNewPassword3.MaxLength = 72;
-            y3 += 44 + 16;
+            y3 += 52 + 16;
 
             this.lblConfirmPasswordLabel3.AutoSize = false;
             this.lblConfirmPasswordLabel3.Location = new Point(0, y3);
-            this.lblConfirmPasswordLabel3.Size = new Size(ContentWidth, 20);
+            this.lblConfirmPasswordLabel3.Size = new Size(ContentWidth, 32);
             this.lblConfirmPasswordLabel3.Font = SIMS_WinFormsApp.UI.Theme.AppFonts.BodyBold;
             this.lblConfirmPasswordLabel3.ForeColor = SIMS_WinFormsApp.UI.Theme.AppColors.TextPrimary;
-            y3 += 24;
+            this.lblConfirmPasswordLabel3.TextAlign = ContentAlignment.MiddleLeft;
+            y3 += 36;
 
             this.txtConfirmPassword3.Location = new Point(0, y3);
-            this.txtConfirmPassword3.Size = new Size(ContentWidth, 44);
+            this.txtConfirmPassword3.Size = new Size(ContentWidth, 52);
             this.txtConfirmPassword3.MaxLength = 72;
-            y3 += 44 + 8;
+            y3 += 52 + 8;
 
             this.lblRequirements3.AutoSize = false;
             this.lblRequirements3.Location = new Point(0, y3);

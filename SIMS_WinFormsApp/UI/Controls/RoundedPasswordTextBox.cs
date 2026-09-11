@@ -16,7 +16,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             _eyeToggle = new EyeToggle
             {
-                Size = new Size(28, 28),
+                Size = new Size(32, 32),
                 Cursor = Cursors.Hand
             };
             _eyeToggle.Click += (s, e) => TogglePasswordVisibility();
@@ -27,7 +27,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             PositionToggle();
         }
 
-        protected override int TrailingWidth => 32;
+        protected override int TrailingWidth => 38;
 
         private void PositionToggle()
         {

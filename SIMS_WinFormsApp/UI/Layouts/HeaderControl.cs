@@ -100,38 +100,48 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _bellIcon = new IconPictureBox
             {
                 IconChar = IconChar.Bell,
+                IconFont = IconFont.Solid,
                 IconColor = LayoutColors.TextWhite,
-                IconSize = 22,
-                Size = new Size(26, 26),
+                IconSize = 26,
+                Size = new Size(32, 32),
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
-                Location = new Point(13, 13)
+                Location = new Point(14, 14)
             };
             _bellIcon.Click += (_, __) => ShowNotificationMenu();
 
             _badgeDot = new Label
             {
                 AutoSize = false,
-                Size = new Size(20, 18),
-                Location = new Point(30, 6),
+                Size = new Size(22, 22),
+                Location = new Point(38, 2),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 7.5f, FontStyle.Bold),
+                Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
                 ForeColor = Color.White,
                 BackColor = LayoutColors.RedDot,
                 Text = "0",
                 Visible = false,
                 Cursor = Cursors.Hand
             };
+            using (var badgePath = new GraphicsPath())
+            {
+                badgePath.AddEllipse(0, 0, 21, 21);
+                _badgeDot.Region = new Region(badgePath);
+            }
             _badgeDot.Click += (_, __) => ShowNotificationMenu();
 
             _bellPanel = new Panel
             {
-                Size = new Size(52, 52),
+                Size = new Size(64, 60),
                 BackColor = LayoutColors.HeaderBg,
                 Cursor = Cursors.Hand
             };
+            // Do not clip the parent to an ellipse: the badge sits near the
+            // top-right edge and must remain a complete circle.
             _bellPanel.Controls.Add(_bellIcon);
             _bellPanel.Controls.Add(_badgeDot);
+            // The badge must always remain above the bell glyph and receive clicks.
+            _badgeDot.BringToFront();
             _bellPanel.Click += (_, __) => ShowNotificationMenu();
             _bellPanel.Paint += PaintBellPanel;
             _bellPanel.MouseEnter += (_, __) => { _bellHover = true; _bellPanel.Invalidate(); };
@@ -271,7 +281,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _accountPanel.Width = accountW;
             _accountPanel.Height = 52;
 
-            int rightNeeded = padRight + accountW + 12 + _bellPanel.Width + 16;
+            int rightNeeded = padRight + accountW + 20 + _bellPanel.Width + 16;
             _rightPanel.Width = Math.Max(200, rightNeeded);
 
             int accountX = _rightPanel.Width - padRight - accountW;
@@ -296,7 +306,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 _userNameLabel.Location = new Point(utX, (_accountPanel.Height - nameSize.Height) / 2);
             }
 
-            int bellX = _accountPanel.Left - 12 - _bellPanel.Width;
+            int bellX = _accountPanel.Left - 20 - _bellPanel.Width;
             int bellY = (h - _bellPanel.Height) / 2;
             _bellPanel.Location = new Point(Math.Max(0, bellX), bellY);
         }
@@ -378,7 +388,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             var menu = new ModernDropdownMenu { Width = 320 };
             menu.AddHeader(BuildAccountHeader());
             menu.AddSeparator();
-            menu.AddItem("profile", Lang.Get("header.dropdown.profile"), IconChar.User)
+            menu.AddItem("profile", Lang.Get("header.dropdown.profile"), IconChar.UserCircle)
                 .AddItem("logout", Lang.Get("header.dropdown.logout"), IconChar.SignOutAlt, isDanger: true);
 
             menu.ItemClicked += (_, key) =>
@@ -514,7 +524,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             if (!_bellHover) return;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             using (var brush = new SolidBrush(LayoutColors.HeaderIconBgHover))
-                e.Graphics.FillRoundedRectangle(brush, 0, 0, _bellPanel.Width - 1, _bellPanel.Height - 1, 12);
+                e.Graphics.FillEllipse(brush, 0, 0, _bellPanel.Width - 1, _bellPanel.Height - 1);
         }
 
         private void PaintAccountPanel(object sender, PaintEventArgs e)

@@ -113,7 +113,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 c.Width = Width - 16;
 
                 if (c is DropdownItemControl)
-                    c.Height = 44;
+                    c.Height = 52;
 
                 _host.Controls.Add(c);
                 y += c.Height + 4;
@@ -194,7 +194,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.ResizeRedraw |
                      ControlStyles.SupportsTransparentBackColor, true);
 
-            Height = 44;
+            Height = 52;
             Cursor = Cursors.Hand;
             BackColor = Color.Transparent;
             Padding = new Padding(0);
@@ -204,10 +204,10 @@ namespace SIMS_WinFormsApp.UI.Controls
             // Icon — không Dock, luôn hiện
             _iconBox = new IconPictureBox
             {
-                Size = new Size(24, 24),
-                Location = new Point(12, 10),
+                Size = new Size(28, 28),
+                Location = new Point(14, 12),
                 IconColor = fg,
-                IconSize = 18,
+                IconSize = 22,
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
                 IconChar = icon ?? IconChar.Circle
@@ -223,8 +223,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                 BackColor = Color.Transparent,
                 Text = _text,
                 Cursor = Cursors.Hand,
-                Location = new Point(44, 0),
-                Size = new Size(200, 44)
+                Location = new Point(58, 0),
+                Size = new Size(200, 52)
             };
 
             Controls.Add(_textLabel);
@@ -233,8 +233,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             Resize += (_, __) =>
             {
-                _textLabel.Size = new Size(Math.Max(40, Width - 52), Height);
-                _iconBox.Location = new Point(12, Math.Max(0, (Height - _iconBox.Height) / 2));
+                _textLabel.Size = new Size(Math.Max(40, Width - 68), Height);
+                _iconBox.Location = new Point(14, Math.Max(0, (Height - _iconBox.Height) / 2));
             };
 
             MouseEnter += OnHover;

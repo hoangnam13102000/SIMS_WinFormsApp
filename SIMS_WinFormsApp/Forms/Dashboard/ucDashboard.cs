@@ -128,13 +128,21 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
             var activityCard = CreateSectionCard(
                 "Hoạt động gần đây",
                 "Các giao dịch và sự kiện mới nhất trong hệ thống");
-            activityCard.Dock = DockStyle.Fill;
+            // Keep the activity card in the normal vertical flow. A Fill child
+            // inside an AutoScroll host can occupy the same bounds as the
+            // statistic cards and paint over their content.
+            activityCard.Dock = DockStyle.Top;
+            activityCard.Height = 420;
             _contentPanel.Controls.Add(activityCard);
 
             // Z-order: Fill dưới cùng, Top ở trên
             _contentPanel.Controls.SetChildIndex(activityCard, 0);
             _contentPanel.Controls.SetChildIndex(spacer, 1);
             _contentPanel.Controls.SetChildIndex(_statsRow, 2);
+            _contentPanel.Resize += (_, __) =>
+            {
+                activityCard.Height = Math.Max(280, _contentPanel.ClientSize.Height - _statsRow.Height - spacer.Height - 8);
+            };
 
             Controls.Add(root);
             ResumeLayout(true);
@@ -198,7 +206,7 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
                 Text = subtitle,
                 Font = new Font("Segoe UI", 9.5f),
                 ForeColor = AppColors.TextSecondary,
-                Location = new Point(20, 46),
+                Location = new Point(20, 52),
                 BackColor = Color.Transparent
             };
             panel.Controls.Add(lblSub);

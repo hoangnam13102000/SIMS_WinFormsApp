@@ -110,17 +110,21 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             using (var titleBrush = new SolidBrush(Color.White))
             {
-                var titleRect = new Rectangle(paddingX, cursorY, Width - paddingX * 2, 44);
+                // The embedded Inter font has a taller ascent than Segoe UI.
+                // Keep extra vertical bounds so the top and bottom of the brand
+                // name remain visible after the form is recreated.
+                var titleRect = new Rectangle(paddingX, cursorY, Width - paddingX * 2, 60);
                 g.DrawString(_brandName, AppFonts.Brand, titleBrush, titleRect);
             }
-            cursorY += 50;
+            cursorY += 66;
 
         
             if (!string.IsNullOrEmpty(_tagline))
             {
                 using (var taglineBrush = new SolidBrush(AppColors.DarkTextMuted))
                 {
-                    var taglineRect = new Rectangle(paddingX, cursorY, Width - paddingX * 2 - 40, 90);
+                    int textWidth = System.Math.Max(80, Width - paddingX * 2 - 16);
+                    var taglineRect = new Rectangle(paddingX, cursorY, textWidth, 120);
                     g.DrawString(_tagline, AppFonts.Body, taglineBrush, taglineRect);
                     cursorY += MeasureHeight(g, _tagline, AppFonts.Body, taglineRect.Width) + 28;
                 }
@@ -128,8 +132,9 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             foreach (var feature in _features)
             {
-                DrawFeatureRow(g, paddingX, cursorY, Width - paddingX * 2, feature);
-                cursorY += 38;
+                int featureWidth = System.Math.Max(80, Width - paddingX * 2);
+                int rowHeight = DrawFeatureRow(g, paddingX, cursorY, featureWidth, feature);
+                cursorY += rowHeight + 10;
             }
 
     
@@ -164,7 +169,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
         }
 
-        private void DrawFeatureRow(Graphics g, int x, int y, int width, string text)
+        private int DrawFeatureRow(Graphics g, int x, int y, int width, string text)
         {
             const int iconSize = 22;
             var iconRect = new Rectangle(x, y, iconSize, iconSize);
@@ -183,8 +188,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             using (var textBrush = new SolidBrush(AppColors.DarkFeatureText))
             {
-                var textRect = new Rectangle(x + iconSize + 12, y - 2, width - iconSize - 12, 30);
+                int textWidth = System.Math.Max(40, width - iconSize - 12);
+                int textHeight = MeasureHeight(g, text, AppFonts.Feature, textWidth);
+                var textRect = new Rectangle(x + iconSize + 12, y - 2, textWidth, textHeight + 6);
                 g.DrawString(text, AppFonts.Feature, textBrush, textRect);
+                return System.Math.Max(iconSize, textHeight);
             }
         }
 

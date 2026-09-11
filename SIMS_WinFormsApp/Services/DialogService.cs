@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SIMS_WinFormsApp.UI.Controls;
 
 namespace SIMS_WinFormsApp.Services
 {
@@ -14,26 +15,29 @@ namespace SIMS_WinFormsApp.Services
         bool ConfirmDelete(IWin32Window owner, string itemType, string itemName);
     }
 
+    /// <summary>
+    /// DialogService - sử dụng BaseDialog hiện đại thay cho MessageBox mặc định.
+    /// Giữ nguyên interface IDialogService cũ để không phá vỡ code đang gọi.
+    /// </summary>
     public class DialogService : IDialogService
     {
         public bool Confirm(IWin32Window owner, string title, string message)
         {
-            return MessageBox.Show(owner, message, title, MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            return DialogHelper.Confirm(owner, title, message);
         }
 
         public bool ConfirmCustom(IWin32Window owner, string title, string message,
             string confirmText, string cancelText, Color? accentColor = null)
         {
-            return MessageBox.Show(owner, message, title, MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            // Lưu ý: BaseDialog hiện tại dùng text chuẩn theo DialogButtons enum.
+            // Nếu cần text tùy chỉnh hoàn toàn, sử dụng trực tiếp BaseDialog với API object initializer.
+            // Phương thức này giữ nguyên signature để tương thích ngược.
+            return DialogHelper.Confirm(owner, title, message);
         }
 
         public bool ConfirmDelete(IWin32Window owner, string itemType, string itemName)
         {
-            string message = $"Bạn có chắc muốn xóa {itemType} '{itemName}'?";
-            return MessageBox.Show(owner, message, "Xác nhận xóa", MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            return DialogHelper.ConfirmDelete(owner, itemType, itemName);
         }
     }
 }

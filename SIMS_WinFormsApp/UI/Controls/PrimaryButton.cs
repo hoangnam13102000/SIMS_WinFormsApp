@@ -68,15 +68,16 @@ namespace SIMS_WinFormsApp.UI.Controls
             Invalidate();
         }
 
-        // ===== CLICK NGAY TỪ MouseDown → hết phải bấm 2 lần =====
+        // ═══════════════════════════════════════════════════════════════
+        // ✅ ĐÃ SỬA: Bỏ Focus() - không cần focus trước khi click
+        // ═══════════════════════════════════════════════════════════════
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
             if (e.Button == MouseButtons.Left && Enabled)
             {
                 _isPressed = true;
-                Focus();
-                Capture = true;          // giữ chuột
+                Capture = true;
                 Invalidate();
             }
         }

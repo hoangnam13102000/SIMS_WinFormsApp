@@ -83,9 +83,10 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _toggleIcon = new IconPictureBox
             {
                 IconChar = IconChar.Bars,
+                IconFont = IconFont.Solid,
                 IconColor = LayoutColors.TextWhite,
-                IconSize = 18,
-                Size = new Size(20, 20),
+                IconSize = 20,
+                Size = new Size(24, 24),
                 SizeMode = PictureBoxSizeMode.CenterImage,
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
@@ -388,7 +389,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
         private int AddGroupHeader(GroupInfo group, int usableWidth, int y)
         {
-            const int chevronSize = 16;
+            const int chevronSize = 18;
             var headerPanel = new Panel
             {
                 Location = new Point(0, y),
@@ -401,7 +402,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             {
                 Text = group.Header,
                 ForeColor = LayoutColors.SidebarTextMuted,
-                Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+                Font = new Font("Segoe UI", 9f, FontStyle.Bold),
                 AutoSize = false,
                 AutoEllipsis = true,
                 TextAlign = ContentAlignment.MiddleLeft,
@@ -414,6 +415,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             var chevron = new IconPictureBox
             {
                 IconChar = group.Expanded ? IconChar.ChevronDown : IconChar.ChevronRight,
+                IconFont = IconFont.Solid,
                 IconColor = LayoutColors.SidebarTextMuted,
                 IconSize = 11,
                 Size = new Size(chevronSize, chevronSize),

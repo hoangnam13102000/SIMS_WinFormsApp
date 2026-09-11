@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="SIMS_WinFormsApp.app"/>
+
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <!-- Windows 8.1 / 10 / 11 -->
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
+      <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
+      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
+      <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+    </application>
+  </compatibility>
+
+  <!--
+    QUAN TRỌNG: project này trước đây KHÔNG có bất kỳ file .manifest nào, nên tiến
+    trình chạy ở chế độ DPI "Unaware" mặc định của .NET Framework - Windows tự
+    bitmap-stretch (DPI virtualization) toàn bộ cửa sổ của app để "giả lập" đúng kích
+    thước trên màn hình có scale > 100%. Cơ chế virtualization này KHÔNG cố định cho
+    cả vòng đời tiến trình: nó được Windows áp lại cho từng cửa sổ top-level mới dựa
+    trên "DPI awareness context" hiện tại của thread tại thời điểm cửa sổ đó được tạo.
+
+    Nếu context này bị đổi giữa chừng (vd. do BaseDialog/PopupFormBase tự Font-based
+    autoscale thay vì dùng AutoScaleMode.None như quy ước của app), các cửa sổ
+    top-level tạo SAU thời điểm đó (vd. LoginForm mở lại sau Logout) có thể bị Windows
+    áp virtualization khác với cửa sổ tạo TRƯỚC đó.
+
+    Khai báo dpiAware/dpiAwareness tường minh ở đây khiến Windows chốt 1 chính sách
+    DPI DUY NHẤT, cố định cho toàn bộ tiến trình ngay từ khi process khởi động. Chọn
+    "System" (không phải PerMonitorV2) vì toàn bộ layout trong app đang dùng pixel
+    tuyệt đối (AutoScaleMode.None ở mọi Form) và chưa xử lý WM_DPICHANGED để tự
+    relayout khi đổi màn hình.
+  -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">System</dpiAwareness>
+    </windowsSettings>
+  </application>
+</assembly>

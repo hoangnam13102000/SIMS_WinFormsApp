@@ -9,9 +9,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
     public class SidebarItemControl : UserControl
     {
         private const int IconLeft = 16;
-        private const int IconSize = 22;
-        private const int TextGap = 12;
-        private const int RightPadding = 12;
+        private const int IconSize = 24;
+        private const int TextGap = 14;
+        private const int RightPadding = 14;
         private const int BadgeWidth = 22;
 
         private readonly IconPictureBox _iconBox;
@@ -56,8 +56,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _iconBox = new IconPictureBox
             {
                 IconChar = icon,
+                IconFont = IconFont.Solid,
                 IconColor = LayoutColors.SidebarTextInactive,
-                IconSize = 18,
+                IconSize = 20,
                 Size = new Size(IconSize, IconSize),
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand
@@ -69,7 +70,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleLeft,
                 ForeColor = LayoutColors.SidebarTextInactive,
-                Font = new Font("Segoe UI", 9.5f),
+                Font = new Font("Segoe UI", 10.5f),
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
                 AutoEllipsis = true
@@ -149,6 +150,12 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
         public void SetCollapsed(bool collapsed)
         {
+            if (_collapsed == collapsed)
+            {
+                LayoutChildren();
+                return;
+            }
+
             _collapsed = collapsed;
 
             string tip = collapsed ? _label : string.Empty;
@@ -177,7 +184,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 int iconX = Math.Max(0, (Width - IconSize) / 2);
                 _iconBox.Location = new Point(iconX, centerY);
                 _iconBox.Visible = true;
-                _iconBox.IconSize = 18;
+                _iconBox.IconSize = 20;
                 _iconBox.IconColor = _isActive
                     ? LayoutColors.SidebarTextActive
                     : LayoutColors.SidebarTextInactive;

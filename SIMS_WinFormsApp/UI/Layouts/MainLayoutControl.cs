@@ -28,8 +28,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private float _sidebarAnimFrom;
         private float _sidebarAnimTo;
         private float _sidebarAnimProgress;
-        private const int SidebarAnimDurationMs = 180;
-        private const int SidebarAnimIntervalMs = 12;
+        private const int SidebarAnimDurationMs = 120;
+        private const int SidebarAnimIntervalMs = 16;
 
         public HeaderControl Header => _header;
         public SidebarControl Sidebar => _sidebar;

@@ -20,13 +20,13 @@ namespace SIMS_WinFormsApp.UI.Controls
                       ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
 
             BackColor = System.Drawing.Color.Transparent;
-            Height = 44;
+            Height = 52;
             Padding = new Padding(14, 0, 14, 0);
 
             _textBox = new TextBox
             {
                 BorderStyle = BorderStyle.None,
-                Font = AppFonts.Body,
+                Font = AppFonts.Input,
                 Location = new Point(14, 12),
                 Width = Width - 28
             };
@@ -43,7 +43,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 AutoSize = false,
                 BackColor = System.Drawing.Color.Transparent,
                 ForeColor = AppColors.TextMutedAlt,
-                Font = AppFonts.Body,
+                Font = AppFonts.Input,
                 Location = new Point(15, 13),
                 TextAlign = ContentAlignment.MiddleLeft,
                 Enabled = false

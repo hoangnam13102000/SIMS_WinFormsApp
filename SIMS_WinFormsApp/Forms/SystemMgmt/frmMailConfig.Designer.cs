@@ -114,9 +114,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             y += 24;
 
             this.txtSenderEmail.Location = new Point(0, y);
-            this.txtSenderEmail.Size = new Size(cardWidth, 44);
+            this.txtSenderEmail.Size = new Size(cardWidth, 52);
             this.txtSenderEmail.MaxLength = 100;
-            y += 44 + 18;
+            y += 52 + 18;
 
             // App password label + field
             this.lblAppPassword.AutoSize = false;
@@ -127,9 +127,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             y += 24;
 
             this.txtAppPassword.Location = new Point(0, y);
-            this.txtAppPassword.Size = new Size(cardWidth, 44);
+            this.txtAppPassword.Size = new Size(cardWidth, 52);
             this.txtAppPassword.MaxLength = 32;
-            y += 44 + 10;
+            y += 52 + 10;
 
             // Hint + how-to link
             this.lblHint.AutoSize = false;

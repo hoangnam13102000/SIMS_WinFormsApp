@@ -68,7 +68,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.SuspendLayout();
 
             // ===== frmChangePassword =====
-            this.AutoScaleMode = AutoScaleMode.Font;
+            this.AutoScaleMode = AutoScaleMode.None;
             this.ClientSize = new Size(1040, 650);
             this.MinimumSize = new Size(920, 580);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -108,10 +108,10 @@ namespace SIMS_WinFormsApp.Forms.Auth
             y += 24;
 
             this.txtCurrent.Location = new Point(formLeft, y);
-            this.txtCurrent.Size = new Size(440, 44);
+            this.txtCurrent.Size = new Size(440, 52);
             this.txtCurrent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.txtCurrent.MaxLength = 100;
-            y += 44 + 16;
+            y += 52 + 16;
 
             // Mat khau moi
             this.lblNew.AutoSize = false;
@@ -120,10 +120,10 @@ namespace SIMS_WinFormsApp.Forms.Auth
             y += 24;
 
             this.txtNew.Location = new Point(formLeft, y);
-            this.txtNew.Size = new Size(440, 44);
+            this.txtNew.Size = new Size(440, 52);
             this.txtNew.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.txtNew.MaxLength = 100;
-            y += 44 + 16;
+            y += 52 + 16;
 
             // Xac nhan mat khau moi
             this.lblConfirm.AutoSize = false;
@@ -132,10 +132,10 @@ namespace SIMS_WinFormsApp.Forms.Auth
             y += 24;
 
             this.txtConfirm.Location = new Point(formLeft, y);
-            this.txtConfirm.Size = new Size(440, 44);
+            this.txtConfirm.Size = new Size(440, 52);
             this.txtConfirm.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.txtConfirm.MaxLength = 100;
-            y += 44 + 10;
+            y += 52 + 10;
 
             // Error label
             this.lblError.AutoSize = false;

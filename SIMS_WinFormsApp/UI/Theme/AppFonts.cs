@@ -84,8 +84,9 @@ namespace SIMS_WinFormsApp.UI.Theme
         public static readonly Font Subtitle = CreateFont(FamilySemiBold, 13f, FontStyle.Regular);
 
         public static readonly Font Brand = CreateFont(FamilyRegularBold, 26f, FontStyle.Bold);
-        public static readonly Font Body = CreateFont(FamilyRegularBold, 10f, FontStyle.Regular);
-        public static readonly Font BodyBold = CreateFont(FamilyRegularBold, 10f, FontStyle.Bold);
+        public static readonly Font Body = CreateFont(FamilyRegularBold, 11f, FontStyle.Regular);
+        public static readonly Font BodyBold = CreateFont(FamilyRegularBold, 11f, FontStyle.Bold);
+        public static readonly Font Input = CreateFont(FamilyRegularBold, 11f, FontStyle.Regular);
         public static readonly Font Feature = CreateFont(FamilyMedium, 10.5f, FontStyle.Regular);
         public static readonly Font Small = CreateFont(FamilyRegularBold, 9f, FontStyle.Regular);
         public static readonly Font SmallBold = CreateFont(FamilyRegularBold, 9f, FontStyle.Bold);

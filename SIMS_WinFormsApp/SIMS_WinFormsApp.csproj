@@ -13,6 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="UI\Controls\BaseTable.cs" />
+    <Compile Include="UI\Controls\ManagementTablePage.cs" />
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
     </Reference>
@@ -182,9 +185,16 @@
     <Compile Include="UI\Controls\AuthBrandPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Controls\BaseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\Controls\ClickableLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Controls\DialogType.cs" />
+    <Compile Include="UI\Controls\DialogButtons.cs" />
+    <Compile Include="UI\Controls\DialogHelper.cs" />
+    <!-- ✅ ĐÃ THÊM: HeaderSection.cs (bị thiếu trước đây) -->
     <Compile Include="UI\Controls\HeaderSection.cs" />
     <Compile Include="UI\Controls\NotificationDropdownControl.cs" />
     <Compile Include="UI\Controls\PopupFormBase.cs">

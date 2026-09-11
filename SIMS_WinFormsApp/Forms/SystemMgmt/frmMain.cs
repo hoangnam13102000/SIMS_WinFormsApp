@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.MVP.Views;
 using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Layouts;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
@@ -21,20 +22,11 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public frmMain()
         {
             InitializeComponent();
-
             AutoScaleMode = AutoScaleMode.None;
             Font = new Font("Segoe UI", 9f);
             StartPosition = FormStartPosition.CenterScreen;
             MinimumSize = new Size(1024, 680);
             BackColor = Color.FromArgb(245, 247, 250);
-
-            // KHÔNG set WindowState = Maximized ở đây (constructor).
-            // Nguyên nhân gốc: khi set WindowState.Maximized TRƯỚC khi Form handle
-            // được tạo (trước Show/Application.Run), WinForms lưu "restore bounds"
-            // = Size/Location hiện tại (từ Designer ClientSize 1280x720 + Location mặc định).
-            // Kết quả: title bar hiển thị icon Restore (coi như Maximized) nhưng
-            // Bounds thực tế vẫn là kích thước nhỏ nằm góc trên-trái.
-            // Giải pháp: chỉ set WindowState SAU khi handle đã tạo (trong Load).
 
             SetStyle(ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.UserPaint |
@@ -42,21 +34,26 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                      ControlStyles.ResizeRedraw, true);
             UpdateStyles();
 
-            // ===== QUAN TRỌNG: Tạo Presenter =====
             _presenter = new MainPresenter(
                 this,
                 () => UserSession.Instance.CurrentUser?.FullName ?? UserSession.Instance.CurrentUser?.Username ?? "Admin",
                 () => UserSession.Instance.CurrentUser?.Email ?? string.Empty);
 
             Load += OnFormLoad;
+            FormClosed += OnFormClosed;
+        }
+
+        private void OnFormClosed(object sender, FormClosedEventArgs e)
+        {
+
+            FormClosed -= OnFormClosed;
+            Load -= OnFormLoad;
+            _presenter?.Dispose();
+            _presenter = null;
         }
 
         private void OnFormLoad(object sender, EventArgs e)
         {
-            // Set Maximized SAU khi handle đã được tạo → Windows tính đúng
-            // WorkingArea của màn hình, Bounds thực tế = full screen, title bar
-            // phản ánh đúng trạng thái Maximized. Restore sẽ trả về ClientSize
-            // từ Designer (1280x720) tại vị trí CenterScreen.
             if (WindowState != FormWindowState.Maximized)
                 WindowState = FormWindowState.Maximized;
 
@@ -66,7 +63,6 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public void AttachLayout(Control layout)
         {
             if (layout == null) return;
-
             Controls.Clear();
             layout.Dock = DockStyle.Fill;
             Controls.Add(layout);
@@ -111,23 +107,36 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         public void ShowMessage(string message, string caption, MessageBoxIcon icon)
         {
-            MessageBox.Show(this, message, caption, MessageBoxButtons.OK, icon);
+            DialogType dialogType = MapMessageBoxIconToDialogType(icon);
+            DialogHelper.ShowCustom(this, caption, message, dialogType, DialogButtons.OK, DialogResult.OK);
         }
 
         public bool Confirm(string message, string caption)
         {
-            return MessageBox.Show(this, message, caption,
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+            return DialogHelper.Confirm(this, caption, message);
         }
 
         public bool ConfirmLogout(string message, string caption, string confirmText, string cancelText)
         {
-            return MessageBox.Show(this, message, caption,
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            using (var dialog = new BaseDialog()
+            {
+                Title = caption,
+                Message = message,
+                IconType = DialogType.Warning,
+                Buttons = DialogButtons.YesNo,
+                DefaultButton = DialogResult.No,
+                StartPosition = FormStartPosition.CenterScreen
+            })
+            {
+                // Truyền owner = this (MainForm) để dialog luôn nổi đúng trên MainForm,
+                // không bị "trôi" ra sau/trước các cửa sổ khác khi MainForm đang mất focus.
+                return dialog.ShowDialog(this) == DialogResult.Yes;
+            }
         }
 
         public void CloseView()
         {
+            if (IsDisposed) return;
             Close();
         }
 
@@ -136,5 +145,19 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             base.OnResize(e);
             _mainLayout?.PerformLayout();
         }
+
+        #region Helper - Map MessageBoxIcon → DialogType
+        private static DialogType MapMessageBoxIconToDialogType(MessageBoxIcon icon)
+        {
+            switch (icon)
+            {
+                case MessageBoxIcon.Information: return DialogType.Info;
+                case MessageBoxIcon.Warning: return DialogType.Warning;
+                case MessageBoxIcon.Error: return DialogType.Error;
+                case MessageBoxIcon.Question: return DialogType.Question;
+                default: return DialogType.Info;
+            }
+        }
+        #endregion
     }
 }
