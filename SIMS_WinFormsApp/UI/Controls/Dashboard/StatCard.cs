@@ -149,15 +149,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             var titleFont = new Font("Segoe UI", 9f);
             var trendFont = new Font("Segoe UI", 8.5f);
 
-            // Đo chiều cao THẬT của từng font tại runtime (bao gồm đuôi chữ g,q,y và dấu
-            // tiếng Việt) thay vì đoán số cố định — tránh bị cắt chữ (như chữ "g" cụt đuôi)
-            // nếu máy chạy dùng font thay thế có kích thước khác "Segoe UI Semibold".
             const string sample = "Ẵợgqy";
             int valueH = TextRenderer.MeasureText(sample, valueFont, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 6;
             int titleH = TextRenderer.MeasureText(sample, titleFont, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 6;
             int trendH = TextRenderer.MeasureText(sample, trendFont, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 6;
 
-            // Value – cùng hàng với icon, chỉ chiếm phần bên phải icon
             _lblValue = new Label
             {
                 AutoSize = false,
@@ -172,8 +168,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             Controls.Add(_lblValue);
 
-            // Title – xuống hàng riêng, chiếm TOÀN BỘ chiều rộng card (không bị bó theo icon)
-            // để có nhiều không gian hơn và tránh bị cắt chữ. Cách Value một khoảng rõ ràng.
             _lblTitle = new Label
             {
                 AutoSize = false,
@@ -241,9 +235,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             base.OnResize(e);
             if (_lblValue == null) return;
 
-            // Chỉ đổi WIDTH theo kích thước card; HEIGHT/vị trí Y giữ nguyên vì đã được
-            // tính theo chiều cao thật của font (đo 1 lần trong BuildUI) để không tái tạo
-            // lỗi cắt chữ (đuôi chữ g, q bị cụt).
             const int valueLeftOffset = 64;
             const int rightPadding = 14;
             _lblValue.Width = Math.Max(40, Width - valueLeftOffset - rightPadding);
@@ -266,6 +257,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            if (_lblValue != null) _lblValue.ForeColor = AppColors.TextTitle;
+            if (_lblTitle != null) _lblTitle.ForeColor = AppColors.TextSecondary;
 
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
@@ -279,7 +272,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            pevent.Graphics.Clear(BackColor);
+
+            pevent.Graphics.Clear(AppColors.PageBg);
         }
     }
 }

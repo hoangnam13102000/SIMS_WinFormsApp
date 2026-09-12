@@ -67,6 +67,23 @@ namespace SIMS_WinFormsApp.UI.Controls.Pagination
 
             Controls.Add(_centerContainer);
             Controls.Add(rightPanel);
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            BackColor = AppColors.White;
+            _pageLabel.ForeColor = AppColors.TextMuted;
+            Invalidate(true);
+            RenderPageButtonsFromCurrentState();
+        }
+
+        private PaginationState _lastState;
+
+        private void RenderPageButtonsFromCurrentState()
+        {
+            if (_lastState != null)
+                Render(_lastState);
         }
 
         private Panel CreatePageSizePanel(out ComboBox pageSizeBox)
@@ -129,10 +146,18 @@ namespace SIMS_WinFormsApp.UI.Controls.Pagination
 
         public void Render(PaginationState state)
         {
+            _lastState = state;
             RenderPageSizeOptions(state);
             RenderPageButtons(state);
             _pageLabel.Text = "Trang " + state.CurrentPage + " / " + state.TotalPages;
             CenterLeftFlow();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+            base.Dispose(disposing);
         }
 
         private void RenderPageSizeOptions(PaginationState state)

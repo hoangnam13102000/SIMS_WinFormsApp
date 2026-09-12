@@ -10,23 +10,16 @@ using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    /// <summary>
-    /// Định nghĩa các loại dialog với icon, accent color và title mặc định tương ứng.
-    /// Không phải Form - chỉ là enum + metadata helper.
-    /// </summary>
     public enum DialogType
     {
         Info,
         Warning,
         Error,
         Success,
-        Question
+        Question,
+        Danger
     }
 
-    /// <summary>
-    /// Metadata cho mỗi loại DialogType - tránh hard-code màu ở nhiều nơi,
-    /// toàn bộ màu lấy từ AppColors hiện có của project.
-    /// </summary>
     internal static class DialogTypeMetadata
     {
         public static IconChar GetIcon(DialogType type)
@@ -38,6 +31,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return IconChar.CircleXmark;
                 case DialogType.Success: return IconChar.CircleCheck;
                 case DialogType.Question: return IconChar.CircleQuestion;
+                case DialogType.Danger: return IconChar.SignOutAlt;
                 default: return IconChar.CircleInfo;
             }
         }
@@ -51,6 +45,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return AppColors.Error;
                 case DialogType.Success: return AppColors.Success;
                 case DialogType.Question: return AppColors.Accent;
+                case DialogType.Danger: return AppColors.Error;
                 default: return AppColors.Info;
             }
         }
@@ -64,6 +59,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return AppColors.ErrorBg;
                 case DialogType.Success: return AppColors.SuccessBg;
                 case DialogType.Question: return AppColors.AccentBgSoft;
+                case DialogType.Danger: return AppColors.ErrorBg;
                 default: return AppColors.InfoBg;
             }
         }
@@ -77,6 +73,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return "Lỗi";
                 case DialogType.Success: return "Thành công";
                 case DialogType.Question: return "Xác nhận";
+                case DialogType.Danger: return "Xác nhận";
                 default: return "Thông tin";
             }
         }
@@ -90,6 +87,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return DialogButtons.OK;
                 case DialogType.Success: return DialogButtons.OK;
                 case DialogType.Question: return DialogButtons.YesNo;
+                case DialogType.Danger: return DialogButtons.YesNo;
                 default: return DialogButtons.OK;
             }
         }
@@ -103,6 +101,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case DialogType.Error: return DialogResult.OK;
                 case DialogType.Success: return DialogResult.OK;
                 case DialogType.Question: return DialogResult.No;
+                case DialogType.Danger: return DialogResult.No;
                 default: return DialogResult.OK;
             }
         }

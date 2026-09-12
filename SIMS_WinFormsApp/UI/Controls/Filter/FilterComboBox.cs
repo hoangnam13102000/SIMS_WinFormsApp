@@ -21,6 +21,21 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             Height = 42;
 
             SelectedIndexChanged += (_, __) => OptionChanged?.Invoke(this, EventArgs.Empty);
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            BackColor = AppColors.White;
+            ForeColor = AppColors.TextPrimary;
+            Invalidate();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+            base.Dispose(disposing);
         }
 
         public void SetOptions(IList<FilterOption> options)

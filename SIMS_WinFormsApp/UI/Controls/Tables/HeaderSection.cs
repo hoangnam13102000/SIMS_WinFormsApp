@@ -190,7 +190,25 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             Controls.Add(_lblSubtitle);
 
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
             ResumeLayout(false);
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            _lblTitle.ForeColor = AppColors.TextTitle;
+            _lblSubtitle.ForeColor = AppColors.TextSecondary;
+            _iconBox.IconColor = AppColors.Info;
+            _iconBackground = AppColors.InfoBg;
+            Invalidate(true);
+            Refresh();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+            base.Dispose(disposing);
         }
 
         #endregion

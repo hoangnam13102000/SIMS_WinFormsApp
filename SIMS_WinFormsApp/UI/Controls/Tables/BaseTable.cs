@@ -53,6 +53,10 @@ namespace SIMS_WinFormsApp.UI.Controls
         // PaginationPresenter nắm state + phép toán phân trang (pageIndex/pageSize/pageCount).
         // BaseTable chỉ đóng vai trò cung cấp dữ liệu (_loadPage) khi Presenter báo cần tải lại.
         private readonly PaginationControl _pagination = new PaginationControl();
+        private TableLayoutPanel _root;
+        private Panel _filterPanel;
+        private Panel _gridCard;
+        private Panel _paginationPanel;
         private readonly PaginationPresenter _paginationPresenter;
         private readonly IList<FilterOption> _statusOptions;
 
@@ -90,7 +94,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _lockColumnIndex = Array.IndexOf(columns, "Khóa");
             _actionColumnIndex = Array.IndexOf(columns, "Thao tác");
 
-            var root = new TableLayoutPanel
+            _root = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 1,
@@ -99,10 +103,10 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Margin = Padding.Empty,
                 Padding = Padding.Empty
             };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 86));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 86));
+            _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
 
             var header = new HeaderSection
             {
@@ -112,14 +116,40 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Subtitle = subtitle,
                 Icon = icon
             };
-            root.Controls.Add(header, 0, 0);
-            root.Controls.Add(CreateFilterBar(), 0, 1);
+            _root.Controls.Add(header, 0, 0);
+            _filterPanel = (Panel)CreateFilterBar();
+            _root.Controls.Add(_filterPanel, 0, 1);
             _grid = CreateGrid(columns);
             AttachActionCellHandlers();
-            root.Controls.Add(CreateGridCard(), 0, 2);
-            root.Controls.Add(CreatePaginationBar(), 0, 3);
-            Controls.Add(root);
+            _gridCard = (Panel)CreateGridCard();
+            _root.Controls.Add(_gridCard, 0, 2);
+            _paginationPanel = (Panel)CreatePaginationBar();
+            _root.Controls.Add(_paginationPanel, 0, 3);
+            Controls.Add(_root);
             LoadCurrentPage();
+
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            BackColor = AppColors.PageBg;
+            _root.BackColor = AppColors.PageBg;
+            _filterPanel.BackColor = AppColors.White;
+            _gridCard.BackColor = AppColors.Border;
+            _paginationPanel.BackColor = AppColors.White;
+
+            _grid.BackgroundColor = AppColors.White;
+            _grid.GridColor = AppColors.TableGrid;
+            _grid.DefaultCellStyle.BackColor = AppColors.White;
+            _grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
+            _grid.DefaultCellStyle.ForeColor = AppColors.TableRowText;
+            _grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
+            _grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            ThemeManager.Instance.ApplyTheme(_filterPanel);
+            ThemeManager.Instance.ApplyTheme(_pagination);
+            _grid.Refresh();
+            Invalidate(true);
         }
 
         /// <summary>Bộ lọc trạng thái mặc định khi nơi gọi BaseTable không tự cung cấp
@@ -281,7 +311,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             grid.DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
             grid.DefaultCellStyle.SelectionForeColor = AppColors.TextPrimary;
             grid.DefaultCellStyle.BackColor = AppColors.White;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.White;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
             return grid;
         }
 
@@ -591,7 +621,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) _searchPresenter?.Dispose();
+            if (disposing)
+            {
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+                _searchPresenter?.Dispose();
+            }
             base.Dispose(disposing);
         }
     }

@@ -11,21 +11,14 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    /// <summary>
-    /// BaseDialog reusable - Form modal hiện đại dùng chung toàn bộ ứng dụng.
-    /// Hỗ trợ 5 loại dialog (Info/Warning/Error/Success/Question),
-    /// Light/Dark theme tự động theo ThemeManager, keyboard navigation,
-    /// rounded corners, icon semantic, auto-resize theo nội dung.
-    /// 
-    /// KHÔNG chứa business logic, database, service - chỉ UI và dialog state.
-    /// </summary>
+
     public class BaseDialog : Form
     {
         #region Constants & Layout
         private const int HeaderHeight = 56;
         private const int FooterHeight = 72;
         private const int IconSize = 56;
-        private const int HeaderIconSize = 18;
+        private const int HeaderIconSize = 24;
         private const int CloseButtonSize = 32;
         private const int CornerRadius = 16;
         private const int MinWidth = 440;
@@ -51,15 +44,35 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly Panel _iconPanel;
         private readonly Label _messageLabel;
         private readonly Label _titleLabel;
-        private readonly IconPictureBox _headerIconBox;    // 🆕 Dùng IconPictureBox
-        private readonly IconPictureBox _bodyIconBox;      // 🆕 Dùng IconPictureBox
-        private readonly IconPictureBox _closeIconBox;     // 🆕 Dùng IconPictureBox cho close
+        private readonly IconPictureBox _headerIconBox;
+        private readonly IconPictureBox _bodyIconBox;
+        private readonly IconPictureBox _closeIconBox;
         private readonly Button _closeButton;
         private readonly List<PrimaryButton> _dialogButtons = new List<PrimaryButton>();
         #endregion
 
+        #region Theme Helpers
+
+        // 🆕 Màu nền riêng cho dialog: ở chế độ tối, AppColors.White quá gần với màu nền
+        // trang (PageBg) khiến dialog bị "hòa lẫn" vào nền. Dùng BgLighter (bề mặt sáng
+        // hơn, vốn dùng cho các khối nổi/hover) để dialog nổi rõ lên trên nền tối.
+        private static Color DialogSurfaceColor =>
+            ThemeManager.Instance.IsDark
+                ? AppColors.BgLighter
+                : AppColors.White;
+
+        // 🆕 Viền dialog: tăng độ tương phản ở CẢ hai chế độ sáng/tối để luôn thấy rõ
+        // ranh giới giữa dialog và nền phía sau, kể cả khi dialog không có bóng đổ
+        // (shadow). AppColors.Border quá nhạt (gần trắng) nên trước đây gần như vô hình.
+        private static Color DialogBorderColor =>
+            ThemeManager.Instance.IsDark
+                ? Color.FromArgb(120, 130, 158)
+                : Color.FromArgb(180, 190, 206);
+
+        private const float DialogBorderWidth = 2f;
+        #endregion
+
         #region Public Properties
-        // 🆕 Bỏ từ khóa "new" - không ẩn thành phần nào
         public string Title
         {
             get => _titleLabel.Text;
@@ -111,16 +124,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         #region Constructor
         public BaseDialog()
         {
-            // ===== Cấu hình Form cơ bản =====
-            // QUAN TRỌNG: BaseDialog trước đây không set AutoScaleMode, nên nó dùng
-            // mặc định AutoScaleMode.Inherit -> hoạt động như Font-based autoscale.
-            // Form này được ShowDialog() ngay giữa luồng Logout (frmMain -> BaseDialog
-            // -> frmLogin mới), và việc nó tự tính lại "current autoscale dimensions"
-            // theo Font/DPI hiện tại của tiến trình (khác quy ước AutoScaleMode.None đã
-            // dùng ở frmLogin/frmMain) chính là nguyên nhân khiến ngữ cảnh DPI của process
-            // bị lệch, làm frmLogin được tạo NGAY SAU ĐÓ hiển thị nhỏ/lệch hơn lần đầu dù
-            // code InitializeComponent() của frmLogin không đổi. Set None ở đây để toàn bộ
-            // Form trong app nhất quán 1 quy ước, không còn Form nào tự autoscale nữa.
+
             AutoScaleMode = AutoScaleMode.None;
             FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.CenterParent;
@@ -132,6 +136,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             MinimumSize = new Size(MinWidth, MinHeight);
             Font = AppFonts.Body;
             BackColor = AppColors.White;
+            Padding = new Padding((int)DialogBorderWidth);
 
             // ===== Tạo các control con =====
             _headerPanel = new Panel
@@ -162,13 +167,14 @@ namespace SIMS_WinFormsApp.UI.Controls
                 BackColor = Color.Transparent,
                 IconChar = IconChar.CircleInfo,
                 IconColor = AppColors.Info,
-                IconSize = HeaderIconSize
+                IconSize = (int)(HeaderIconSize * 0.92),
+                SizeMode = PictureBoxSizeMode.CenterImage
             };
 
             _titleLabel = new Label
             {
                 AutoSize = true,
-                Location = new Point(48, 18),
+                Location = new Point(56, 16),
                 Font = AppFonts.Subtitle,
                 BackColor = Color.Transparent,
                 UseMnemonic = false
@@ -207,21 +213,30 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             _iconPanel = new Panel
             {
-                Size = new Size(IconSize + 24, IconSize + 24),
+                // 🆕 Giảm khoảng đệm quanh icon (từ +24 xuống +16) để icon trông to,
+                // rõ hơn trong khung nền tròn - trước đây icon bị "chìm" quá nhỏ.
+                Size = new Size(IconSize + 16, IconSize + 16),
                 Location = new Point(24, 20),
                 BackColor = Color.Transparent
             };
             _iconPanel.Paint += IconPanel_Paint;
 
             // 🆕 Body icon dùng IconPictureBox
+            // Lưu ý: IconPictureBox cần IconSize nhỏ hơn Size của control một chút
+            // (giống cách làm ở SidebarItemControl/StatCard) để glyph được canh giữa
+            // đẹp mắt trong khung - nếu để IconSize = Size, icon sẽ trông lệch/nhỏ do
+            // vùng "khoảng trắng" tự nhiên của glyph FontAwesome.
             _bodyIconBox = new IconPictureBox
             {
                 Size = new Size(IconSize, IconSize),
-                Location = new Point(12, 12),
+                Location = new Point(8, 8),
                 BackColor = Color.Transparent,
                 IconChar = IconChar.CircleInfo,
                 IconColor = AppColors.Info,
-                IconSize = IconSize
+                // 🆕 Tăng tỉ lệ icon (0.78 -> 0.92) để icon nổi bật, dễ nhìn hơn, không
+                // còn cảm giác "lọt thỏm" trong khung nền tròn.
+                IconSize = (int)(IconSize * 0.92),
+                SizeMode = PictureBoxSizeMode.CenterImage
             };
             _iconPanel.Controls.Add(_bodyIconBox);
 
@@ -248,6 +263,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             // ===== Sự kiện =====
             _headerPanel.Paint += HeaderPanel_Paint;
+            _bodyPanel.Paint += BodyPanel_Paint;
             _footerPanel.Paint += FooterPanel_Paint;
             KeyDown += BaseDialog_KeyDown;
             Resize += BaseDialog_Resize;
@@ -303,11 +319,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            // ===== Vẽ viền nhẹ xung quanh dialog =====
-            var contentRect = new Rectangle(0, 0, Width - 1, Height - 1);
+            // Padding giữ vùng viền luôn nằm ngoài các panel dock-fill.
+            var contentRect = new Rectangle(1, 1, Width - 3, Height - 3);
 
-            using (var bgPath = AppRadius.GetRoundedPath(contentRect, CornerRadius))
-            using (var borderPen = new Pen(AppColors.Border, 1f))
+            using (var bgPath = AppRadius.GetRoundedPath(contentRect, CornerRadius - 2))
+            using (var borderPen = new Pen(DialogBorderColor, DialogBorderWidth))
             {
                 g.DrawPath(borderPen, bgPath);
             }
@@ -334,8 +350,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (Width <= 0 || Height <= 0) return;
 
-            var rect = new Rectangle(0, 0, Width, Height);
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius))
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius + 2))
             {
                 Region = new Region(path);
             }
@@ -343,10 +359,10 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void ApplyThemeColors()
         {
-            BackColor = AppColors.White;
-            _headerPanel.BackColor = AppColors.White;
-            _bodyPanel.BackColor = AppColors.White;
-            _footerPanel.BackColor = AppColors.White;
+            BackColor = DialogSurfaceColor;
+            _headerPanel.BackColor = DialogSurfaceColor;
+            _bodyPanel.BackColor = DialogSurfaceColor;
+            _footerPanel.BackColor = DialogSurfaceColor;
             _titleLabel.ForeColor = AppColors.TextTitle;
             _messageLabel.ForeColor = AppColors.TextPrimary;
             UpdateCloseIconColor();
@@ -573,10 +589,25 @@ namespace SIMS_WinFormsApp.UI.Controls
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
+            DrawTopBorder(g, _headerPanel.ClientSize.Width);
+
             // Vẽ separator nhẹ dưới header
-            using (var pen = new Pen(AppColors.Border, 1f))
+            using (var pen = new Pen(DialogBorderColor, 1f))
             {
                 g.DrawLine(pen, 20, HeaderHeight - 1, _headerPanel.ClientSize.Width - 20, HeaderHeight - 1);
+            }
+        }
+
+        private void BodyPanel_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (var pen = new Pen(DialogBorderColor, DialogBorderWidth))
+            {
+                g.DrawLine(pen, 0, 0, 0, _bodyPanel.ClientSize.Height - 1);
+                g.DrawLine(pen, _bodyPanel.ClientSize.Width - 1, 0,
+                    _bodyPanel.ClientSize.Width - 1, _bodyPanel.ClientSize.Height - 1);
             }
         }
 
@@ -585,10 +616,38 @@ namespace SIMS_WinFormsApp.UI.Controls
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
+            DrawBottomBorder(g, _footerPanel.ClientSize.Width, _footerPanel.ClientSize.Height);
+
             // Vẽ separator nhẹ trên footer
-            using (var pen = new Pen(AppColors.Border, 1f))
+            using (var pen = new Pen(DialogBorderColor, 1f))
             {
                 g.DrawLine(pen, 20, 12, _footerPanel.ClientSize.Width - 20, 12);
+            }
+        }
+
+        private void DrawTopBorder(Graphics g, int width)
+        {
+            int radius = CornerRadius;
+            using (var pen = new Pen(DialogBorderColor, DialogBorderWidth))
+            using (var path = new GraphicsPath())
+            {
+                path.AddArc(new Rectangle(0, 0, radius * 2, radius * 2), 180, 90);
+                path.AddLine(radius, 0, width - radius, 0);
+                path.AddArc(new Rectangle(width - radius * 2, 0, radius * 2, radius * 2), 270, 90);
+                g.DrawPath(pen, path);
+            }
+        }
+
+        private void DrawBottomBorder(Graphics g, int width, int height)
+        {
+            int radius = CornerRadius;
+            using (var pen = new Pen(DialogBorderColor, DialogBorderWidth))
+            using (var path = new GraphicsPath())
+            {
+                path.AddArc(new Rectangle(0, height - radius * 2, radius * 2, radius * 2), 90, 90);
+                path.AddLine(radius, height - 1, width - radius, height - 1);
+                path.AddArc(new Rectangle(width - radius * 2, height - radius * 2, radius * 2, radius * 2), 0, 90);
+                g.DrawPath(pen, path);
             }
         }
 

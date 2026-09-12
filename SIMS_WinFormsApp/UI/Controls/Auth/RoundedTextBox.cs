@@ -103,6 +103,14 @@ namespace SIMS_WinFormsApp.UI.Controls
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
+            // Ô nhập liệu bên trong (_textBox) là 1 TextBox gốc của Windows: mặc định
+            // luôn có nền trắng/chữ đen cố định, KHÔNG tự đổi theo theme. Đồng bộ màu
+            // của nó với AppColors mỗi lần vẽ lại (kể cả khi đổi theme) để không còn
+            // bị "nền trắng" lộ ra giữa khung nhập liệu khi đang ở Dark mode.
+            _textBox.BackColor = AppColors.White;
+            _textBox.ForeColor = AppColors.TextPrimary;
+            _placeholderLabel.ForeColor = AppColors.TextMutedAlt;
+
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
             Color borderColor = _isFocused ? AppColors.Accent : AppColors.FieldBorder;
             int borderWidth = _isFocused ? 2 : 1;

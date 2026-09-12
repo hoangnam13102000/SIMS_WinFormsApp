@@ -122,14 +122,13 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             {
                 Title = caption,
                 Message = message,
-                IconType = DialogType.Warning,
+                IconType = DialogType.Danger,
                 Buttons = DialogButtons.YesNo,
                 DefaultButton = DialogResult.No,
                 StartPosition = FormStartPosition.CenterScreen
             })
             {
-                // Truyền owner = this (MainForm) để dialog luôn nổi đúng trên MainForm,
-                // không bị "trôi" ra sau/trước các cửa sổ khác khi MainForm đang mất focus.
+                
                 return dialog.ShowDialog(this) == DialogResult.Yes;
             }
         }

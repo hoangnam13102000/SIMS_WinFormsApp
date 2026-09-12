@@ -5,13 +5,14 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Layouts
 {
     public class SidebarControl : UserControl
     {
-        private const int GroupHeaderHeight = 36;
+        private const int GroupHeaderHeight = LayoutColors.SidebarItemHeight;
         private const int MenuBarHeight = 48;
         private const int ScrollBarWidth = 6;
         private const int ScrollBarMargin = 3;
@@ -24,6 +25,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly Label _menuLabel;
         private readonly Panel _togglePanel;
         private readonly IconPictureBox _toggleIcon;
+        private readonly ToolTip _toggleTip;
         private bool _toggleHover;
 
         private readonly Panel _viewport;
@@ -73,7 +75,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
             _menuLabel = new Label
             {
-                Text = "MENU",
+                Text = Lang.Get("sidebar.menu.label"),
                 Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
                 ForeColor = LayoutColors.SidebarTextMuted,
                 AutoSize = true,
@@ -115,9 +117,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _togglePanel.MouseEnter += (_, __) => { _toggleHover = true; _togglePanel.Invalidate(); };
             _togglePanel.MouseLeave += (_, __) => { _toggleHover = false; _togglePanel.Invalidate(); };
 
-            var tip = new ToolTip { InitialDelay = 400 };
-            tip.SetToolTip(_togglePanel, "Thu gọn / Mở rộng menu");
-            tip.SetToolTip(_toggleIcon, "Thu gọn / Mở rộng menu");
+            _toggleTip = new ToolTip { InitialDelay = 400 };
+            _toggleTip.SetToolTip(_togglePanel, Lang.Get("sidebar.toggle.tooltip"));
+            _toggleTip.SetToolTip(_toggleIcon, Lang.Get("sidebar.toggle.tooltip"));
 
             _menuBar.Controls.Add(_menuLabel);
             _menuBar.Controls.Add(_togglePanel);
@@ -460,6 +462,38 @@ namespace SIMS_WinFormsApp.UI.Layouts
             return y + GroupHeaderHeight;
         }
 
+        public void ApplyLabels(
+            string menuLabel,
+            string toggleTooltip,
+            IReadOnlyList<string> sectionHeadersInOrder,
+            IReadOnlyDictionary<string, string> itemLabelsByPageKey)
+        {
+            if (!string.IsNullOrEmpty(menuLabel))
+                _menuLabel.Text = menuLabel;
+
+            if (!string.IsNullOrEmpty(toggleTooltip))
+            {
+                _toggleTip.SetToolTip(_togglePanel, toggleTooltip);
+                _toggleTip.SetToolTip(_toggleIcon, toggleTooltip);
+            }
+
+            if (sectionHeadersInOrder != null)
+            {
+                for (int i = 0; i < _groups.Count && i < sectionHeadersInOrder.Count; i++)
+                    _groups[i].Header = sectionHeadersInOrder[i];
+            }
+
+            if (itemLabelsByPageKey != null)
+            {
+                foreach (var group in _groups)
+                    foreach (var item in group.Items)
+                        if (itemLabelsByPageKey.TryGetValue(item.PageKey, out var label))
+                            item.SetLabel(label);
+            }
+
+            BuildLayout();
+        }
+
         public void SetActive(string pageKey)
         {
             _activePageKey = pageKey;
@@ -477,10 +511,6 @@ namespace SIMS_WinFormsApp.UI.Layouts
             }
         }
 
-        /// <summary>
-        /// collapsed = mode icon-only / full.
-        /// rebuild = true → BuildLayout; false → chỉ đổi cờ item.
-        /// </summary>
         public void SetCollapsed(bool collapsed, bool rebuild = true)
         {
             _collapsed = collapsed;
@@ -518,12 +548,6 @@ namespace SIMS_WinFormsApp.UI.Layouts
             }
         }
 
-        /// <summary>
-        /// Gọi TRƯỚC khi bắt đầu animation đóng/mở. Chỉ cập nhật cờ trạng thái
-        /// (_collapsed, group.Expanded) và mở khóa Min/Max Size để Width có thể
-        /// tự do thay đổi mượt trong suốt animation — KHÔNG snap Width, KHÔNG
-        /// rebuild layout ngay (tránh giật/nhảy khung hình trước khi animation chạy).
-        /// </summary>
         public void PrepareAnimatedCollapse(bool collapsed)
         {
             _collapsed = collapsed;
@@ -539,9 +563,6 @@ namespace SIMS_WinFormsApp.UI.Layouts
             MaximumSize = Size.Empty;
         }
 
-        /// <summary>
-        /// Gọi mỗi frame animation — chỉ đổi Width, không rebuild.
-        /// </summary>
         public void ApplyAnimatedWidth(int width)
         {
             if (width < 1) width = 1;
@@ -550,7 +571,6 @@ namespace SIMS_WinFormsApp.UI.Layouts
             MaximumSize = Size.Empty;
             Width = width;
 
-            // Trong lúc animate: width hẹp → luôn icon-only (tránh chữ cắt)
             bool showAsCollapsed = _collapsed || width < 160;
 
             foreach (var g in _groups)

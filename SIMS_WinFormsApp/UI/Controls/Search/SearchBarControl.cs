@@ -79,7 +79,17 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
             _popup.ItemPicked += (_, item) => SuggestionPicked?.Invoke(this, item);
 
             Resize += (_, __) => LayoutInner();
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
             LayoutInner();
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e)
+        {
+            _textBox.BackColor = AppColors.White;
+            _textBox.ForeColor = AppColors.TextPrimary;
+            _placeholderLabel.ForeColor = AppColors.TextMutedAlt;
+            _searchIcon.IconColor = AppColors.IconMuted;
+            Invalidate(true);
         }
 
         private void LayoutInner()
@@ -153,7 +163,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) _popup.Dispose();
+            if (disposing)
+            {
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+                _popup.Dispose();
+            }
             base.Dispose(disposing);
         }
 

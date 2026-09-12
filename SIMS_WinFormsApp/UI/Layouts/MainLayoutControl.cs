@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Layouts
@@ -14,6 +16,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly FooterControl _footer;
         private readonly Panel _contentHost;
         private readonly TableLayoutPanel _root;
+        private readonly SettingsButtonControl _settingsButton;
+        private const int SettingsButtonMargin = 24;
 
         private readonly Dictionary<string, Control> _pages =
             new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
@@ -92,7 +96,11 @@ namespace SIMS_WinFormsApp.UI.Layouts
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.FromArgb(245, 247, 250),
-                Padding = new Padding(16),
+                // Mỗi trang con (ucDashboard, BaseTable, ...) đã tự có Padding riêng
+                // của nó -> nếu host này cộng thêm Padding sẽ tạo ra 2 lớp khoảng
+                // trắng chồng nhau, nhìn như 1 viền trắng dày bao quanh nội dung.
+                // Bỏ Padding ở đây để mỗi trang tự quyết định khoảng cách của mình.
+                Padding = new Padding(0),
                 Margin = new Padding(0)
             };
 
@@ -127,6 +135,47 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _root.SetColumnSpan(_footer, 2);
 
             Controls.Add(_root);
+
+            // Nút Cài đặt (FAB) nổi ở góc dưới-phải, hiển thị trên mọi trang của shell
+            // chính - thêm SAU _root và BringToFront() để luôn nằm trên cùng z-order.
+            _settingsButton = new SettingsButtonControl();
+            Controls.Add(_settingsButton);
+            _settingsButton.BringToFront();
+            PositionSettingsButton();
+
+            // Auto-refresh: khi người dùng đổi theme/accent/ngôn ngữ trong popup Cài đặt,
+            // toàn bộ shell (nền trang nội dung + các control đang hiển thị) sẽ tự vẽ lại
+            // ngay lập tức thay vì phải đóng/mở lại trang hoặc khởi động lại ứng dụng.
+            ThemeManager.Instance.ThemeChanged += OnAppearanceChanged;
+            LanguageManager.Instance.LanguageChanged += OnAppearanceChanged;
+        }
+
+        private void OnAppearanceChanged(object sender, EventArgs e)
+        {
+            if (IsDisposed) return;
+
+            BackColor = AppColors.PageBg;
+            _root.BackColor = AppColors.PageBg;
+            _contentHost.BackColor = AppColors.PageBg;
+
+            PerformLayout();
+            _contentHost.PerformLayout();
+
+            // Dùng Refresh() (vẽ lại đồng bộ, ngay lập tức) thay vì chỉ Invalidate()
+            // (chỉ đánh dấu "bẩn" rồi đợi vòng lặp thông điệp vẽ lại sau). Với
+            // Invalidate(true) đơn thuần, hàng chục control tự vẽ (StatCard,
+            // HeaderSection...) được vẽ lại KHÔNG đồng thời -> có thể thấy hình vẽ dở
+            // dang/chồng khung hình cũ - mới trong chốc lát (chữ bị "nhòe"/mờ ngay lúc
+            // chuyển theme). Refresh() ép vẽ lại toàn bộ cây control ngay trong 1 lần.
+            Refresh();
+        }
+
+        private void PositionSettingsButton()
+        {
+            if (_settingsButton == null) return;
+            _settingsButton.Location = new Point(
+                Width - _settingsButton.Width - SettingsButtonMargin,
+                Height - _settingsButton.Height - SettingsButtonMargin);
         }
 
         public void AddSection(string label)
@@ -260,12 +309,16 @@ namespace SIMS_WinFormsApp.UI.Layouts
         {
             base.OnResize(e);
             _root?.PerformLayout();
+            PositionSettingsButton();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                ThemeManager.Instance.ThemeChanged -= OnAppearanceChanged;
+                LanguageManager.Instance.LanguageChanged -= OnAppearanceChanged;
+
                 _sidebarAnimTimer?.Stop();
                 _sidebarAnimTimer?.Dispose();
             }

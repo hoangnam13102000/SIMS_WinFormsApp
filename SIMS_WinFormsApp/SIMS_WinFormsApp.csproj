@@ -35,14 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="UI\Controls\BaseTable.cs" />
+    <Compile Include="UI\Controls\Tables\BaseTable.cs" />
     <Compile Include="UI\Controls\Filter\FilterComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\Filter\FilterOption.cs" />
     <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
     <Compile Include="UI\Controls\Filter\IFilterView.cs" />
-    <Compile Include="UI\Controls\ManagementTablePage.cs" />
+    <Compile Include="UI\Controls\Tables\ManagementTablePage.cs" />
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
     </Reference>
@@ -188,27 +188,27 @@
     <Compile Include="Services\Security\PasswordResetService.cs" />
     <Compile Include="Services\Mail\MailSender.cs" />
     <Compile Include="Services\Session\UserSession.cs" />
-    <Compile Include="UI\Controls\AuthBrandPanel.cs">
+    <Compile Include="UI\Controls\Auth\AuthBrandPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\BaseDialog.cs">
+    <Compile Include="UI\Controls\Dialogs\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\ClickableLabel.cs">
+    <Compile Include="UI\Controls\Auth\ClickableLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\DialogType.cs" />
-    <Compile Include="UI\Controls\DialogButtons.cs" />
-    <Compile Include="UI\Controls\DialogHelper.cs" />
+    <Compile Include="UI\Controls\Dialogs\DialogType.cs" />
+    <Compile Include="UI\Controls\Dialogs\DialogButtons.cs" />
+    <Compile Include="UI\Controls\Dialogs\DialogHelper.cs" />
     <!-- ✅ ĐÃ THÊM: HeaderSection.cs (bị thiếu trước đây) -->
-    <Compile Include="UI\Controls\HeaderSection.cs" />
-    <Compile Include="UI\Controls\NotificationDropdownControl.cs" />
+    <Compile Include="UI\Controls\Tables\HeaderSection.cs" />
+    <Compile Include="UI\Controls\Popups\NotificationDropdownControl.cs" />
     <Compile Include="UI\Controls\Pagination\IPaginationView.cs" />
     <Compile Include="UI\Controls\Pagination\PaginationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\Pagination\PaginationPresenter.cs" />
-    <Compile Include="UI\Controls\PopupFormBase.cs">
+    <Compile Include="UI\Controls\Popups\PopupFormBase.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\Search\ISearchView.cs" />
@@ -216,21 +216,30 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\Search\SearchPresenter.cs" />
-    <Compile Include="UI\Controls\StatCard.cs" />
-    <Compile Include="UI\Controls\ModernCheckBox.cs">
+    <Compile Include="UI\Controls\Settings\SettingsButtonControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Settings\SettingsPopupControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Dashboard\StatCard.cs" />
+    <Compile Include="UI\Controls\Auth\ModernCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\ModernDropdownMenu.cs">
+    <Compile Include="UI\Controls\Popups\ModernDropdownMenu.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\PrimaryButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\RoundedPasswordTextBox.cs">
+    <Compile Include="UI\Controls\Auth\RoundedPasswordTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\RoundedTextBox.cs">
+    <Compile Include="UI\Controls\Auth\RoundedTextBox.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Settings\ToggleSwitchControl.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\I18n\Lang.cs" />
     <Compile Include="UI\I18n\LanguageManager.cs" />

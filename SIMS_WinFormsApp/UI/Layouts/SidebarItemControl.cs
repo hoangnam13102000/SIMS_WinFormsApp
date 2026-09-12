@@ -18,7 +18,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly Label _textLabel;
         private readonly Label _badgeLabel;
         private readonly ToolTip _toolTip;
-        private readonly string _label;
+        private string _label;
         private readonly IconChar _iconChar;
         private string _pageKey;
         private bool _isActive;
@@ -129,6 +129,25 @@ namespace SIMS_WinFormsApp.UI.Layouts
         {
             if (ClientRectangle.Contains(PointToClient(Cursor.Position))) return;
             UpdateVisualState();
+        }
+
+        /// <summary>
+        /// Cập nhật nhãn hiển thị (dùng khi đổi ngôn ngữ) mà không cần tạo lại control.
+        /// </summary>
+        public void SetLabel(string label)
+        {
+            _label = label ?? string.Empty;
+            _textLabel.Text = _label;
+
+            if (_collapsed)
+            {
+                string tip = _label;
+                _toolTip.SetToolTip(this, tip);
+                _toolTip.SetToolTip(_iconBox, tip);
+            }
+
+            LayoutChildren();
+            Invalidate();
         }
 
         public void SetBadge(int count)

@@ -34,6 +34,13 @@ namespace SIMS_WinFormsApp.Forms.Auth
                 LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
                 ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
             };
+
+            // Đồng bộ màu pnlRight theo theme đang active NGAY từ đầu (trước đây chỉ
+            // được cập nhật khi ThemeChanged bắn ra sau này). Nếu app khởi động khi
+            // theme đã ở chế độ Dark (được lưu từ phiên trước), pnlRight vẫn giữ màu
+            // trắng cứng khai báo trong Designer trong khi các label/nút bên trong đã
+            // dùng màu chữ của theme Dark -> tương phản kém, giao diện login bị "vỡ".
+            OnThemeChanged(this, EventArgs.Empty);
         }
 
         private void WireEvents()
@@ -53,7 +60,10 @@ namespace SIMS_WinFormsApp.Forms.Auth
         private void OnThemeChanged(object sender, EventArgs e)
         {
             pnlRight.BackColor = AppColors.White;
-            Invalidate(true);
+            // Refresh() vẽ lại đồng bộ ngay lập tức, tránh tình trạng chữ/khung nhập
+            // liệu hiển thị dở dang (nhòe) trong lúc các control con lần lượt được vẽ
+            // lại không đồng thời như khi chỉ gọi Invalidate().
+            Refresh();
         }
         private void RefreshTexts()
         {
