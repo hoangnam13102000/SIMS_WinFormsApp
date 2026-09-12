@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Forms.Chat;
 using SIMS_WinFormsApp.Forms.Dashboard;
 using SIMS_WinFormsApp.MVP.Views;
 using SIMS_WinFormsApp.Services.Session;
@@ -50,6 +51,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("accounts", "sidebar.page.accounts"),
             ("employees", "sidebar.page.employees"),
             ("customers", "sidebar.page.customers"),
+            ("chat", "sidebar.page.chat"),
             ("shifts", "sidebar.page.shifts"),
             ("settings", "sidebar.page.settings"),
         };
@@ -129,6 +131,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("report-revenue", Lang.Get("sidebar.page.reportRevenue"), CreatePlaceholder("placeholder.reportRevenue.title", "placeholder.reportRevenue.description"), IconChar.ChartColumn);
             layout.AddPage("report-inventory", Lang.Get("sidebar.page.reportInventory"), CreatePlaceholder("placeholder.reportInventory.title", "placeholder.reportInventory.description"), IconChar.ChartLine);
             layout.AddSection(Lang.Get("sidebar.section.support"));
+            layout.AddPage("chat", Lang.Get("sidebar.page.chat"), new ucChat(), IconChar.Comments);
             layout.AddPage("shifts", Lang.Get("sidebar.page.shifts"), CreatePlaceholder("placeholder.shifts.title", "placeholder.shifts.description"), IconChar.Stopwatch);
             layout.AddSection(Lang.Get("sidebar.section.system"));
             layout.AddPage("settings", Lang.Get("sidebar.page.settings"), CreatePlaceholder("placeholder.settings.title", "placeholder.settings.description"), IconChar.Gear);

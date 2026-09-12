@@ -86,12 +86,11 @@ namespace SIMS_WinFormsApp.UI.Controls
                 g.FillPath(brush, path);
             }
 
-            int thumbD = h - 4;
-            int thumbX = _checked ? w - thumbD - 2 : 2;
-            using (var shadow = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
-                g.FillEllipse(shadow, thumbX, 3, thumbD, thumbD);
+            int thumbD = Math.Max(8, h - 6);
+            int thumbX = _checked ? w - thumbD - 3 : 3;
+            int thumbY = (h - thumbD) / 2;
             using (var thumbBrush = new SolidBrush(Color.White))
-                g.FillEllipse(thumbBrush, thumbX, 2, thumbD, thumbD);
+                g.FillEllipse(thumbBrush, thumbX, thumbY, thumbD, thumbD);
         }
     }
 }

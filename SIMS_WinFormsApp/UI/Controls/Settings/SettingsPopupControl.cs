@@ -15,7 +15,12 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const string PrefKeyNotificationSound = "sims.notification.soundEnabled";
         private const string PrefKeyHideNewOrderNotification = "sims.notification.hideNewOrder";
 
-        private const int PopupWidth = 340;
+        // Tăng kích thước popup để dễ nhìn hơn. Dùng màu nền elevated (BgLighter)
+        // thay vì AppColors.White (gần trùng PageBg ở dark mode → khó phân biệt).
+        private const int PopupWidth = 380;
+        private const int RowHeight = 48;
+        private const int SwatchSize = 36;
+        private const int ContentPadding = 20;
 
         private readonly Panel _host;
 
@@ -29,13 +34,17 @@ namespace SIMS_WinFormsApp.UI.Controls
         public SettingsPopupControl()
         {
             Width = PopupWidth;
-            BackColor = AppColors.White;
+            // BgLighter: dark ≈ (38,42,53) nổi rõ trên PageBg (18,20,25);
+            // light ≈ (241,245,249) nhẹ nhàng trên nền trắng.
+            BackColor = AppColors.BgLighter;
 
             _host = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = AppColors.White,
-                Padding = new Padding(16, 14, 16, 14),
+                BackColor = AppColors.BgLighter,
+                // Padding chỉ có ý nghĩa với Docked controls; vì ta dùng absolute layout
+                // nên sẽ tự offset Location trong BuildContent.
+                Padding = new Padding(0),
                 AutoScroll = false
             };
             Controls.Add(_host);
@@ -47,29 +56,30 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void BuildContent()
         {
-            int y = 0;
-            int contentW = PopupWidth - 32;
+            int y = ContentPadding;          // margin trên
+            int contentW = PopupWidth - ContentPadding * 2;
+            int x = ContentPadding;          // margin trái
 
-            y = AddSectionLabel("settings.section.appearance", y);
-            y = AddThemeRows(y, contentW);
+            y = AddSectionLabel("settings.section.appearance", y, x, contentW);
+            y = AddThemeRows(y, x, contentW);
 
-            y = AddSeparator(y, contentW);
-            y = AddSectionLabel("settings.section.accent", y);
-            y = AddAccentSwatches(y);
+            y = AddSeparator(y, x, contentW);
+            y = AddSectionLabel("settings.section.accent", y, x, contentW);
+            y = AddAccentSwatches(y, x);
 
-            y = AddSeparator(y, contentW);
-            y = AddSectionLabel("settings.section.notification", y);
-            y = AddNotificationToggles(y, contentW);
+            y = AddSeparator(y, x, contentW);
+            y = AddSectionLabel("settings.section.notification", y, x, contentW);
+            y = AddNotificationToggles(y, x, contentW);
 
-            y = AddSeparator(y, contentW);
-            y = AddSectionLabel("settings.section.language", y);
-            y = AddLanguageRows(y, contentW);
+            y = AddSeparator(y, x, contentW);
+            y = AddSectionLabel("settings.section.language", y, x, contentW);
+            y = AddLanguageRows(y, x, contentW);
 
-            Height = y + 14;
+            Height = y + ContentPadding;   // margin dưới
             ApplyRoundedRegion();
         }
 
-        private int AddSectionLabel(string i18nKey, int y)
+        private int AddSectionLabel(string i18nKey, int y, int x, int contentW)
         {
             var label = new Label
             {
@@ -80,38 +90,38 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ForeColor = AppColors.TextMuted,
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(0, y),
-                Size = new Size(PopupWidth - 32, 20)
+                Location = new Point(x, y),
+                Size = new Size(contentW, 22)
             };
             _host.Controls.Add(label);
             _sectionLabels.Add(label);
-            return y + label.Height + 6;
+            return y + label.Height + 8;
         }
 
-        private int AddSeparator(int y, int contentW)
+        private int AddSeparator(int y, int x, int contentW)
         {
-            int sepY = y + 6;
+            int sepY = y + 8;
             var sep = new Panel
             {
-                Location = new Point(0, sepY),
+                Location = new Point(x, sepY),
                 Size = new Size(contentW, 1),
                 BackColor = AppColors.Border
             };
             _host.Controls.Add(sep);
-            return sepY + 1 + 10;
+            return sepY + 1 + 12;
         }
 
-        private int AddThemeRows(int y, int contentW)
+        private int AddThemeRows(int y, int x, int contentW)
         {
             var lightRow = new SettingsOptionRowControl("light", Lang.Get("settings.theme.light"), IconChar.Sun)
             {
-                Location = new Point(0, y),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y),
+                Size = new Size(contentW, RowHeight)
             };
             var darkRow = new SettingsOptionRowControl("dark", Lang.Get("settings.theme.dark"), IconChar.Moon)
             {
-                Location = new Point(0, y + 46),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y + RowHeight + 4),
+                Size = new Size(contentW, RowHeight)
             };
 
             lightRow.Selected = !ThemeManager.Instance.IsDark;
@@ -125,7 +135,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _host.Controls.Add(lightRow);
             _host.Controls.Add(darkRow);
 
-            return y + 46 + 44;
+            return y + RowHeight + 4 + RowHeight;
         }
 
         private void SelectTheme(ThemeMode mode, SettingsOptionRowControl lightRow, SettingsOptionRowControl darkRow)
@@ -136,10 +146,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             RefreshColorsAfterThemeChange();
         }
 
-        private int AddAccentSwatches(int y)
+        private int AddAccentSwatches(int y, int startX)
         {
-            const int swatchSize = 32;
-            const int gap = 12;
+            const int gap = 14;
 
             var accents = new[]
             {
@@ -147,22 +156,22 @@ namespace SIMS_WinFormsApp.UI.Controls
                 AccentColor.Orange, AccentColor.Rose, AccentColor.Teal
             };
 
-            int x = 0;
+            int x = startX;
             foreach (var accent in accents)
             {
                 var swatch = new AccentSwatchControl(accent)
                 {
                     Location = new Point(x, y),
-                    Size = new Size(swatchSize, swatchSize),
+                    Size = new Size(SwatchSize, SwatchSize),
                     Selected = accent.Name == AppColors.CurrentAccent.Name
                 };
                 swatch.Clicked += (_, __) => SelectAccent(accent);
                 _accentSwatches.Add(swatch);
                 _host.Controls.Add(swatch);
-                x += swatchSize + gap;
+                x += SwatchSize + gap;
             }
 
-            return y + swatchSize;
+            return y + SwatchSize;
         }
 
         private void SelectAccent(AccentColor accent)
@@ -174,22 +183,22 @@ namespace SIMS_WinFormsApp.UI.Controls
             RefreshColorsAfterThemeChange();
         }
 
-        private int AddNotificationToggles(int y, int contentW)
+        private int AddNotificationToggles(int y, int x, int contentW)
         {
             bool soundOn = AppSettingsStore.Get(PrefKeyNotificationSound, "true") != "false";
             bool hideNewOrder = AppSettingsStore.Get(PrefKeyHideNewOrderNotification, "false") == "true";
 
             var soundRow = new SettingsToggleRowControl(Lang.Get("settings.notification.sound"), IconChar.VolumeHigh, soundOn)
             {
-                Location = new Point(0, y),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y),
+                Size = new Size(contentW, RowHeight)
             };
             soundRow.Toggled += (_, isOn) => AppSettingsStore.Set(PrefKeyNotificationSound, isOn ? "true" : "false");
 
             var hideOrderRow = new SettingsToggleRowControl(Lang.Get("settings.notification.hideNewOrder"), IconChar.BellSlash, hideNewOrder)
             {
-                Location = new Point(0, y + 46),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y + RowHeight + 4),
+                Size = new Size(contentW, RowHeight)
             };
             hideOrderRow.Toggled += (_, isOn) => AppSettingsStore.Set(PrefKeyHideNewOrderNotification, isOn ? "true" : "false");
 
@@ -199,20 +208,20 @@ namespace SIMS_WinFormsApp.UI.Controls
             _host.Controls.Add(soundRow);
             _host.Controls.Add(hideOrderRow);
 
-            return y + 46 + 44;
+            return y + RowHeight + 4 + RowHeight;
         }
 
-        private int AddLanguageRows(int y, int contentW)
+        private int AddLanguageRows(int y, int x, int contentW)
         {
             var viRow = new SettingsOptionRowControl("vi", Lang.Get("settings.language.vi"), IconChar.Globe)
             {
-                Location = new Point(0, y),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y),
+                Size = new Size(contentW, RowHeight)
             };
             var enRow = new SettingsOptionRowControl("en", Lang.Get("settings.language.en"), IconChar.Globe)
             {
-                Location = new Point(0, y + 46),
-                Size = new Size(contentW, 44)
+                Location = new Point(x, y + RowHeight + 4),
+                Size = new Size(contentW, RowHeight)
             };
 
             viRow.Selected = LanguageManager.Instance.IsVietnamese;
@@ -226,7 +235,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _host.Controls.Add(viRow);
             _host.Controls.Add(enRow);
 
-            return y + 46 + 44;
+            return y + RowHeight + 4 + RowHeight;
         }
 
         private void SelectLanguage(System.Globalization.CultureInfo culture, SettingsOptionRowControl viRow, SettingsOptionRowControl enRow)
@@ -257,8 +266,23 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void RefreshColorsAfterThemeChange()
         {
-            BackColor = AppColors.White;
-            _host.BackColor = AppColors.White;
+            BackColor = AppColors.BgLighter;
+            _host.BackColor = AppColors.BgLighter;
+
+            // Cập nhật màu chữ section labels theo theme mới
+            foreach (var label in _sectionLabels)
+            {
+                label.ForeColor = AppColors.TextMuted;
+            }
+
+            // Force re-apply selected state để cập nhật Accent / text colors
+            foreach (var row in _themeRows)
+                row.Selected = row.Selected;
+            foreach (var row in _languageRows)
+                row.Selected = row.Selected;
+            foreach (var swatch in _accentSwatches)
+                swatch.Selected = swatch.Selected;
+
             Invalidate(true);
         }
 
@@ -278,7 +302,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             base.OnPaint(e);
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var pen = new Pen(AppColors.Border, 1f))
+            // Viền rõ hơn một chút để popup tách biệt khỏi nền content
+            using (var pen = new Pen(AppColors.Border, 1.5f))
             using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, Width - 1, Height - 1), AppRadius.Large))
                 g.DrawPath(pen, path);
         }
@@ -318,7 +343,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.ResizeRedraw |
                      ControlStyles.SupportsTransparentBackColor, true);
 
-            Height = 44;
+            Height = 48;
             Cursor = Cursors.Hand;
             BackColor = Color.Transparent;
 
@@ -327,9 +352,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                 IconChar = icon,
                 IconFont = IconFont.Solid,
                 IconColor = AppColors.TextSecondary,
-                IconSize = 18,
-                Size = new Size(24, 24),
-                Location = new Point(10, 10),
+                IconSize = 20,
+                Size = new Size(26, 26),
+                Location = new Point(12, 11),
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand
             };
@@ -342,8 +367,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ForeColor = AppColors.TextPrimary,
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(44, 0),
-                Size = new Size(180, 44),
+                Location = new Point(48, 0),
+                Size = new Size(200, 48),
                 Cursor = Cursors.Hand
             };
 
@@ -366,8 +391,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             Resize += (_, __) =>
             {
-                _textLabel.Size = new Size(Math.Max(40, Width - 44 - 32), Height);
-                _checkIcon.Location = new Point(Width - _checkIcon.Width - 8, (Height - _checkIcon.Height) / 2);
+                _textLabel.Size = new Size(Math.Max(40, Width - 48 - 36), Height);
+                _checkIcon.Location = new Point(Width - _checkIcon.Width - 10, (Height - _checkIcon.Height) / 2);
             };
 
             Click += (_, __) => Clicked?.Invoke(this, EventArgs.Empty);
@@ -411,7 +436,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
             else if (_hover)
             {
-                using (var brush = new SolidBrush(AppColors.BgLighter))
+                // Hover nổi hơn nền popup (BgLighter): dùng màu trung gian giữa Border và BgLighter
+                // để vẫn thấy rõ ở cả dark lẫn light mode.
+                Color hover = ThemeManager.Instance.IsDark
+                    ? Color.FromArgb(50, 55, 68)
+                    : Color.FromArgb(226, 232, 240);
+                using (var brush = new SolidBrush(hover))
                 using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, Width - 1, Height - 1), AppRadius.Medium))
                     g.FillPath(brush, path);
             }
@@ -435,7 +465,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         public SettingsToggleRowControl(string text, IconChar icon, bool initialChecked)
         {
-            Height = 44;
+            Height = 48;
             BackColor = Color.Transparent;
 
             _iconBox = new IconPictureBox
@@ -443,9 +473,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                 IconChar = icon,
                 IconFont = IconFont.Solid,
                 IconColor = AppColors.TextSecondary,
-                IconSize = 18,
-                Size = new Size(24, 24),
-                Location = new Point(10, 10),
+                IconSize = 20,
+                Size = new Size(26, 26),
+                Location = new Point(12, 11),
                 BackColor = Color.Transparent
             };
 
@@ -457,13 +487,13 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ForeColor = AppColors.TextPrimary,
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(44, 0),
-                Size = new Size(190, 44)
+                Location = new Point(48, 0),
+                Size = new Size(210, 48)
             };
 
             _toggle = new ToggleSwitchControl
             {
-                Size = new Size(44, 24)
+                Size = new Size(48, 26)
             };
             _toggle.SetCheckedSilently(initialChecked);
             _toggle.CheckedChanged += (_, __) => Toggled?.Invoke(this, _toggle.Checked);
@@ -474,8 +504,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             Resize += (_, __) =>
             {
-                _textLabel.Size = new Size(Math.Max(40, Width - 44 - 60), Height);
-                _toggle.Location = new Point(Width - _toggle.Width - 8, (Height - _toggle.Height) / 2);
+                _textLabel.Size = new Size(Math.Max(40, Width - 48 - 64), Height);
+                _toggle.Location = new Point(Width - _toggle.Width - 10, (Height - _toggle.Height) / 2);
             };
         }
         public void SetText(string text) => _textLabel.Text = text;
@@ -511,7 +541,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.ResizeRedraw |
                      ControlStyles.SupportsTransparentBackColor, true);
 
-            Size = new Size(32, 32);
+            Size = new Size(36, 36);
             Cursor = Cursors.Hand;
             BackColor = Color.Transparent;
 
@@ -520,8 +550,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                 IconChar = IconChar.Check,
                 IconFont = IconFont.Solid,
                 IconColor = Color.White,
-                IconSize = 13,
-                Size = new Size(16, 16),
+                IconSize = 14,
+                Size = new Size(18, 18),
                 BackColor = Color.Transparent,
                 Visible = false,
                 Cursor = Cursors.Hand

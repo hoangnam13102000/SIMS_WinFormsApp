@@ -1,9 +1,11 @@
-﻿using SIMS_WinFormsApp.Forms.Auth;
+﻿using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Forms.Auth;
 using SIMS_WinFormsApp.Forms.SystemMgmt;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp
@@ -16,12 +18,13 @@ namespace SIMS_WinFormsApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            WarmUpFontAwesome();
+
             ThemeManager.Instance.ApplyStartupTheme();
             _ = LanguageManager.Instance;
 
             while (true)
             {
-
                 using (var loginForm = new frmLogin())
                 {
                     loginForm.StartPosition = FormStartPosition.CenterScreen;
@@ -44,6 +47,29 @@ namespace SIMS_WinFormsApp
                     continue;
 
                 break;
+            }
+        }
+
+        private static void WarmUpFontAwesome()
+        {
+            try
+            {
+                using (var pic = new IconPictureBox
+                {
+                    IconChar = IconChar.Bell,
+                    IconFont = IconFont.Solid,
+                    IconSize = 16,
+                    Size = new Size(16, 16)
+                })
+                {
+
+                    var _ = pic.IconChar;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[FontAwesome] Warm-up failed: " + ex.Message);
+              
             }
         }
     }
