@@ -4,11 +4,12 @@ using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Chat;
 using SIMS_WinFormsApp.Models.Chat;
+using SIMS_WinFormsApp.Repositories.Interfaces;
 
-namespace SIMS_WinFormsApp.DAL
+namespace SIMS_WinFormsApp.Repositories.Implementations
 {
 
-    public class ChatRepository
+    public class ChatRepository : IChatRepository
     {
         // Ghi 1 tin nhắn STAFF_DM: tự tạo hội thoại (nếu chưa có) rồi insert message ------
         public long SaveStaffMessage(int userIdA, int userIdB, int senderUserId, string senderName,

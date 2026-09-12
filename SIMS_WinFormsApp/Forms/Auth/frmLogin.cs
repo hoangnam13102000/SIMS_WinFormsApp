@@ -1,5 +1,8 @@
 ﻿using SIMS_WinFormsApp.Infrastructure;
+using SIMS_WinFormsApp.MVP.Presenters;
+using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
@@ -10,16 +13,19 @@ using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp.Forms.Auth
 {
-    public partial class frmLogin : Form
+    public partial class frmLogin : Form, ILoginView
     {
         private const string PrefKeyRememberMe = "sims.login.rememberMe";
         private const string PrefKeyRememberedUsername = "sims.login.rememberedUsername";
 
-        private readonly AuthService _authService = new AuthService();
+        private readonly IAuthService _authService;
+        private readonly LoginPresenter _presenter;
 
-        public frmLogin()
+        public frmLogin(IAuthService authService)
         {
             InitializeComponent();
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            _presenter = new LoginPresenter(this, _authService);
 
             AcceptButton = btnLogin;
 
@@ -113,9 +119,36 @@ namespace SIMS_WinFormsApp.Forms.Auth
             }
         }
 
-        private void SaveRememberedUsername(string username)
+        private async Task DoLoginAsync()
         {
-            if (chkRemember.Checked)
+            await _presenter.LoginAsync();
+        }
+
+        public string Username => txtUsername.Text;
+
+        public string Password => txtPassword.Text;
+
+        public bool RememberMe => chkRemember.Checked;
+
+        public void ShowError(string message) => lblError.Text = message;
+
+        public void ClearError() => lblError.Text = "";
+
+        public void SetLoading(bool busy)
+        {
+            if (IsDisposed) return;
+
+            txtUsername.Enabled = !busy;
+            txtPassword.Enabled = !busy;
+            chkRemember.Enabled = !busy;
+            btnLogin.Enabled = !busy;
+            btnLogin.Text = busy ? Lang.Get("common.loading") : Lang.Get("login.submit");
+            Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
+        }
+
+        public void SaveRememberedUsername(string username, bool rememberMe)
+        {
+            if (rememberMe)
             {
                 AppSettingsStore.Set(PrefKeyRememberMe, "1");
                 AppSettingsStore.Set(PrefKeyRememberedUsername, username);
@@ -123,72 +156,14 @@ namespace SIMS_WinFormsApp.Forms.Auth
             else
             {
                 AppSettingsStore.Set(PrefKeyRememberMe, "0");
-                AppSettingsStore.Set(PrefKeyRememberedUsername, "");
+                AppSettingsStore.Set(PrefKeyRememberedUsername, string.Empty);
             }
         }
 
-        private async Task DoLoginAsync()
+        public void CloseOnSuccess()
         {
-            ClearError();
-
-            string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text;
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                ShowError(Lang.Get("login.error.emptyFields"));
-                return;
-            }
-
-            SetLoading(true);
-            try
-            {
-                LoginResult result = await Task.Run(() => _authService.TryLogin(username, password));
-
-                switch (result.Status)
-                {
-                    case LoginStatus.Success:
-                        SaveRememberedUsername(username);
-                        DialogResult = DialogResult.OK;
-                        Close();
-                        break;
-
-                    case LoginStatus.AccountLocked:
-                        ShowError(Lang.Get("login.error.locked"));
-                        break;
-
-                    case LoginStatus.AccountDisabled:
-                        ShowError(Lang.Get("login.error.disabled"));
-                        break;
-
-                    default:
-                        ShowError(Lang.Get("login.error.invalid"));
-                        break;
-                }
-            }
-            catch (Exception)
-            {
-
-                ShowError(Lang.Get("login.error.configMissing"));
-            }
-            finally
-            {
-                if (!IsDisposed) SetLoading(false);
-            }
-        }
-
-        private void ShowError(string message) => lblError.Text = message;
-
-        private void ClearError() => lblError.Text = "";
-
-        private void SetLoading(bool busy)
-        {
-            txtUsername.Enabled = !busy;
-            txtPassword.Enabled = !busy;
-            chkRemember.Enabled = !busy;
-            btnLogin.Enabled = !busy;
-            btnLogin.Text = busy ? Lang.Get("common.loading") : Lang.Get("login.submit");
-            Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

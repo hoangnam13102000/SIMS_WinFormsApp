@@ -2,9 +2,10 @@
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.Dashboard
 {
@@ -20,13 +21,14 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
         }
     }
 
-    public partial class ucDashboard : UserControl
+    public partial class ucDashboard : UserControl, IDashboardView
     {
+        private readonly DashboardPresenter _presenter;
         private HeaderSection _header;
         private TableLayoutPanel _statsRow;
         private BufferedPanel _contentPanel;
 
-        public ucDashboard()
+        public ucDashboard(string displayName = null)
         {
             AutoScaleMode = AutoScaleMode.None;
             Font = new Font("Segoe UI", 9f);
@@ -38,7 +40,8 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
 
             InitializeComponent();
             BuildUI();
-            LoadData();
+            _presenter = new DashboardPresenter(this, displayName);
+            _presenter.Load();
         }
 
         private void BuildUI()
@@ -228,13 +231,9 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
             return panel;
         }
 
-        private void LoadData()
+        public void ShowDashboardUser(string displayName)
         {
-            var session = UserSession.Instance;
-            string name = session.CurrentUser?.FullName
-                       ?? session.CurrentUser?.Username
-                       ?? "bạn";
-            _header.SetDashboard(name);
+            _header.SetDashboard(displayName);
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System.Data.Linq;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Indetity;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Chat;
+using SIMS_WinFormsApp.Infrastructure.Configuration;
 
 namespace SIMS_WinFormsApp.DAL.Linq
 {
     public class SimsDataContext : DataContext
     {
-        public SimsDataContext() : base(DbHelper.ConnectionString)
+        public SimsDataContext() : this(new ConnectionStringProvider().GetConnectionString())
         {
         }
 

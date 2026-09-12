@@ -41,7 +41,8 @@
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
-    <Compile Include="MVP\Views\IChatView.cs" />
+    <Compile Include="Views\Interfaces\IChatView.cs" />
+    <Compile Include="Views\Interfaces\IDashboardView.cs" />
     <Compile Include="Services\Chat\ChatClientService.cs" />
     <Compile Include="Services\Chat\ChatServerHost.cs" />
     <Compile Include="Services\Chat\ChatWsConfig.cs" />
@@ -106,16 +107,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAL\ChatRepository.cs" />
-    <Compile Include="DAL\DbHelper.cs" />
+    <Compile Include="Repositories\Implementations\ChatRepository.cs" />
+    <Compile Include="Infrastructure\Configuration\IConnectionStringProvider.cs" />
+    <Compile Include="Infrastructure\Configuration\ConnectionStringProvider.cs" />
+    <Compile Include="Infrastructure\Configuration\IDbConnectionFactory.cs" />
+    <Compile Include="Infrastructure\Configuration\DbConnectionFactory.cs" />
     <Compile Include="DAL\Linq\Entities\Chat\ChatConversationEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\PermissionEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\RoleEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\RolePermissionEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\UserEntity.cs" />
     <Compile Include="DAL\Linq\SimsDataContext.cs" />
-    <Compile Include="DAL\PermissionRepository.cs" />
-    <Compile Include="DAL\UserRepository.cs" />
+    <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
+    <Compile Include="Repositories\Implementations\UserRepository.cs" />
     <Compile Include="Forms\Auth\frmChangePassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -195,17 +199,40 @@
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsStore.cs" />
+    <Compile Include="Infrastructure\Configuration\ConnectionConfigurationService.cs" />
+    <Compile Include="Infrastructure\Configuration\IConnectionConfigurationService.cs" />
+    <Compile Include="Infrastructure\Composition\AppComposition.cs" />
     <Compile Include="Infrastructure\SecureConfigStore.cs" />
+    <Compile Include="Models\DTOs\LoginRequestDto.cs" />
+    <Compile Include="Models\DTOs\UserManagementPageDto.cs" />
+    <Compile Include="Models\AppConstants.cs" />
+    <Compile Include="Models\Enums\RoleCodes.cs" />
+    <Compile Include="Models\Enums\UserStatus.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="MVP\Presenters\ChangePasswordPresenter.cs" />
+    <Compile Include="MVP\Presenters\DashboardPresenter.cs" />
+    <Compile Include="MVP\Presenters\ForgotPasswordPresenter.cs" />
+    <Compile Include="MVP\Presenters\LoginPresenter.cs" />
     <Compile Include="MVP\Presenters\MainPresenter.cs" />
-    <Compile Include="MVP\Views\IMainView.cs" />
+    <Compile Include="Views\Interfaces\IChangePasswordView.cs" />
+    <Compile Include="Views\Interfaces\IForgotPasswordView.cs" />
+    <Compile Include="Views\Interfaces\ILoginView.cs" />
+    <Compile Include="Views\Interfaces\IMainView.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Repositories\Interfaces\IChatRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\DialogService.cs" />
-    <Compile Include="Services\Security\PasswordHasher.cs" />
+    <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IPasswordResetService.cs" />
+    <Compile Include="Services\Interfaces\IUserManagementService.cs" />
+    <Compile Include="Services\Implementations\UserManagementService.cs" />
+    <Compile Include="Services\Security\IPasswordHasher.cs" />
+    <Compile Include="Services\Security\BCryptPasswordHasher.cs" />
     <Compile Include="Services\Security\PasswordResetService.cs" />
     <Compile Include="Services\Mail\MailSender.cs" />
+    <Compile Include="Services\Session\IUserSession.cs" />
     <Compile Include="Services\Session\UserSession.cs" />
     <Compile Include="UI\Controls\Auth\AuthBrandPanel.cs">
       <SubType>Component</SubType>

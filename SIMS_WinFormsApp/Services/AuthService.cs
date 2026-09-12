@@ -1,5 +1,7 @@
-﻿using SIMS_WinFormsApp.DAL;
 using SIMS_WinFormsApp.Models;
+using SIMS_WinFormsApp.Models.Enums;
+using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Session;
 
@@ -15,8 +17,8 @@ namespace SIMS_WinFormsApp.Services
 
     public class LoginResult
     {
-        public LoginStatus Status { get; set; }
-        public User User { get; set; }
+        public LoginStatus Status { get; private set; }
+        public User User { get; private set; }
 
         public static LoginResult Ok(User user) => new LoginResult { Status = LoginStatus.Success, User = user };
         public static LoginResult Fail(LoginStatus status) => new LoginResult { Status = status };
@@ -30,17 +32,20 @@ namespace SIMS_WinFormsApp.Services
         NewPasswordSameAsOld
     }
 
-    public class AuthService
+    public class AuthService : IAuthService
     {
-        private const int MinNewPasswordLength = 8;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserSession _session;
+        private readonly IPasswordHasher _passwordHasher;
 
-        private readonly UserRepository _userRepository;
-
-        public AuthService() : this(new UserRepository()) { }
-
-        public AuthService(UserRepository userRepository)
+        public AuthService(
+            IUserRepository userRepository,
+            IUserSession session,
+            IPasswordHasher passwordHasher)
         {
-            _userRepository = userRepository;
+            _userRepository = userRepository ?? throw new System.ArgumentNullException(nameof(userRepository));
+            _session = session ?? throw new System.ArgumentNullException(nameof(session));
+            _passwordHasher = passwordHasher ?? throw new System.ArgumentNullException(nameof(passwordHasher));
         }
 
         public LoginResult TryLogin(string username, string password)
@@ -52,33 +57,33 @@ namespace SIMS_WinFormsApp.Services
             if (user.IsLocked)
                 return LoginResult.Fail(LoginStatus.AccountLocked);
 
-            if (user.Status == "DISABLED")
+            if (user.Status == UserStatus.Disabled)
                 return LoginResult.Fail(LoginStatus.AccountDisabled);
 
-            if (!PasswordHasher.Verify(password, user.PasswordHash))
+            if (!_passwordHasher.Verify(password, user.PasswordHash))
             {
-                _userRepository.RegisterFailedLogin(user.UserId);
+                _userRepository.RegisterFailedLogin(user.UserId, AppConstants.MaxFailedLoginAttempts);
                 return LoginResult.Fail(LoginStatus.InvalidCredentials);
             }
 
             _userRepository.ResetFailedLogin(user.UserId);
-            UserSession.Instance.SignIn(user);
+            _session.SignIn(user);
             return LoginResult.Ok(user);
         }
 
         public ChangePasswordStatus ChangePassword(int userId, string currentPassword, string newPassword)
         {
             var user = _userRepository.FindById(userId);
-            if (user == null || !PasswordHasher.Verify(currentPassword, user.PasswordHash))
+            if (user == null || !_passwordHasher.Verify(currentPassword, user.PasswordHash))
                 return ChangePasswordStatus.CurrentPasswordWrong;
 
-            if (string.IsNullOrEmpty(newPassword) || newPassword.Length < MinNewPasswordLength)
+            if (string.IsNullOrEmpty(newPassword) || newPassword.Length < AppConstants.MinPasswordLength)
                 return ChangePasswordStatus.NewPasswordTooShort;
 
-            if (PasswordHasher.Verify(newPassword, user.PasswordHash))
+            if (_passwordHasher.Verify(newPassword, user.PasswordHash))
                 return ChangePasswordStatus.NewPasswordSameAsOld;
 
-            string newHash = PasswordHasher.Hash(newPassword);
+            string newHash = _passwordHasher.Hash(newPassword);
             _userRepository.UpdatePassword(userId, newHash);
 
             return ChangePasswordStatus.Success;

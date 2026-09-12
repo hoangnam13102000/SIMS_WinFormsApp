@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SIMS_WinFormsApp.Models.Chat;
 using SIMS_WinFormsApp.Services.Chat;
 
-namespace SIMS_WinFormsApp.MVP.Views
+namespace SIMS_WinFormsApp.Views.Interfaces
 {
 
     public interface IChatView

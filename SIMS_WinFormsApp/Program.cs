@@ -1,6 +1,7 @@
 ﻿using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.Auth;
 using SIMS_WinFormsApp.Forms.SystemMgmt;
+using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
@@ -25,7 +26,7 @@ namespace SIMS_WinFormsApp
 
             while (true)
             {
-                using (var loginForm = new frmLogin())
+                using (var loginForm = AppComposition.CreateLoginForm())
                 {
                     loginForm.StartPosition = FormStartPosition.CenterScreen;
                     loginForm.TopMost = true;

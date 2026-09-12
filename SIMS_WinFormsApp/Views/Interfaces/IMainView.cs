@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SIMS_WinFormsApp.MVP.Views
+namespace SIMS_WinFormsApp.Views.Interfaces
 {
     public interface IMainView
     {

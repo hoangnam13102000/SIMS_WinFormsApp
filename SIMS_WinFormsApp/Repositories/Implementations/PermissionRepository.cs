@@ -2,7 +2,7 @@
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
 
-namespace SIMS_WinFormsApp.DAL
+namespace SIMS_WinFormsApp.Repositories.Implementations
 {
  
     public class PermissionRepository

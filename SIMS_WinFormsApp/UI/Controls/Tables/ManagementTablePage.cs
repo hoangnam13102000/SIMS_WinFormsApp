@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -11,22 +11,22 @@ namespace SIMS_WinFormsApp.UI.Controls
 {
     public static class ManagementTablePage
     {
-        public static Control Accounts()
+        public static Control Accounts(IUserManagementService service)
         {
             return Create("Quản lý tài khoản", "Quản lý tài khoản người dùng và phân quyền trong hệ thống",
-                IconChar.UsersCog, null);
+                IconChar.UsersCog, null, service);
         }
 
-        public static Control Employees()
+        public static Control Employees(IUserManagementService service)
         {
             return Create("Quản lý nhân viên", "Danh sách nhân viên và thông tin làm việc",
-                IconChar.User, "Nhân viên");
+                IconChar.User, "Nhân viên", service);
         }
 
-        public static Control Customers()
+        public static Control Customers(IUserManagementService service)
         {
             return Create("Quản lý khách hàng", "Danh sách khách hàng và lịch sử giao dịch",
-                IconChar.AddressBook, "Khách hàng");
+                IconChar.AddressBook, "Khách hàng", service);
         }
 
         /// <summary>Danh sách lựa chọn cho ComboBox lọc trạng thái tài khoản. Value khớp đúng
@@ -39,54 +39,41 @@ namespace SIMS_WinFormsApp.UI.Controls
             new FilterOption("Vô hiệu hóa", "INACTIVE")
         };
 
-        private static Control Create(string title, string subtitle, IconChar icon, string roleFilter)
+        private static Control Create(
+            string title,
+            string subtitle,
+            IconChar icon,
+            string roleFilter,
+            IUserManagementService service)
         {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
             return new BaseTable(title, subtitle, icon,
                 new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa", "Thao tác" },
                 (pageIndex, pageSize, search, statusFilter) =>
-                    LoadUsers(pageIndex, pageSize, search, roleFilter, statusFilter),
+                    LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter),
                 AccountStatusOptions());
         }
 
-        private static TablePageResult LoadUsers(int pageIndex, int pageSize, string search,
+        private static TablePageResult LoadUsers(IUserManagementService service, int pageIndex, int pageSize, string search,
             string roleFilter, string statusFilter)
         {
-            using (var db = new SimsDataContext())
+            var page = service.GetPage(pageIndex, pageSize, search, roleFilter, statusFilter);
+            return new TablePageResult
             {
-                var query = from u in db.Users
-                            join r in db.Roles on u.RoleID equals r.RoleID
-                            where !u.IsDeleted
-                            select new { u, r };
-                if (!string.IsNullOrWhiteSpace(roleFilter))
-                    query = query.Where(x => x.r.RoleName.Contains(roleFilter));
-                if (!string.IsNullOrWhiteSpace(statusFilter))
-                    query = query.Where(x => x.u.Status == statusFilter);
-                if (!string.IsNullOrWhiteSpace(search))
+                TotalCount = page.TotalCount,
+                Rows = page.Rows.Select(x => new object[]
                 {
-                    var term = search.Trim();
-                    query = query.Where(x => x.u.Username.Contains(term)
-                        || x.u.FullName.Contains(term)
-                        || x.u.Email.Contains(term));
-                }
-
-                int total = query.Count();
-                var rows = query.OrderBy(x => x.u.FullName)
-                    .Skip(pageIndex * pageSize)
-                    .Take(pageSize)
-                    .ToList()
-                    .Select(x => new object[]
-                    {
-                        x.u.Username,
-                        x.u.FullName,
-                        x.u.Email,
-                        x.r.RoleName,
-                        string.Equals(x.u.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase)
-                            ? "Đang hoạt động" : "Vô hiệu hóa",
-                        x.u.IsLocked ? "Đang khóa" : "Bình thường",
-                        "Xem  Sửa  Khóa"
-                    }).ToList();
-                return new TablePageResult { TotalCount = total, Rows = rows };
-            }
+                    x.Username,
+                    x.FullName,
+                    x.Email,
+                    x.RoleName,
+                    string.Equals(x.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase)
+                        ? "Đang hoạt động" : "Vô hiệu hóa",
+                    x.IsLocked ? "Đang khóa" : "Bình thường",
+                    "Xem  Sửa  Khóa"
+                }).ToList()
+            };
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using SIMS_WinFormsApp.Services;
+using SIMS_WinFormsApp.MVP.Presenters;
+using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.Services;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
@@ -9,13 +13,16 @@ using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp.Forms.Auth
 {
-    public partial class frmChangePassword : Form
+    public partial class frmChangePassword : Form, IChangePasswordView
     {
-        private readonly AuthService _authService = new AuthService();
+        private readonly IAuthService _authService;
+        private readonly ChangePasswordPresenter _presenter;
 
-        public frmChangePassword()
+        public frmChangePassword(IAuthService authService = null)
         {
             InitializeComponent();
+            _authService = authService ?? AppComposition.CreateAuthService();
+            _presenter = new ChangePasswordPresenter(this, _authService);
 
             AcceptButton = btnSubmit;
             CancelButton = btnCancel;
@@ -99,70 +106,18 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         private async Task DoChangePasswordAsync()
         {
-            ClearError();
-
-            string current = txtCurrent.Text;
-            string newPassword = txtNew.Text;
-            string confirm = txtConfirm.Text;
-
-            if (string.IsNullOrEmpty(current) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(confirm))
-            {
-                ShowError(Lang.Get("changepassword.error.emptyFields"));
-                return;
-            }
-
-            if (newPassword != confirm)
-            {
-                ShowError(Lang.Get("changepassword.error.mismatch"));
-                return;
-            }
-
-            int userId = UserSession.Instance.CurrentUser.UserId;
-
-            SetLoading(true);
-            try
-            {
-                ChangePasswordStatus status = await Task.Run(() =>
-                    _authService.ChangePassword(userId, current, newPassword));
-
-                switch (status)
-                {
-                    case ChangePasswordStatus.Success:
-                        MessageBox.Show(this, Lang.Get("changepassword.success"), Lang.Get("common.success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        DialogResult = DialogResult.OK;
-                        Close();
-                        break;
-
-                    case ChangePasswordStatus.CurrentPasswordWrong:
-                        ShowError(Lang.Get("changepassword.error.currentWrong"));
-                        break;
-
-                    case ChangePasswordStatus.NewPasswordTooShort:
-                        ShowError(Lang.Get("changepassword.error.tooShort"));
-                        break;
-
-                    case ChangePasswordStatus.NewPasswordSameAsOld:
-                        ShowError(Lang.Get("changepassword.error.sameAsOld"));
-                        break;
-                }
-            }
-            catch (Exception)
-            {
-                ShowError(Lang.Get("login.error.unexpected"));
-            }
-            finally
-            {
-                if (!IsDisposed) SetLoading(false);
-            }
+            await _presenter.ChangeAsync();
         }
 
-        private void ShowError(string message) => lblError.Text = message;
-
-        private void ClearError() => lblError.Text = "";
-
-        private void SetLoading(bool busy)
+        public string CurrentPassword => txtCurrent.Text;
+        public string NewPassword => txtNew.Text;
+        public string Confirmation => txtConfirm.Text;
+        public int CurrentUserId => UserSession.Instance.CurrentUser?.UserId ?? 0;
+        public void ClearError() => lblError.Text = "";
+        public void ShowError(string message) => lblError.Text = message;
+        public void SetLoading(bool busy)
         {
+            if (IsDisposed) return;
             txtCurrent.Enabled = !busy;
             txtNew.Enabled = !busy;
             txtConfirm.Enabled = !busy;
@@ -170,6 +125,13 @@ namespace SIMS_WinFormsApp.Forms.Auth
             btnCancel.Enabled = !busy;
             btnSubmit.Text = busy ? Lang.Get("common.loading") : Lang.Get("changepassword.submit");
             Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
+        }
+        public void ShowSuccess(string message) => MessageBox.Show(this, message,
+            Lang.Get("common.success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+        public void CloseOnSuccess()
+        {
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

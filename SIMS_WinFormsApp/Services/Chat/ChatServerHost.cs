@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Fleck;
 using Newtonsoft.Json;
-using SIMS_WinFormsApp.DAL;
 using SIMS_WinFormsApp.Models.Chat;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.Repositories.Implementations;
 
 namespace SIMS_WinFormsApp.Services.Chat
 {
@@ -21,13 +23,18 @@ namespace SIMS_WinFormsApp.Services.Chat
             new ConcurrentDictionary<IWebSocketConnection, StaffSession>();
 
         // Liên kết chat real-time với DB (ChatConversations/ChatMessages, FK -> Users) ----
-        private readonly ChatRepository _chatRepository = new ChatRepository();
+        private readonly IChatRepository _chatRepository;
 
         private WebSocketServer _server;
         private bool _started;
         private readonly object _startLock = new object();
 
-        private ChatServerHost() { }
+        private ChatServerHost() : this(AppComposition.CreateChatRepository()) { }
+
+        internal ChatServerHost(IChatRepository chatRepository)
+        {
+            _chatRepository = chatRepository ?? throw new ArgumentNullException(nameof(chatRepository));
+        }
 
         public bool IsRunning
         {

@@ -4,7 +4,7 @@ using SIMS_WinFormsApp.Models;
 namespace SIMS_WinFormsApp.Services.Session
 {
   
-    public sealed class UserSession
+    public sealed class UserSession : IUserSession
     {
         private static readonly Lazy<UserSession> LazyInstance = new Lazy<UserSession>(() => new UserSession());
         public static UserSession Instance => LazyInstance.Value;

@@ -6,8 +6,10 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.Chat;
 using SIMS_WinFormsApp.Forms.Dashboard;
-using SIMS_WinFormsApp.MVP.Views;
+using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Controls;
@@ -21,6 +23,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly Func<string> _getDisplayName;
         private readonly Func<string> _getEmail;
         private readonly Func<string> _getRole;
+        private readonly IUserManagementService _userManagementService;
         private bool _isLoggingOut;
         private readonly List<PlaceholderPanel> _placeholders = new List<PlaceholderPanel>();
 
@@ -60,12 +63,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             IMainView view,
             Func<string> getDisplayName = null,
             Func<string> getEmail = null,
-            Func<string> getRole = null)
+            Func<string> getRole = null,
+            IUserManagementService userManagementService = null)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _getDisplayName = getDisplayName ?? (() => "Admin");
             _getEmail = getEmail ?? (() => "admin@sims.local");
             _getRole = getRole ?? (() => UserSession.Instance.CurrentUser?.RoleName ?? string.Empty);
+            _userManagementService = userManagementService ??
+                AppComposition.CreateUserManagementService();
             _view.ViewReady += OnViewReady;
             _view.LogoutRequested += OnLogoutRequested;
             _view.ProfileRequested += OnProfileRequested;
@@ -112,11 +118,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         {
             var layout = new MainLayoutControl(Lang.Get("main.header.subtitle"));
             layout.AddSection(Lang.Get("sidebar.section.overview"));
-            layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"), new ucDashboard(), IconChar.House);
+            layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
+                new ucDashboard(_getDisplayName()), IconChar.House);
             layout.AddSection(Lang.Get("sidebar.section.users"));
-            layout.AddPage("accounts", Lang.Get("sidebar.page.accounts"), ManagementTablePage.Accounts(), IconChar.UsersCog);
-            layout.AddPage("employees", Lang.Get("sidebar.page.employees"), ManagementTablePage.Employees(), IconChar.User);
-            layout.AddPage("customers", Lang.Get("sidebar.page.customers"), ManagementTablePage.Customers(), IconChar.AddressBook);
+            layout.AddPage("accounts", Lang.Get("sidebar.page.accounts"), ManagementTablePage.Accounts(_userManagementService), IconChar.UsersCog);
+            layout.AddPage("employees", Lang.Get("sidebar.page.employees"), ManagementTablePage.Employees(_userManagementService), IconChar.User);
+            layout.AddPage("customers", Lang.Get("sidebar.page.customers"), ManagementTablePage.Customers(_userManagementService), IconChar.AddressBook);
             layout.AddSection(Lang.Get("sidebar.section.sales"));
             layout.AddPage("pos", Lang.Get("sidebar.page.pos"), CreatePlaceholder("placeholder.pos.title", "placeholder.pos.description"), IconChar.CartShopping);
             layout.AddPage("orders", Lang.Get("sidebar.page.orders"), CreatePlaceholder("placeholder.orders.title", "placeholder.orders.description"), IconChar.ListUl);

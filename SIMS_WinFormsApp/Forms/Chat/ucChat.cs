@@ -4,16 +4,14 @@ using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.Chat;
 using SIMS_WinFormsApp.MVP.Presenters;
-using SIMS_WinFormsApp.MVP.Views;
+using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Chat;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Chat
 {
-    /// <summary>
-    /// View chat nội bộ staff – implement IChatView. Presenter gắn trong constructor.
-    /// </summary>
+
     public sealed class ucChat : UserControl, IChatView
     {
         public event Action ViewLoaded;
@@ -367,9 +365,6 @@ namespace SIMS_WinFormsApp.Forms.Chat
             using (var dotPen = new Pen(AppColors.White, 1.5f))
                 e.Graphics.DrawEllipse(dotPen, dotRect);
 
-            // 3 dòng (tên / vai trò / trạng thái) được xếp chồng dựa trên chiều cao đo thực tế
-            // của font (_rowNameH / _rowSmallH) — không dùng số px cố định — nên khung chữ
-            // luôn đủ cao cho chính font đó, kể cả dấu tiếng Việt, ở mọi mức DPI/scale.
             int textLeft = e.Bounds.X + 48;
             int textWidth = e.Bounds.Width - 60;
             int y = e.Bounds.Y + 6;

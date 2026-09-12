@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.DAL;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Services; 
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
@@ -12,11 +12,14 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
     public partial class frmConnectionConfig : Form
     {
         private readonly IDialogService _dialogService; 
+        private readonly IConnectionConfigurationService _configurationService;
 
-        public frmConnectionConfig()
+        public frmConnectionConfig(IConnectionConfigurationService configurationService = null)
         {
             InitializeComponent();
-            _dialogService = new DialogService();
+            _dialogService = AppComposition.CreateDialogService();
+            _configurationService = configurationService ??
+                AppComposition.CreateConnectionConfigurationService();
             LoadCurrentSettings();
             UpdateAuthUI();
             SetStatus("", null);
@@ -26,10 +29,10 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         {
             try
             {
-                var setting = ConfigurationManager.ConnectionStrings[DbHelper.ConnectionStringName];
-                if (setting == null || string.IsNullOrWhiteSpace(setting.ConnectionString))
+                string connectionString = _configurationService.GetCurrentConnectionString();
+                if (string.IsNullOrWhiteSpace(connectionString))
                     return;
-                var builder = new SqlConnectionStringBuilder(setting.ConnectionString);
+                var builder = new SqlConnectionStringBuilder(connectionString);
                 txtServer.Text = builder.DataSource;
                 txtDatabase.Text = builder.InitialCatalog;
                 if (builder.IntegratedSecurity)
@@ -97,7 +100,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 txtUserId.Focus();
                 return null;
             }
-            return DbHelper.BuildConnectionString(
+            return _configurationService.BuildConnectionString(
                 txtServer.Text,
                 txtDatabase.Text,
                 rbWindowsAuth.Checked,
@@ -143,7 +146,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             Application.DoEvents();
             try
             {
-                if (DbHelper.TestConnection(connStr, out string error))
+                if (_configurationService.TestConnection(connStr, out string error))
                 {
                     SetStatus("Kết nối thành công!", true);
                     MessageBox.Show("Kết nối SQL Server thành công!", "Test Connection",
@@ -167,7 +170,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             string connStr = BuildConnectionStringFromUI();
             if (connStr == null) return;
 
-            if (!DbHelper.TestConnection(connStr, out string error))
+            if (!_configurationService.TestConnection(connStr, out string error))
             {
 
                 bool confirmed = _dialogService.ConfirmCustom(
@@ -185,7 +188,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
             try
             {
-                DbHelper.SaveConnectionString(connStr, encrypt: true);
+                _configurationService.SaveConnectionString(connStr);
                 SetStatus("Đã lưu và mã hóa thành công.", true);
                 MessageBox.Show(
                     "Đã lưu ConnectionString vào App.config và mã hóa thành công!\n\n" +

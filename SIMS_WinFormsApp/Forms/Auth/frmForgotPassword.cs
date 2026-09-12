@@ -2,17 +2,21 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.MVP.Presenters;
+using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Security;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Auth
 {
-    public partial class frmForgotPassword : Form
+    public partial class frmForgotPassword : Form, IForgotPasswordView
     {
         private enum Step { Identify, VerifyOtp, ResetPassword }
 
-        private readonly PasswordResetService _resetService = PasswordResetService.Instance;
+        private readonly ForgotPasswordPresenter _presenter;
 
         private Step _currentStep = Step.Identify;
         private string _challengeId;
@@ -27,9 +31,12 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         public frmForgotPassword() : this("") { }
 
-        public frmForgotPassword(string initialUsername)
+        public frmForgotPassword(string initialUsername, IPasswordResetService resetService = null)
         {
             InitializeComponent();
+            _presenter = new ForgotPasswordPresenter(
+                this,
+                resetService ?? AppComposition.CreatePasswordResetService());
 
             txtUsername1.Text = (initialUsername ?? "").Trim();
             RefreshTexts();
@@ -133,7 +140,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             SetBusy1(true);
             ShowMessage1(Lang.Get("forgot.identify.genericNotice"), AppColors.TextMuted);
 
-            var result = await Task.Run(() => _resetService.RequestOtp(username, email));
+            var result = await _presenter.RequestOtpAsync();
 
             SetBusy1(false);
 
@@ -212,7 +219,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             SetBusy2(true);
 
-            var result = await Task.Run(() => _resetService.VerifyOtp(_challengeId, code));
+            var result = await _presenter.VerifyOtpAsync();
 
             SetBusy2(false);
 
@@ -256,7 +263,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             if (_busy || _challengeId == null) return;
 
             lnkResend2.Enabled = false;
-            var result = await Task.Run(() => _resetService.ResendOtp(_challengeId));
+            var result = await _presenter.ResendOtpAsync();
 
             switch (result.Status)
             {
@@ -295,7 +302,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
         private void ReturnToIdentify()
         {
             if (_busy) return;
-            _resetService.CancelChallenge(_challengeId);
+            _presenter.CancelChallenge();
             _challengeId = null;
             StopCountdown();
             txtOtp2.Text = "";
@@ -379,7 +386,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             string password = txtNewPassword3.Text;
             string confirm = txtConfirmPassword3.Text;
 
-            var validation = PasswordResetService.ValidatePassword(password);
+            var validation = _presenter.ValidatePassword();
             if (validation != PasswordResetService.PasswordValidationStatus.Valid)
             {
                 ShowMessage3(ValidationMessage(validation), AppColors.Error);
@@ -398,7 +405,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             SetBusy3(true);
 
-            var result = await Task.Run(() => _resetService.ResetPassword(_challengeId, password));
+            var result = await _presenter.ResetPasswordAsync();
 
             SetBusy3(false);
 
@@ -445,7 +452,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         private void ResetToIdentify(string message)
         {
-            _resetService.CancelChallenge(_challengeId);
+            _presenter.CancelChallenge();
             _challengeId = null;
             StopCountdown();
             txtOtp2.Text = "";
@@ -550,9 +557,16 @@ namespace SIMS_WinFormsApp.Forms.Auth
             ClearSensitiveFields();
             if (!_completed && _challengeId != null)
             {
-                _resetService.CancelChallenge(_challengeId);
+                _presenter.CancelChallenge();
                 _challengeId = null;
             }
         }
+
+        public string Username => txtUsername1.Text.Trim();
+        public string Email => txtEmail1.Text.Trim();
+        public string OtpCode => txtOtp2.Text.Trim();
+        public string NewPassword => txtNewPassword3.Text;
+        public string ConfirmPassword => txtConfirmPassword3.Text;
+        public string ChallengeId => _challengeId;
     }
 }

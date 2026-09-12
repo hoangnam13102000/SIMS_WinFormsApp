@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using SIMS_WinFormsApp.DAL;
 using SIMS_WinFormsApp.Models;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.Repositories.Implementations;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Mail;
 using SIMS_WinFormsApp.UI.I18n;
 
 namespace SIMS_WinFormsApp.Services.Security
 {
-    public sealed class PasswordResetService
+    public sealed class PasswordResetService : IPasswordResetService
     {
         public const int OtpTtlSeconds = 5 * 60;
         public const int VerifiedTtlSeconds = 10 * 60;
@@ -32,16 +35,24 @@ namespace SIMS_WinFormsApp.Services.Security
         private readonly ConcurrentDictionary<string, Challenge> _challenges = new ConcurrentDictionary<string, Challenge>();
         private readonly ConcurrentDictionary<string, RateBucket> _sendRates = new ConcurrentDictionary<string, RateBucket>();
 
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly MailSender _mailSender;
+        private readonly IPasswordHasher _passwordHasher;
 
-        private PasswordResetService() : this(new UserRepository(), new MailSender()) { }
+        private PasswordResetService() : this(
+            AppComposition.CreateUserRepository(),
+            new MailSender(),
+            new BCryptPasswordHasher()) { }
 
         // Constructor phụ để có thể unit test sau này (inject fake repo/mailer).
-        internal PasswordResetService(UserRepository userRepository, MailSender mailSender)
+        internal PasswordResetService(
+            IUserRepository userRepository,
+            MailSender mailSender,
+            IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _mailSender = mailSender;
+            _passwordHasher = passwordHasher;
         }
 
         public RequestResult RequestOtp(string usernameInput, string emailInput)
@@ -250,39 +261,31 @@ namespace SIMS_WinFormsApp.Services.Security
                 challenge.Resetting = true;
             }
 
-            UserRepository.PasswordResetUpdateResult updateResult;
             try
             {
-                updateResult = _userRepository.ResetPasswordFromRecovery(challenge.UserId, newPassword);
+                var account = _userRepository.FindById(challenge.UserId);
+                if (account == null || !account.IsActive)
+                    return new ResetResult(ResetStatus.AccountUnavailable, PasswordValidationStatus.Valid);
+                if (_passwordHasher.Verify(newPassword, account.PasswordHash))
+                    return new ResetResult(ResetStatus.SameAsOldPassword, PasswordValidationStatus.Valid);
+
+                _userRepository.UpdatePasswordHash(
+                    challenge.UserId, _passwordHasher.Hash(newPassword));
             }
             catch (Exception)
             {
-                updateResult = UserRepository.PasswordResetUpdateResult.UpdateFailed;
+                lock (challenge.Lock) { challenge.Resetting = false; }
+                return new ResetResult(ResetStatus.UpdateFailed, PasswordValidationStatus.Valid);
             }
 
-            if (updateResult == UserRepository.PasswordResetUpdateResult.Success)
+            _challenges.TryRemove(challengeId, out _);
+            lock (challenge.Lock)
             {
-                _challenges.TryRemove(challengeId, out _);
-                lock (challenge.Lock)
-                {
-                    challenge.Cancelled = true;
-                    challenge.Resetting = false;
-                    ClearOtpHash(challenge);
-                }
-                return new ResetResult(ResetStatus.Success, PasswordValidationStatus.Valid);
+                challenge.Cancelled = true;
+                challenge.Resetting = false;
+                ClearOtpHash(challenge);
             }
-
-            lock (challenge.Lock) { challenge.Resetting = false; }
-
-            if (updateResult == UserRepository.PasswordResetUpdateResult.SameAsOldPassword)
-                return new ResetResult(ResetStatus.SameAsOldPassword, PasswordValidationStatus.Valid);
-
-            if (updateResult == UserRepository.PasswordResetUpdateResult.AccountUnavailable)
-            {
-                InvalidateAndRemove(challenge);
-                return new ResetResult(ResetStatus.AccountUnavailable, PasswordValidationStatus.Valid);
-            }
-            return new ResetResult(ResetStatus.UpdateFailed, PasswordValidationStatus.Valid);
+            return new ResetResult(ResetStatus.Success, PasswordValidationStatus.Valid);
         }
 
         public void CancelChallenge(string challengeId)
@@ -312,11 +315,17 @@ namespace SIMS_WinFormsApp.Services.Security
                 if (char.IsDigit(c)) hasDigit = true;
                 if (!char.IsWhiteSpace(c)) hasNonWhitespace = true;
             }
+
             if (!hasNonWhitespace) return PasswordValidationStatus.Whitespace;
             if (!hasLetter) return PasswordValidationStatus.Letter;
             if (!hasDigit) return PasswordValidationStatus.Digit;
             if (Encoding.UTF8.GetByteCount(password) > 72) return PasswordValidationStatus.ByteLength;
             return PasswordValidationStatus.Valid;
+        }
+
+        PasswordValidationStatus IPasswordResetService.ValidatePassword(string password)
+        {
+            return ValidatePassword(password);
         }
 
         public static string MaskEmail(string emailInput)

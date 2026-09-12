@@ -70,3 +70,30 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 |  | Thành viên |  |
 
 **Công việc chung:** Chuẩn hóa giao diện, viết tài liệu báo cáo, kiểm thử tích hợp giữa các module.
+
+---
+
+## KIẾN TRÚC ỨNG DỤNG
+
+Project sử dụng MVP (Model–View–Presenter) theo luồng:
+
+```text
+WinForms View -> Presenter -> Service -> Repository -> LINQ to SQL/Database
+```
+
+- `Forms/` chỉ chứa mã giao diện và triển khai các interface trong `Views/Interfaces/`.
+- `MVP/Presenters/` điều phối event, validation ở cấp màn hình và cập nhật View.
+- `Services/Interfaces/` chứa contract nghiệp vụ; `Services/Implementations/` chứa các use case.
+- `Repositories/Interfaces/` chứa abstraction persistence; `Repositories/Implementations/`
+  chứa các repository implementation. `DAL/` chỉ chứa `DbHelper`, `DataContext` và LINQ entities.
+- `Models/DTOs/` là dữ liệu trao đổi giữa các layer; `Models/Entities/` là model nghiệp vụ.
+- `Infrastructure/` chứa cấu hình, lưu trữ bảo mật và các adapter nền tảng.
+
+Dependency được truyền vào Presenter/Service qua constructor. Composition của các dependency
+mặc định chỉ được thực hiện ở tầng khởi tạo ứng dụng hoặc constructor mặc định của adapter,
+giúp các Presenter và Service có thể test bằng mock/fake mà không cần database hoặc WinForms.
+
+Dashboard hiện là màn hình trình bày mẫu: các thẻ thống kê và khu vực hoạt động chưa có module
+nghiệp vụ tương ứng nên chưa tạo repository/service giả. User/session display đã được điều phối
+qua `DashboardPresenter`; khi dữ liệu dashboard thật được triển khai, service/repository có thể
+được bổ sung mà không đưa truy vấn vào View.

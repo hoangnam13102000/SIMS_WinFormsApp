@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SIMS_WinFormsApp.DAL;
+using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models;
 using SIMS_WinFormsApp.Models.Chat;
-using SIMS_WinFormsApp.MVP.Views;
+using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services.Chat;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
@@ -19,8 +20,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly IChatView _view;
         private readonly IChatClientService _client;
         private readonly Control _syncControl;
-        private readonly ChatRepository _chatRepository;
-        private readonly UserRepository _userRepository;
+        private readonly IChatRepository _chatRepository;
+        private readonly IUserRepository _userRepository;
 
         private int _selectedPeerId;
         private string _selectedPeerName = string.Empty;
@@ -33,13 +34,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly HashSet<int> _onlineIds = new HashSet<int>();
 
         public ChatPresenter(IChatView view, Control syncControl, IChatClientService client = null,
-            ChatRepository chatRepository = null, UserRepository userRepository = null)
+            IChatRepository chatRepository = null, IUserRepository userRepository = null)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _syncControl = syncControl ?? throw new ArgumentNullException(nameof(syncControl));
             _client = client ?? ChatClientService.Instance;
-            _chatRepository = chatRepository ?? new ChatRepository();
-            _userRepository = userRepository ?? new UserRepository();
+            _chatRepository = chatRepository ?? AppComposition.CreateChatRepository();
+            _userRepository = userRepository ?? AppComposition.CreateUserRepository();
 
             _view.ViewLoaded += OnViewLoaded;
             _view.ViewUnloaded += OnViewUnloaded;
