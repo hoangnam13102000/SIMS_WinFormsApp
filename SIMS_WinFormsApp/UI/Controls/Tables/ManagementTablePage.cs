@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Forms.SystemMgmt;
+using SIMS_WinFormsApp.Models.DTOs;
+using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
@@ -48,17 +51,43 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
 
-            return new BaseTable(title, subtitle, icon,
+            // Giữ lại danh sách dòng gốc (UserManagementRowDto) của trang đang hiển thị, vì cột
+            // "Thao tác" trong BaseTable chỉ báo về RowIndex - cần map ngược RowIndex -> dữ liệu
+            // gốc thì mới biết đang "Xem" tài khoản nào.
+            IReadOnlyList<UserManagementRowDto> currentRows = Array.Empty<UserManagementRowDto>();
+
+            var table = new BaseTable(title, subtitle, icon,
                 new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa", "Thao tác" },
                 (pageIndex, pageSize, search, statusFilter) =>
-                    LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter),
+                    LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter, out currentRows),
                 AccountStatusOptions());
+
+            table.ActionButtonClicked += (sender, e) => HandleActionButtonClicked(table, e, currentRows);
+
+            return table;
+        }
+
+        /// <summary>Bấm icon mắt/bút/khóa ở cột "Thao tác". Hiện tại chỉ "Xem" đã có popup chi
+        /// tiết (frmUserAccountDetail); "Sửa"/"Khóa" chưa có màn hình tương ứng nên tạm bỏ qua -
+        /// không báo lỗi để tránh gây hiểu nhầm là có bug.</summary>
+        private static void HandleActionButtonClicked(
+            BaseTable table,
+            TableActionEventArgs e,
+            IReadOnlyList<UserManagementRowDto> rows)
+        {
+            if (e.Action != TableActionType.View) return;
+            if (rows == null || e.RowIndex < 0 || e.RowIndex >= rows.Count) return;
+
+            var detailDto = UserDetailMapper.FromRow(rows[e.RowIndex]);
+            frmUserAccountDetail.Show(table.FindForm(), detailDto);
         }
 
         private static TablePageResult LoadUsers(IUserManagementService service, int pageIndex, int pageSize, string search,
-            string roleFilter, string statusFilter)
+            string roleFilter, string statusFilter, out IReadOnlyList<UserManagementRowDto> rows)
         {
             var page = service.GetPage(pageIndex, pageSize, search, roleFilter, statusFilter);
+            rows = page.Rows;
+
             return new TablePageResult
             {
                 TotalCount = page.TotalCount,
