@@ -36,8 +36,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DAL\Linq\Entities\Chat\ChatMessageEntity.cs" />
+    <Compile Include="DAL\Linq\Entities\Identity\EmployeeEntity.cs" />
     <Compile Include="Forms\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\frmAddEmployee.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\SystemMgmt\frmEditUserAccount.cs">
       <SubType>Form</SubType>
@@ -46,13 +50,20 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
+    <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
+    <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
+    <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
+    <Compile Include="Models\Enums\Gender.cs" />
     <Compile Include="Models\Mapping\UserDetailMapper.cs" />
+    <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
+    <Compile Include="Repositories\Implementations\RoleRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
@@ -67,6 +78,9 @@
     <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
     <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs" />
     <Compile Include="UI\Controls\Forms\LabeledIconField.cs" />
+    <Compile Include="UI\Controls\LabeledComboField.cs" />
+    <Compile Include="UI\Controls\LabeledDateField.cs" />
+    <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
     <Compile Include="Views\Interfaces\IChatView.cs" />
     <Compile Include="Views\Interfaces\IDashboardView.cs" />
     <Compile Include="Services\Chat\ChatClientService.cs" />

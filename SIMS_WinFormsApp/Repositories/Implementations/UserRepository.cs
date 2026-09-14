@@ -115,7 +115,8 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
         // Kiểm tra email đã được dùng bởi tài khoản KHÁC hay chưa (loại trừ chính user đang
         // sửa) - dùng trước khi UpdateContactInfo để báo lỗi rõ ràng thay vì để DB ném lỗi
-        // ràng buộc unique (nếu có) hoặc âm thầm gán trùng email.
+        // ràng buộc unique (nếu có) hoặc âm thầm gán trùng email. Khi tạo mới (chưa có
+        // UserID), gọi với excludeUserId = -1 để kiểm tra trùng trên toàn bộ bảng.
         public bool IsEmailInUseByOthers(string email, int excludeUserId)
         {
             string normalized = (email ?? string.Empty).Trim();
@@ -274,6 +275,79 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     TotalCount = total,
                     Rows = rows
                 };
+            }
+        }
+
+        // Kiểm tra trùng tên đăng nhập - dùng khi UserManagementService tự sinh username cho
+        // nhân viên mới (thử tối đa vài lần, mỗi lần kiểm tra trùng qua hàm này).
+        public bool IsUsernameInUse(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username)) return false;
+
+            using (var db = new SimsDataContext())
+            {
+                return db.Users.Any(u => u.Username == username);
+            }
+        }
+
+        // Ghi tài khoản nhân viên mới VÀO 2 BẢNG: Users (tài khoản đăng nhập) rồi Employees
+        // (hồ sơ nhân viên mở rộng 1-1, xem EmployeeEntity) - giống cách Customers mở rộng
+        // Users cho khách hàng. Username/PasswordHash đã được Service chuẩn bị sẵn (sinh +
+        // băm) - Repository chỉ lo phần persist, không tự quyết định nghiệp vụ. Cả 2 lần ghi
+        // nằm trong CÙNG 1 transaction ADO.NET: nếu insert Employees lỗi thì insert Users
+        // cũng được rollback, tránh sinh ra tài khoản "mồ côi" không có hồ sơ nhân viên.
+        public int CreateEmployee(NewEmployeeDto employee)
+        {
+            if (employee == null) throw new ArgumentNullException(nameof(employee));
+
+            using (var db = new SimsDataContext())
+            {
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction())
+                {
+                    db.Transaction = transaction;
+                    try
+                    {
+                        var userEntity = new UserEntity
+                        {
+                            Username = employee.Username,
+                            PasswordHash = employee.PasswordHash,
+                            FullName = employee.FullName,
+                            Email = employee.Email,
+                            Phone = employee.Phone,
+                            RoleID = employee.RoleId,
+                            IsLocked = false,
+                            FailedLoginCount = 0,
+                            Status = "ACTIVE",
+                            IsDeleted = false,
+                            CreatedAt = DateTime.Now
+                        };
+                        db.Users.InsertOnSubmit(userEntity);
+                        db.SubmitChanges();
+                        // Sau SubmitChanges, userEntity.UserID đã được DB sinh (IDENTITY) - dùng
+                        // ngay để tạo mã nhân viên "EMP_0001" theo đúng quy ước ghi trong SIMS.sql.
+                        var employeeEntity = new EmployeeEntity
+                        {
+                            UserID = userEntity.UserID,
+                            EmployeeID = "EMP_" + userEntity.UserID.ToString("D4"),
+                            DateOfBirth = employee.DateOfBirth,
+                            Gender = employee.Gender,
+                            Salary = employee.Salary,
+                            HireDate = employee.HireDate ?? DateTime.Today,
+                            CreatedAt = DateTime.Now
+                        };
+                        db.Employees.InsertOnSubmit(employeeEntity);
+                        db.SubmitChanges();
+
+                        transaction.Commit();
+                        return userEntity.UserID;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
             }
         }
 

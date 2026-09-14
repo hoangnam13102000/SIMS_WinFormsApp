@@ -26,5 +26,13 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
             string searchTerm,
             string roleFilter,
             string statusFilter);
+
+        /// <summary>Tên đăng nhập đã tồn tại chưa - dùng khi tự sinh username cho nhân viên mới
+        /// để đảm bảo duy nhất trước khi ghi DB.</summary>
+        bool IsUsernameInUse(string username);
+
+        /// <summary>Tạo tài khoản nhân viên mới (username/mật khẩu đã được Service chuẩn bị
+        /// sẵn). Trả về UserID vừa tạo.</summary>
+        int CreateEmployee(NewEmployeeDto employee);
     }
 }

@@ -3,7 +3,7 @@ using System.Data.Linq.Mapping;
 
 namespace SIMS_WinFormsApp.DAL.Linq.Entities.Indetity
 {
-    
+
     [Table(Name = "Users")]
     public class UserEntity
     {

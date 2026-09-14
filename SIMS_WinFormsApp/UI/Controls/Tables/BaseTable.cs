@@ -50,11 +50,12 @@ namespace SIMS_WinFormsApp.UI.Controls
         private FilterPresenter _filterPresenter;
         private DataGridView _grid;
 
-        // Phân trang: tách theo MVP — PaginationControl là View (thuần UI),
-        // PaginationPresenter nắm state + phép toán phân trang (pageIndex/pageSize/pageCount).
+        // Phân trang: tách theo MVP giống thanh phân trang — PaginationControl là View (thuần
+        // UI), PaginationPresenter nắm state + phép toán phân trang (pageIndex/pageSize/pageCount).
         // BaseTable chỉ đóng vai trò cung cấp dữ liệu (_loadPage) khi Presenter báo cần tải lại.
         private readonly PaginationControl _pagination = new PaginationControl();
         private TableLayoutPanel _root;
+        private Panel _headerRow;
         private Panel _filterPanel;
         private Panel _gridCard;
         private Panel _paginationPanel;
@@ -80,9 +81,16 @@ namespace SIMS_WinFormsApp.UI.Controls
         /// <summary>Phát sinh khi người dùng bấm 1 trong các nút icon (Xem/Sửa/Khóa) ở cột "Thao tác".</summary>
         public event EventHandler<TableActionEventArgs> ActionButtonClicked;
 
+        /// <summary>Phát sinh khi người dùng bấm nút thêm mới ở góc phải header (chỉ tồn tại khi
+        /// <c>addButtonText</c> được truyền vào constructor). Nơi khởi tạo BaseTable (vd:
+        /// ManagementTablePage) chịu trách nhiệm mở popup thêm mới tương ứng và gọi lại
+        /// <see cref="Reload"/> sau khi lưu thành công — BaseTable không biết gì về popup cụ thể.</summary>
+        public event EventHandler AddButtonClicked;
+
         public BaseTable(string title, string subtitle, FontAwesome.Sharp.IconChar icon,
             string[] columns, Func<int, int, string, string, TablePageResult> loadPage,
-            IList<FilterOption> statusOptions = null, int pageSize = 10)
+            IList<FilterOption> statusOptions = null, int pageSize = 10,
+            string addButtonText = null)
         {
             _loadPage = loadPage ?? throw new ArgumentNullException(nameof(loadPage));
             _statusOptions = statusOptions ?? DefaultStatusOptions();
@@ -113,13 +121,15 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             var header = new HeaderSection
             {
-                Dock = DockStyle.Fill,
-                Margin = new Padding(0, 0, 0, 12),
                 Title = title,
                 Subtitle = subtitle,
                 Icon = icon
             };
-            _root.Controls.Add(header, 0, 0);
+            Control headerRow = string.IsNullOrEmpty(addButtonText)
+                ? WrapPlainHeader(header)
+                : WrapHeaderWithAddButton(header, addButtonText);
+            _headerRow = headerRow as Panel; // null khi không có nút thêm (WrapPlainHeader trả thẳng HeaderSection)
+            _root.Controls.Add(headerRow, 0, 0);
             _filterPanel = (Panel)CreateFilterBar();
             _root.Controls.Add(_filterPanel, 0, 1);
             _grid = CreateGrid(columns);
@@ -134,10 +144,69 @@ namespace SIMS_WinFormsApp.UI.Controls
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
         }
 
+        /// <summary>Không có nút thêm mới: giữ nguyên cách bố trí gốc (header chiếm trọn ô,
+        /// margin dưới 12px để chừa khoảng cách với thanh filter).</summary>
+        private static Control WrapPlainHeader(HeaderSection header)
+        {
+            header.Dock = DockStyle.Fill;
+            header.Margin = new Padding(0, 0, 0, 12);
+            return header;
+        }
+
+        /// <summary>Có nút thêm mới: bọc HeaderSection trong 1 Panel để đặt thêm PrimaryButton
+        /// neo góc phải, canh giữa theo chiều dọc — nằm đè lên trong cùng khối thẻ trắng bo góc
+        /// mà HeaderSection tự vẽ (giống mẫu "+ Thêm nhân viên" cạnh tiêu đề trang).</summary>
+        private Control WrapHeaderWithAddButton(HeaderSection header, string addButtonText)
+        {
+            var host = new Panel
+            {
+                Dock = DockStyle.Fill,
+                // KHÔNG dùng Color.Transparent: lồng 1 control tự vẽ (HeaderSection, double-
+                // buffered) vào Panel "trong suốt thật" là lỗi WinForms kinh điển gây viền/góc
+                // đen ở phần bo tròn không được composite đúng. Panel này luôn nằm trong _root
+                // (BackColor = AppColors.PageBg) nên set thẳng cùng màu là đủ, nhìn y hệt trong
+                // suốt mà không qua cơ chế transparent-forwarding gây lỗi.
+                BackColor = AppColors.PageBg,
+                Margin = new Padding(0, 0, 0, 12)
+            };
+            header.Dock = DockStyle.Fill;
+            header.Margin = Padding.Empty;
+            host.Controls.Add(header);
+
+            int textWidth;
+            using (var g = host.CreateGraphics())
+                textWidth = TextRenderer.MeasureText(g, addButtonText, AppFonts.Button).Width;
+
+            var btnAdd = new PrimaryButton
+            {
+                Text = addButtonText,
+                IsPrimary = true,
+                Size = new Size(textWidth + 48, 42),
+                CornerRadius = AppRadius.Medium,
+                Font = AppFonts.Button,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            btnAdd.Click += (s, e) => AddButtonClicked?.Invoke(this, EventArgs.Empty);
+            host.Controls.Add(btnAdd);
+            btnAdd.BringToFront();
+
+            void Reposition()
+            {
+                btnAdd.Location = new Point(
+                    host.ClientSize.Width - btnAdd.Width - 24,
+                    (host.ClientSize.Height - btnAdd.Height) / 2);
+            }
+            host.Resize += (s, e) => Reposition();
+            Reposition();
+
+            return host;
+        }
+
         private void OnThemeChanged(object sender, EventArgs e)
         {
             BackColor = AppColors.PageBg;
             _root.BackColor = AppColors.PageBg;
+            if (_headerRow != null) _headerRow.BackColor = AppColors.PageBg;
             _filterPanel.BackColor = AppColors.White;
             _gridCard.BackColor = AppColors.Border;
             _paginationPanel.BackColor = AppColors.White;
@@ -335,13 +404,29 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (e.RowIndex < 0) return; // để header vẽ mặc định
 
-            if (e.ColumnIndex == _statusColumnIndex || e.ColumnIndex == _lockColumnIndex)
+            // Bỏ qua khi ô đang có kích thước tạm thời <= 0 (thường xảy ra đúng lúc control
+            // đang resize/layout, vd vừa chuyển sang trang này) - vẽ vào 1 hình chữ nhật rỗng
+            // là nguyên nhân phổ biến khiến GDI+ (MeasureString/DrawString) ném
+            // ArgumentException "Parameter is not valid.".
+            if (e.CellBounds.Width <= 0 || e.CellBounds.Height <= 0) return;
+
+            try
             {
-                PaintPillCell(e);
+                if (e.ColumnIndex == _statusColumnIndex || e.ColumnIndex == _lockColumnIndex)
+                {
+                    PaintPillCell(e);
+                }
+                else if (e.ColumnIndex == _actionColumnIndex)
+                {
+                    PaintActionCell(e);
+                }
             }
-            else if (e.ColumnIndex == _actionColumnIndex)
+            catch (ArgumentException)
             {
-                PaintActionCell(e);
+                // Phòng hờ: nếu GDI+ vẫn ném lỗi vì Graphics tạm thời không hợp lệ (đang
+                // resize/layout), bỏ qua khung vẽ này thay vì làm gián đoạn debug - DataGridView
+                // sẽ tự vẽ lại đúng ở lần Invalidate/Paint kế tiếp, không mất dữ liệu.
+                e.Handled = true;
             }
         }
 

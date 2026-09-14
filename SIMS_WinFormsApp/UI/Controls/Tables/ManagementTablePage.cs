@@ -22,8 +22,10 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         public static Control Employees(IUserManagementService service)
         {
+            // Chỉ riêng màn "Quản lý nhân viên" mới có nút "+ Thêm nhân viên" ở góc phải header
+            // (Accounts/Customers không có, vì tính năng thêm mới hiện chỉ áp dụng cho nhân viên).
             return Create("Quản lý nhân viên", "Danh sách nhân viên và thông tin làm việc",
-                IconChar.User, "Nhân viên", service);
+                IconChar.User, "Nhân viên", service, "+ Thêm nhân viên");
         }
 
         public static Control Customers(IUserManagementService service)
@@ -47,7 +49,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             string subtitle,
             IconChar icon,
             string roleFilter,
-            IUserManagementService service)
+            IUserManagementService service,
+            string addButtonText = null)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
 
@@ -60,9 +63,15 @@ namespace SIMS_WinFormsApp.UI.Controls
                 new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa", "Thao tác" },
                 (pageIndex, pageSize, search, statusFilter) =>
                     LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter, out currentRows),
-                AccountStatusOptions());
+                AccountStatusOptions(),
+                addButtonText: addButtonText);
 
             table.ActionButtonClicked += (sender, e) => HandleActionButtonClicked(table, e, currentRows, service);
+
+            if (!string.IsNullOrEmpty(addButtonText))
+            {
+                table.AddButtonClicked += (sender, e) => HandleAddButtonClicked(table, service);
+            }
 
             return table;
         }
@@ -111,6 +120,14 @@ namespace SIMS_WinFormsApp.UI.Controls
                     }
                     break;
             }
+        }
+
+        /// <summary>Bấm nút "+ Thêm nhân viên" ở header: mở popup frmAddEmployee, reload lại
+        /// bảng nếu tạo thành công (DialogResult.OK) để dòng mới hiện ra ngay.</summary>
+        private static void HandleAddButtonClicked(BaseTable table, IUserManagementService service)
+        {
+            var result = frmAddEmployee.Show(table.FindForm(), service);
+            if (result == DialogResult.OK) table.Reload();
         }
 
         private static TablePageResult LoadUsers(IUserManagementService service, int pageIndex, int pageSize, string search,

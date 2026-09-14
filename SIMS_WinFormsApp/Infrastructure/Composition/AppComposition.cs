@@ -5,6 +5,7 @@ using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services;
 using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Services.Mail;
 using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Forms.Auth;
@@ -23,6 +24,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new UserRepository();
         }
 
+        public static IRoleRepository CreateRoleRepository()
+        {
+            return new RoleRepository();
+        }
+
         public static IChatRepository CreateChatRepository()
         {
             return new ChatRepository();
@@ -38,7 +44,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
 
         public static IUserManagementService CreateUserManagementService()
         {
-            return new UserManagementService(CreateUserRepository());
+            return new UserManagementService(
+                CreateUserRepository(),
+                CreateRoleRepository(),
+                new BCryptPasswordHasher(),
+                new MailSender());
         }
 
         public static IConnectionConfigurationService CreateConnectionConfigurationService()

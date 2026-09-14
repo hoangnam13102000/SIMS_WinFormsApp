@@ -16,6 +16,7 @@ namespace SIMS_WinFormsApp.DAL.Linq
         }
 
         public Table<UserEntity> Users => GetTable<UserEntity>();
+        public Table<EmployeeEntity> Employees => GetTable<EmployeeEntity>();
         public Table<RoleEntity> Roles => GetTable<RoleEntity>();
         public Table<PermissionEntity> Permissions => GetTable<PermissionEntity>();
         public Table<RolePermissionEntity> RolePermissions => GetTable<RolePermissionEntity>();
