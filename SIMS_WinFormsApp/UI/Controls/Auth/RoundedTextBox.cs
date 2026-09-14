@@ -58,13 +58,19 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void LayoutInner()
         {
-            _textBox.Location = new Point(14, (Height - _textBox.Height) / 2);
-            _textBox.Width = System.Math.Max(10, Width - 28 - TrailingWidth);
-            _placeholderLabel.Location = new Point(15, 0);
+            int leadingOffset = 14 + LeadingWidth;
+            _textBox.Location = new Point(leadingOffset, (Height - _textBox.Height) / 2);
+            _textBox.Width = System.Math.Max(10, Width - leadingOffset - 14 - TrailingWidth);
+            _placeholderLabel.Location = new Point(leadingOffset + 1, 0);
             _placeholderLabel.Size = new Size(_textBox.Width - 2, Height);
         }
 
         protected virtual int TrailingWidth => 0;
+
+        // Mặc định 0 -> _textBox/_placeholderLabel giữ nguyên vị trí cũ (leadingOffset = 14),
+        // không đổi hành vi của RoundedTextBox/RoundedPasswordTextBox hiện có. Lớp con (ví dụ
+        // IconRoundedTextBox) override giá trị này để chừa chỗ cho icon bên trái.
+        protected virtual int LeadingWidth => 0;
 
         protected TextBox InputControl => _textBox;
 
@@ -103,10 +109,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // Ô nhập liệu bên trong (_textBox) là 1 TextBox gốc của Windows: mặc định
-            // luôn có nền trắng/chữ đen cố định, KHÔNG tự đổi theo theme. Đồng bộ màu
-            // của nó với AppColors mỗi lần vẽ lại (kể cả khi đổi theme) để không còn
-            // bị "nền trắng" lộ ra giữa khung nhập liệu khi đang ở Dark mode.
             _textBox.BackColor = AppColors.White;
             _textBox.ForeColor = AppColors.TextPrimary;
             _placeholderLabel.ForeColor = AppColors.TextMutedAlt;

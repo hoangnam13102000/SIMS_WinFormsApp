@@ -14,6 +14,8 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         void RegisterFailedLogin(int userId, int lockThreshold = 5);
         void ResetFailedLogin(int userId);
         void UpdatePassword(int userId, string newPasswordHash);
+        bool IsEmailInUseByOthers(string email, int excludeUserId);
+        bool UpdateContactInfo(int userId, string fullName, string email, string phone);
         void SetLocked(int userId, bool isLocked);
         IReadOnlyList<User> GetPage(int pageIndex, int pageSize, string searchTerm = null);
         IReadOnlyDictionary<string, int> CountUsersByRole();

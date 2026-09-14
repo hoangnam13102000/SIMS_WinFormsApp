@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
 using SIMS_WinFormsApp.UI.Controls.Search;
@@ -16,7 +18,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         public IList<object[]> Rows { get; set; } = new List<object[]>();
     }
 
-    /// <summary>Loại thao tác tương ứng với từng nút icon trong cột "Thao tác".</summary>
     public enum TableActionType
     {
         View = 0,
@@ -69,8 +70,10 @@ namespace SIMS_WinFormsApp.UI.Controls
         private int _hoverRowIndex = -1;
         private int _hoverButtonIndex = -1;
 
-        private const int ActionButtonSize = 28;
-        private const int ActionButtonGap = 14;
+        private const int ActionButtonSize = 34;
+        private const int ActionButtonGap = 10;
+        private static readonly Dictionary<string, Bitmap> ActionIconBitmaps =
+            new Dictionary<string, Bitmap>();
 
         public DataGridView Grid => _grid;
 
@@ -233,7 +236,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             panel.Controls.Add(_pagination);
             return panel;
         }
-
+        public void Reload() => LoadCurrentPage();
         private void LoadCurrentPage()
         {
             var result = _loadPage(_paginationPresenter.PageIndex, _paginationPresenter.PageSize,
@@ -312,6 +315,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             grid.DefaultCellStyle.SelectionForeColor = AppColors.TextPrimary;
             grid.DefaultCellStyle.BackColor = AppColors.White;
             grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
+            var doubleBufferedProperty = typeof(DataGridView).GetProperty(
+                "DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            doubleBufferedProperty?.SetValue(grid, true, null);
             return grid;
         }
 
@@ -398,11 +404,14 @@ namespace SIMS_WinFormsApp.UI.Controls
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             var rects = GetActionButtonRects(e.CellBounds.Size);
+            bool isLocked = _lockColumnIndex >= 0
+                && Convert.ToString(_grid.Rows[e.RowIndex].Cells[_lockColumnIndex].Value)
+                    .IndexOf("Đang khóa", StringComparison.OrdinalIgnoreCase) >= 0;
             for (int i = 0; i < rects.Length; i++)
             {
                 var abs = new Rectangle(e.CellBounds.X + rects[i].X, e.CellBounds.Y + rects[i].Y, rects[i].Width, rects[i].Height);
                 bool hovered = _hoverRowIndex == e.RowIndex && _hoverButtonIndex == i;
-                DrawActionButton(e.Graphics, abs, (TableActionType)i, hovered);
+                DrawActionButton(e.Graphics, abs, (TableActionType)i, hovered, isLocked);
             }
 
             DrawCellBottomBorder(e);
@@ -442,7 +451,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
         }
 
-        private static void DrawActionButton(Graphics g, Rectangle rect, TableActionType type, bool hovered)
+        private static void DrawActionButton(Graphics g, Rectangle rect, TableActionType type, bool hovered, bool isLocked)
         {
             var color = ActionColor(type);
 
@@ -452,85 +461,42 @@ namespace SIMS_WinFormsApp.UI.Controls
                     g.FillEllipse(hoverBrush, rect);
             }
 
+            var bitmap = GetActionIconBitmap(type, color, rect.Size, isLocked);
+            g.DrawImageUnscaled(bitmap, rect.Location);
+        }
+
+        private static Bitmap GetActionIconBitmap(TableActionType type, Color color, Size size, bool isLocked)
+        {
+            string cacheKey = type + ":" + isLocked;
+            Bitmap bitmap;
+            if (ActionIconBitmaps.TryGetValue(cacheKey, out bitmap)) return bitmap;
+
+            var icon = new IconPictureBox
+            {
+                IconChar = GetActionIcon(type, isLocked),
+                IconColor = color,
+                IconSize = 22,
+                Size = size,
+                SizeMode = PictureBoxSizeMode.CenterImage,
+                BackColor = Color.Transparent
+            };
+            bitmap = new Bitmap(size.Width, size.Height);
+            icon.DrawToBitmap(bitmap, new Rectangle(Point.Empty, size));
+            icon.Dispose();
+            bitmap.MakeTransparent(bitmap.GetPixel(0, 0));
+            ActionIconBitmaps[cacheKey] = bitmap;
+            return bitmap;
+        }
+
+        private static IconChar GetActionIcon(TableActionType type, bool isLocked)
+        {
             switch (type)
             {
-                case TableActionType.View:
-                    DrawEyeIcon(g, rect, color);
-                    break;
-                case TableActionType.Edit:
-                    DrawEditIcon(g, rect, color);
-                    break;
-                case TableActionType.Lock:
-                    DrawLockIcon(g, rect, color);
-                    break;
+                case TableActionType.View: return IconChar.Eye;
+                case TableActionType.Edit: return IconChar.PenToSquare;
+                case TableActionType.Lock: return isLocked ? IconChar.LockOpen : IconChar.Lock;
+                default: return IconChar.CircleQuestion;
             }
-        }
-
-        private static void DrawEyeIcon(Graphics g, Rectangle bounds, Color color)
-        {
-            var r = Deflate(bounds, 4);
-            int h = Math.Max(8, (int)(r.Width * 0.62));
-            var eyeRect = new Rectangle(r.X, r.Y + (r.Height - h) / 2, r.Width, h);
-
-            using (var brush = new SolidBrush(color))
-                g.FillEllipse(brush, eyeRect);
-
-            int iris = Math.Max(6, h * 3 / 5);
-            var irisRect = new Rectangle(eyeRect.X + (eyeRect.Width - iris) / 2, eyeRect.Y + (eyeRect.Height - iris) / 2, iris, iris);
-            using (var whiteBrush = new SolidBrush(Color.White))
-                g.FillEllipse(whiteBrush, irisRect);
-
-            int pupil = Math.Max(3, iris / 2);
-            var pupilRect = new Rectangle(irisRect.X + (irisRect.Width - pupil) / 2, irisRect.Y + (irisRect.Height - pupil) / 2, pupil, pupil);
-            using (var pupilBrush = new SolidBrush(color))
-                g.FillEllipse(pupilBrush, pupilRect);
-        }
-
-        private static void DrawEditIcon(Graphics g, Rectangle bounds, Color color)
-        {
-            var r = Deflate(bounds, 3);
-            var squareRect = new Rectangle(r.X, r.Y + r.Height / 3, r.Width * 2 / 3, r.Height * 2 / 3);
-
-            using (var pen = new Pen(color, 2f))
-            using (var path = RoundedRect(squareRect, 3))
-                g.DrawPath(pen, path);
-
-            var tailStart = new Point(squareRect.X + 4, squareRect.Bottom - 4);
-            var tipEnd = new Point(r.Right, r.Y);
-            using (var pen = new Pen(color, 2.3f) { StartCap = LineCap.Round, EndCap = LineCap.Round })
-                g.DrawLine(pen, tailStart, tipEnd);
-
-            var nib = new[]
-            {
-                tipEnd,
-                new Point(tipEnd.X - 7, tipEnd.Y),
-                new Point(tipEnd.X, tipEnd.Y + 7)
-            };
-            using (var brush = new SolidBrush(color))
-                g.FillPolygon(brush, nib);
-        }
-
-        private static void DrawLockIcon(Graphics g, Rectangle bounds, Color color)
-        {
-            var r = Deflate(bounds, 5);
-            int shackleHeight = (int)(r.Height * 0.55);
-            var shackleRect = new Rectangle(r.X + r.Width / 6, r.Y, r.Width * 2 / 3, shackleHeight * 2);
-
-            using (var pen = new Pen(color, 2.3f))
-                g.DrawArc(pen, shackleRect, 180, 180);
-
-            var bodyRect = new Rectangle(r.X, r.Y + shackleHeight - 2, r.Width, r.Height - shackleHeight + 2);
-            using (var path = RoundedRect(bodyRect, 3))
-            using (var brush = new SolidBrush(color))
-                g.FillPath(brush, path);
-
-            int holeSize = Math.Max(3, bodyRect.Width / 5);
-            var holeRect = new Rectangle(
-                bodyRect.X + (bodyRect.Width - holeSize) / 2,
-                bodyRect.Y + (bodyRect.Height - holeSize) / 2 - 1,
-                holeSize, holeSize);
-            using (var holeBrush = new SolidBrush(Color.White))
-                g.FillEllipse(holeBrush, holeRect);
         }
 
         private static Rectangle Deflate(Rectangle rect, int amount)

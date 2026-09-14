@@ -62,24 +62,55 @@ namespace SIMS_WinFormsApp.UI.Controls
                     LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter, out currentRows),
                 AccountStatusOptions());
 
-            table.ActionButtonClicked += (sender, e) => HandleActionButtonClicked(table, e, currentRows);
+            table.ActionButtonClicked += (sender, e) => HandleActionButtonClicked(table, e, currentRows, service);
 
             return table;
         }
 
-        /// <summary>Bấm icon mắt/bút/khóa ở cột "Thao tác". Hiện tại chỉ "Xem" đã có popup chi
-        /// tiết (frmUserAccountDetail); "Sửa"/"Khóa" chưa có màn hình tương ứng nên tạm bỏ qua -
-        /// không báo lỗi để tránh gây hiểu nhầm là có bug.</summary>
+        /// <summary>Bấm icon mắt/bút/khóa ở cột "Thao tác". "Xem" mở popup chi tiết
+        /// (frmUserAccountDetail), "Sửa" mở popup cập nhật (frmEditUserAccount), "Khóa" bật/tắt
+        /// trạng thái khóa tài khoản trong DB và reload lại bảng sau khi thành công.</summary>
         private static void HandleActionButtonClicked(
             BaseTable table,
             TableActionEventArgs e,
-            IReadOnlyList<UserManagementRowDto> rows)
+            IReadOnlyList<UserManagementRowDto> rows,
+            IUserManagementService service)
         {
-            if (e.Action != TableActionType.View) return;
             if (rows == null || e.RowIndex < 0 || e.RowIndex >= rows.Count) return;
 
             var detailDto = UserDetailMapper.FromRow(rows[e.RowIndex]);
-            frmUserAccountDetail.Show(table.FindForm(), detailDto);
+
+            switch (e.Action)
+            {
+                case TableActionType.View:
+                    frmUserAccountDetail.Show(table.FindForm(), detailDto);
+                    break;
+
+                case TableActionType.Edit:
+                    var result = frmEditUserAccount.Show(table.FindForm(), detailDto, service);
+                    if (result == DialogResult.OK) table.Reload();
+                    break;
+
+                case TableActionType.Lock:
+                    bool lockAccount = !rows[e.RowIndex].IsLocked;
+                    string actionText = lockAccount ? "khóa" : "mở khóa";
+                    bool confirmed = DialogHelper.Confirm(
+                        table.FindForm(),
+                        "Xác nhận thao tác",
+                        string.Format("Bạn có chắc muốn {0} tài khoản '{1}' không?", actionText, detailDto.Username));
+                    if (!confirmed) break;
+
+                    var lockResult = service.SetAccountLocked(detailDto.UserId, lockAccount);
+                    if (lockResult == SetAccountLockResult.Success)
+                    {
+                        table.Reload();
+                    }
+                    else
+                    {
+                        DialogHelper.ShowWarning(table.FindForm(), "Không tìm thấy tài khoản.");
+                    }
+                    break;
+            }
         }
 
         private static TablePageResult LoadUsers(IUserManagementService service, int pageIndex, int pageSize, string search,

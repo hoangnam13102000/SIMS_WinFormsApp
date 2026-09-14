@@ -70,6 +70,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 : Color.FromArgb(180, 190, 206);
 
         private const float DialogBorderWidth = 2f;
+        private const int DialogContentMargin = 10;
         #endregion
 
         #region Public Properties
@@ -136,7 +137,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             MinimumSize = new Size(MinWidth, MinHeight);
             Font = AppFonts.Body;
             BackColor = AppColors.White;
-            Padding = new Padding((int)DialogBorderWidth);
+            Padding = new Padding(DialogContentMargin);
 
             // ===== Tạo các control con =====
             _headerPanel = new Panel
@@ -194,6 +195,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _closeButton.FlatAppearance.BorderSize = 0;
             _closeButton.FlatAppearance.MouseOverBackColor = Color.Transparent;
             _closeButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            _closeButton.Visible = false;
             _closeButton.Click += (s, e) => CloseWithResult(DialogResult.Cancel);
             _closeButton.Paint += CloseButton_Paint;
             _closeButton.MouseEnter += (s, e) => { _isCloseHover = true; UpdateCloseIconColor(); };
@@ -262,9 +264,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             Controls.Add(_headerPanel);
 
             // ===== Sự kiện =====
-            _headerPanel.Paint += HeaderPanel_Paint;
-            _bodyPanel.Paint += BodyPanel_Paint;
-            _footerPanel.Paint += FooterPanel_Paint;
             KeyDown += BaseDialog_KeyDown;
             Resize += BaseDialog_Resize;
             Shown += BaseDialog_Shown;
@@ -319,8 +318,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            // Padding giữ vùng viền luôn nằm ngoài các panel dock-fill.
-            var contentRect = new Rectangle(1, 1, Width - 3, Height - 3);
+            // Chỉ vẽ một viền duy nhất quanh toàn bộ dialog; các panel con không tự vẽ viền.
+            var contentRect = new Rectangle(1, 1,
+                Math.Max(1, ClientSize.Width - 2), Math.Max(1, ClientSize.Height - 2));
 
             using (var bgPath = AppRadius.GetRoundedPath(contentRect, CornerRadius - 2))
             using (var borderPen = new Pen(DialogBorderColor, DialogBorderWidth))

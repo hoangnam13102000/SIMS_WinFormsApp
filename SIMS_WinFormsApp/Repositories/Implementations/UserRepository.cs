@@ -113,6 +113,38 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             }
         }
 
+        // Kiểm tra email đã được dùng bởi tài khoản KHÁC hay chưa (loại trừ chính user đang
+        // sửa) - dùng trước khi UpdateContactInfo để báo lỗi rõ ràng thay vì để DB ném lỗi
+        // ràng buộc unique (nếu có) hoặc âm thầm gán trùng email.
+        public bool IsEmailInUseByOthers(string email, int excludeUserId)
+        {
+            string normalized = (email ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(normalized)) return false;
+
+            using (var db = new SimsDataContext())
+            {
+                return db.Users.Any(u =>
+                    u.Email == normalized && u.UserID != excludeUserId && !u.IsDeleted);
+            }
+        }
+
+        // Cập nhật thông tin liên hệ (họ tên/email/SĐT) cho popup "Cập nhật tài khoản".
+        // Trả về false nếu không tìm thấy user (ví dụ đã bị xóa) để Service báo lỗi phù hợp.
+        public bool UpdateContactInfo(int userId, string fullName, string email, string phone)
+        {
+            using (var db = new SimsDataContext())
+            {
+                var user = db.Users.FirstOrDefault(u => u.UserID == userId);
+                if (user == null) return false;
+
+                user.FullName = fullName;
+                user.Email = email;
+                user.Phone = phone;
+                db.SubmitChanges();
+                return true;
+            }
+        }
+
         public void SetLocked(int userId, bool isLocked)
         {
             using (var db = new SimsDataContext())
@@ -195,50 +227,53 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 string searchTerm,
                 string roleFilter,
                 string statusFilter)
+        {
+            using (var db = new SimsDataContext())
             {
-                using (var db = new SimsDataContext())
+                var query =
+                    from u in db.Users
+                    join r in db.Roles on u.RoleID equals r.RoleID
+                    where !u.IsDeleted
+                    select new { u, r };
+
+                if (!string.IsNullOrWhiteSpace(roleFilter))
+                    query = query.Where(x => x.r.RoleName.Contains(roleFilter));
+                if (!string.IsNullOrWhiteSpace(statusFilter))
+                    query = query.Where(x => x.u.Status == statusFilter);
+                if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    var query =
-                        from u in db.Users
-                        join r in db.Roles on u.RoleID equals r.RoleID
-                        where !u.IsDeleted
-                        select new { u, r };
+                    string term = searchTerm.Trim();
+                    query = query.Where(x =>
+                        x.u.Username.Contains(term) ||
+                        x.u.FullName.Contains(term) ||
+                        x.u.Email.Contains(term));
+                }
 
-                    if (!string.IsNullOrWhiteSpace(roleFilter))
-                        query = query.Where(x => x.r.RoleName.Contains(roleFilter));
-                    if (!string.IsNullOrWhiteSpace(statusFilter))
-                        query = query.Where(x => x.u.Status == statusFilter);
-                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                int total = query.Count();
+                var rows = query
+                    .OrderBy(x => x.u.FullName)
+                    .Skip(Math.Max(0, pageIndex) * pageSize)
+                    .Take(pageSize)
+                    .ToList()
+                    .Select(x => new UserManagementRowDto
                     {
-                        string term = searchTerm.Trim();
-                        query = query.Where(x =>
-                            x.u.Username.Contains(term) ||
-                            x.u.FullName.Contains(term) ||
-                            x.u.Email.Contains(term));
-                    }
+                        UserId = x.u.UserID,
+                        Username = x.u.Username,
+                        FullName = x.u.FullName,
+                        Email = x.u.Email,
+                        Phone = x.u.Phone,
+                        RoleCode = x.r.RoleCode,
+                        RoleName = x.r.RoleName,
+                        Status = x.u.Status,
+                        IsLocked = x.u.IsLocked
+                    })
+                    .ToList();
 
-                    int total = query.Count();
-                    var rows = query
-                        .OrderBy(x => x.u.FullName)
-                        .Skip(Math.Max(0, pageIndex) * pageSize)
-                        .Take(pageSize)
-                        .ToList()
-                        .Select(x => new UserManagementRowDto
-                        {
-                            Username = x.u.Username,
-                            FullName = x.u.FullName,
-                            Email = x.u.Email,
-                            RoleName = x.r.RoleName,
-                            Status = x.u.Status,
-                            IsLocked = x.u.IsLocked
-                        })
-                        .ToList();
-
-                    return new UserManagementPageDto
-                    {
-                        TotalCount = total,
-                        Rows = rows
-                    };
+                return new UserManagementPageDto
+                {
+                    TotalCount = total,
+                    Rows = rows
+                };
             }
         }
 

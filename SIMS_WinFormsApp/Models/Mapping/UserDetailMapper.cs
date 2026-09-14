@@ -36,10 +36,12 @@ namespace SIMS_WinFormsApp.Models.Mapping
 
             return new UserDetailDto
             {
+                UserId = row.UserId,
                 Username = row.Username,
                 FullName = row.FullName,
                 Email = row.Email,
                 RoleName = row.RoleName,
+                RoleCode = row.RoleCode,
                 Status = string.Equals(row.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase)
                     ? UserStatus.Active
                     : UserStatus.Disabled,

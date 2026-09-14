@@ -39,6 +39,9 @@
     <Compile Include="Forms\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\frmEditUserAccount.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\frmUserAccountDetail.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -46,6 +49,7 @@
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
     <Compile Include="Models\Mapping\UserDetailMapper.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
+    <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
@@ -54,9 +58,15 @@
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Dialogs\BaseFormDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Dialogs\DetailAvatarPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\DetailInfoItemControl.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
+    <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
+    <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs" />
+    <Compile Include="UI\Controls\Forms\LabeledIconField.cs" />
     <Compile Include="Views\Interfaces\IChatView.cs" />
     <Compile Include="Views\Interfaces\IDashboardView.cs" />
     <Compile Include="Services\Chat\ChatClientService.cs" />
@@ -71,6 +81,7 @@
     <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
     <Compile Include="UI\Controls\Filter\IFilterView.cs" />
     <Compile Include="UI\Controls\Tables\ManagementTablePage.cs" />
+    <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
     <Compile Include="Views\Interfaces\IUserAccountDetailView.cs" />
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>

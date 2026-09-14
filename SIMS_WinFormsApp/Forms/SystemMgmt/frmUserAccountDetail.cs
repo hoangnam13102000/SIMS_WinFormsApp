@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs;
+using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.MVP.ViewModels;
 using SIMS_WinFormsApp.Services.Implementations;
@@ -24,6 +25,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
     public sealed class frmUserAccountDetail : BaseDetailDialogForm, IUserAccountDetailView
     {
         private readonly UserAccountDetailPresenter _presenter;
+        private readonly UserDetailDto _user;
 
         private DetailInfoItemControl _itemAccountCode;
         private DetailInfoItemControl _itemRole;
@@ -52,6 +54,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (viewModelBuilder == null) throw new ArgumentNullException(nameof(viewModelBuilder));
 
+            _user = user;
             BuildContent();
 
             _presenter = new UserAccountDetailPresenter(this, viewModelBuilder);
@@ -71,7 +74,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         #region Dựng giao diện (chỉ chạy 1 lần lúc khởi tạo)
         private void BuildContent()
         {
-            HeaderTitle = "Chi tiết tài khoản nhân viên";
+            HeaderTitle = "Chi tiết tài khoản " + GetAccountTypeLabel(_user);
             SetHeaderIcon(IconChar.UsersCog, AppColors.Accent);
 
             var accountTab = AddTab("account", "Tài khoản");
@@ -79,6 +82,13 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
             var securityTab = AddTab("security", "Bảo mật");
             BuildSecurityTab(securityTab);
+        }
+
+        private static string GetAccountTypeLabel(UserDetailDto user)
+        {
+            return string.Equals(user.RoleCode, RoleCodes.Customer, StringComparison.OrdinalIgnoreCase)
+                ? "khách hàng"
+                : "nhân viên";
         }
 
         private void BuildAccountTab(Panel host)
