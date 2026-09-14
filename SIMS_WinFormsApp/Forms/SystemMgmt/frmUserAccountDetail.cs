@@ -127,7 +127,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             for (int i = 0; i < rowCount; i++)
-                grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 72f));
+                grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 88f));
             return grid;
         }
 

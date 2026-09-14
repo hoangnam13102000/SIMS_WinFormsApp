@@ -9,19 +9,7 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    /// <summary>
-    /// Khung sườn dùng chung cho mọi popup "xem chi tiết" (nhân viên/tài khoản, khách hàng,
-    /// sản phẩm...): thẻ bo góc nổi trên nền mờ, header có icon + tiêu đề + nút đóng, cột
-    /// avatar bên trái, dải tab bên phải và footer có nút hành động. Lớp này KHÔNG biết gì
-    /// về User/Customer/Product - toàn bộ phần "hiểu dữ liệu gì, hiển thị gì" nằm ở lớp con
-    /// (ví dụ <c>frmUserAccountDetail</c>) và ở Presenter/ViewModel tương ứng.
-    ///
-    /// Muốn có 1 popup chi tiết mới (ví dụ "Chi tiết khách hàng"): kế thừa lớp này, gọi
-    /// <see cref="AddTab"/> để tạo các tab, đổ control (khuyến khích dùng
-    /// <see cref="DetailInfoItemControl"/>) vào panel trả về, rồi cấu hình
-    /// <see cref="Avatar"/> + <see cref="HeaderTitle"/> + <see cref="SetHeaderIcon"/>.
-    /// Đây chính là điểm mở rộng theo Open/Closed: thêm loại popup mới không cần sửa lớp này.
-    /// </summary>
+
     public class BaseDetailDialogForm : Form
     {
         #region Constants & Layout
@@ -30,7 +18,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int HeaderIconContainerSize = 40;
         private const int HeaderIconSize = 20;
         private const int CloseButtonSize = 32;
-        private const int CornerRadius = 16;
+        private const int CornerRadius = 18;
         private const int SidebarWidth = 208;
         private const int TabStripHeight = 44;
         private const int TabButtonHeight = 30;
@@ -42,8 +30,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int FooterButtonSpacing = 12;
         private const int FooterButtonRightMargin = 24;
 
-        public static readonly Size DefaultDialogSize = new Size(760, 520);
-        public static readonly Size MinimumDialogSize = new Size(620, 420);
+        public static readonly Size DefaultDialogSize = new Size(1040, 600);
+        public static readonly Size MinimumDialogSize = new Size(940, 540);
         #endregion
 
         #region Fields
@@ -71,7 +59,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         #endregion
 
         #region Public API
-        /// <summary>Người dùng bấm nút đóng (nút X ở header, nút "Đóng" ở footer, hoặc phím Esc).</summary>
+      
         public event EventHandler CloseRequested;
 
         public string HeaderTitle
@@ -80,7 +68,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             set => _titleLabel.Text = value ?? string.Empty;
         }
 
-        /// <summary>Cột avatar bên trái - lớp con tự set Initial/AvatarColor/NameText/SubtitleText.</summary>
         protected DetailAvatarPanel Avatar => _avatarPanel;
 
         protected void SetHeaderIcon(IconChar icon, Color accentColor)
@@ -327,12 +314,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         #endregion
 
         #region Footer buttons (extension point cho lớp con)
-        /// <summary>
-        /// Thêm 1 nút hành động vào footer, xếp từ phải sang trái (nút "Đóng" mặc định luôn
-        /// nằm ngoài cùng bên phải vì được thêm đầu tiên trong constructor). Lớp con gọi hàm
-        /// này trong constructor của chính nó để bổ sung hành động (ví dụ "Đặt lại mật khẩu")
-        /// mà không phải sửa lại BaseDetailDialogForm.
-        /// </summary>
+
         protected PrimaryButton AddFooterButton(string text, bool isPrimary, EventHandler onClick)
         {
             var button = new PrimaryButton
@@ -386,16 +368,24 @@ namespace SIMS_WinFormsApp.UI.Controls
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+        }
 
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
 
-            var contentRect = new Rectangle(1, 1, Width - 3, Height - 3);
-            using (var path = AppRadius.GetRoundedPath(contentRect, CornerRadius - 2))
-            using (var pen = new Pen(DialogTheme.BorderColor, DialogTheme.BorderWidth))
+            if (m.Msg == 0x000F)
             {
-                g.DrawPath(pen, path);
+                using (var g = CreateGraphics())
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                    var contentRect = new Rectangle(1, 1, Width - 3, Height - 3);
+                    using (var path = AppRadius.GetRoundedPath(contentRect, CornerRadius))
+                    using (var pen = new Pen(DialogTheme.BorderColor, DialogTheme.BorderWidth))
+                        g.DrawPath(pen, path);
+                }
             }
         }
 
@@ -436,7 +426,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (Width <= 0 || Height <= 0) return;
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius + 2))
+            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius))
                 Region = new Region(path);
         }
 

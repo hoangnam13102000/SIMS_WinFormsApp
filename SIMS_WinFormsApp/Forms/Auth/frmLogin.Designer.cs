@@ -87,10 +87,14 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // ===== brandPanel =====
             this.brandPanel.Dock = DockStyle.Fill;
+            this.brandPanel.Margin = Padding.Empty;
+            this.brandPanel.Padding = Padding.Empty;
 
             // ===== pnlRight (phải, chứa card đăng nhập được canh giữa) =====
             this.pnlRight.Dock = DockStyle.Fill;
             this.pnlRight.BackColor = Color.White;
+            this.pnlRight.Margin = Padding.Empty;
+            this.pnlRight.Padding = Padding.Empty;
 
             // A percentage table layout keeps the split at exactly 40/60.
             // Unlike manually changing a Dock.Left width, it remains stable

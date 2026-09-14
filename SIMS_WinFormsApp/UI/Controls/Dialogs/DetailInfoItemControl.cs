@@ -29,7 +29,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private static readonly int ValueTextHeight = MeasureLineHeight(AppFonts.BodyBold);
 
         private static int MeasureLineHeight(Font font) =>
-            TextRenderer.MeasureText(HeightSample, font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 4;
+            TextRenderer.MeasureText(HeightSample, font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 8;
 
         private readonly Panel _iconBox;
         private readonly IconPictureBox _iconGlyph;
@@ -110,7 +110,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Location = new Point(TextLeftOffset, 2),
                 Size = new Size(Width - TextLeftOffset, LabelTextHeight),
                 TextAlign = ContentAlignment.MiddleLeft,
-                AutoEllipsis = true
+                AutoEllipsis = false
             };
             Controls.Add(_lblLabel);
 
@@ -124,7 +124,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Location = new Point(TextLeftOffset, _lblLabel.Bottom + 2),
                 Size = new Size(Width - TextLeftOffset, ValueTextHeight),
                 TextAlign = ContentAlignment.MiddleLeft,
-                AutoEllipsis = true
+                AutoEllipsis = false
             };
             Controls.Add(_lblValue);
 
@@ -134,8 +134,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            // Cùng lý do như DetailAvatarPanel: Size gán trong constructor bắn OnResize ngay,
-            // trước khi _iconBox/_lblLabel/_lblValue kịp khởi tạo -> phải chặn ở đây.
             if (_iconBox == null) return;
             LayoutChildren();
         }
