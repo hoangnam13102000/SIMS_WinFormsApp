@@ -8,6 +8,7 @@ using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
@@ -243,7 +244,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             remove => CloseRequested -= value;
         }
 
-        public void ShowError(string message) => DialogHelper.ShowError(this, message);
+        public void ShowError(string message) => AppToast.Error(this, message);
 
         public void SetSaving(bool isSaving)
         {
@@ -260,13 +261,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public void ShowCreationResult(string username, bool emailSent, string emailError, string rawPassword)
         {
             string info = "Tên đăng nhập: " + username + "\n\n";
-            if (emailSent)
+            if (!emailSent)
             {
-                DialogHelper.ShowSuccess(this,
-                    info + "Mật khẩu đăng nhập đã được gửi tới email của nhân viên.");
-            }
-            else
-            {
+
                 DialogHelper.ShowError(this,
                     info + "Đã tạo tài khoản nhưng gửi email thất bại"
                     + (string.IsNullOrEmpty(emailError) ? "." : ": " + emailError) + "\n\n"

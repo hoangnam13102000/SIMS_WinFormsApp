@@ -8,16 +8,12 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    /// <summary>
-    /// Popup "Nhập dữ liệu" dùng chung cho mọi trang quản lý (Nhân viên, Sản phẩm,...) - chỉ là
-    /// View thuần theo MVP; toàn bộ logic đọc file/đối chiếu cột/gọi rowHandler nằm ở
-    /// ImportDataPresenter. Cùng khuôn mẫu BaseFormDialogForm + Show(...) tĩnh với frmAddEmployee.
-    /// </summary>
     public sealed class frmImportData : BaseFormDialogForm, IImportDataView
     {
         private readonly ImportDataPresenter _presenter;
@@ -214,7 +210,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             Cursor = isBusy ? Cursors.WaitCursor : Cursors.Default;
         }
 
-        public void ShowValidationError(string title, string message) => DialogHelper.ShowError(this, title, message);
+        public void ShowValidationError(string title, string message) => AppToast.Error(this, title, message);
 
         public void ShowResult(int successCount, IReadOnlyList<string> errors)
         {
@@ -233,12 +229,12 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             _txtResult.Visible = true;
 
             if (errors.Count == 0)
-                DialogHelper.ShowSuccess(this, "Thành công", "Đã nhập " + successCount + " dòng dữ liệu.");
+                AppToast.Success(this, "Thành công", "Đã nhập " + successCount + " dòng dữ liệu.");
             else if (successCount > 0)
-                DialogHelper.ShowWarning(this, "Hoàn tất một phần",
+                AppToast.Warning(this, "Hoàn tất một phần",
                     successCount + " dòng thành công, " + errors.Count + " dòng lỗi (xem chi tiết trong hộp kết quả).");
             else
-                DialogHelper.ShowError(this, "Nhập thất bại", "Không có dòng nào được nhập thành công.");
+                AppToast.Error(this, "Nhập thất bại", "Không có dòng nào được nhập thành công.");
         }
         #endregion
 

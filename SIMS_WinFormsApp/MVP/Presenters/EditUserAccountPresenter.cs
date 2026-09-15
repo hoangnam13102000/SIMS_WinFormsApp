@@ -69,7 +69,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 switch (result)
                 {
                     case UpdateAccountResult.Success:
-                        _view.ShowSuccess("Cập nhật tài khoản thành công.");
                         _view.CloseOnSuccess();
                         break;
                     case UpdateAccountResult.EmailAlreadyInUse:

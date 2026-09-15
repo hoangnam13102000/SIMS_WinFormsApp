@@ -91,6 +91,12 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
+    <Compile Include="UI\Controls\Toast\AppToast.cs" />
+    <Compile Include="UI\Controls\Toast\IToastNotifier.cs" />
+    <Compile Include="UI\Controls\Toast\ToastNotification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Toast\ToastService.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>

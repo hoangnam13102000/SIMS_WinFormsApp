@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Export
 {
@@ -48,19 +49,23 @@ namespace SIMS_WinFormsApp.Services.Implementations.Export
                 };
                 worker.RunWorkerCompleted += (s, e) =>
                 {
+                    // Chỉ là báo kết quả của thao tác nền đã chạy xong (không cần người dùng
+                    // xác nhận mới được tiếp tục làm việc khác) -> dùng toast tự biến mất.
+                    Control anchor = owner as Control;
+
                     if (failure != null)
                     {
-                        DialogHelper.ShowError(owner, "Lỗi", "Xuất file thất bại: " + failure.Message);
+                        AppToast.Error(anchor, "Lỗi", "Xuất file thất bại: " + failure.Message);
                         return;
                     }
                     if (rowCount == 0)
                     {
-                        DialogHelper.ShowInfo(owner, "Không có dữ liệu",
+                        AppToast.Info(anchor, "Không có dữ liệu",
                             "Đã tạo file \"" + Path.GetFileName(filePath) + "\" nhưng không có dòng dữ liệu nào để xuất.");
                     }
                     else
                     {
-                        DialogHelper.ShowSuccess(owner, "Thành công",
+                        AppToast.Success(anchor, "Thành công",
                             "Đã xuất " + rowCount + " dòng vào file \"" + Path.GetFileName(filePath) + "\"");
                     }
                 };

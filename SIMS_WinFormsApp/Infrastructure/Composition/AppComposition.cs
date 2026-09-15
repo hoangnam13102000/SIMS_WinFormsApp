@@ -9,6 +9,7 @@ using SIMS_WinFormsApp.Services.Mail;
 using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Forms.Auth;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 
 namespace SIMS_WinFormsApp.Infrastructure.Composition
 {
@@ -64,6 +65,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IDialogService CreateDialogService()
         {
             return new DialogService();
+        }
+
+        public static IToastNotifier CreateToastNotifier()
+        {
+            return new ToastService();
         }
     }
 }

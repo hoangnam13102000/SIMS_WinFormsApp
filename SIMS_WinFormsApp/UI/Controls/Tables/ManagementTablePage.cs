@@ -6,10 +6,11 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.SystemMgmt;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
-using SIMS_WinFormsApp.Services.Implementations.Export; // MỚI
-using SIMS_WinFormsApp.Services.Implementations.Import; // MỚI
+using SIMS_WinFormsApp.Services.Implementations.Export; 
+using SIMS_WinFormsApp.Services.Implementations.Import; 
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls.Filter;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
@@ -100,7 +101,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
                 case TableActionType.Edit:
                     var result = frmEditUserAccount.Show(table.FindForm(), detailDto, service);
-                    if (result == DialogResult.OK) table.Reload();
+                    if (result == DialogResult.OK)
+                    {
+                        table.Reload();
+                        AppToast.Success(table.FindForm(), "Cập nhật tài khoản thành công.");
+                    }
                     break;
 
                 case TableActionType.Lock:
@@ -119,7 +124,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                     }
                     else
                     {
-                        DialogHelper.ShowWarning(table.FindForm(), "Không tìm thấy tài khoản.");
+                        // Người dùng đã xác nhận (Confirm ở trên) - đây chỉ là báo kết quả thất
+                        // bại sau đó, không cần xác nhận thêm nữa -> toast tự biến mất.
+                        AppToast.Warning(table.FindForm(), "Không tìm thấy tài khoản.");
                     }
                     break;
             }
@@ -128,7 +135,11 @@ namespace SIMS_WinFormsApp.UI.Controls
         private static void HandleAddButtonClicked(BaseTable table, IUserManagementService service)
         {
             var result = frmAddEmployee.Show(table.FindForm(), service);
-            if (result == DialogResult.OK) table.Reload();
+            if (result == DialogResult.OK)
+            {
+                table.Reload();
+                AppToast.Success(table.FindForm(), "Đã thêm nhân viên thành công.");
+            }
         }
 
         /// <summary>

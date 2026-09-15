@@ -5,6 +5,7 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Layouts;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
@@ -107,8 +108,10 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         public void ShowMessage(string message, string caption, MessageBoxIcon icon)
         {
+            // Thông báo thuần (không cần người dùng xác nhận trước khi tiếp tục) -> dùng
+            // toast tự biến mất thay vì dialog modal chặn thao tác (DialogHelper.ShowCustom).
             DialogType dialogType = MapMessageBoxIconToDialogType(icon);
-            DialogHelper.ShowCustom(this, caption, message, dialogType, DialogButtons.OK, DialogResult.OK);
+            AppToast.Show(this, dialogType, caption, message);
         }
 
         public bool Confirm(string message, string caption)
@@ -128,7 +131,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 StartPosition = FormStartPosition.CenterScreen
             })
             {
-                
+
                 return dialog.ShowDialog(this) == DialogResult.Yes;
             }
         }

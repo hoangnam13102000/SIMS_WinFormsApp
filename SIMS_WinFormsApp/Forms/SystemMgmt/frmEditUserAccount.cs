@@ -8,20 +8,12 @@ using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    /// <summary>
-    /// Popup "Cập nhật tài khoản" - dùng chung cho cả nhân viên lẫn khách hàng (cả hai đều là
-    /// User, chỉ khác RoleCode). Kế thừa khung sườn <see cref="BaseFormDialogForm"/> (khác với
-    /// <see cref="BaseDetailDialogForm"/> mà popup "Xem chi tiết" đang dùng, vì đây là popup
-    /// FORM nhập liệu chứ không phải xem chi tiết có sidebar/tab) và đóng vai trò View trong mô
-    /// hình MVP (implement <see cref="IEditUserAccountView"/>). Form chỉ lo dựng control và
-    /// đọc/ghi giá trị field - việc validate + gọi Service do <see cref="EditUserAccountPresenter"/>
-    /// đảm nhiệm.
-    /// </summary>
     public sealed class frmEditUserAccount : BaseFormDialogForm, IEditUserAccountView
     {
         private readonly EditUserAccountPresenter _presenter;
@@ -279,9 +271,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             remove => CloseRequested -= value;
         }
 
-        public void ShowError(string message) => DialogHelper.ShowError(this, message);
+        public void ShowError(string message) => AppToast.Error(this, message);
 
-        public void ShowSuccess(string message) => DialogHelper.ShowSuccess(this, message);
+        public void ShowSuccess(string message) => AppToast.Success(this, message);
 
         public void SetSaving(bool isSaving)
         {
