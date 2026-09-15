@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq; 
 using System.Reflection;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Models.DTOs; 
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
 using SIMS_WinFormsApp.UI.Controls.Search;
@@ -25,7 +27,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         Lock = 2
     }
 
-    /// <summary>Thông tin nút thao tác được bấm: dòng nào, loại thao tác nào.</summary>
     public sealed class TableActionEventArgs : EventArgs
     {
         public int RowIndex { get; }
@@ -40,9 +41,6 @@ namespace SIMS_WinFormsApp.UI.Controls
 
     public class BaseTable : UserControl
     {
-        // Tham số thứ 4 (string) là giá trị lọc trạng thái đang chọn (null = "Tất cả trạng
-        // thái" — không áp thêm điều kiện). Nơi khởi tạo BaseTable (vd: ManagementTablePage)
-        // chịu trách nhiệm build câu truy vấn DB dựa trên giá trị này.
         private readonly Func<int, int, string, string, TablePageResult> _loadPage;
         private SearchBarControl _searchBar;
         private SearchPresenter _searchPresenter;
@@ -50,9 +48,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         private FilterPresenter _filterPresenter;
         private DataGridView _grid;
 
-        // Phân trang: tách theo MVP giống thanh phân trang — PaginationControl là View (thuần
-        // UI), PaginationPresenter nắm state + phép toán phân trang (pageIndex/pageSize/pageCount).
-        // BaseTable chỉ đóng vai trò cung cấp dữ liệu (_loadPage) khi Presenter báo cần tải lại.
         private readonly PaginationControl _pagination = new PaginationControl();
         private TableLayoutPanel _root;
         private Panel _headerRow;
@@ -90,7 +85,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         public BaseTable(string title, string subtitle, FontAwesome.Sharp.IconChar icon,
             string[] columns, Func<int, int, string, string, TablePageResult> loadPage,
             IList<FilterOption> statusOptions = null, int pageSize = 10,
-            string addButtonText = null)
+            string addButtonText = null,
+            IList<OverflowMenuAction> overflowActions = null) // MỚI: tham số optional, mặc định null
         {
             _loadPage = loadPage ?? throw new ArgumentNullException(nameof(loadPage));
             _statusOptions = statusOptions ?? DefaultStatusOptions();
@@ -128,7 +124,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             Control headerRow = string.IsNullOrEmpty(addButtonText)
                 ? WrapPlainHeader(header)
                 : WrapHeaderWithAddButton(header, addButtonText);
-            _headerRow = headerRow as Panel; // null khi không có nút thêm (WrapPlainHeader trả thẳng HeaderSection)
+            headerRow = AttachOverflowMenu(headerRow, overflowActions); // MỚI: chèn nút "Tùy chọn" nếu có, không đổi gì khi null/rỗng
+            _headerRow = headerRow as Panel; // null khi không có nút thêm và cũng không có overflowActions (WrapPlainHeader trả thẳng HeaderSection)
             _root.Controls.Add(headerRow, 0, 0);
             _filterPanel = (Panel)CreateFilterBar();
             _root.Controls.Add(_filterPanel, 0, 1);
@@ -200,6 +197,73 @@ namespace SIMS_WinFormsApp.UI.Controls
             Reposition();
 
             return host;
+        }
+
+        // MỚI: chèn nút "Tùy chọn" (Xuất CSV/Xuất Excel/Nhập dữ liệu...) vào header, cạnh nút
+        // "+ Thêm..." nếu có. KHÔNG đổi hành vi cũ: overflowActions null/rỗng => trả nguyên
+        // headerRow ban đầu, không chỉnh sửa gì (mọi trang hiện tại không truyền tham số mới
+        // này vẫn hiển thị y hệt trước đây).
+        private static Control AttachOverflowMenu(Control headerRow, IList<OverflowMenuAction> overflowActions)
+        {
+            if (overflowActions == null || overflowActions.Count == 0) return headerRow;
+
+            var trigger = new OverflowMenuButton { Height = 42 };
+            trigger.Click += (s, e) => ShowOverflowMenu(trigger, overflowActions);
+
+            if (headerRow is Panel existingHost)
+            {
+                // Header đã có host Panel riêng (trường hợp có nút "+ Thêm...") - chèn thêm nút
+                // "Tùy chọn" vào panel có sẵn, neo ngay bên trái nút "+ Thêm...". Panel này đã
+                // được WrapHeaderWithAddButton() gán BackColor = AppColors.PageBg (không phải
+                // Transparent) nên không cần chỉnh gì thêm ở đây.
+                existingHost.Controls.Add(trigger);
+                trigger.BringToFront();
+
+                var addButton = existingHost.Controls.OfType<PrimaryButton>().FirstOrDefault();
+
+                void Reposition()
+                {
+                    int rightEdge = addButton != null ? addButton.Left - 12 : existingHost.ClientSize.Width - 24;
+                    trigger.Location = new Point(rightEdge - trigger.Width, (existingHost.ClientSize.Height - trigger.Height) / 2);
+                }
+                existingHost.Resize += (s, e) => Reposition();
+                if (addButton != null) addButton.LocationChanged += (s, e) => Reposition();
+                Reposition();
+                return existingHost;
+            }
+
+            // Header chưa có host Panel (trang không có nút "+ Thêm...") - bọc thêm 1 Panel để
+            // neo nút "Tùy chọn" ở góc phải. Cùng nguyên tắc với WrapHeaderWithAddButton(): dùng
+            // thẳng AppColors.PageBg thay vì Color.Transparent để tránh lỗi composite/viền đen
+            // ở góc bo tròn khi lồng control tự vẽ (HeaderSection) vào panel "trong suốt thật".
+            var host = new Panel { Dock = DockStyle.Fill, BackColor = AppColors.PageBg, Margin = headerRow.Margin };
+            headerRow.Margin = Padding.Empty;
+            host.Controls.Add(headerRow);
+            host.Controls.Add(trigger);
+            trigger.BringToFront();
+
+            void RepositionNoAddButton()
+            {
+                trigger.Location = new Point(host.ClientSize.Width - trigger.Width - 24, (host.ClientSize.Height - trigger.Height) / 2);
+            }
+            host.Resize += (s, e) => RepositionNoAddButton();
+            RepositionNoAddButton();
+            return host;
+        }
+
+        // MỚI: mở ModernDropdownMenu (component có sẵn của project) với danh sách hành động.
+        private static void ShowOverflowMenu(Control anchor, IList<OverflowMenuAction> actions)
+        {
+            var menu = new ModernDropdownMenu { Width = 220 };
+            foreach (var action in actions)
+                menu.AddItem(action.Text, action.Text, action.Icon, action.IsDanger);
+
+            menu.ItemClicked += (s, key) =>
+            {
+                var match = actions.FirstOrDefault(a => a.Text == key);
+                match?.OnClick();
+            };
+            menu.ShowBelow(anchor, offsetY: 6);
         }
 
         private void OnThemeChanged(object sender, EventArgs e)

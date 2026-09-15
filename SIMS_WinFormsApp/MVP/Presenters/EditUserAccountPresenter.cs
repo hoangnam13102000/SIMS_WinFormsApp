@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
@@ -15,11 +15,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
     /// </summary>
     public sealed class EditUserAccountPresenter
     {
-        // Cùng 1 mẫu regex email đã dùng ở PasswordResetService - giữ nhất quán quy tắc hợp lệ
-        // email trong toàn bộ ứng dụng.
-        private static readonly Regex EmailPattern =
-            new Regex(@"^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
-
         private readonly IEditUserAccountView _view;
         private readonly IUserManagementService _userManagementService;
         private readonly int _userId;
@@ -53,13 +48,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 return;
             }
 
-            if (!EmailPattern.IsMatch(email))
+            if (!InputValidators.IsValidEmail(email))
             {
                 _view.ShowError("Email không đúng định dạng.");
                 return;
             }
 
-            if (!string.IsNullOrEmpty(phone) && !Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            if (!string.IsNullOrEmpty(phone) && !InputValidators.IsValidPhone(phone))
             {
                 _view.ShowError("Số điện thoại không đúng định dạng (VD: 09xxxxxxxx).");
                 return;

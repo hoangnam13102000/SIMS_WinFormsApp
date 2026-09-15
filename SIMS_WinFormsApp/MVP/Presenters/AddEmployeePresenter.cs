@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
@@ -10,11 +10,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
     public sealed class AddEmployeePresenter
     {
-        private static readonly Regex EmailPattern =
-            new Regex(@"^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
-        private static readonly Regex PhonePattern =
-            new Regex(@"^0\d{9,10}$", RegexOptions.Compiled);
-
         private readonly IAddEmployeeView _view;
         private readonly IUserManagementService _userManagementService;
 
@@ -46,12 +41,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _view.ShowError("Vui lòng nhập email.");
                 return;
             }
-            if (!EmailPattern.IsMatch(email))
+            if (!InputValidators.IsValidEmail(email))
             {
                 _view.ShowError("Email không đúng định dạng.");
                 return;
             }
-            if (!string.IsNullOrEmpty(phone) && !PhonePattern.IsMatch(phone))
+            if (!string.IsNullOrEmpty(phone) && !InputValidators.IsValidPhone(phone))
             {
                 _view.ShowError("Số điện thoại không đúng định dạng (VD: 09xxxxxxxx).");
                 return;

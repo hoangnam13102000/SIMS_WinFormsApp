@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure;
 using SIMS_WinFormsApp.Services.Mail;
+using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -13,9 +13,6 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
    
     public partial class frmMailConfig : Form
     {
-        private static readonly Regex EmailPattern =
-            new Regex(@"^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
-
         private const string DefaultSenderEmail = "hoangnam131020@gmail.com";
 
         private bool _busy;
@@ -94,7 +91,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 ShowMessage(Lang.Get("mailconfig.validation.email.required"), AppColors.Error);
                 return false;
             }
-            if (!EmailPattern.IsMatch(email))
+            if (!InputValidators.IsValidEmail(email))
             {
                 ShowMessage(Lang.Get("mailconfig.validation.email.invalid"), AppColors.Error);
                 return false;

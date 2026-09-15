@@ -49,23 +49,49 @@
     <Compile Include="Forms\SystemMgmt\frmUserAccountDetail.cs">
       <SubType>Form</SubType>
     </Compile>
+    <!-- MỚI: popup "Nhập dữ liệu" dùng chung (Export/Import) -->
+    <Compile Include="Forms\SystemMgmt\frmImportData.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
+    <!-- MỚI: DTO cho cơ chế Export/Import -->
+    <Compile Include="Models\DTOs\OverflowMenuAction.cs" />
+    <Compile Include="Models\DTOs\ImportRowResult.cs" />
+    <Compile Include="Models\DTOs\ImportSummaryDto.cs" />
     <Compile Include="Models\Enums\Gender.cs" />
     <Compile Include="Models\Mapping\UserDetailMapper.cs" />
     <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
+    <!-- MỚI: Presenter dùng chung cho popup "Nhập dữ liệu" -->
+    <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
+    <Compile Include="Services\Validation\InputValidators.cs" />
+    <!-- MỚI: interface + implementation cơ chế Export -->
+    <Compile Include="Services\Interfaces\ITableDataExporter.cs" />
+    <Compile Include="Services\Implementations\Export\CsvTableExporter.cs" />
+    <Compile Include="Services\Implementations\Export\ExcelTableExporter.cs" />
+    <Compile Include="Services\Implementations\Export\TableExportRunner.cs" />
+    <!-- MỚI: interface + implementation cơ chế Import -->
+    <Compile Include="Services\Interfaces\ITableDataImporter.cs" />
+    <Compile Include="Services\Interfaces\ImportRowHandler.cs" />
+    <Compile Include="Services\Implementations\Import\CsvTableImporter.cs" />
+    <Compile Include="Services\Implementations\Import\ExcelTableImporter.cs" />
+    <Compile Include="Services\Implementations\Import\ImportColumnMapper.cs" />
+    <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
+    <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
+    <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
+    <Compile Include="Views\Interfaces\IImportDataView.cs" />
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +121,10 @@
     <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
     <Compile Include="UI\Controls\Filter\IFilterView.cs" />
     <Compile Include="UI\Controls\Tables\ManagementTablePage.cs" />
+    <!-- MỚI: nút trigger menu "Tùy chọn" cạnh nút "+ Thêm..." -->
+    <Compile Include="UI\Controls\Popups\OverflowMenuButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
     <Compile Include="Views\Interfaces\IUserAccountDetailView.cs" />
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
@@ -109,6 +139,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.3, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3.3\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -118,6 +151,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <!-- MỚI: cần cho ZipArchive (xuất .xlsx) / ZipFile (đọc .xlsx) -->
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
     </Reference>

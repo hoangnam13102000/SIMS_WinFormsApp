@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -131,7 +132,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
                 ShowMessage1(Lang.Get("forgot.validation.email.required"), AppColors.Error);
                 return;
             }
-            if (!Regex.IsMatch(email, @"^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$"))
+            if (!InputValidators.IsValidEmail(email))
             {
                 ShowMessage1(Lang.Get("forgot.validation.email.invalid"), AppColors.Error);
                 return;

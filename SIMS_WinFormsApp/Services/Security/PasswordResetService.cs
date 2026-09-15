@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using SIMS_WinFormsApp.Models;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Repositories.Implementations;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Mail;
+using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.UI.I18n;
 
 namespace SIMS_WinFormsApp.Services.Security
@@ -25,9 +25,6 @@ namespace SIMS_WinFormsApp.Services.Security
         public const int MaxVerifyAttempts = 5;
 
         private const int OtpBound = 1_000_000;
-        private static readonly Regex EmailPattern =
-            new Regex(@"^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
-
         private static readonly Lazy<PasswordResetService> LazyInstance =
             new Lazy<PasswordResetService>(() => new PasswordResetService());
         public static PasswordResetService Instance => LazyInstance.Value;
@@ -128,7 +125,7 @@ namespace SIMS_WinFormsApp.Services.Security
 
         public VerifyResult VerifyOtp(string challengeId, string inputCode)
         {
-            if (challengeId == null || inputCode == null || !Regex.IsMatch(inputCode, @"^\d{6}$"))
+            if (challengeId == null || inputCode == null || !InputValidators.IsValidOtp(inputCode))
                 return new VerifyResult(VerifyStatus.InvalidCode, MaxVerifyAttempts);
 
             DateTime now = DateTime.UtcNow;
@@ -449,7 +446,7 @@ namespace SIMS_WinFormsApp.Services.Security
         private static string NormalizeEmail(string email) => email == null ? "" : email.Trim().ToLowerInvariant();
 
         private static bool IsValidIdentityInput(string username, string email) =>
-            username.Length >= 3 && username.Length <= 50 && EmailPattern.IsMatch(email);
+            username.Length >= 3 && username.Length <= 50 && InputValidators.IsValidEmail(email);
 
         private static string RateKey(string username, string email) => username + "\n" + email;
 
