@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         string FullName { get; set; }
         string Email { get; set; }
         string Phone { get; set; }
+        string AvatarFilePath { get; }
         DateTime? DateOfBirth { get; set; }
         Gender? SelectedGender { get; set; }
         int? SelectedRoleId { get; set; }

@@ -17,6 +17,10 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
     public sealed class frmAddEmployee : BaseFormDialogForm, IAddEmployeeView
     {
+        /// <summary>Kích thước popup khi chuyển sang layout ngang (avatar + 2 cột) - rộng hơn
+        /// DefaultDialogSize (620x720) của BaseFormDialogForm vốn dành cho layout 1 cột dọc.</summary>
+        private static readonly System.Drawing.Size HorizontalDialogSize = new System.Drawing.Size(960, 780);
+
         private readonly AddEmployeePresenter _presenter;
 
         private LabeledIconField _fieldFullName;
@@ -27,6 +31,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private LabeledDateField _fieldHireDate;
         private LabeledComboField _fieldGender;
         private LabeledComboField _fieldRole;
+        private ThreeColumnFieldsPanel _fieldsGrid;
         private PrimaryButton _btnSave;
         private IReadOnlyList<RoleOptionDto> _roleOptions = Array.Empty<RoleOptionDto>();
 
@@ -51,6 +56,10 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         {
             if (userManagementService == null) throw new ArgumentNullException(nameof(userManagementService));
 
+            // Đặt kích thước popup TRƯỚC khi dựng nội dung để ThreeColumnFieldsPanel tính đúng
+            // độ rộng từng cột ngay từ lần layout đầu tiên (ContentHost đã có ClientSize đúng).
+            Size = HorizontalDialogSize;
+
             BuildContent();
             CloseRequested += (s, e) => Close();
 
@@ -74,30 +83,38 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             HeaderTitle = "Thêm nhân viên";
             SetHeaderIcon(IconChar.UserPlus, AppColors.Accent);
 
-            // Cùng cách xếp Dock=Top với frmEditUserAccount: control add SAU CÙNG hiển thị
-            // TRÊN CÙNG, nên add theo thứ tự NGƯỢC LẠI với thứ tự hiển thị mong muốn (banner ->
-            // Họ tên -> Email -> SĐT -> Ngày sinh -> Giới tính -> Vai trò -> Ngày vào làm ->
-            // Lương, từ trên xuống).
-            var fieldSalary = CreateSalaryField();
-            var fieldHireDate = CreateHireDateField();
-            var fieldRole = CreateRoleField();
-            var fieldGender = CreateGenderField();
-            var fieldDob = CreateDateOfBirthField();
-            var fieldPhone = CreatePhoneField();
-            var fieldEmail = CreateEmailField();
-            var fieldFullName = CreateFullNameField();
             var banner = CreateBanner();
 
-            ContentHost.Controls.Add(fieldSalary);
-            ContentHost.Controls.Add(fieldHireDate);
-            ContentHost.Controls.Add(fieldRole);
-            ContentHost.Controls.Add(fieldGender);
-            ContentHost.Controls.Add(fieldDob);
-            ContentHost.Controls.Add(fieldPhone);
-            ContentHost.Controls.Add(fieldEmail);
-            ContentHost.Controls.Add(fieldFullName);
+            var fieldFullName = CreateFullNameField();
+            var fieldEmail = CreateEmailField();
+            var fieldPhone = CreatePhoneField();
+            var fieldDob = CreateDateOfBirthField();
+            var fieldGender = CreateGenderField();
+
+            var fieldRole = CreateRoleField();
+            var fieldHireDate = CreateHireDateField();
+            var fieldSalary = CreateSalaryField();
+
+            // Layout ngang: cột trái là ảnh đại diện, cột giữa "Thông tin cá nhân", cột phải
+            // "Thông tin công việc" - thay cho layout xếp dọc 1 cột trước đây. ThreeColumnFieldsPanel
+            // chỉ lo việc chia cột/co giãn chiều cao, không biết gì về các field cụ thể ở đây.
+            var fieldsGrid = new ThreeColumnFieldsPanel { Margin = new Padding(0, 0, 0, 4) };
+            fieldsGrid.SetSecondColumnFields(
+                CreatePersonalInfoHeader(), fieldFullName, fieldEmail, fieldPhone, fieldDob, fieldGender);
+            fieldsGrid.SetThirdColumnFields(
+                CreateWorkInfoHeader(), fieldRole, fieldHireDate, fieldSalary);
+
+            // Với các control con đều Dock=Top trong cùng 1 Panel, WinForms xếp control ADD SAU
+            // CÙNG lên vị trí TRÊN CÙNG, nên add theo thứ tự NGƯỢC LẠI với thứ tự hiển thị mong
+            // muốn (banner -> fieldsGrid, từ trên xuống).
+            ContentHost.Controls.Add(fieldsGrid);
             ContentHost.Controls.Add(banner);
 
+            // KHÔNG gọi fieldsGrid.Reflow() ở đây: Form CHƯA có handle cửa sổ tại thời điểm
+            // BuildContent() chạy trong constructor nên Width chưa chắc đã đúng theo
+            // HorizontalDialogSize - xem giải thích đầy đủ ở BaseFormDialogForm.OnContentReady
+            // (cùng gốc bug từng khiến popup Cập nhật tài khoản bị cắt/co cột nội dung).
+            _fieldsGrid = fieldsGrid;
             _fieldFullName = fieldFullName;
             _fieldEmail = fieldEmail;
             _fieldPhone = fieldPhone;
@@ -116,6 +133,14 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             _btnSave = AddFooterButton("Thêm mới", true, (s, e) => RaiseSaveRequested());
         }
 
+        /// <summary>Xem BaseFormDialogForm.OnContentReady - Reflow lần đầu phải chạy sau khi Form
+        /// đã có handle cửa sổ, không phải trong BuildContent().</summary>
+        protected override void OnContentReady()
+        {
+            base.OnContentReady();
+            _fieldsGrid.Reflow();
+        }
+
         private static InfoBannerPanel CreateBanner()
         {
             return new InfoBannerPanel
@@ -125,6 +150,16 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 DescriptionText = "Tài khoản đăng nhập sẽ được tạo tự động và gửi qua email sau khi lưu.",
                 Margin = new Padding(0, 0, 0, 16)
             };
+        }
+
+        private static FieldGroupHeader CreatePersonalInfoHeader()
+        {
+            return new FieldGroupHeader { Icon = IconChar.IdCard, HeaderText = "Thông tin cá nhân" };
+        }
+
+        private static FieldGroupHeader CreateWorkInfoHeader()
+        {
+            return new FieldGroupHeader { Icon = IconChar.Briefcase, HeaderText = "Thông tin công việc" };
         }
 
         private static LabeledIconField CreateFullNameField()
@@ -202,6 +237,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public string FullName { get => _fieldFullName.Value; set => _fieldFullName.Value = value; }
         public string Email { get => _fieldEmail.Value; set => _fieldEmail.Value = value; }
         public string Phone { get => _fieldPhone.Value; set => _fieldPhone.Value = value; }
+
+        public string AvatarFilePath => _fieldsGrid?.Avatar?.SelectedFilePath;
         public DateTime? DateOfBirth { get => _fieldDateOfBirth.Value; set => _fieldDateOfBirth.Value = value; }
 
         public Gender? SelectedGender

@@ -190,7 +190,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
             var me = UserSession.Instance.CurrentUser?.UserId ?? 0;
             bool isMine = msg.UserId == me;
-            int peerId = isMine ? msg.ToUserId : msg.UserId;
+
+            // Tin nhắn của chính mình đã được vẽ ngay lên UI lúc gửi (optimistic UI trong
+            // OnSendRequested). Server (ChatServerHost.HandleStaffChat) sau khi lưu DB còn
+            // echo lại đúng gói tin đó về socket của người gửi để xác nhận đã gửi/lưu thành
+            // công — nếu append lại ở đây thì trên máy người gửi sẽ hiện 2 bong bóng cho
+            // cùng 1 tin (trong khi DB chỉ có đúng 1 dòng). Nên chỉ hiển thị tin đến từ người khác.
+            if (isMine) return;
+
+            int peerId = msg.UserId;
 
             RunOnUi(() =>
             {

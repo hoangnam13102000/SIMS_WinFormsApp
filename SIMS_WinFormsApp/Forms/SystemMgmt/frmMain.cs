@@ -86,9 +86,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             if (!string.IsNullOrEmpty(title)) Text = title;
         }
 
-        public void SetUserInfo(string displayName, string email, string avatarInitial = null)
+        public void SetUserInfo(string displayName, string email, string avatarInitial = null, string avatarPath = null)
         {
-            _mainLayout?.SetUser(displayName, email, avatarInitial);
+            _mainLayout?.SetUser(displayName, email, avatarInitial, null, avatarPath);
         }
 
         public void SetUnreadNotifications(int count)

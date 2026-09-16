@@ -7,6 +7,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         string FullName { get; set; }
         string Email { get; set; }
         string Phone { get; set; }
+        string AvatarFilePath { get; }
 
         event EventHandler SaveRequested;
 

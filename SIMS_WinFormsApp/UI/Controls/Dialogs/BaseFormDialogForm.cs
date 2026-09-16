@@ -64,6 +64,75 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
         #endregion
 
+        #region Content lifecycle
+        /// <summary>
+        /// Được gọi đúng 1 lần trong <see cref="OnLoad"/>, tức là SAU KHI handle cửa sổ đã được
+        /// tạo và <see cref="ContentHost"/> (Panel AutoScroll=true, Dock=Fill) đã có ClientSize /
+        /// DisplayRectangle CHÍNH XÁC theo Size thật sự của form (900x560, 960x780...).
+        ///
+        /// Đây chính là nguyên nhân popup bị "cắt" nội dung (chỉ thấy avatar, 2 cột còn lại co
+        /// rúm lại vài px): trước đây các lớp con gọi thẳng <c>fieldsGrid.Reflow()</c> ngay trong
+        /// constructor/BuildContent(), tức là TRƯỚC KHI Form có handle. Tại thời điểm đó,
+        /// ContentHost/fieldsGrid có thể vẫn đang mang Width mặc định do control-tree chưa được
+        /// WinForms "chốt" kích thước theo ClientSize thật của Form (việc gán Size trong
+        /// constructor không đảm bảo cascade Dock đồng bộ 100% khi Form chưa được tạo handle,
+        /// đặc biệt với Panel AutoScroll lồng nhau). Reflow() vì vậy chạy với 1 Width "rác" nhỏ
+        /// hơn nhiều so với thực tế, khiến 2 cột nội dung bị ép xuống mức tối thiểu 10px.
+        ///
+        /// Mọi layout phụ thuộc độ rộng ContentHost tại thời điểm khởi tạo (gọi
+        /// ThreeColumnFieldsPanel.Reflow() lần đầu, đo chữ để MeasureText...) PHẢI đặt ở đây thay
+        /// vì gọi trực tiếp trong BuildContent(). Mặc định không làm gì - lớp con override nếu
+        /// cần.
+        /// </summary>
+        protected virtual void OnContentReady()
+        {
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            // Gọi OnContentReady() TRƯỚC base.OnLoad(e): base.OnLoad(e) chính là nơi sự kiện
+            // Load được phát ra, và constructor BaseFormDialogForm(IWin32Window) đăng ký 1 handler
+            // Load để canh giữa popup dựa trên Width/Height HIỆN TẠI của Form. Nếu OnContentReady()
+            // (nơi FitHeightToContent() có thể đổi Height) chạy SAU khi Load đã phát ra, handler
+            // canh giữa sẽ dùng Height CŨ (trước khi co giãn) - khiến popup lệch tâm theo trục dọc.
+            OnContentReady();
+            base.OnLoad(e);
+        }
+        #endregion
+
+        #region Content sizing
+        /// <summary>
+        /// Co Height của Form vừa khít với chiều cao nội dung THẬT SỰ đang có trong ContentHost
+        /// (đo bằng Bottom của control thấp nhất, đúng cách LayoutColumn/Reflow đang dùng), thay
+        /// vì giữ nguyên 1 con số cố định đoán trước (rất dễ dư/thiếu tuỳ nội dung từng popup,
+        /// dẫn tới hiện scroll bar không cần thiết như popup Cập nhật tài khoản từng gặp).
+        ///
+        /// PHẢI gọi ở cuối OnContentReady() (sau khi đã Reflow layout ngang nếu có) - lúc đó
+        /// ContentHost đã có ClientSize thật và mọi control con đã có Bounds cuối cùng. Nếu nội
+        /// dung cao hơn không gian màn hình cho phép, Height chỉ tăng tới giới hạn màn hình - khi
+        /// đó ContentHost.AutoScroll vẫn hoạt động bình thường như lưới an toàn, không có gì vỡ.
+        /// </summary>
+        protected void FitHeightToContent()
+        {
+            if (ContentHost.Controls.Count == 0) return;
+
+            int contentHeight = 0;
+            foreach (Control child in ContentHost.Controls)
+            {
+                if (child.Visible) contentHeight = Math.Max(contentHeight, child.Bottom);
+            }
+
+            int desiredHeight = HeaderHeight + FooterHeight
+                + ContentHost.Padding.Top + contentHeight + ContentHost.Padding.Bottom
+                + Padding.Top + Padding.Bottom;
+
+            int maxScreenHeight = Screen.FromControl(this).WorkingArea.Height - 60;
+            desiredHeight = Math.Max(MinimumSize.Height, Math.Min(desiredHeight, maxScreenHeight));
+
+            if (Height != desiredHeight) Height = desiredHeight;
+        }
+        #endregion
+
         #region Constructor
         public BaseFormDialogForm()
         {
@@ -83,7 +152,6 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             // ===== Header (icon + tiêu đề + nút đóng) =====
             _headerPanel = new Panel { Dock = DockStyle.Top, Height = HeaderHeight, BackColor = DialogTheme.SurfaceColor };
-            _headerPanel.Paint += HeaderPanel_Paint;
 
             var headerIconHolder = new Panel
             {
@@ -277,12 +345,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 g.DrawPath(pen, path);
             }
-        }
-
-        private void HeaderPanel_Paint(object sender, PaintEventArgs e)
-        {
-            using (var pen = new Pen(DialogTheme.BorderColor, 1f))
-                e.Graphics.DrawLine(pen, 20, HeaderHeight - 1, _headerPanel.ClientSize.Width - 20, HeaderHeight - 1);
         }
 
         private void FooterPanel_Paint(object sender, PaintEventArgs e)

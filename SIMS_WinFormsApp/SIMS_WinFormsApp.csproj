@@ -40,6 +40,12 @@
     <Compile Include="Forms\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\Profile\ucMyProfile.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Profile\ucMyProfile.Designer.cs">
+      <DependentUpon>ucMyProfile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\frmAddEmployee.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +97,9 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
+    <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
+    <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
+    <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
     <Compile Include="UI\Controls\Toast\AppToast.cs" />
     <Compile Include="UI\Controls\Toast\IToastNotifier.cs" />
     <Compile Include="UI\Controls\Toast\ToastNotification.cs">
@@ -150,7 +159,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
     </Reference>

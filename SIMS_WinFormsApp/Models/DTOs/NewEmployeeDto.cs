@@ -9,6 +9,7 @@ namespace SIMS_WinFormsApp.Models.DTOs
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string AvatarUrl { get; set; }
         public int RoleId { get; set; }
         public DateTime? DateOfBirth { get; set; }
         /// <summary>"MALE" | "FEMALE" | "OTHER" | null.</summary>

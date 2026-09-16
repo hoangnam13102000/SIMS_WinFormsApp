@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Repositories.Interfaces;
@@ -30,6 +31,8 @@ namespace SIMS_WinFormsApp.Services.Implementations
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
             _mailSender = mailSender ?? throw new ArgumentNullException(nameof(mailSender));
+
+            Directory.CreateDirectory(GetAvatarDirectory());
         }
 
         public UserManagementPageDto GetPage(
@@ -43,18 +46,20 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 pageIndex, pageSize, searchTerm, roleFilter, statusFilter);
         }
 
-        public UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone)
+        public UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone, string avatarFilePath = null)
         {
             string normalizedEmail = (email ?? string.Empty).Trim();
 
             if (_userRepository.IsEmailInUseByOthers(normalizedEmail, userId))
                 return UpdateAccountResult.EmailAlreadyInUse;
 
+            string avatarUrl = StoreAvatar(userId, avatarFilePath);
             bool updated = _userRepository.UpdateContactInfo(
                 userId,
                 (fullName ?? string.Empty).Trim(),
                 normalizedEmail,
-                (phone ?? string.Empty).Trim());
+                (phone ?? string.Empty).Trim(),
+                avatarUrl);
 
             return updated ? UpdateAccountResult.Success : UpdateAccountResult.UserNotFound;
         }
@@ -101,6 +106,7 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 FullName = (request.FullName ?? string.Empty).Trim(),
                 Email = email,
                 Phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone.Trim(),
+                AvatarUrl = StoreAvatarForNewUser(request.AvatarFilePath),
                 RoleId = request.RoleId,
                 DateOfBirth = request.DateOfBirth,
                 Gender = request.Gender.HasValue ? request.Gender.Value.ToString().ToUpperInvariant() : null,
@@ -132,6 +138,50 @@ namespace SIMS_WinFormsApp.Services.Implementations
             }
 
             return outcome;
+        }
+
+        private static string StoreAvatar(int userId, string sourcePath)
+        {
+            if (string.IsNullOrWhiteSpace(sourcePath)) return null;
+            if (!File.Exists(sourcePath))
+                throw new FileNotFoundException("Không tìm thấy ảnh đại diện đã chọn.", sourcePath);
+
+            string directory = GetAvatarDirectory();
+            Directory.CreateDirectory(directory);
+            string extension = Path.GetExtension(sourcePath).ToLowerInvariant();
+            string destination = Path.Combine(directory, "user_" + userId + extension);
+            File.Copy(sourcePath, destination, true);
+            return destination;
+        }
+
+        private static string StoreAvatarForNewUser(string sourcePath)
+        {
+            if (string.IsNullOrWhiteSpace(sourcePath)) return null;
+            if (!File.Exists(sourcePath))
+                throw new FileNotFoundException("Không tìm thấy ảnh đại diện đã chọn.", sourcePath);
+
+            string directory = GetAvatarDirectory();
+            Directory.CreateDirectory(directory);
+            string extension = Path.GetExtension(sourcePath).ToLowerInvariant();
+            string destination = Path.Combine(directory, "new_" + Guid.NewGuid().ToString("N") + extension);
+            File.Copy(sourcePath, destination, true);
+            return destination;
+        }
+
+        private static string GetAvatarDirectory()
+        {
+            string assemblyDirectory = Path.GetDirectoryName(
+                typeof(UserManagementService).Assembly.Location);
+            DirectoryInfo projectDirectory = string.IsNullOrWhiteSpace(assemblyDirectory)
+                ? null
+                : new DirectoryInfo(assemblyDirectory).Parent?.Parent;
+
+            if (projectDirectory != null)
+            {
+                return Path.Combine(projectDirectory.FullName, "Resources", "Avatars");
+            }
+
+            throw new DirectoryNotFoundException("Không xác định được thư mục project SIMS_WinFormsApp.");
         }
 
         private bool IsRoleAssignable(int roleId)

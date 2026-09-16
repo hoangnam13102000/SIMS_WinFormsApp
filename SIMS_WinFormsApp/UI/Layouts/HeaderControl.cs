@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Controls;
@@ -34,13 +35,13 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private string _email = "admin@sims.local";
         private string _role = string.Empty;
         private string _avatarInitial = "A";
+        private Image _avatarImage;
 
         private Form _openPopup;
         private Control _openPopupTrigger;
 
         public event EventHandler ProfileClicked;
         public event EventHandler LogoutClicked;
-        public event EventHandler BellClicked;
 
         public HeaderControl() : this("Cửa hàng điện thoại trực tuyến") { }
 
@@ -317,7 +318,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
             LayoutHeader();
         }
 
-        public void SetUser(string displayName, string email, string avatarInitial = null, string role = null)
+        public void SetUser(string displayName, string email, string avatarInitial = null,
+            string role = null, string avatarPath = null)
         {
             _displayName = string.IsNullOrWhiteSpace(displayName) ? "User" : displayName;
             _email = email ?? string.Empty;
@@ -332,8 +334,31 @@ namespace SIMS_WinFormsApp.UI.Layouts
                     : _displayName.Trim().Substring(0, 1).ToUpperInvariant();
             }
             _avatarInitial = avatarInitial;
-            _avatarLabel.Text = avatarInitial;
+            SetAvatar(avatarPath, avatarInitial);
             LayoutHeader();
+        }
+
+        private void SetAvatar(string avatarPath, string avatarInitial)
+        {
+            _avatarImage?.Dispose();
+            _avatarImage = null;
+            _avatarLabel.Image = null;
+            _avatarLabel.Text = avatarInitial;
+
+            if (string.IsNullOrWhiteSpace(avatarPath) || !File.Exists(avatarPath)) return;
+
+            try
+            {
+                using (var source = Image.FromFile(avatarPath))
+                    _avatarImage = new Bitmap(source);
+                _avatarLabel.Image = _avatarImage;
+                _avatarLabel.Text = string.Empty;
+                _avatarLabel.ImageAlign = ContentAlignment.MiddleCenter;
+            }
+            catch (Exception)
+            {
+                _avatarImage = null;
+            }
         }
 
         public void SetUnreadCount(int count)
@@ -540,6 +565,12 @@ namespace SIMS_WinFormsApp.UI.Layouts
             base.OnPaint(e);
             using (var pen = new Pen(LayoutColors.HeaderBorder))
                 e.Graphics.DrawLine(pen, 0, Height - 1, Width, Height - 1);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) _avatarImage?.Dispose();
+            base.Dispose(disposing);
         }
 
         protected override void OnHandleCreated(EventArgs e)

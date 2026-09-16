@@ -8,7 +8,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         void AttachLayout(Control layout);
 
         void SetWindowTitle(string title);
-        void SetUserInfo(string displayName, string email, string avatarInitial = null);
+        void SetUserInfo(string displayName, string email, string avatarInitial = null, string avatarPath = null);
         void SetUnreadNotifications(int count);
         void SetSidebarBadge(string pageKey, int count);
 

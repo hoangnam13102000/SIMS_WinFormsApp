@@ -46,7 +46,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
             public string Key { get; set; }
             public string Header { get; set; }
             public List<SidebarItemControl> Items { get; set; } = new List<SidebarItemControl>();
-            public bool Expanded { get; set; } = true;
+            // Mặc định đóng (không tự mở) khi vừa chạy app - người dùng tự bấm để mở nhóm
+            // mục nào họ cần xem, tránh sidebar dài lê thê ngay từ đầu.
+            public bool Expanded { get; set; } = false;
         }
 
         public SidebarControl()
@@ -319,7 +321,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             var group = _groups.FirstOrDefault(g => g.Key == groupKey);
             if (group == null)
             {
-                group = new GroupInfo { Key = groupKey, Header = groupHeader, Expanded = true };
+                group = new GroupInfo { Key = groupKey, Header = groupHeader, Expanded = false };
                 _groups.Add(group);
             }
             var item = new SidebarItemControl(pageKey, label, icon);

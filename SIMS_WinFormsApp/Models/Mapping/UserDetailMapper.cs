@@ -40,6 +40,8 @@ namespace SIMS_WinFormsApp.Models.Mapping
                 Username = row.Username,
                 FullName = row.FullName,
                 Email = row.Email,
+                Phone = row.Phone,
+                AvatarUrl = row.AvatarUrl,
                 RoleName = row.RoleName,
                 RoleCode = row.RoleCode,
                 Status = string.Equals(row.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase)

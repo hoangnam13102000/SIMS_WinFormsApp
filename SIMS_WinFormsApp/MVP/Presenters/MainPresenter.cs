@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.Chat;
 using SIMS_WinFormsApp.Forms.Dashboard;
+using SIMS_WinFormsApp.Forms.Profile;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
@@ -26,6 +27,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly IUserManagementService _userManagementService;
         private bool _isLoggingOut;
         private readonly List<PlaceholderPanel> _placeholders = new List<PlaceholderPanel>();
+        private ucMyProfile _profilePage;
 
         private static readonly string[] SectionLabelKeysInOrder =
         {
@@ -87,8 +89,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             var name = _getDisplayName() ?? "Admin";
             var email = _getEmail() ?? string.Empty;
             var role = _getRole() ?? string.Empty;
-            _view.SetUserInfo(name, email);
-            _layout.SetUser(name, email, null, role);
+            var avatarPath = UserSession.Instance.CurrentUser?.AvatarUrl;
+            _view.SetUserInfo(name, email, null, avatarPath);
+            _layout.SetUser(name, email, null, role, avatarPath);
             _layout.SetBadge("orders", 3);
             _layout.SetUnreadCount(2);
             _layout.ShowPage("dashboard");
@@ -142,6 +145,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("shifts", Lang.Get("sidebar.page.shifts"), CreatePlaceholder("placeholder.shifts.title", "placeholder.shifts.description"), IconChar.Stopwatch);
             layout.AddSection(Lang.Get("sidebar.section.system"));
             layout.AddPage("settings", Lang.Get("sidebar.page.settings"), CreatePlaceholder("placeholder.settings.title", "placeholder.settings.description"), IconChar.Gear);
+
+            // "Trang cá nhân" - mở khi bấm avatar/tên ở Header (OnProfileRequested) hoặc từ mục
+            // sidebar này. Trang tự ghép lại EditUserAccountPresenter + ChangePasswordPresenter
+            // đã có sẵn (xem ucMyProfile) nên không cần thêm Presenter/Service nghiệp vụ mới ở đây.
+            layout.AddSection("TÀI KHOẢN CỦA TÔI");
+            _profilePage = new ucMyProfile(_userManagementService);
+            _profilePage.ProfileUpdated += OnProfileUpdated;
+            layout.AddPage("profile", "Hồ sơ cá nhân", _profilePage, IconChar.IdCard);
+
             return layout;
         }
 
@@ -231,7 +243,21 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         private void OnProfileRequested(object sender, EventArgs e)
         {
-            _view.ShowMessage("Mở form hồ sơ cá nhân (chưa gắn).", "Hồ sơ", MessageBoxIcon.Information);
+            // Đã gắn "Trang cá nhân" thật (ucMyProfile) ở BuildLayout() - thay cho thông báo
+            // placeholder "chưa gắn" trước đây.
+            _layout?.ShowPage("profile");
+        }
+
+        private void OnProfileUpdated(object sender, EventArgs e)
+        {
+            if (_layout == null) return;
+
+            var name = _getDisplayName() ?? "Admin";
+            var email = _getEmail() ?? string.Empty;
+            var role = _getRole() ?? string.Empty;
+            var avatarPath = UserSession.Instance.CurrentUser?.AvatarUrl;
+            _view.SetUserInfo(name, email, null, avatarPath);
+            _layout.SetUser(name, email, null, role, avatarPath);
         }
 
         private void OnPageChanged(object sender, string pageKey)
@@ -246,6 +272,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _view.ProfileRequested -= OnProfileRequested;
             _view.PageChanged -= OnPageChanged;
             LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+            if (_profilePage != null) _profilePage.ProfileUpdated -= OnProfileUpdated;
         }
     }
 }

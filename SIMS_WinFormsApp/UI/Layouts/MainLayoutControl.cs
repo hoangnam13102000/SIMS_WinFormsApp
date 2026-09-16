@@ -285,8 +285,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
             }
         }
 
-        public void SetUser(string displayName, string email, string avatarInitial = null, string role = null)
-            => _header.SetUser(displayName, email, avatarInitial, role);
+        public void SetUser(string displayName, string email, string avatarInitial = null,
+            string role = null, string avatarPath = null)
+            => _header.SetUser(displayName, email, avatarInitial, role, avatarPath);
 
         public void SetBadge(string key, int count)
             => _sidebar.SetBadge(key, count);

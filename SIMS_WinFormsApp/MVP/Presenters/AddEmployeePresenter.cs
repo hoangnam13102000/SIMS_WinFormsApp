@@ -74,6 +74,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 FullName = fullName,
                 Email = email,
                 Phone = string.IsNullOrEmpty(phone) ? null : phone,
+                AvatarFilePath = _view.AvatarFilePath,
                 DateOfBirth = _view.DateOfBirth,
                 Gender = _view.SelectedGender,
                 RoleId = _view.SelectedRoleId.Value,
@@ -100,9 +101,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _view.ShowError("Có lỗi xảy ra, vui lòng thử lại.");
+                _view.ShowError("Không thể lưu ảnh đại diện hoặc tạo tài khoản: " + ex.Message);
             }
             finally
             {

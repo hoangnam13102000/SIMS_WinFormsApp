@@ -64,7 +64,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             try
             {
                 var result = await Task.Run(() =>
-                    _userManagementService.UpdateAccount(_userId, fullName, email, phone));
+                    _userManagementService.UpdateAccount(_userId, fullName, email, phone, _view.AvatarFilePath));
 
                 switch (result)
                 {
@@ -79,9 +79,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _view.ShowError("Có lỗi xảy ra, vui lòng thử lại.");
+                _view.ShowError("Không thể lưu ảnh đại diện hoặc thông tin tài khoản: " + ex.Message);
             }
             finally
             {

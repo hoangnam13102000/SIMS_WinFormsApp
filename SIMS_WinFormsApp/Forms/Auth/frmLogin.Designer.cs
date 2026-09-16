@@ -68,13 +68,6 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             this.SuspendLayout();
 
-            // ===== frmLogin =====
-            // AutoScaleMode.None: toàn bộ Location/Size trong file này là pixel tuyệt đối,
-            // giống quy ước đã dùng ở frmMain/ucDashboard/HeaderControl/SidebarControl/...
-            // Nếu để Font (mặc định Designer) mà không khóa AutoScaleDimensions, mỗi lần
-            // Form được new lại (vd. sau Logout) WinForms sẽ tính lại baseline scale dựa
-            // trên ngữ cảnh Font/DPI hiện tại của tiến trình -> có thể ra baseline khác lần
-            // đầu, khiến toàn bộ layout bị co giãn/lệch dù code Designer không đổi.
             this.AutoScaleMode = AutoScaleMode.None;
             this.ClientSize = new Size(1200, 760);
             this.MinimumSize = new Size(1100, 700);
@@ -112,8 +105,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // ===== pnlFormCard =====
             const int cardWidth = 440;
-            // Leave enough vertical room for font ascent/descent and the complete
-            // controls when the form is reopened after logout.
+
             const int cardHeight = 520;
 
             this.pnlFormCard.Size = new Size(cardWidth, cardHeight);
@@ -198,12 +190,11 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.lblError.Text = "";
             y += 28;
 
-            // Login button
             this.btnLogin.Location = new Point(0, y);
-            this.btnLogin.Size = new Size(cardWidth, 46);
+            this.btnLogin.Size = new Size(cardWidth, 54);
             this.btnLogin.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.btnLogin.IsPrimary = true;
-            y += 46 + 20;
+            y += 54 + 20;
 
             this.pnlFormCard.Controls.Add(this.btnLogin);
             this.pnlFormCard.Controls.Add(this.lblError);

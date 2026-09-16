@@ -12,10 +12,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
     {
         internal const int CardWidth = 380;
 
-        private const int Padding = 16;
-        private const int IconSize = 22;
+        private const int CardPadding = 16;
+        private const int IconSize = 28;
         private const int CloseSize = 14;
-        private const int TextGap = 10;
+        private const int TextGap = 12;
         private const int CornerRadius = 12;
         private const int FadeStepMs = 25;
         private const double FadeInStep = 0.15d;
@@ -44,22 +44,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
             _accentColor = DialogTypeMetadata.GetAccentColor(type);
             BackColor = DialogTypeMetadata.GetSoftBgColor(type);
 
-            var iconBox = new IconPictureBox
-            {
-                Size = new Size(IconSize, IconSize),
-                Location = new Point(Padding, Padding),
-                BackColor = Color.Transparent,
-                IconChar = DialogTypeMetadata.GetIcon(type),
-                IconColor = _accentColor,
-                IconSize = (int)(IconSize * 0.92),
-                SizeMode = PictureBoxSizeMode.CenterImage
-            };
-            Controls.Add(iconBox);
-
             var closeBox = new IconPictureBox
             {
                 Size = new Size(CloseSize, CloseSize),
-                Location = new Point(CardWidth - Padding - CloseSize, Padding + 3),
+                Location = new Point(CardWidth - CardPadding - CloseSize, CardPadding + 3),
                 BackColor = Color.Transparent,
                 IconChar = IconChar.Xmark,
                 IconColor = AppColors.TextMuted,
@@ -69,21 +57,21 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
             closeBox.Click += (s, e) => Dismiss();
             Controls.Add(closeBox);
 
-            int textLeft = Padding + IconSize + TextGap;
-            int textWidth = Math.Max(60, CardWidth - textLeft - Padding - CloseSize - TextGap);
+            int textLeft = CardPadding + IconSize + TextGap;
+            int textWidth = Math.Max(60, CardWidth - textLeft - CardPadding - CloseSize - TextGap);
 
+            // Tạo trước 2 label để đo chiều cao thật của khối nội dung (title + message),
+            // từ đó mới tính được vị trí Y để canh icon vào đúng giữa khối này.
             var titleLabel = new Label
             {
                 AutoSize = true,
                 MaximumSize = new Size(textWidth, 0),
-                Location = new Point(textLeft, Padding - 1),
                 Font = AppFonts.BodyBold,
                 ForeColor = AppColors.TextTitle,
                 BackColor = Color.Transparent,
                 Text = title ?? string.Empty,
                 UseMnemonic = false
             };
-            Controls.Add(titleLabel);
 
             Label messageLabel = null;
             if (!string.IsNullOrWhiteSpace(message))
@@ -92,18 +80,48 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
                 {
                     AutoSize = true,
                     MaximumSize = new Size(textWidth, 0),
-                    Location = new Point(textLeft, titleLabel.Bottom + 3),
                     Font = AppFonts.Small,
                     ForeColor = AppColors.TextSecondary,
                     BackColor = Color.Transparent,
                     Text = message,
                     UseMnemonic = false
                 };
+            }
+
+            const int LineGap = 3;
+            int titleHeight = titleLabel.PreferredSize.Height;
+            int messageHeight = messageLabel?.PreferredSize.Height ?? 0;
+            int textBlockHeight = messageLabel != null ? titleHeight + LineGap + messageHeight : titleHeight;
+
+            // Khối cao hơn (icon hay text) sẽ quyết định top của khối còn lại, để cả hai
+            // luôn được canh giữa theo chiều dọc so với nhau, thay vì icon bị dính cứng ở top.
+            int blockHeight = Math.Max(IconSize, textBlockHeight);
+            int iconTop = CardPadding + (blockHeight - IconSize) / 2;
+            int textTop = CardPadding + (blockHeight - textBlockHeight) / 2;
+
+            var iconBox = new IconPictureBox
+            {
+                Size = new Size(IconSize, IconSize),
+                Location = new Point(CardPadding, iconTop),
+                BackColor = Color.Transparent,
+                IconChar = DialogTypeMetadata.GetIcon(type),
+                IconColor = _accentColor,
+                IconSize = (int)(IconSize * 0.92),
+                SizeMode = PictureBoxSizeMode.CenterImage
+            };
+            Controls.Add(iconBox);
+
+            titleLabel.Location = new Point(textLeft, textTop);
+            Controls.Add(titleLabel);
+
+            if (messageLabel != null)
+            {
+                messageLabel.Location = new Point(textLeft, titleLabel.Bottom + LineGap);
                 Controls.Add(messageLabel);
             }
 
             int contentBottom = Math.Max(iconBox.Bottom, messageLabel?.Bottom ?? titleLabel.Bottom);
-            ClientSize = new Size(CardWidth, contentBottom + Padding);
+            ClientSize = new Size(CardWidth, contentBottom + CardPadding);
             ApplyRoundedRegion();
 
             // Bấm vào bất kỳ đâu trên toast (kể cả tiêu đề/nội dung) đều đóng sớm được,

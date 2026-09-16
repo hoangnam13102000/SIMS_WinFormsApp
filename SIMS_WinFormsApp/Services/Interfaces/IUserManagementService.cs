@@ -45,7 +45,7 @@ namespace SIMS_WinFormsApp.Services.Interfaces
             string searchTerm,
             string roleFilter,
             string statusFilter);
-        UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone);
+        UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone, string avatarFilePath = null);
         SetAccountLockResult SetAccountLocked(int userId, bool isLocked);
         IReadOnlyList<RoleOptionDto> GetAssignableRoles();
 

@@ -421,10 +421,13 @@ namespace SIMS_WinFormsApp.Forms.Chat
                 Padding = new Padding(12, 8, 12, 8)
             };
 
+            // Dùng chiều cao đo thực tế (_rowSmallH, đo sẵn theo font AppFonts.Small kèm ký tự
+            // có dấu cao/thấp nhất "Ầệgy") thay vì số px cố định 16, để dòng "Tên · giờ" không
+            // bị cắt ngang phần dấu tiếng Việt phía trên (ví dụ "Bạn" bị cắt còn "Ban.").
             var nameTime = new Label
             {
                 AutoSize = false,
-                Height = 16,
+                Height = _rowSmallH,
                 Dock = DockStyle.Top,
                 Font = AppFonts.Small,
                 ForeColor = isMine ? Color.FromArgb(220, 255, 255, 255) : AppColors.TextMuted,
@@ -444,7 +447,10 @@ namespace SIMS_WinFormsApp.Forms.Chat
             var textSize = TextRenderer.MeasureText(msg.Text ?? "", AppFonts.Body, new Size(width * 2 / 3, int.MaxValue),
                 TextFormatFlags.WordBreak);
             int bubbleW = Math.Min(width * 2 / 3, Math.Max(100, textSize.Width + 28));
-            int bubbleH = Math.Max(48, textSize.Height + 36);
+            // Chiều cao bubble = padding trên/dưới + chiều cao thật của dòng tên/giờ (_rowSmallH)
+            // + chiều cao nội dung tin nhắn, thay vì cộng thêm hằng số 36 áng chừng (nguồn gốc
+            // gây cắt chữ vì trước đó nameTime chỉ cao 16px trong khi cần _rowSmallH).
+            int bubbleH = Math.Max(48, bubble.Padding.Top + bubble.Padding.Bottom + _rowSmallH + textSize.Height);
             bubble.Size = new Size(bubbleW, bubbleH);
             bubble.Location = new Point(isMine ? width - bubbleW - 8 : 8, 0);
             wrap.Height = bubbleH + 4;

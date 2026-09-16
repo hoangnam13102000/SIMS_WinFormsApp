@@ -3,6 +3,7 @@ using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Indetity;
 using SIMS_WinFormsApp.Models;
 using SIMS_WinFormsApp.Models.DTOs;
+using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -131,7 +132,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
         // Cập nhật thông tin liên hệ (họ tên/email/SĐT) cho popup "Cập nhật tài khoản".
         // Trả về false nếu không tìm thấy user (ví dụ đã bị xóa) để Service báo lỗi phù hợp.
-        public bool UpdateContactInfo(int userId, string fullName, string email, string phone)
+        public bool UpdateContactInfo(int userId, string fullName, string email, string phone, string avatarUrl = null)
         {
             using (var db = new SimsDataContext())
             {
@@ -141,6 +142,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 user.FullName = fullName;
                 user.Email = email;
                 user.Phone = phone;
+                if (!string.IsNullOrWhiteSpace(avatarUrl)) user.AvatarUrl = avatarUrl;
                 db.SubmitChanges();
                 return true;
             }
@@ -237,7 +239,11 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     where !u.IsDeleted
                     select new { u, r };
 
-                if (!string.IsNullOrWhiteSpace(roleFilter))
+                if (string.Equals(roleFilter, RoleCodes.NonCustomerFilter, StringComparison.OrdinalIgnoreCase))
+                    query = query.Where(x => x.r.RoleCode != RoleCodes.Customer);
+                else if (string.Equals(roleFilter, RoleCodes.Customer, StringComparison.OrdinalIgnoreCase))
+                    query = query.Where(x => x.r.RoleCode == RoleCodes.Customer);
+                else if (!string.IsNullOrWhiteSpace(roleFilter))
                     query = query.Where(x => x.r.RoleName.Contains(roleFilter));
                 if (!string.IsNullOrWhiteSpace(statusFilter))
                     query = query.Where(x => x.u.Status == statusFilter);
@@ -263,6 +269,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         FullName = x.u.FullName,
                         Email = x.u.Email,
                         Phone = x.u.Phone,
+                        AvatarUrl = x.u.AvatarUrl,
                         RoleCode = x.r.RoleCode,
                         RoleName = x.r.RoleName,
                         Status = x.u.Status,
@@ -315,6 +322,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                             FullName = employee.FullName,
                             Email = employee.Email,
                             Phone = employee.Phone,
+                            AvatarUrl = employee.AvatarUrl,
                             RoleID = employee.RoleId,
                             IsLocked = false,
                             FailedLoginCount = 0,

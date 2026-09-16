@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.SystemMgmt;
 using SIMS_WinFormsApp.Models.DTOs;
+using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.Services.Implementations.Export; 
 using SIMS_WinFormsApp.Services.Implementations.Import; 
@@ -29,14 +30,14 @@ namespace SIMS_WinFormsApp.UI.Controls
             // (Accounts/Customers không có, vì tính năng thêm mới hiện chỉ áp dụng cho nhân viên).
             // MỚI: kèm theo menu "Tùy chọn" (Xuất CSV/Xuất Excel/Nhập dữ liệu) cạnh nút "+ Thêm".
             return Create("Quản lý nhân viên", "Danh sách nhân viên và thông tin làm việc",
-                IconChar.User, "Nhân viên", service, "+ Thêm nhân viên",
+                IconChar.User, RoleCodes.NonCustomerFilter, service, "+ Thêm nhân viên",
                 getTable => BuildEmployeeOverflowActions(service, "Nhân viên", getTable));
         }
 
         public static Control Customers(IUserManagementService service)
         {
             return Create("Quản lý khách hàng", "Danh sách khách hàng và lịch sử giao dịch",
-                IconChar.AddressBook, "Khách hàng", service);
+                IconChar.AddressBook, RoleCodes.Customer, service);
         }
 
         private static IList<FilterOption> AccountStatusOptions() => new[]
