@@ -128,7 +128,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("employees", Lang.Get("sidebar.page.employees"), ManagementTablePage.Employees(_userManagementService), IconChar.User);
             layout.AddPage("customers", Lang.Get("sidebar.page.customers"), ManagementTablePage.Customers(_userManagementService), IconChar.AddressBook);
             layout.AddSection(Lang.Get("sidebar.section.sales"));
-            layout.AddPage("pos", Lang.Get("sidebar.page.pos"), CreatePlaceholder("placeholder.pos.title", "placeholder.pos.description"), IconChar.CartShopping);
+            layout.AddPage("pos", Lang.Get("sidebar.page.pos"), SIMS_WinFormsApp.UI.Controls.Pos.PosPage.Create(_getDisplayName()), IconChar.CartShopping);
             layout.AddPage("orders", Lang.Get("sidebar.page.orders"), CreatePlaceholder("placeholder.orders.title", "placeholder.orders.description"), IconChar.ListUl);
             layout.AddPage("invoices", Lang.Get("sidebar.page.invoices"), CreatePlaceholder("placeholder.invoices.title", "placeholder.invoices.description"), IconChar.Receipt);
             layout.AddPage("returns", Lang.Get("sidebar.page.returns"), CreatePlaceholder("placeholder.returns.title", "placeholder.returns.description"), IconChar.RotateLeft);

@@ -62,6 +62,13 @@
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
+    <Compile Include="Models\DTOs\Pos\CartLineDto.cs" />
+    <Compile Include="Models\DTOs\Pos\CartTotalsDto.cs" />
+    <Compile Include="Models\DTOs\Pos\CategoryOptionDto.cs" />
+    <Compile Include="Models\DTOs\Pos\CustomerLookupDto.cs" />
+    <Compile Include="Models\DTOs\Pos\HeldCartDto.cs" />
+    <Compile Include="Models\DTOs\Pos\ProductCatalogItemDto.cs" />
+    <Compile Include="Models\DTOs\Pos\PromotionResultDto.cs" />
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
     <!-- MỚI: DTO cho cơ chế Export/Import -->
@@ -73,6 +80,11 @@
     <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
+    <Compile Include="MVP\Presenters\Pos\CartCalculator.cs" />
+    <Compile Include="MVP\Presenters\Pos\HeldCartStore.cs" />
+    <Compile Include="MVP\Presenters\Pos\PosCart.cs" />
+    <Compile Include="MVP\Presenters\Pos\PosFormat.cs" />
+    <Compile Include="MVP\Presenters\Pos\PosPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <!-- MỚI: Presenter dùng chung cho popup "Nhập dữ liệu" -->
     <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
@@ -80,8 +92,17 @@
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
+    <Compile Include="Services\Barcode\AForgeWebcamCaptureSession.cs" />
+    <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
+    <Compile Include="Services\Barcode\IWebcamCaptureSession.cs" />
+    <Compile Include="Services\Implementations\Pos\DemoCustomerLookupService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlProductCatalogService.cs" />
+    <Compile Include="Services\Implementations\Pos\DemoPromotionService.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
+    <Compile Include="Services\Interfaces\Pos\ICustomerLookupService.cs" />
+    <Compile Include="Services\Interfaces\Pos\IProductCatalogService.cs" />
+    <Compile Include="Services\Interfaces\Pos\IPromotionService.cs" />
     <Compile Include="Services\Validation\InputValidators.cs" />
     <!-- MỚI: interface + implementation cơ chế Export -->
     <Compile Include="Services\Interfaces\ITableDataExporter.cs" />
@@ -97,9 +118,30 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
+    <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
+    <Compile Include="UI\Controls\Barcode\BarcodeScannerPresenter.cs" />
+    <Compile Include="UI\Controls\Barcode\frmBarcodeScannerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Barcode\IBarcodeScannerLauncher.cs" />
+    <Compile Include="UI\Controls\Barcode\IBarcodeScannerView.cs" />
     <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
     <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
+    <Compile Include="UI\Controls\Pos\CartLineRowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Pos\CustomerFieldControl.cs" />
+    <Compile Include="UI\Controls\Pos\frmListPickerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Pos\PosPage.cs" />
+    <Compile Include="UI\Controls\Pos\PosPageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Pos\ProductTileControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Toast\AppToast.cs" />
     <Compile Include="UI\Controls\Toast\IToastNotifier.cs" />
     <Compile Include="UI\Controls\Toast\ToastNotification.cs">
@@ -141,7 +183,17 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
+    <Compile Include="Views\Interfaces\IPosView.cs" />
     <Compile Include="Views\Interfaces\IUserAccountDetailView.cs" />
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Video.2.2.5\lib\AForge.Video.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Video.DirectShow.2.2.5\lib\AForge.Video.DirectShow.dll</HintPath>
+    </Reference>
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
     </Reference>
@@ -200,6 +252,12 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="zxing, Version=0.16.11.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.11\lib\net47\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.11.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.11\lib\net47\zxing.presentation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Repositories\Implementations\ChatRepository.cs" />

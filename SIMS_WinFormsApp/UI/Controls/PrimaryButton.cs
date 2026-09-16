@@ -23,6 +23,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ControlStyles.UserPaint |
                 ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.ResizeRedraw |
+                ControlStyles.StandardClick |
                 ControlStyles.UserMouse |
                 ControlStyles.SupportsTransparentBackColor |
                 ControlStyles.Selectable, true);
@@ -90,9 +91,6 @@ namespace SIMS_WinFormsApp.UI.Controls
                 bool wasPressed = _isPressed;
                 _isPressed = false;
                 Capture = false;
-
-                if (wasPressed && ClientRectangle.Contains(e.Location) && Enabled)
-                    PerformClick();
 
                 Invalidate();
             }
