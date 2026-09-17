@@ -22,6 +22,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         private Panel _iconCircle;
         private Label _lblTitle;
         private Label _lblSubtitle;
+        private Panel _actionHost;
+        private int _actionWidth;
 
         private string _title = "Tổng quan";
         private string _subtitle = string.Empty;
@@ -110,8 +112,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ControlStyles.ResizeRedraw |
                 ControlStyles.SupportsTransparentBackColor, true);
 
-            Height = 108;
-            MinimumSize = new Size(300, 108);
+            Height = 132;
+            MinimumSize = new Size(300, 132);
             // Không set Dock ở đây – parent quyết định
             BackColor = Color.Transparent;
             Padding = new Padding(0);
@@ -190,8 +192,31 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             Controls.Add(_lblSubtitle);
 
+            _actionHost = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 375,
+                BackColor = Color.Transparent,
+                Padding = new Padding(0, 36, 0, 0),
+                Visible = false
+            };
+            Controls.Add(_actionHost);
+
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
             ResumeLayout(false);
+        }
+
+        public void SetActions(Control actions)
+        {
+            if (actions == null) throw new ArgumentNullException(nameof(actions));
+
+            _actionHost.Controls.Clear();
+            actions.Dock = DockStyle.Fill;
+            _actionHost.Controls.Add(actions);
+            _actionWidth = _actionHost.Width;
+            _actionHost.Visible = true;
+            PerformLayout();
+            UpdateTextLayout();
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
@@ -249,15 +274,24 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             base.OnResize(e);
 
-            // Chỉ đổi WIDTH theo kích thước control; HEIGHT giữ nguyên giá trị đã đo
-            // từ font thật (đo 1 lần trong BuildUI) để không tái tạo lỗi cắt chữ.
-            int textW = Math.Max(80, Width - 104);
-            if (_lblTitle != null)
-                _lblTitle.Width = textW;
-            if (_lblSubtitle != null)
-                _lblSubtitle.Width = textW;
+            if (_iconCircle != null)
+            {
+                int centerY = Math.Max(0, (ClientSize.Height - _iconCircle.Height) / 2);
+                _iconCircle.Location = new Point(20, centerY);
+            }
+
+            UpdateTextLayout();
 
             Invalidate();
+        }
+
+        private void UpdateTextLayout()
+        {
+            int textW = Math.Max(80, ClientSize.Width - 104 - _actionWidth);
+            if (_lblTitle == null || _lblSubtitle == null) return;
+
+            _lblTitle.Width = textW;
+            _lblSubtitle.Width = textW;
         }
 
         protected override void OnPaintBackground(PaintEventArgs pevent)

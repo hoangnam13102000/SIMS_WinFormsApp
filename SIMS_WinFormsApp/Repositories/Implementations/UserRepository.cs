@@ -44,8 +44,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             }
         }
 
-        // Tra cứu tài khoản cho luồng quên mật khẩu: khớp CẢ username lẫn email.
-        // Không lấy theo username không thôi để tránh lộ thông tin qua timing/kết quả.
         public User FindForPasswordReset(string username, string email)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email))
@@ -239,7 +237,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     where !u.IsDeleted
                     select new { u, r };
 
-                if (string.Equals(roleFilter, RoleCodes.NonCustomerFilter, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(roleFilter, UserManagementFilters.NonCustomer, StringComparison.OrdinalIgnoreCase))
                     query = query.Where(x => x.r.RoleCode != RoleCodes.Customer);
                 else if (string.Equals(roleFilter, RoleCodes.Customer, StringComparison.OrdinalIgnoreCase))
                     query = query.Where(x => x.r.RoleCode == RoleCodes.Customer);

@@ -22,8 +22,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 
         event EventHandler<string> PromoApplyRequested;
         event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
-        event EventHandler<string> PaymentMethodChanged;
-
         event EventHandler HoldCartRequested;
         event EventHandler ViewHeldCartsRequested;
         event EventHandler CheckoutRequested;

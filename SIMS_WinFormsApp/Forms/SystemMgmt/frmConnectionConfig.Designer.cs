@@ -73,7 +73,7 @@
             this.txtServer.Name = "txtServer";
             this.txtServer.Size = new System.Drawing.Size(310, 23);
             this.txtServer.TabIndex = 1;
-            this.txtServer.Text = ".\\SQLEXPRESS";
+            this.txtServer.Text = "localhost\\SQLEXPRESS";
             // 
             // lblDatabase
             // 

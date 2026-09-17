@@ -30,7 +30,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             // (Accounts/Customers không có, vì tính năng thêm mới hiện chỉ áp dụng cho nhân viên).
             // MỚI: kèm theo menu "Tùy chọn" (Xuất CSV/Xuất Excel/Nhập dữ liệu) cạnh nút "+ Thêm".
             return Create("Quản lý nhân viên", "Danh sách nhân viên và thông tin làm việc",
-                IconChar.User, RoleCodes.NonCustomerFilter, service, "+ Thêm nhân viên",
+                IconChar.User, UserManagementFilters.NonCustomer, service, "+ Thêm nhân viên",
                 getTable => BuildEmployeeOverflowActions(service, "Nhân viên", getTable));
         }
 

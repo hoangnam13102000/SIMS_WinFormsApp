@@ -59,9 +59,17 @@
     <Compile Include="Forms\SystemMgmt\frmImportData.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\ucRolePermission.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
+    <Compile Include="Models\DTOs\Permission\PermissionGroupEntryViewModel.cs" />
+    <Compile Include="Models\DTOs\Permission\PermissionGroupViewModel.cs" />
+    <Compile Include="Models\DTOs\Permission\PermissionResourceViewModel.cs" />
+    <Compile Include="Models\DTOs\Permission\PermissionToggleViewModel.cs" />
+    <Compile Include="Models\DTOs\Permission\RolePermissionRoleRowDto.cs" />
     <Compile Include="Models\DTOs\Pos\CartLineDto.cs" />
     <Compile Include="Models\DTOs\Pos\CartTotalsDto.cs" />
     <Compile Include="Models\DTOs\Pos\CategoryOptionDto.cs" />
@@ -76,7 +84,14 @@
     <Compile Include="Models\DTOs\ImportRowResult.cs" />
     <Compile Include="Models\DTOs\ImportSummaryDto.cs" />
     <Compile Include="Models\Enums\Gender.cs" />
+    <Compile Include="Models\Enums\UserManagementFilters.cs" />
     <Compile Include="Models\Mapping\UserDetailMapper.cs" />
+    <Compile Include="Models\Permission\AppPermission.cs" />
+    <Compile Include="Models\Permission\PermissionCatalog.cs" />
+    <Compile Include="Models\Permission\PermissionCatalogEntry.cs" />
+    <Compile Include="Models\Permission\PermissionResourceTierLayout.cs" />
+    <Compile Include="Models\Permission\PermissionSet.cs" />
+    <Compile Include="Models\Permission\RolePermissionDefaults.cs" />
     <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
@@ -85,12 +100,15 @@
     <Compile Include="MVP\Presenters\Pos\PosCart.cs" />
     <Compile Include="MVP\Presenters\Pos\PosFormat.cs" />
     <Compile Include="MVP\Presenters\Pos\PosPresenter.cs" />
+    <Compile Include="MVP\Presenters\RolePermissionPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <!-- MỚI: Presenter dùng chung cho popup "Nhập dữ liệu" -->
     <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
+    <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRolePermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
     <Compile Include="Services\Barcode\AForgeWebcamCaptureSession.cs" />
     <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
@@ -128,6 +146,22 @@
     <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
     <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
+    <Compile Include="UI\Controls\Permission\PermissionGroupCardControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Permission\PermissionResourceDropdownControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Permission\PermissionToggleRowControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Permission\PermissionUiHelpers.cs" />
+    <Compile Include="UI\Controls\Permission\RoleListItemControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Permission\VerticalStackPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Pos\CartLineRowControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -184,6 +218,7 @@
     </Compile>
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
     <Compile Include="Views\Interfaces\IPosView.cs" />
+    <Compile Include="Views\Interfaces\IRolePermissionView.cs" />
     <Compile Include="Views\Interfaces\IUserAccountDetailView.cs" />
     <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
       <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>

@@ -60,8 +60,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         public event EventHandler<string> PromoApplyRequested;
         public event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
-        public event EventHandler<string> PaymentMethodChanged;
-
         public event EventHandler HoldCartRequested;
         public event EventHandler ViewHeldCartsRequested;
         public event EventHandler CheckoutRequested;
