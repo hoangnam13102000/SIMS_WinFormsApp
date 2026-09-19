@@ -14,6 +14,7 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
+
     public sealed class TablePageResult
     {
         public int TotalCount { get; set; }
@@ -56,6 +57,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private Panel _paginationPanel;
         private readonly PaginationPresenter _paginationPresenter;
         private readonly IList<FilterOption> _statusOptions;
+        private readonly bool _externalData;
 
         // ===================== Cột đặc biệt (badge / nút thao tác) =====================
         private readonly int _statusColumnIndex = -1;
@@ -81,17 +83,29 @@ namespace SIMS_WinFormsApp.UI.Controls
         /// ManagementTablePage) chịu trách nhiệm mở popup thêm mới tương ứng và gọi lại
         /// <see cref="Reload"/> sau khi lưu thành công — BaseTable không biết gì về popup cụ thể.</summary>
         public event EventHandler AddButtonClicked;
+        public event EventHandler PageChanged;
+
+        public int PageIndex => _paginationPresenter.PageIndex;
+        public int PageSize => _paginationPresenter.PageSize;
 
         public BaseTable(string title, string subtitle, FontAwesome.Sharp.IconChar icon,
             string[] columns, Func<int, int, string, string, TablePageResult> loadPage,
             IList<FilterOption> statusOptions = null, int pageSize = 10,
             string addButtonText = null,
-            IList<OverflowMenuAction> overflowActions = null) // MỚI: tham số optional, mặc định null
+            IList<OverflowMenuAction> overflowActions = null,
+            Control customFilterPanel = null,
+            int customFilterHeight = 86,
+            bool externalData = false) // externalData: Presenter owns loading, BaseTable owns layout/paging
         {
             _loadPage = loadPage ?? throw new ArgumentNullException(nameof(loadPage));
             _statusOptions = statusOptions ?? DefaultStatusOptions();
+            _externalData = externalData;
             _paginationPresenter = new PaginationPresenter(_pagination, pageSize);
-            _paginationPresenter.PageChanged += (_, __) => LoadCurrentPage();
+            _paginationPresenter.PageChanged += (_, __) =>
+            {
+                if (_externalData) PageChanged?.Invoke(this, EventArgs.Empty);
+                else LoadCurrentPage();
+            };
             AutoScaleMode = AutoScaleMode.None;
             Dock = DockStyle.Fill;
             BackColor = AppColors.PageBg;
@@ -111,7 +125,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Padding = Padding.Empty
             };
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 86));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, customFilterPanel == null ? 86 : customFilterHeight));
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
 
@@ -127,7 +141,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             headerRow = AttachOverflowMenu(headerRow, overflowActions); // MỚI: chèn nút "Tùy chọn" nếu có, không đổi gì khi null/rỗng
             _headerRow = headerRow as Panel; // null khi không có nút thêm và cũng không có overflowActions (WrapPlainHeader trả thẳng HeaderSection)
             _root.Controls.Add(headerRow, 0, 0);
-            _filterPanel = (Panel)CreateFilterBar();
+            _filterPanel = customFilterPanel as Panel ?? (Panel)CreateFilterBar();
             _root.Controls.Add(_filterPanel, 0, 1);
             _grid = CreateGrid(columns);
             AttachActionCellHandlers();
@@ -136,7 +150,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _paginationPanel = (Panel)CreatePaginationBar();
             _root.Controls.Add(_paginationPanel, 0, 3);
             Controls.Add(_root);
-            LoadCurrentPage();
+            if (!_externalData) LoadCurrentPage();
 
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
         }
@@ -370,6 +384,18 @@ namespace SIMS_WinFormsApp.UI.Controls
             return panel;
         }
         public void Reload() => LoadCurrentPage();
+
+        public void ResetToFirstPage() => _paginationPresenter.ResetToFirstPage();
+
+        public void SetPageResult(IList<object[]> rows, int totalCount)
+        {
+            _grid.Rows.Clear();
+            foreach (var row in rows ?? new List<object[]>())
+                _grid.Rows.Add(row);
+            _paginationPresenter.ApplyResult(totalCount);
+            ClearHover();
+        }
+
         private void LoadCurrentPage()
         {
             var result = _loadPage(_paginationPresenter.PageIndex, _paginationPresenter.PageSize,

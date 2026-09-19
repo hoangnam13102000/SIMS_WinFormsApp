@@ -20,6 +20,8 @@ namespace SIMS_WinFormsApp.DAL.Linq
         public Table<RoleEntity> Roles => GetTable<RoleEntity>();
         public Table<PermissionEntity> Permissions => GetTable<PermissionEntity>();
         public Table<RolePermissionEntity> RolePermissions => GetTable<RolePermissionEntity>();
+
+        public Table<AuditLogEntity> AuditLogs => GetTable<AuditLogEntity>();
         public Table<ChatConversationEntity> ChatConversations => GetTable<ChatConversationEntity>();
         public Table<ChatMessageEntity> ChatMessages => GetTable<ChatMessageEntity>();
     }

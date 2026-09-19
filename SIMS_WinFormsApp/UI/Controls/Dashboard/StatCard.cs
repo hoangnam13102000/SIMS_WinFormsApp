@@ -25,6 +25,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private Color _iconColor = AppColors.Blue;
         private Color _iconBg = Color.FromArgb(219, 234, 254);
         private Color _trendColor = AppColors.Success;
+        private Color _topBorderColor = Color.Transparent;
 
         public string ValueText
         {
@@ -97,6 +98,16 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 _trendColor = value;
                 if (_lblTrend != null) _lblTrend.ForeColor = _trendColor;
+            }
+        }
+
+        public Color TopBorderColor
+        {
+            get => _topBorderColor;
+            set
+            {
+                _topBorderColor = value;
+                Invalidate();
             }
         }
 
@@ -265,6 +276,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             using (var brush = new SolidBrush(AppColors.White))
             {
                 g.FillPath(brush, path);
+            }
+
+            if (_topBorderColor != Color.Transparent && Width > 16)
+            {
+                using (var pen = new Pen(_topBorderColor, 1f))
+                    g.DrawLine(pen, AppRadius.Large, 0, Width - AppRadius.Large - 1, 0);
             }
 
             base.OnPaint(e);

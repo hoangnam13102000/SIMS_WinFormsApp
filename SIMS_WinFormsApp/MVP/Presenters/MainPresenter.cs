@@ -14,6 +14,7 @@ using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Pos;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
 {
@@ -126,7 +127,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("employees", Lang.Get("sidebar.page.employees"), ManagementTablePage.Employees(_userManagementService), IconChar.User);
             layout.AddPage("customers", Lang.Get("sidebar.page.customers"), ManagementTablePage.Customers(_userManagementService), IconChar.AddressBook);
             layout.AddSection(Lang.Get("sidebar.section.sales"));
-            layout.AddPage("pos", Lang.Get("sidebar.page.pos"), CreatePlaceholder("placeholder.pos.title", "placeholder.pos.description"), IconChar.CartShopping);
+            layout.AddPage("pos", Lang.Get("sidebar.page.pos"), PosPage.Create(_getDisplayName()), IconChar.CartShopping);
             layout.AddPage("orders", Lang.Get("sidebar.page.orders"), CreatePlaceholder("placeholder.orders.title", "placeholder.orders.description"), IconChar.ListUl);
             layout.AddPage("invoices", Lang.Get("sidebar.page.invoices"), CreatePlaceholder("placeholder.invoices.title", "placeholder.invoices.description"), IconChar.Receipt);
             layout.AddPage("returns", Lang.Get("sidebar.page.returns"), CreatePlaceholder("placeholder.returns.title", "placeholder.returns.description"), IconChar.RotateLeft);
@@ -143,9 +144,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("shifts", Lang.Get("sidebar.page.shifts"), CreatePlaceholder("placeholder.shifts.title", "placeholder.shifts.description"), IconChar.Stopwatch);
             layout.AddSection(Lang.Get("sidebar.section.system"));
             layout.AddPage("settings", Lang.Get("sidebar.page.settings"), CreatePlaceholder("placeholder.settings.title", "placeholder.settings.description"), IconChar.Gear);
-            // Bổ sung trang "Phân quyền vai trò" (chỉ THÊM dòng này, không đổi các AddPage/AddSection
-            // phía trên). Nhãn để tạm dạng chuỗi cứng tiếng Việt thay vì Lang.Get(...) vì file tài
-            // nguyên đa ngôn ngữ (messages_vi/en.properties) nằm ngoài phạm vi các file .cs được sửa.
+            layout.AddPage("audit-log", "Nhật ký hệ thống", new ucAuditLog(), IconChar.ClockRotateLeft);
             layout.AddPage("role-permissions", "Phân quyền vai trò", new ucRolePermission(), IconChar.UserShield);
             return layout;
         }

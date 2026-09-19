@@ -5,12 +5,12 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.SystemMgmt;
 using SIMS_WinFormsApp.Models.DTOs;
-using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Mapping;
-using SIMS_WinFormsApp.Services.Implementations.Export; 
-using SIMS_WinFormsApp.Services.Implementations.Import; 
+using SIMS_WinFormsApp.Services.Implementations.Export;
+using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls.Filter;
+using SIMS_WinFormsApp.UI.Controls.Loading;
 using SIMS_WinFormsApp.UI.Controls.Toast;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -21,23 +21,32 @@ namespace SIMS_WinFormsApp.UI.Controls
         public static Control Accounts(IUserManagementService service)
         {
             return Create("Quản lý tài khoản", "Quản lý tài khoản người dùng và phân quyền trong hệ thống",
-                IconChar.UsersCog, null, service);
+                IconChar.UsersCog, null, service,
+                buildOverflowActions: getTable => BuildAccountsOverflowActions(getTable));
         }
 
+        private static IList<OverflowMenuAction> BuildAccountsOverflowActions(Func<BaseTable> getTable)
+        {
+            return new List<OverflowMenuAction>
+            {
+                new OverflowMenuAction("Phân quyền vai trò", IconChar.UserShield, () =>
+                    frmRoleManagement.Show(getTable().FindForm()))
+            };
+        }
         public static Control Employees(IUserManagementService service)
         {
             // Chỉ riêng màn "Quản lý nhân viên" mới có nút "+ Thêm nhân viên" ở góc phải header
             // (Accounts/Customers không có, vì tính năng thêm mới hiện chỉ áp dụng cho nhân viên).
             // MỚI: kèm theo menu "Tùy chọn" (Xuất CSV/Xuất Excel/Nhập dữ liệu) cạnh nút "+ Thêm".
             return Create("Quản lý nhân viên", "Danh sách nhân viên và thông tin làm việc",
-                IconChar.User, UserManagementFilters.NonCustomer, service, "+ Thêm nhân viên",
+                IconChar.User, "Nhân viên", service, "+ Thêm nhân viên",
                 getTable => BuildEmployeeOverflowActions(service, "Nhân viên", getTable));
         }
 
         public static Control Customers(IUserManagementService service)
         {
             return Create("Quản lý khách hàng", "Danh sách khách hàng và lịch sử giao dịch",
-                IconChar.AddressBook, RoleCodes.Customer, service);
+                IconChar.AddressBook, "Khách hàng", service);
         }
 
         private static IList<FilterOption> AccountStatusOptions() => new[]
@@ -66,10 +75,18 @@ namespace SIMS_WinFormsApp.UI.Controls
             BaseTable table = null; // MỚI: khai báo trước - buildOverflowActions cần tham chiếu để Reload() sau khi nhập xong
             var overflowActions = buildOverflowActions?.Invoke(() => table); // MỚI
 
+            // MỚI: LoadingOverlayHost - hiện lớp phủ "Đang tải dữ liệu..." mỗi khi BaseTable gọi
+            // lại delegate tải trang bên dưới (đổi trang/tìm kiếm/lọc/Reload()). Khai báo trước vì
+            // delegate tham chiếu tới nó, nhưng chỉ được gán SAU khi `table` dựng xong bên dưới -
+            // nên lần tải đầu tiên (bên trong constructor của BaseTable) sẽ không có lớp phủ, các
+            // lần tải sau (đổi trang/tìm kiếm/lọc/Reload) đều có. Đây là giới hạn chấp nhận được
+            // để không phải sửa BaseTable.cs.
+            LoadingOverlayHost overlayHost = null;
+
             table = new BaseTable(title, subtitle, icon,
                 new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa", "Thao tác" },
                 (pageIndex, pageSize, search, statusFilter) =>
-                    LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter, out currentRows),
+                    LoadUsersWithLoadingIndicator(overlayHost, service, pageIndex, pageSize, search, roleFilter, statusFilter, out currentRows),
                 AccountStatusOptions(),
                 addButtonText: addButtonText,
                 overflowActions: overflowActions); // MỚI
@@ -81,7 +98,32 @@ namespace SIMS_WinFormsApp.UI.Controls
                 table.AddButtonClicked += (sender, e) => HandleAddButtonClicked(table, service);
             }
 
-            return table;
+            // MỚI: bọc bảng trong LoadingOverlayHost - hoàn toàn không đụng vào BaseTable hay
+            // LoadUsers, chỉ bao ngoài Control trả về (Open/Closed Principle).
+            overlayHost = new LoadingOverlayHost(table);
+            return overlayHost;
+        }
+
+        /// <summary>MỚI: bọc quanh <see cref="LoadUsers"/> để hiện/ẩn lớp phủ đang tải qua
+        /// <see cref="ILoadingIndicator"/> - KHÔNG thay đổi bất kỳ dòng nào trong LoadUsers.
+        /// BaseTable gọi delegate tải trang đồng bộ trên UI thread (kiến trúc hiện tại của dự
+        /// án), nên cần Application.DoEvents() để ép vẽ lại 1 lần, cho lớp phủ kịp hiển thị
+        /// trước khi câu lệnh truy vấn (đồng bộ) phía dưới chạy.</summary>
+        private static TablePageResult LoadUsersWithLoadingIndicator(
+            ILoadingIndicator loadingIndicator,
+            IUserManagementService service, int pageIndex, int pageSize, string search,
+            string roleFilter, string statusFilter, out IReadOnlyList<UserManagementRowDto> rows)
+        {
+            loadingIndicator?.ShowLoading("Đang tải dữ liệu...");
+            Application.DoEvents();
+            try
+            {
+                return LoadUsers(service, pageIndex, pageSize, search, roleFilter, statusFilter, out rows);
+            }
+            finally
+            {
+                loadingIndicator?.HideLoading();
+            }
         }
 
         private static void HandleActionButtonClicked(

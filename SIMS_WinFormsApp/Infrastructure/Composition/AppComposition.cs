@@ -33,13 +33,16 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new RoleRepository();
         }
 
+        public static IPermissionRepository CreatePermissionRepository()
+        {
+            return new PermissionRepository();
+        }
+
         public static IChatRepository CreateChatRepository()
         {
             return new ChatRepository();
         }
 
-        // ---- Bổ sung cho trang "Phân quyền vai trò" (RolePermissionPresenter) ----
-        // Chỉ THÊM factory mới, không đổi bất kỳ factory nào ở trên.
         public static IRolePermissionRepository CreateRolePermissionRepository()
         {
             return new RolePermissionRepository();
@@ -82,11 +85,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new ToastService();
         }
 
-        // ---- Bổ sung các factory còn thiếu cho tính năng POS (UI/Controls/Pos/PosPage.cs) ----
-        // Các interface/implementation này đã có sẵn trong project (Services/Interfaces/Pos,
-        // Services/Implementations/Pos, UI/Controls/Barcode) nhưng chưa được nối vào
-        // AppComposition - đây là lỗi build có sẵn, không liên quan tới trang "Phân quyền vai
-        // trò". Chỉ THÊM các method dưới đây, không đổi bất kỳ method nào ở trên.
         public static IDbConnectionFactory CreateConnectionFactory()
         {
             return new DbConnectionFactory(new ConnectionStringProvider());
@@ -110,6 +108,16 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IBarcodeScannerLauncher CreateBarcodeScannerLauncher()
         {
             return new BarcodeScannerLauncher();
+        }
+
+        public static IAuditLogRepository CreateAuditLogRepository()
+        {
+            return new AuditLogRepository();
+        }
+
+        public static IAuditLogWriter CreateAuditLogWriter()
+        {
+            return new AuditLogRepository();
         }
     }
 }
