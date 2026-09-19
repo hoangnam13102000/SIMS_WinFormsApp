@@ -80,7 +80,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, Width - 1, Height - 1), AppRadius.Medium))
-            using (var pen = new Pen(AppColors.Border, 1f))
+            using (var pen = new Pen(Color.White, 1.2f))
             {
                 g.DrawPath(pen, path);
             }

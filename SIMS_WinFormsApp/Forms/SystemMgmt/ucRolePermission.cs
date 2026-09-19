@@ -399,6 +399,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         {
             public RoundedCardPanel()
             {
+                BorderStyle = BorderStyle.None;
                 SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
                          ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
                 BackColor = AppColors.White;
@@ -406,7 +407,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
             protected override void OnPaintBackground(PaintEventArgs pevent)
             {
-                // Nền + viền bo góc tự vẽ trong OnPaint bên dưới.
+                pevent.Graphics.Clear(AppColors.White);
             }
 
             protected override void OnPaint(PaintEventArgs e)
@@ -416,7 +417,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 var rect = new Rectangle(0, 0, Width - 1, Height - 1);
                 using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
                 using (var brush = new SolidBrush(AppColors.White))
-                using (var pen = new Pen(AppColors.Border, 1f))
+                using (var pen = new Pen(Color.White, 1.2f))
                 {
                     g.FillPath(brush, path);
                     g.DrawPath(pen, path);

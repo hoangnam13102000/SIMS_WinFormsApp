@@ -249,10 +249,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
             using (var brush = new SolidBrush(AppColors.White))
-            using (var pen = new Pen(AppColors.Border, 1f))
             {
                 g.FillPath(brush, path);
-                g.DrawPath(pen, path);
             }
 
             base.OnPaint(e);
@@ -296,10 +294,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            if (Parent != null)
-                pevent.Graphics.Clear(Parent.BackColor);
-            else
-                pevent.Graphics.Clear(AppColors.PageBg);
+            pevent.Graphics.Clear(AppColors.White);
         }
 
         #endregion

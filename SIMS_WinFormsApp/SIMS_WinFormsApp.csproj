@@ -71,6 +71,8 @@
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
+    <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
+    <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
     <Compile Include="Models\DTOs\PermissionDto.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Models\Permission\RolePermissionDefaults.cs" />
     <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\AuditLogPresenter.cs" />
+    <Compile Include="MVP\Presenters\BackupRecoveryPresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\Pos\CartCalculator.cs" />
@@ -126,6 +129,21 @@
     <Compile Include="Repositories\Interfaces\IPermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRolePermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
+    <Compile Include="Services\Backup\BackupException.cs" />
+    <Compile Include="Services\Backup\BackupFormat.cs" />
+    <Compile Include="Services\Backup\BackupManager.cs" />
+    <Compile Include="Services\Backup\DailyBackupScheduler.cs" />
+    <Compile Include="Services\Backup\BackupResult.cs" />
+    <Compile Include="Services\Backup\BackupStorage.cs" />
+    <Compile Include="Services\Backup\CloudinaryBackupUploadListener.cs" />
+    <Compile Include="Services\Backup\CloudinaryConfig.cs" />
+    <Compile Include="Services\Backup\CloudinaryUploader.cs" />
+    <Compile Include="Services\Backup\CloudinaryUploadException.cs" />
+    <Compile Include="Services\Backup\IBackupListener.cs" />
+    <Compile Include="Services\Backup\IBackupStrategy.cs" />
+    <Compile Include="Services\Backup\ICloudinaryUploader.cs" />
+    <Compile Include="Services\Backup\IRestoreStrategy.cs" />
+    <Compile Include="Services\Backup\SqlServerNativeBackupStrategy.cs" />
     <Compile Include="Services\Barcode\AForgeWebcamCaptureSession.cs" />
     <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
     <Compile Include="Services\Barcode\IWebcamCaptureSession.cs" />
@@ -152,6 +170,10 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
+    <Compile Include="UI\Controls\Backup\BackupPage.cs" />
+    <Compile Include="UI\Controls\Backup\BackupRecoveryPageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\BarcodeScannerPresenter.cs" />
     <Compile Include="UI\Controls\Barcode\frmBarcodeScannerDialog.cs">
@@ -203,6 +225,7 @@
     </Compile>
     <Compile Include="UI\Controls\Toast\ToastService.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
+    <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>

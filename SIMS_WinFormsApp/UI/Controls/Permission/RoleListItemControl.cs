@@ -102,10 +102,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            if (Parent != null)
-            {
-                g.Clear(PermissionUiHelpers.GetEffectiveBackColor(this));
-            }
+            g.Clear(AppColors.White);
 
             if (_isSelected)
             {
@@ -129,7 +126,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            // Nền được tự vẽ trong OnPaint (bo góc) - bỏ qua nền mặc định để tránh vẽ đè hình chữ nhật vuông góc.
+            pevent.Graphics.Clear(AppColors.White);
         }
     }
 }

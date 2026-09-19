@@ -10,6 +10,7 @@ using SIMS_WinFormsApp.Forms.SystemMgmt;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
@@ -26,6 +27,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly Func<string> _getEmail;
         private readonly Func<string> _getRole;
         private readonly IUserManagementService _userManagementService;
+        private DailyBackupScheduler _dailyBackupScheduler;
         private bool _isLoggingOut;
         private readonly List<PlaceholderPanel> _placeholders = new List<PlaceholderPanel>();
 
@@ -94,6 +96,23 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _layout.SetBadge("orders", 3);
             _layout.SetUnreadCount(2);
             _layout.ShowPage("dashboard");
+
+            StartDailyBackupScheduler();
+        }
+
+        private void StartDailyBackupScheduler()
+        {
+            if (_dailyBackupScheduler != null) return;
+
+            var backupManager = AppComposition.CreateBackupManager();
+            var cloudUploadListener = AppComposition.CreateCloudinaryBackupUploadListener();
+            if (cloudUploadListener != null)
+                backupManager.AddListener(cloudUploadListener);
+
+            _dailyBackupScheduler = new DailyBackupScheduler(
+                backupManager,
+                TimeSpan.FromHours(1));
+            _dailyBackupScheduler.Start();
         }
 
         private void OnLanguageChanged(object sender, EventArgs e)
@@ -144,6 +163,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("shifts", Lang.Get("sidebar.page.shifts"), CreatePlaceholder("placeholder.shifts.title", "placeholder.shifts.description"), IconChar.Stopwatch);
             layout.AddSection(Lang.Get("sidebar.section.system"));
             layout.AddPage("settings", Lang.Get("sidebar.page.settings"), CreatePlaceholder("placeholder.settings.title", "placeholder.settings.description"), IconChar.Gear);
+            layout.AddPage("backup", Lang.Get("sidebar.page.backup"), SIMS_WinFormsApp.UI.Controls.Backup.BackupPage.Create(), IconChar.ShieldHalved);
             layout.AddPage("audit-log", "Nhật ký hệ thống", new ucAuditLog(), IconChar.ClockRotateLeft);
             layout.AddPage("role-permissions", "Phân quyền vai trò", new ucRolePermission(), IconChar.UserShield);
             return layout;
@@ -245,6 +265,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         public void Dispose()
         {
+            _dailyBackupScheduler?.Dispose();
+            _dailyBackupScheduler = null;
             _view.ViewReady -= OnViewReady;
             _view.LogoutRequested -= OnLogoutRequested;
             _view.ProfileRequested -= OnProfileRequested;
