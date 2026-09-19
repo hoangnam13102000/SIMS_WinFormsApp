@@ -1,6 +1,6 @@
 ﻿using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.DAL.Linq.Entities;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Indetity;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
 using SIMS_WinFormsApp.Models;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Enums;

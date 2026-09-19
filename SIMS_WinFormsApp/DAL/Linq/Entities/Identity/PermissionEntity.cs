@@ -1,6 +1,6 @@
 ﻿using System.Data.Linq.Mapping;
 
-namespace SIMS_WinFormsApp.DAL.Linq.Entities.Indetity
+namespace SIMS_WinFormsApp.DAL.Linq.Entities.Identity
 {
     [Table(Name = "Permissions")]
     public class PermissionEntity

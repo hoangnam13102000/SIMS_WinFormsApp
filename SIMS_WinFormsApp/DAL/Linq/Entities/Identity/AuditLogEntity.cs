@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Linq.Mapping;
 
-namespace SIMS_WinFormsApp.DAL.Linq.Entities.Indetity
+namespace SIMS_WinFormsApp.DAL.Linq.Entities.Identity
 {
     /// <summary>Ánh xạ bảng AuditLogs (đã có sẵn trong sql/SIMS.sql, chưa có entity C# trước đây):
     /// LogID, UserID, Action, TableName, RecordID, OldValue, NewValue, Detail, IPAddress, CreatedAt.</summary>

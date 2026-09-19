@@ -16,6 +16,8 @@ using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Controls.Pos;
+using SIMS_WinFormsApp.Models.Enums;
+using SIMS_WinFormsApp.Models.Permission;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
 {
@@ -162,11 +164,33 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("chat", Lang.Get("sidebar.page.chat"), new ucChat(), IconChar.Comments);
             layout.AddPage("shifts", Lang.Get("sidebar.page.shifts"), CreatePlaceholder("placeholder.shifts.title", "placeholder.shifts.description"), IconChar.Stopwatch);
             layout.AddSection(Lang.Get("sidebar.section.system"));
-            layout.AddPage("settings", Lang.Get("sidebar.page.settings"), CreatePlaceholder("placeholder.settings.title", "placeholder.settings.description"), IconChar.Gear);
+            if (CanAccessSettingsPage())
+            {
+                layout.AddPage("settings", Lang.Get("sidebar.page.settings"), new ucSystemSettings(), IconChar.Gear);
+            }
             layout.AddPage("backup", Lang.Get("sidebar.page.backup"), SIMS_WinFormsApp.UI.Controls.Backup.BackupPage.Create(), IconChar.ShieldHalved);
             layout.AddPage("audit-log", "Nhật ký hệ thống", new ucAuditLog(), IconChar.ClockRotateLeft);
             layout.AddPage("role-permissions", "Phân quyền vai trò", new ucRolePermission(), IconChar.UserShield);
             return layout;
+        }
+
+        private bool CanAccessSettingsPage()
+        {
+            var user = UserSession.Instance.CurrentUser;
+            if (user == null) return false;
+            if (string.Equals(user.RoleCode, RoleCodes.Admin, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            try
+            {
+                var repository = AppComposition.CreateRolePermissionRepository();
+                return repository.GetPermissionsForRole(user.RoleId)
+                    .Contains(AppPermission.SETTINGS_MANAGE);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private Control CreatePlaceholder(string titleKey, string descriptionKey)

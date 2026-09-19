@@ -140,6 +140,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new AuditLogRepository();
         }
 
+        public static IStoreConfigRepository CreateStoreConfigRepository()
+        {
+            return new StoreConfigRepository();
+        }
+
         public static IAuditLogWriter CreateAuditLogWriter()
         {
             return new AuditLogRepository();
