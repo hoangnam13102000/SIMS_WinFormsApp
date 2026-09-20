@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.Models.DTOs; 
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
@@ -109,7 +110,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             AutoScaleMode = AutoScaleMode.None;
             Dock = DockStyle.Fill;
             BackColor = AppColors.PageBg;
-            Padding = new Padding(10);
+            Padding = new Padding(24, 20, 24, 16);
 
             _statusColumnIndex = Array.IndexOf(columns, "Trạng thái");
             _lockColumnIndex = Array.IndexOf(columns, "Khóa");
@@ -124,8 +125,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Margin = Padding.Empty,
                 Padding = Padding.Empty
             };
+            // Đồng bộ height header với chuẩn dashboard cho toàn bộ project.
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, customFilterPanel == null ? 86 : customFilterHeight));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, customFilterPanel == null ? 72 : customFilterHeight));
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
 
@@ -178,7 +180,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 // (BackColor = AppColors.PageBg) nên set thẳng cùng màu là đủ, nhìn y hệt trong
                 // suốt mà không qua cơ chế transparent-forwarding gây lỗi.
                 BackColor = AppColors.PageBg,
-                Margin = new Padding(0, 0, 0, 12)
+                Margin = new Padding(0, 0, 0, 16)
             };
             header.Dock = DockStyle.Fill;
             header.Margin = Padding.Empty;
@@ -286,7 +288,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _root.BackColor = AppColors.PageBg;
             if (_headerRow != null) _headerRow.BackColor = AppColors.PageBg;
             _filterPanel.BackColor = AppColors.White;
-            _gridCard.BackColor = AppColors.Border;
+            _gridCard.BackColor = AppColors.White;
             _paginationPanel.BackColor = AppColors.White;
 
             _grid.BackgroundColor = AppColors.White;
@@ -415,9 +417,10 @@ namespace SIMS_WinFormsApp.UI.Controls
             var card = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = AppColors.Border,
-                Padding = new Padding(1),
-                Margin = Padding.Empty
+                BackColor = AppColors.White,
+                Padding = new Padding(0),
+                Margin = new Padding(0),
+                BorderStyle = BorderStyle.None
             };
             card.Controls.Add(_grid);
             return card;
@@ -425,7 +428,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private static DataGridView CreateGrid(string[] columns)
         {
-            var grid = new DataGridView
+            var grid = new Guna2DataGridView
             {
                 Dock = DockStyle.Fill,
                 AllowUserToAddRows = false,
@@ -437,17 +440,48 @@ namespace SIMS_WinFormsApp.UI.Controls
                 GridColor = AppColors.TableGrid,
                 BorderStyle = BorderStyle.None,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
-                ColumnHeadersHeight = 58,
-                RowTemplate = { Height = 60 },
+                ColumnHeadersHeight = 56,
+                RowTemplate = { Height = 48 },
                 EnableHeadersVisualStyles = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false,
-                ReadOnly = true
+                ReadOnly = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                DefaultCellStyle = { Padding = new Padding(12, 0, 12, 0), Alignment = DataGridViewContentAlignment.MiddleLeft },
+                AlternatingRowsDefaultCellStyle = { BackColor = AppColors.TableRowOdd },
+                ColumnHeadersDefaultCellStyle =
+                {
+                    BackColor = AppColors.TableHeaderBg,
+                    ForeColor = Color.White,
+                    Font = AppFonts.BodyBold,
+                    Padding = new Padding(12, 0, 12, 0),
+                    Alignment = DataGridViewContentAlignment.MiddleCenter
+                },
+                RowHeadersDefaultCellStyle = { BackColor = AppColors.White },
+                RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
+                ShowCellErrors = false,
+                ShowEditingIcon = false,
+                ShowRowErrors = false,
+                ScrollBars = ScrollBars.Vertical,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
             };
+
+            grid.ThemeStyle.AlternatingRowsStyle.BackColor = AppColors.TableRowOdd;
+            grid.ThemeStyle.HeaderStyle.BackColor = AppColors.TableHeaderBg;
+            grid.ThemeStyle.HeaderStyle.ForeColor = Color.White;
+            grid.ThemeStyle.HeaderStyle.Font = AppFonts.BodyBold;
+            grid.ThemeStyle.RowsStyle.BackColor = AppColors.White;
+            grid.ThemeStyle.RowsStyle.ForeColor = AppColors.TableRowText;
+            grid.ThemeStyle.RowsStyle.SelectionBackColor = AppColors.AccentBgSoft;
+            grid.ThemeStyle.RowsStyle.SelectionForeColor = AppColors.TextPrimary;
+            grid.ThemeStyle.GridColor = AppColors.TableGrid;
+            grid.ThemeStyle.RowsStyle.Height = 48;
+            grid.ThemeStyle.HeaderStyle.BorderStyle = DataGridViewHeaderBorderStyle.None;
+
             foreach (var column in columns)
             {
                 bool isCentered = column == "Trạng thái" || column == "Khóa" || column == "Thao tác";
-                grid.Columns.Add(new DataGridViewTextBoxColumn
+                var col = new DataGridViewTextBoxColumn
                 {
                     HeaderText = column,
                     Name = column,
@@ -460,7 +494,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                     HeaderCell = { Style = { Alignment = isCentered
                         ? DataGridViewContentAlignment.MiddleCenter
                         : DataGridViewContentAlignment.MiddleLeft } }
-                });
+                };
+                grid.Columns.Add(col);
             }
 
             grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;

@@ -122,7 +122,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
 
             int contentBottom = Math.Max(iconBox.Bottom, messageLabel?.Bottom ?? titleLabel.Bottom);
             ClientSize = new Size(CardWidth, contentBottom + CardPadding);
-            ApplyRoundedRegion();
 
             // Bấm vào bất kỳ đâu trên toast (kể cả tiêu đề/nội dung) đều đóng sớm được,
             // không cần đợi hết thời gian hiển thị.
@@ -211,16 +210,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Toast
             {
                 // Một số hệ thống không hỗ trợ per-pixel opacity trên layered window -
                 // bỏ qua có chủ đích: toast vẫn hiển thị bình thường, chỉ mất hiệu ứng fade.
-            }
-        }
-
-        private void ApplyRoundedRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using (GraphicsPath path = AppRadius.GetRoundedPath(rect, CornerRadius))
-            {
-                Region = new Region(path);
             }
         }
 

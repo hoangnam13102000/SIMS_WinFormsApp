@@ -99,7 +99,7 @@ namespace SIMS_WinFormsApp.UI.Theme
             White = dark ? Color.FromArgb(28, 31, 38) : Color.White;
             BgLight = dark ? Color.FromArgb(15, 17, 21) : Color.FromArgb(248, 250, 252);
             BgLighter = dark ? Color.FromArgb(38, 42, 53) : Color.FromArgb(241, 245, 249);
-            PageBg = dark ? Color.FromArgb(18, 20, 25) : Color.FromArgb(244, 246, 249);
+            PageBg = dark ? Color.FromArgb(18, 20, 25) : Color.FromArgb(244, 247, 250);
 
             Border = dark ? Color.FromArgb(51, 56, 71) : Color.FromArgb(226, 232, 240);
             FieldBorder = dark ? Color.FromArgb(71, 78, 97) : Color.FromArgb(203, 213, 225);

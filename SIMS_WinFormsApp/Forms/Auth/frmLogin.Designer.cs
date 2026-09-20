@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -10,9 +11,9 @@ namespace SIMS_WinFormsApp.Forms.Auth
         private System.ComponentModel.IContainer components = null;
 
         private AuthBrandPanel brandPanel;
-        private Panel pnlRight;
+        private Guna2Panel pnlRight;
         private TableLayoutPanel pnlAuthSplit;
-        private Panel pnlFormCard;
+        private Guna2Panel pnlFormCard;
 
         private Label lblTitle;
         private Label lblSubtitle;
@@ -46,9 +47,9 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.components = new System.ComponentModel.Container();
 
             this.brandPanel = new AuthBrandPanel();
-            this.pnlRight = new Panel();
+            this.pnlRight = new Guna2Panel();
             this.pnlAuthSplit = new TableLayoutPanel();
-            this.pnlFormCard = new Panel();
+            this.pnlFormCard = new Guna2Panel();
 
             this.lblTitle = new Label();
             this.lblSubtitle = new Label();
@@ -70,7 +71,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             this.AutoScaleMode = AutoScaleMode.None;
             this.ClientSize = new Size(1200, 760);
-            this.MinimumSize = new Size(1100, 700);
+            this.MinimumSize = new Size(1100, 760);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = true;
             this.MinimizeBox = true;
@@ -86,6 +87,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // ===== pnlRight (phải, chứa card đăng nhập được canh giữa) =====
             this.pnlRight.Dock = DockStyle.Fill;
             this.pnlRight.BackColor = Color.White;
+            this.pnlRight.FillColor = AppColors.White;
             this.pnlRight.Margin = Padding.Empty;
             this.pnlRight.Padding = Padding.Empty;
 
@@ -106,10 +108,13 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // ===== pnlFormCard =====
             const int cardWidth = 440;
 
-            const int cardHeight = 520;
+            // Tăng chiều cao card để các nhãn/title/button không bị cắt ở chân khi render
+            // với font thực tế trên Windows (Segoe UI / ClearType có chiều cao lớn hơn tính toán sơ bộ).
+            const int cardHeight = 560;
 
             this.pnlFormCard.Size = new Size(cardWidth, cardHeight);
             this.pnlFormCard.BackColor = Color.Transparent;
+            this.pnlFormCard.FillColor = Color.Transparent;
             this.pnlFormCard.Anchor = AnchorStyles.None;
 
             int y = 0;
@@ -117,20 +122,20 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // Title
             this.lblTitle.AutoSize = false;
             this.lblTitle.Location = new Point(-5, y);
-            this.lblTitle.Size = new Size(cardWidth + 5, 72);
+            this.lblTitle.Size = new Size(cardWidth + 5, 78);
             this.lblTitle.Font = AppFonts.Title;
             this.lblTitle.ForeColor = AppColors.TextTitle;
             this.lblTitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += 76;
+            y += 78 + 12;
 
             // Subtitle
             this.lblSubtitle.AutoSize = false;
             this.lblSubtitle.Location = new Point(0, y);
-            this.lblSubtitle.Size = new Size(cardWidth, 30);
+            this.lblSubtitle.Size = new Size(cardWidth, 34);
             this.lblSubtitle.Font = AppFonts.Body;
             this.lblSubtitle.ForeColor = AppColors.TextMuted;
             this.lblSubtitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += 30 + 34;
+            y += 34 + 36;
 
             // Username label + field
             this.lblUsername.AutoSize = false;
@@ -164,15 +169,20 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             // Remember me + Forgot password row
             this.pnlOptionsRow.Location = new Point(0, y);
-            this.pnlOptionsRow.Size = new Size(cardWidth, 30);
+            this.pnlOptionsRow.Size = new Size(cardWidth, 40);
             this.pnlOptionsRow.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
-            this.chkRemember.Location = new Point(0, 2);
+            this.chkRemember.AutoSize = false;
+            this.chkRemember.Size = new Size(220, 30);
+            this.chkRemember.Location = new Point(0, 5);
             this.chkRemember.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
-            this.lnkForgotPassword.AutoSize = true;
+            this.lnkForgotPassword.AutoSize = false;
+            this.lnkForgotPassword.Size = new Size(200, 30);
+            this.lnkForgotPassword.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold, GraphicsUnit.Point);
+            this.lnkForgotPassword.TextAlign = ContentAlignment.MiddleRight;
             this.lnkForgotPassword.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.lnkForgotPassword.Location = new Point(cardWidth - 130, 4);
+            this.lnkForgotPassword.Location = new Point(cardWidth - 200, 4);
 
             this.pnlOptionsRow.Controls.Add(this.chkRemember);
             this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
@@ -183,18 +193,18 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // Error label
             this.lblError.AutoSize = false;
             this.lblError.Location = new Point(0, y);
-            this.lblError.Size = new Size(cardWidth, 24);
+            this.lblError.Size = new Size(cardWidth, 26);
             this.lblError.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.lblError.ForeColor = AppColors.Error;
             this.lblError.Font = AppFonts.Small;
             this.lblError.Text = "";
-            y += 28;
+            y += 30;
 
             this.btnLogin.Location = new Point(0, y);
-            this.btnLogin.Size = new Size(cardWidth, 54);
+            this.btnLogin.Size = new Size(cardWidth, 58);
             this.btnLogin.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.btnLogin.IsPrimary = true;
-            y += 54 + 20;
+            y += 58 + 20;
 
             this.pnlFormCard.Controls.Add(this.btnLogin);
             this.pnlFormCard.Controls.Add(this.lblError);

@@ -177,42 +177,35 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
             var card = CreateCardPanel();
             card.Margin = new Padding(0, 16, 0, 0);
 
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, BackColor = Color.Transparent };
+            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, BackColor = Color.Transparent };
             layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
             card.Controls.Add(layout);
 
-            var titleLabel = new Label
-            {
-                Text = "Các bản sao lưu hiện có",
-                Font = AppFonts.Subtitle,
-                ForeColor = AppColors.TextTitle,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.BottomLeft,
-                BackColor = Color.Transparent
-            };
-            layout.Controls.Add(titleLabel, 0, 0);
-
-            layout.Controls.Add(BuildFilterRow(), 0, 1);
+            layout.Controls.Add(BuildFilterRow(), 0, 0);
 
             _grid = CreateGrid();
             _grid.CellContentClick += OnGridCellContentClick;
             var gridHolder = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0, 10, 0, 10) };
             gridHolder.Controls.Add(_grid);
-            layout.Controls.Add(gridHolder, 0, 2);
+            layout.Controls.Add(gridHolder, 0, 1);
 
             _paginationControl = new PaginationControl { Dock = DockStyle.Fill };
-            layout.Controls.Add(_paginationControl, 0, 3);
+            layout.Controls.Add(_paginationControl, 0, 2);
 
             return card;
         }
 
         private Panel BuildFilterRow()
         {
-            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.Transparent,
+                Padding = new Padding(5)
+            };
 
             _searchBar = new SearchBarControl { PlaceholderText = "Tìm theo tên file backup..." };
 
@@ -248,21 +241,22 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
 
             void Reflow()
             {
-                const int pickerWidth = 130, gap = 8, h = 40;
-                int y = (panel.Height - h) / 2;
+                const int pickerWidth = 170, gap = 8, h = 40;
+                int xStart = panel.Padding.Left;
+                int y = panel.Padding.Top + (panel.ClientSize.Height - panel.Padding.Vertical - h) / 2;
 
-                _toDate.Size = new Size(pickerWidth, h);
-                _toDate.Location = new Point(panel.Width - pickerWidth, y);
+                _searchBar.Location = new Point(xStart, y);
+                _searchBar.Size = new Size(Math.Max(100, panel.ClientSize.Width - panel.Padding.Horizontal - pickerWidth * 2 - 180), h);
 
-                toLabel.Location = new Point(_toDate.Left - gap - toLabel.Width, y + (h - toLabel.Height) / 2);
+                fromLabel.Location = new Point(_searchBar.Right + gap, y + (h - fromLabel.Height) / 2);
 
                 _fromDate.Size = new Size(pickerWidth, h);
-                _fromDate.Location = new Point(toLabel.Left - gap - pickerWidth, y);
+                _fromDate.Location = new Point(fromLabel.Right + gap, y);
 
-                fromLabel.Location = new Point(_fromDate.Left - gap - fromLabel.Width, y + (h - fromLabel.Height) / 2);
+                toLabel.Location = new Point(_fromDate.Right + gap, y + (h - toLabel.Height) / 2);
 
-                _searchBar.Location = new Point(0, y);
-                _searchBar.Size = new Size(Math.Max(80, fromLabel.Left - gap), h);
+                _toDate.Size = new Size(pickerWidth, h);
+                _toDate.Location = new Point(toLabel.Right + gap, y);
             }
             panel.Resize += (s, e) => Reflow();
             Reflow();
@@ -276,7 +270,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
                 Format = DateTimePickerFormat.Short,
                 ShowCheckBox = true,
                 Checked = false,
-                Font = AppFonts.Body
+                Font = AppFonts.Body,
+                Width = 170,
+                Height = 40
             };
         }
         #endregion

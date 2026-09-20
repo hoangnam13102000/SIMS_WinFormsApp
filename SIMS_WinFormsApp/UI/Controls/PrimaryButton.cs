@@ -1,158 +1,90 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    public class PrimaryButton : Control, IButtonControl
+    public class PrimaryButton : BaseButton
     {
-        private bool _isHover;
-        private bool _isPressed;
-
-        public int CornerRadius { get; set; } = AppRadius.Medium;
         public bool IsPrimary { get; set; } = true;
         public Color? CustomAccentColor { get; set; }
-        public DialogResult DialogResult { get; set; }
 
         public PrimaryButton()
         {
-            SetStyle(
-                ControlStyles.AllPaintingInWmPaint |
-                ControlStyles.UserPaint |
-                ControlStyles.OptimizedDoubleBuffer |
-                ControlStyles.ResizeRedraw |
-                ControlStyles.StandardClick |
-                ControlStyles.UserMouse |
-                ControlStyles.SupportsTransparentBackColor |
-                ControlStyles.Selectable, true);
-
-            BackColor = Color.Transparent;
             ForeColor = Color.White;
             Font = AppFonts.Button;
             Height = 46;
+            IconSize = 16;
             Cursor = Cursors.Hand;
-            TabStop = true;
+            CornerRadius = AppRadius.Medium;
         }
 
-        public void NotifyDefault(bool value) { }
-
-        public void PerformClick()
+        protected override Color GetBackgroundColor()
         {
-            if (!Enabled || !Visible) return;
-            OnClick(EventArgs.Empty);
-        }
-
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
-            {
-                PerformClick();
-                e.Handled = true;
-            }
-        }
-
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            base.OnMouseEnter(e);
-            _isHover = true;
-            Invalidate();
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-            _isHover = false;
-            _isPressed = false;
-            Invalidate();
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // ✅ ĐÃ SỬA: Bỏ Focus() - không cần focus trước khi click
-        // ═══════════════════════════════════════════════════════════════
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-            if (e.Button == MouseButtons.Left && Enabled)
-            {
-                _isPressed = true;
-                Capture = true;
-                Invalidate();
-            }
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-            if (e.Button == MouseButtons.Left)
-            {
-                bool wasPressed = _isPressed;
-                _isPressed = false;
-                Capture = false;
-
-                Invalidate();
-            }
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            ApplyRoundedRegion();
-        }
-
-        private void ApplyRoundedRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-            using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, Width, Height), CornerRadius))
-                Region = new Region(path);
-        }
-
-        protected override bool ShowFocusCues => false;
-
-        protected override void OnPaintBackground(PaintEventArgs pevent) { }
-
-        protected override void OnPaint(PaintEventArgs pevent)
-        {
-            var g = pevent.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
             Color accent = CustomAccentColor ?? AppColors.Accent;
-            Color fill, textColor;
 
             if (!Enabled)
+                return AppColors.DisabledBtn;
+
+            if (IsPrimary)
             {
-                fill = AppColors.DisabledBtn;
-                textColor = Color.White;
-            }
-            else if (IsPrimary)
-            {
-                fill = _isPressed ? Scale(accent, 0.85)
-                                  : (_isHover ? Scale(accent, 0.72) : accent);
-                textColor = Color.White;
-            }
-            else
-            {
-                fill = _isHover ? AppColors.CancelHover : AppColors.CancelBg;
-                textColor = AppColors.TextPrimary;
+                if (_isPressed)
+                    return Scale(accent, 0.85);
+                if (_isHover)
+                    return Scale(accent, 0.72);
+                return accent;
             }
 
-            var rect = new Rectangle(0, 0, Width, Height);
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius))
-            using (var brush = new SolidBrush(fill))
+            return _isHover ? AppColors.CancelHover : AppColors.CancelBg;
+        }
+
+        protected override Color GetBorderColor()
+        {
+            if (!IsPrimary)
+                return AppColors.Border;
+
+            return Enabled ? (CustomAccentColor ?? AppColors.Accent) : AppColors.Border;
+        }
+
+        protected override Color GetTextColor()
+        {
+            return IsPrimary ? Color.White : AppColors.TextPrimary;
+        }
+
+        protected override void DrawText(Graphics g)
+        {
+            if (string.IsNullOrEmpty(Text)) return;
+
+            var iconWidth = Icon.HasValue ? IconSize + 10 : 0;
+            var textWidth = TextRenderer.MeasureText(Text, Font).Width;
+            var totalWidth = iconWidth + textWidth;
+            var startX = Math.Max(0, (Width - totalWidth) / 2);
+
+            if (Icon.HasValue)
             {
-                g.FillPath(brush, path);
-                if (!IsPrimary)
+                var iconBox = Controls[0] as IconPictureBox;
+                if (iconBox != null)
                 {
-                    using (var pen = new Pen(AppColors.Border, 1f))
-                        g.DrawPath(pen, path);
+                    iconBox.IconColor = GetTextColor();
+                    iconBox.Location = new Point(startX, (Height - IconSize) / 2);
                 }
             }
 
-            TextRenderer.DrawText(g, Text, Font, ClientRectangle, textColor,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
+            var textBounds = new Rectangle(
+                startX + iconWidth,
+                0,
+                Math.Max(0, Width - startX - iconWidth),
+                Height);
+
+            TextRenderer.DrawText(
+                g,
+                Text,
+                Font,
+                textBounds,
+                GetTextColor(),
+                TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
         }
 
         private static Color Scale(Color c, double factor)

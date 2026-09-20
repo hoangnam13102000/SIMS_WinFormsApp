@@ -14,6 +14,7 @@ namespace SIMS_WinFormsApp.UI.Controls
     {
         private const int BoxSize = 18;
         private bool _checked;
+        public bool DarkMode { get; set; }
 
         public event EventHandler CheckedChanged;
 
@@ -34,10 +35,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
                       ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
             BackColor = AppColors.White;
-            Font = AppFonts.Small;
+            Font = new Font("Segoe UI", 12.5f, FontStyle.Regular, GraphicsUnit.Point);
             ForeColor = AppColors.TextMuted;
             Cursor = Cursors.Hand;
-            AutoSize = true;
+            AutoSize = false;
+            Size = new Size(220, 30);
             TabStop = false;
         }
 
@@ -58,7 +60,8 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             var g = pevent.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            Color backgroundColor = AppColors.White;
+            Color backgroundColor = DarkMode ? Color.FromArgb(20, 23, 30) : AppColors.White;
+            Color accent = DarkMode ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
             g.Clear(backgroundColor);
 
             int y = (Height - BoxSize) / 2;
@@ -68,14 +71,14 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 if (_checked)
                 {
-                    using (var brush = new SolidBrush(AppColors.Accent))
+                    using (var brush = new SolidBrush(accent))
                         g.FillPath(brush, path);
                 }
                 else
                 {
-                    using (var brush = new SolidBrush(AppColors.White))
+                    using (var brush = new SolidBrush(backgroundColor))
                         g.FillPath(brush, path);
-                    using (var pen = new Pen(AppColors.FieldBorder, 1.4f))
+                    using (var pen = new Pen(DarkMode ? Color.FromArgb(115, 123, 139) : AppColors.FieldBorder, 1.4f))
                         g.DrawPath(pen, path);
                 }
             }
@@ -92,8 +95,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
 
             var textRect = new Rectangle(BoxSize + 8, 0, Math.Max(0, Width - BoxSize - 8), Height);
-            TextRenderer.DrawText(g, Text, Font, textRect, ForeColor, backgroundColor,
-                TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.NoPadding);
+            Color textColor = DarkMode ? Color.FromArgb(240, 242, 246) : ForeColor;
+            TextRenderer.DrawText(g, Text, Font, textRect, textColor, backgroundColor,
+                TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.NoPadding | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix);
         }
     }
 }

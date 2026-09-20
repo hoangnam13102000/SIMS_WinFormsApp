@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls.Search
@@ -20,7 +21,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
         public event EventHandler<string> TextEdited;
         public event EventHandler<string> SuggestionPicked;
 
-        private readonly TextBox _textBox;
+        private readonly Guna2TextBox _textBox;
         private readonly Label _placeholderLabel;
         private readonly IconPictureBox _searchIcon;
         private readonly SuggestionPopup _popup;
@@ -42,12 +43,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
                 Size = new Size(18, 18)
             };
 
-            _textBox = new TextBox
+            _textBox = new Guna2TextBox
             {
-                BorderStyle = BorderStyle.None,
+                BorderRadius = AppRadius.Medium,
+                BorderThickness = 1,
+                FillColor = AppColors.White,
                 Font = AppFonts.Input,
                 ForeColor = AppColors.TextPrimary,
-                BackColor = AppColors.White
+                BackColor = AppColors.White,
+                BorderColor = AppColors.FieldBorder,
+                Cursor = Cursors.IBeam
             };
             _textBox.GotFocus += (_, __) => { _isFocused = true; Invalidate(); };
             _textBox.LostFocus += (_, __) => { _isFocused = false; Invalidate(); HideSuggestions(); };
@@ -143,21 +148,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            Color borderColor = _isFocused ? AppColors.Accent : AppColors.FieldBorder;
-            int borderWidth = _isFocused ? 2 : 1;
-
-            using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-            using (var fillBrush = new SolidBrush(AppColors.White))
-            using (var pen = new Pen(borderColor, borderWidth))
-            {
-                g.FillPath(fillBrush, path);
-                g.DrawPath(pen, path);
-            }
-
             base.OnPaint(e);
         }
 

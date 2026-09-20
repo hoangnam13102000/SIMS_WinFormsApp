@@ -242,12 +242,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             Controls.Add(_headerPanel);
 
             KeyDown += BaseFormDialogForm_KeyDown;
-            Resize += (s, e) => { RepositionHeaderControls(); RepositionFooterButtons(); ApplyRoundedRegion(); Invalidate(); };
+            Resize += (s, e) => { RepositionHeaderControls(); RepositionFooterButtons(); Invalidate(); };
             ThemeManager.Instance.ThemeChanged += ThemeManager_ThemeChanged;
 
             RepositionHeaderControls();
             RepositionFooterButtons();
-            ApplyRoundedRegion();
         }
 
         public BaseFormDialogForm(IWin32Window owner) : this()
@@ -372,14 +371,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         private void RepositionHeaderControls()
         {
             _closeButton.Location = new Point(_headerPanel.ClientSize.Width - CloseButtonSize - 12, (HeaderHeight - CloseButtonSize) / 2);
-        }
-
-        private void ApplyRoundedRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-            var rect = new Rectangle(0, 0, Math.Max(1, ClientSize.Width - 1), Math.Max(1, ClientSize.Height - 1));
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius + 2))
-                Region = new Region(path);
         }
 
         private void ThemeManager_ThemeChanged(object sender, EventArgs e)

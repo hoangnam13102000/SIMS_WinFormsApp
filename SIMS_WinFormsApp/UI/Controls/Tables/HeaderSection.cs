@@ -112,11 +112,13 @@ namespace SIMS_WinFormsApp.UI.Controls
                 ControlStyles.ResizeRedraw |
                 ControlStyles.SupportsTransparentBackColor, true);
 
-            Height = 132;
-            MinimumSize = new Size(300, 132);
-            // Không set Dock ở đây – parent quyết định
-            BackColor = Color.Transparent;
+            // Dùng cùng một chuẩn height cho toàn project, lấy theo dashboard để mọi page
+            // đều có header đồng nhất. Không để từng page tự định nghĩa row khác nhau.
+            Height = 120;
+            MinimumSize = new Size(300, 120);
+            BackColor = AppColors.White;
             Padding = new Padding(0);
+            Margin = new Padding(0, 0, 0, 12);
 
             BuildUI();
         }
@@ -132,8 +134,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             // Icon circle – canh giữa theo chiều cao mới (108px)
             _iconCircle = new Panel
             {
-                Size = new Size(48, 48),
-                Location = new Point(20, 30),
+                Size = new Size(42, 42),
+                Location = new Point(20, (Height - 42) / 2),
                 BackColor = Color.Transparent
             };
             _iconCircle.Paint += IconCircle_Paint;
@@ -158,9 +160,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             // thay vì đoán số cố định — tránh bị cắt chữ nếu máy chạy không có đúng font
             // "Segoe UI Semibold" và Windows phải dùng font thay thế có kích thước khác.
             int titleH = TextRenderer.MeasureText("Ẵợgqy", titleFont,
-                new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 8;
+                new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 6;
             int subtitleH = TextRenderer.MeasureText("Ẵợgqy", subtitleFont,
-                new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 8;
+                new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height + 6;
 
             // Title
             _lblTitle = new Label
@@ -169,7 +171,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Text = _title,
                 Font = titleFont,
                 ForeColor = AppColors.TextTitle,
-                Location = new Point(84, 16),
+                Location = new Point(78, 16),
                 Size = new Size(Math.Max(80, Width - 104), titleH),
                 TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent,
@@ -184,7 +186,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Text = _subtitle,
                 Font = subtitleFont,
                 ForeColor = AppColors.TextSecondary,
-                Location = new Point(84, _lblTitle.Bottom + 4),
+                Location = new Point(78, _lblTitle.Bottom + 3),
                 Size = new Size(Math.Max(80, Width - 104), subtitleH),
                 TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent,
@@ -195,9 +197,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             _actionHost = new Panel
             {
                 Dock = DockStyle.Right,
-                Width = 375,
+                Width = 320,
                 BackColor = Color.Transparent,
-                Padding = new Padding(0, 36, 0, 0),
+                Padding = new Padding(0, 20, 14, 0),
                 Visible = false
             };
             Controls.Add(_actionHost);
@@ -221,6 +223,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void OnThemeChanged(object sender, EventArgs e)
         {
+            BackColor = AppColors.White;
             _lblTitle.ForeColor = AppColors.TextTitle;
             _lblSubtitle.ForeColor = AppColors.TextSecondary;
             _iconBox.IconColor = AppColors.Info;
@@ -251,6 +254,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             using (var brush = new SolidBrush(AppColors.White))
             {
                 g.FillPath(brush, path);
+            }
+
+            using (var pen = new Pen(AppColors.Border, 1f))
+            {
+                var borderRect = new Rectangle(0, 0, Width - 1, Height - 1);
+                g.DrawPath(pen, AppRadius.GetRoundedPath(borderRect, AppRadius.Large));
             }
 
             base.OnPaint(e);
@@ -294,7 +303,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            pevent.Graphics.Clear(AppColors.White);
+            pevent.Graphics.Clear(BackColor);
         }
 
         #endregion

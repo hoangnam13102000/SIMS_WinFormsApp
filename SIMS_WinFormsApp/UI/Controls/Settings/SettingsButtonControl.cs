@@ -23,10 +23,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.ResizeRedraw |
                      ControlStyles.SupportsTransparentBackColor, true);
 
-            // Kích thước gốc là 52. Đã thử tăng gấp đôi (104) nhưng quá to, giảm lại
-            // còn 72 - vẫn lớn hơn rõ rệt so với bản gốc nhưng cân đối hơn với layout.
             Size = new Size(72, 72);
             BackColor = Color.Transparent;
+            ForeColor = Color.Transparent;
             Cursor = Cursors.Hand;
 
             _icon = new IconPictureBox
@@ -41,13 +40,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             Controls.Add(_icon);
             CenterIcon();
-            UpdateRegion();
 
             _toolTip = new ToolTip();
             _toolTip.SetToolTip(this, Lang.Get("settings.tooltip"));
             _toolTip.SetToolTip(_icon, Lang.Get("settings.tooltip"));
 
-            Resize += (_, __) => { CenterIcon(); UpdateRegion(); };
+            Resize += (_, __) => { CenterIcon(); };
 
             Click += (_, __) => TogglePopup();
             _icon.Click += (_, __) => TogglePopup();
@@ -59,22 +57,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         private void CenterIcon()
         {
             _icon.Location = new Point((Width - _icon.Width) / 2, (Height - _icon.Height) / 2);
-        }
-
-        // Bo tròn đúng vùng (Region) của control theo hình tròn thay vì chỉ vẽ ellipse
-        // lên nền vuông: nhờ vậy phần góc vuông bên ngoài đường tròn không còn thuộc
-        // vùng client của control nữa (không bị OS/GDI tô đè), nên không còn viền/khối
-        // vuông lộ ra quanh nút tròn dù nó nổi (FAB) trên bất kỳ nền nào phía sau.
-        private void UpdateRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-
-            using (var path = new GraphicsPath())
-            {
-                path.AddEllipse(0, 0, Width - 1, Height - 1);
-                Region?.Dispose();
-                Region = new Region(path);
-            }
         }
 
         private void TogglePopup()
@@ -91,7 +73,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             popup.ShowAbove(this, 12);
         }
 
-        protected override void OnPaintBackground(PaintEventArgs pevent) { }
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+            // Control này là FAB nổi trên nền trang, không được vẽ nền đen/opacity giả.
+            // Chỉ vẽ hình tròn của chính nó trong OnPaint, phần nền phía sau phải thấy rõ.
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -99,8 +85,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
             Color bg = _hover ? AppColors.AccentHover : AppColors.Accent;
-            using (var shadow = new SolidBrush(Color.FromArgb(60, 0, 0, 0)))
-                g.FillEllipse(shadow, 1, 2, Width - 2, Height - 2);
+            using (var shadow = new SolidBrush(Color.FromArgb(38, 0, 0, 0)))
+                g.FillEllipse(shadow, 2, 4, Width - 4, Height - 4);
             using (var brush = new SolidBrush(bg))
                 g.FillEllipse(brush, 0, 0, Width - 2, Height - 2);
 

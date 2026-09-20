@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp
@@ -24,10 +25,17 @@ namespace SIMS_WinFormsApp
             ThemeManager.Instance.ApplyStartupTheme();
             _ = LanguageManager.Instance;
 
+            var appIcon = TryLoadApplicationIcon();
+
             while (true)
             {
                 using (var loginForm = AppComposition.CreateLoginForm())
                 {
+                    if (appIcon != null)
+                    {
+                        loginForm.Icon = appIcon;
+                    }
+
                     loginForm.StartPosition = FormStartPosition.CenterScreen;
                     loginForm.TopMost = true;
                     loginForm.Load += (s, e) => loginForm.BeginInvoke(new Action(() => { loginForm.TopMost = false; }));
@@ -39,6 +47,11 @@ namespace SIMS_WinFormsApp
 
                 using (var mainForm = new frmMain())
                 {
+                    if (appIcon != null)
+                    {
+                        mainForm.Icon = appIcon;
+                    }
+
                     mainForm.StartPosition = FormStartPosition.CenterScreen;
                     mainForm.Shown += (s, e) => { mainForm.Activate(); mainForm.BringToFront(); };
                     Application.Run(mainForm);
@@ -49,6 +62,24 @@ namespace SIMS_WinFormsApp
 
                 break;
             }
+        }
+
+        private static System.Drawing.Icon TryLoadApplicationIcon()
+        {
+            try
+            {
+                var relativePath = Path.Combine("Resources", "Logo", "app_logo.ico");
+                var fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+
+                if (File.Exists(fullPath))
+                    return new System.Drawing.Icon(fullPath);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[AppIcon] Failed to load icon: " + ex.Message);
+            }
+
+            return null;
         }
 
         private static void WarmUpFontAwesome()

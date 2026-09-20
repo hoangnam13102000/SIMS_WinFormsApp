@@ -124,11 +124,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 Visible = false,
                 Cursor = Cursors.Hand
             };
-            using (var badgePath = new GraphicsPath())
-            {
-                badgePath.AddEllipse(0, 0, 21, 21);
-                _badgeDot.Region = new Region(badgePath);
-            }
+            _badgeDot.Paint += BadgeDot_Paint;
             _badgeDot.Click += (_, __) => ShowNotificationMenu();
 
             _bellPanel = new Panel
@@ -159,11 +155,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 Text = _avatarInitial,
                 Cursor = Cursors.Hand
             };
-            using (var path = new GraphicsPath())
-            {
-                path.AddEllipse(0, 0, 41, 41);
-                _avatarLabel.Region = new Region(path);
-            }
+            _avatarLabel.Paint += AvatarLabel_Paint;
             _avatarLabel.Click += (_, __) => ShowAccountMenu();
 
             _userNameLabel = new Label
@@ -310,6 +302,47 @@ namespace SIMS_WinFormsApp.UI.Layouts
             int bellX = _accountPanel.Left - 20 - _bellPanel.Width;
             int bellY = (h - _bellPanel.Height) / 2;
             _bellPanel.Location = new Point(Math.Max(0, bellX), bellY);
+        }
+
+        private void BadgeDot_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var rect = new Rectangle(0, 0, _badgeDot.Width - 1, _badgeDot.Height - 1);
+            using (var clip = new GraphicsPath())
+            {
+                clip.AddEllipse(rect);
+                e.Graphics.SetClip(clip);
+                using (var brush = new SolidBrush(_badgeDot.BackColor))
+                    e.Graphics.FillRectangle(brush, rect);
+                TextRenderer.DrawText(e.Graphics, _badgeDot.Text, _badgeDot.Font, rect,
+                    _badgeDot.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                e.Graphics.ResetClip();
+            }
+        }
+
+        private void AvatarLabel_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var rect = new Rectangle(0, 0, _avatarLabel.Width - 1, _avatarLabel.Height - 1);
+            using (var clip = new GraphicsPath())
+            {
+                clip.AddEllipse(rect);
+                e.Graphics.SetClip(clip);
+                using (var bg = new SolidBrush(_avatarLabel.BackColor))
+                    e.Graphics.FillRectangle(bg, rect);
+
+                if (_avatarLabel.Image != null)
+                {
+                    e.Graphics.DrawImage(_avatarLabel.Image, rect, new Rectangle(0, 0, _avatarLabel.Image.Width, _avatarLabel.Image.Height), GraphicsUnit.Pixel);
+                }
+                else
+                {
+                    TextRenderer.DrawText(e.Graphics, _avatarLabel.Text, _avatarLabel.Font, rect,
+                        _avatarLabel.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                }
+
+                e.Graphics.ResetClip();
+            }
         }
 
         public void SetSubtitle(string subtitle)
@@ -478,11 +511,30 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 BackColor = LayoutColors.Accent,
                 Text = _avatarInitial
             };
-            using (var path = new GraphicsPath())
+            avatar.Paint += (s, e) =>
             {
-                path.AddEllipse(0, 0, avatarSize - 1, avatarSize - 1);
-                avatar.Region = new Region(path);
-            }
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                var avatarRect = new Rectangle(0, 0, avatar.Width - 1, avatar.Height - 1);
+                using (var clip = new GraphicsPath())
+                {
+                    clip.AddEllipse(avatarRect);
+                    e.Graphics.SetClip(clip);
+                    using (var bg = new SolidBrush(avatar.BackColor))
+                        e.Graphics.FillRectangle(bg, avatarRect);
+
+                    if (avatar.Image != null)
+                    {
+                        e.Graphics.DrawImage(avatar.Image, avatarRect, new Rectangle(0, 0, avatar.Image.Width, avatar.Image.Height), GraphicsUnit.Pixel);
+                    }
+                    else
+                    {
+                        TextRenderer.DrawText(e.Graphics, avatar.Text, avatar.Font, avatarRect,
+                            avatar.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                    }
+
+                    e.Graphics.ResetClip();
+                }
+            };
 
             int textX = leftPad + avatarSize + gap;
             int textY = Math.Max(10, (headerH - textBlockH) / 2);

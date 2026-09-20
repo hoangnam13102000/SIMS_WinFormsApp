@@ -165,6 +165,7 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
                 IconColor = iconColor,
                 IconBackground = iconBg,
                 TrendColor = trendColor,
+                TopBorderColor = iconColor,
                 Dock = DockStyle.Fill,
                 Margin = new Padding(0, 0, column < 3 ? 12 : 0, 0)
             };

@@ -277,7 +277,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             UpdateDialogAppearance();
             RebuildButtons();
             AdjustSizeToContent();
-            ApplyRoundedRegion();
         }
 
         /// <summary>
@@ -329,12 +328,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
         }
 
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            ApplyRoundedRegion();
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -346,17 +339,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         #endregion
 
         #region Private Methods - UI Update
-        private void ApplyRoundedRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius + 2))
-            {
-                Region = new Region(path);
-            }
-        }
-
         private void ApplyThemeColors()
         {
             BackColor = DialogSurfaceColor;

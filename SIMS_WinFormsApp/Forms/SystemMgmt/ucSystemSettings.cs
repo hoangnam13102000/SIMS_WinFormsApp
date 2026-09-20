@@ -118,23 +118,58 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         {
             SuspendLayout();
 
-            var root = new Panel { Dock = DockStyle.Fill, BackColor = AppColors.PageBg };
+            var root = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2,
+                BackColor = AppColors.PageBg,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 128F));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
             var headerHost = BuildHeaderRow();
 
             var scrollHost = new BufferedPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
-                BackColor = AppColors.PageBg
+                BackColor = AppColors.PageBg,
+                Padding = new Padding(0, 8, 0, 0)
             };
 
-            scrollHost.Controls.Add(CreateTwoColumnRow(BuildPricingCard(), BuildReturnPolicyCard()));
-            scrollHost.Controls.Add(BuildStoreInfoCard());
+            var contentStack = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 1,
+                RowCount = 2,
+                BackColor = AppColors.PageBg,
+                Margin = new Padding(0),
+                Padding = new Padding(0)
+            };
+            contentStack.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            contentStack.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            contentStack.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            var storeInfoCard = BuildStoreInfoCard();
+            storeInfoCard.Margin = new Padding(0, 0, 0, 18);
+
+            var lowerTwoCards = CreateTwoColumnRow(BuildPricingCard(), BuildReturnPolicyCard());
+            lowerTwoCards.Margin = new Padding(0);
+
+            contentStack.Controls.Add(storeInfoCard, 0, 0);
+            contentStack.Controls.Add(lowerTwoCards, 0, 1);
+            scrollHost.Controls.Add(contentStack);
 
             _overlayHost = new LoadingOverlayHost(scrollHost) { Dock = DockStyle.Fill };
 
-            root.Controls.Add(_overlayHost);
-            root.Controls.Add(headerHost);
+            root.Controls.Add(headerHost, 0, 0);
+            root.Controls.Add(_overlayHost, 0, 1);
 
             Controls.Add(root);
             ResumeLayout(true);
@@ -152,12 +187,12 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
             var host = new Panel
             {
-                Dock = DockStyle.Top,
+                Dock = DockStyle.Fill,
                 Height = 108,
                 // KHÔNG dùng Color.Transparent khi lồng 1 control tự vẽ (HeaderSection) vào Panel -
                 // cùng lý do đã ghi chú ở BaseTable.WrapHeaderWithAddButton (tránh viền/góc đen).
                 BackColor = AppColors.PageBg,
-                Margin = new Padding(0, 0, 0, 16)
+                Margin = new Padding(0)
             };
             host.Controls.Add(header);
 
@@ -190,7 +225,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private Panel BuildStoreInfoCard()
         {
-            var card = new Panel { Dock = DockStyle.Top, BackColor = Color.Transparent, Padding = new Padding(24), Margin = new Padding(0, 0, 0, 16) };
+            var card = new Panel { Dock = DockStyle.Top, BackColor = Color.Transparent, Padding = new Padding(24), Margin = new Padding(0, 18, 0, 18) };
             card.Paint += (s, e) => PaintCard(card, e);
 
             var header = CreateSectionHeader(
@@ -198,7 +233,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 "Thông tin cơ bản hiển thị trên hoá đơn, báo cáo và giao diện",
                 IconChar.Shop, AppColors.Accent, AppColors.AccentBgSoft);
             header.Dock = DockStyle.Top;
-            header.Margin = new Padding(0, 0, 0, 8);
+            header.Margin = new Padding(0, 0, 0, 14);
 
             _fieldStoreName = new LabeledIconField
             {
@@ -231,7 +266,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private Panel BuildPricingCard()
         {
-            var card = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Padding = new Padding(24) };
+            var card = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Padding = new Padding(24), Margin = new Padding(0, 0, 12, 0) };
             card.Paint += (s, e) => PaintCard(card, e);
 
             var header = CreateSectionHeader(
@@ -239,7 +274,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 "Cấu hình thuế và quy tắc tính giá bán",
                 IconChar.Percent, AppColors.Success, AppColors.SuccessBg);
             header.Dock = DockStyle.Top;
-            header.Margin = new Padding(0, 0, 0, 8);
+            header.Margin = new Padding(0, 0, 0, 14);
 
             _fieldVatRate = new LabeledIconField
             {
@@ -271,7 +306,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private Panel BuildReturnPolicyCard()
         {
-            var card = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Padding = new Padding(24) };
+            var card = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Padding = new Padding(24), Margin = new Padding(12, 0, 0, 0) };
             card.Paint += (s, e) => PaintCard(card, e);
 
             var header = CreateSectionHeader(
@@ -279,7 +314,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 "Quy định thời gian và quy trình duyệt phiếu",
                 IconChar.RightLeft, AppColors.Warning, AppColors.WarningBg);
             header.Dock = DockStyle.Top;
-            header.Margin = new Padding(0, 0, 0, 8);
+            header.Margin = new Padding(0, 0, 0, 14);
 
             _fieldReturnDays = new LabeledIconField
             {
@@ -397,19 +432,34 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private static Panel CreateTwoColumnRow(Control left, Control right)
         {
-            var row = new Panel { Dock = DockStyle.Top, BackColor = Color.Transparent };
+            var row = new Panel { Dock = DockStyle.Top, BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 18) };
             left.Dock = DockStyle.None;
             right.Dock = DockStyle.None;
 
             void Layout()
             {
                 const int gap = 24;
-                int half = Math.Max(10, (row.Width - gap) / 2);
-                left.Width = half;
+                if (row.Width <= gap)
+                {
+                    left.Width = row.Width;
+                    right.Width = row.Width;
+                    left.Location = new Point(0, 0);
+                    right.Location = new Point(0, left.Bottom + gap);
+                    row.Height = left.Height + right.Height + gap;
+                    return;
+                }
+
+                int totalContentWidth = row.Width - gap;
+                int columnWidth = totalContentWidth / 2;
+                left.Width = columnWidth;
+                right.Width = columnWidth;
                 left.Location = new Point(0, 0);
-                right.Width = Math.Max(10, row.Width - half - gap);
                 right.Location = new Point(left.Right + gap, 0);
-                row.Height = Math.Max(left.Height, right.Height);
+
+                int maxHeight = Math.Max(left.Height, right.Height);
+                row.Height = maxHeight;
+                left.Height = maxHeight;
+                right.Height = maxHeight;
             }
 
             row.Controls.Add(right);

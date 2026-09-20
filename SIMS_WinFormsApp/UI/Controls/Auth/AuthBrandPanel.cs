@@ -81,27 +81,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             int cursorY = _contentTop >= 0 ? _contentTop : (int)(Height * 0.20);
 
             var logoRect = new Rectangle(paddingX, cursorY, 64, 64);
-            using (var logoPath = AppRadius.GetRoundedPath(logoRect, 18))
-            using (var logoBrush = new SolidBrush(Color.White))
+
+            if (_logo != null)
             {
-                g.FillPath(logoBrush, logoPath);
-
-                if (_logo != null)
-                {
-                    var oldClip = g.Clip;
-                    g.SetClip(logoPath, CombineMode.Intersect);
-
-                    int inset = 10;
-                    var innerRect = new Rectangle(
-                        logoRect.X + inset, logoRect.Y + inset,
-                        logoRect.Width - inset * 2, logoRect.Height - inset * 2);
-                    g.DrawImage(_logo, innerRect);
-
-                    g.Clip = oldClip;
-                }
+                g.DrawImage(_logo, logoRect);
             }
-
-            if (_logo == null)
+            else
             {
                 DrawCheckGlyph(g, logoRect, AppColors.DarkTop);
             }
@@ -110,23 +95,31 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             using (var titleBrush = new SolidBrush(Color.White))
             {
-                // The embedded Inter font has a taller ascent than Segoe UI.
-                // Keep extra vertical bounds so the top and bottom of the brand
-                // name remain visible after the form is recreated.
-                var titleRect = new Rectangle(paddingX, cursorY, Width - paddingX * 2, 60);
-                g.DrawString(_brandName, AppFonts.Brand, titleBrush, titleRect);
+                // Cho đủ không gian dọc cho chữ có dấu và chữ có đường g/p/q/y.
+                // Khi chiều cao container quá sát, các nét dưới của chữ sẽ bị cắt ngang.
+                var titleRect = new Rectangle(paddingX, cursorY, Width - paddingX * 2, 90);
+                using (var format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.NoWrap))
+                {
+                    format.LineAlignment = StringAlignment.Center;
+                    format.Alignment = StringAlignment.Near;
+                    g.DrawString(_brandName, AppFonts.Brand, titleBrush, titleRect, format);
+                }
             }
-            cursorY += 66;
+            cursorY += 90;
 
-        
             if (!string.IsNullOrEmpty(_tagline))
             {
                 using (var taglineBrush = new SolidBrush(AppColors.DarkTextMuted))
                 {
                     int textWidth = System.Math.Max(80, Width - paddingX * 2 - 16);
-                    var taglineRect = new Rectangle(paddingX, cursorY, textWidth, 120);
-                    g.DrawString(_tagline, AppFonts.Body, taglineBrush, taglineRect);
-                    cursorY += MeasureHeight(g, _tagline, AppFonts.Body, taglineRect.Width) + 28;
+                    var taglineRect = new Rectangle(paddingX, cursorY, textWidth, 130);
+                    using (var format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.NoWrap))
+                    {
+                        format.LineAlignment = StringAlignment.Near;
+                        format.Alignment = StringAlignment.Near;
+                        g.DrawString(_tagline, AppFonts.Body, taglineBrush, taglineRect, format);
+                    }
+                    cursorY += MeasureHeight(g, _tagline, AppFonts.Body, taglineRect.Width) + 32;
                 }
             }
 

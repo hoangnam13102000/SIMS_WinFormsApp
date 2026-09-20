@@ -27,7 +27,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             Font = new Font("Segoe UI", 9f);
             StartPosition = FormStartPosition.CenterScreen;
             MinimumSize = new Size(1024, 680);
-            BackColor = Color.FromArgb(245, 247, 250);
+            BackColor = Color.FromArgb(244, 247, 250);
+            TransparencyKey = Color.Empty;
 
             SetStyle(ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.UserPaint |

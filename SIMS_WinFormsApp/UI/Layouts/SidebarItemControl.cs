@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Theme;
@@ -88,11 +89,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 Visible = false,
                 Cursor = Cursors.Hand
             };
-            using (var path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddArc(0, 0, 19, 19, 0, 360);
-                _badgeLabel.Region = new Region(path);
-            }
+            _badgeLabel.Paint += BadgeLabel_Paint;
 
             Controls.Add(_iconBox);
             Controls.Add(_textLabel);
@@ -148,6 +145,22 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
             LayoutChildren();
             Invalidate();
+        }
+
+        private void BadgeLabel_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var rect = new Rectangle(0, 0, _badgeLabel.Width - 1, _badgeLabel.Height - 1);
+            using (var clip = new GraphicsPath())
+            {
+                clip.AddEllipse(rect);
+                e.Graphics.SetClip(clip);
+                using (var bg = new SolidBrush(_badgeLabel.BackColor))
+                    e.Graphics.FillRectangle(bg, rect);
+                TextRenderer.DrawText(e.Graphics, _badgeLabel.Text, _badgeLabel.Font, rect,
+                    _badgeLabel.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                e.Graphics.ResetClip();
+            }
         }
 
         public void SetBadge(int count)

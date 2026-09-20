@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly Label _placeholderLabel;
         private int _cornerRadius = AppRadius.Medium;
         private bool _isFocused;
+        public bool DarkMode { get; set; }
 
         public event System.EventHandler TextChanged2;
 

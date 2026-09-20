@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
@@ -14,7 +15,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly HeaderControl _header;
         private readonly SidebarControl _sidebar;
         private readonly FooterControl _footer;
-        private readonly Panel _contentHost;
+        private readonly Guna2Panel _contentHost;
         private readonly TableLayoutPanel _root;
         private readonly SettingsButtonControl _settingsButton;
         private const int SettingsButtonMargin = 24;
@@ -92,10 +93,11 @@ namespace SIMS_WinFormsApp.UI.Layouts
                 Margin = new Padding(0)
             };
 
-            _contentHost = new Panel
+            _contentHost = new Guna2Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.FromArgb(245, 247, 250),
+                FillColor = AppColors.PageBg,
                 // Mỗi trang con (ucDashboard, BaseTable, ...) đã tự có Padding riêng
                 // của nó -> nếu host này cộng thêm Padding sẽ tạo ra 2 lớp khoảng
                 // trắng chồng nhau, nhìn như 1 viền trắng dày bao quanh nội dung.

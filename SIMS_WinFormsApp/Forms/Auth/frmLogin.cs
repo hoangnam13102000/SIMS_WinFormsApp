@@ -8,6 +8,8 @@ using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using System;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -28,6 +30,13 @@ namespace SIMS_WinFormsApp.Forms.Auth
             _presenter = new LoginPresenter(this, _authService);
 
             AcceptButton = btnLogin;
+
+            bool dark = ThemeManager.Instance.IsDark;
+            btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
+            txtUsername.DarkMode = dark;
+            txtPassword.DarkMode = dark;
+            chkRemember.DarkMode = dark;
+            lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
 
             WireEvents();
             RefreshTexts();
@@ -65,10 +74,21 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         private void OnThemeChanged(object sender, EventArgs e)
         {
-            pnlRight.BackColor = AppColors.White;
-            // Refresh() vẽ lại đồng bộ ngay lập tức, tránh tình trạng chữ/khung nhập
-            // liệu hiển thị dở dang (nhòe) trong lúc các control con lần lượt được vẽ
-            // lại không đồng thời như khi chỉ gọi Invalidate().
+            bool dark = ThemeManager.Instance.IsDark;
+
+            pnlRight.BackColor = dark ? Color.FromArgb(18, 20, 26) : AppColors.White;
+            pnlRight.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            lblTitle.ForeColor = dark ? Color.White : AppColors.TextTitle;
+            lblSubtitle.ForeColor = dark ? Color.FromArgb(200, 210, 225) : AppColors.TextMuted;
+            lblUsername.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            lblPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            lblError.ForeColor = AppColors.Error;
+            btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
+            txtUsername.DarkMode = dark;
+            txtPassword.DarkMode = dark;
+            chkRemember.DarkMode = dark;
+            lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
+
             Refresh();
         }
         private void RefreshTexts()

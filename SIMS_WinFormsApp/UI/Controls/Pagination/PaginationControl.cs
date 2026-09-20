@@ -229,7 +229,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pagination
                 button.BackColor = AppColors.Accent;
                 button.ForeColor = AppColors.White;
                 button.FlatAppearance.BorderColor = AppColors.Accent;
-                button.Enabled = false;
+                button.Enabled = true;
             }
             else
             {
@@ -263,11 +263,36 @@ namespace SIMS_WinFormsApp.UI.Controls.Pagination
                 ForeColor = AppColors.TextPrimary,
                 Size = new Size(ButtonWidth, ButtonHeight),
                 Cursor = Cursors.Hand,
-                Margin = new Padding(3, 3, 3, 0)
+                Margin = new Padding(3, 3, 3, 0),
+                UseVisualStyleBackColor = false
             };
             button.FlatAppearance.BorderColor = AppColors.Border;
-            button.Region = new Region(RoundedRect(new Rectangle(Point.Empty, button.Size), 10));
+            button.FlatAppearance.BorderSize = 1;
+            button.Paint += (_, pe) => DrawRoundedButton(pe.Graphics, button);
             return button;
+        }
+
+        private static void DrawRoundedButton(Graphics g, Button button)
+        {
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            var rect = new Rectangle(0, 0, button.Width - 1, button.Height - 1);
+            using (var path = RoundedRect(rect, 8))
+            using (var fill = new SolidBrush(button.BackColor))
+            using (var border = new Pen(button.FlatAppearance.BorderColor, 1f))
+            {
+                g.FillPath(fill, path);
+                g.DrawPath(border, path);
+            }
+
+            TextRenderer.DrawText(
+                g,
+                button.Text,
+                button.Font,
+                new Rectangle(0, 0, button.Width, button.Height),
+                button.ForeColor,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
         }
 
         private static GraphicsPath RoundedRect(Rectangle bounds, int radius)
