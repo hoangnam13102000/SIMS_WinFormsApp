@@ -19,14 +19,14 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         public ModernDropdownMenu()
         {
-            BackColor = LayoutColors.DropdownBg;
+            BackColor = DropdownPalette.Surface;
             Padding = Padding.Empty;
             Size = new Size(280, 56);
 
             _host = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = LayoutColors.DropdownBg,
+                BackColor = DropdownPalette.Surface,
                 Padding = new Padding(8),
                 AutoScroll = false
             };
@@ -60,7 +60,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             sep.Paint += (s, e) =>
             {
-                using (var pen = new Pen(LayoutColors.DropdownBorder))
+                using (var pen = new Pen(DropdownPalette.Border))
                     e.Graphics.DrawLine(pen, 8, 4, sep.Width - 8, 4);
             };
             _ordered.Add(sep);
@@ -137,7 +137,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             base.OnPaint(e);
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var pen = new Pen(LayoutColors.DropdownBorder, 1f))
+            using (var pen = new Pen(DropdownPalette.Border, 1f))
             using (var path = RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), 11))
                 g.DrawPath(pen, path);
         }
@@ -199,7 +199,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             BackColor = Color.Transparent;
             Padding = new Padding(0);
 
-            Color fg = isDanger ? LayoutColors.Danger : LayoutColors.TextWhite;
+            // Màu chữ/icon lấy theo NỀN của dropdown (DropdownPalette tự bảo đảm tương phản),
+            // không dùng TextWhite cứng như trước — đó là lý do mục menu bị vô hình trên nền trắng.
+            Color fg = isDanger ? DropdownPalette.Danger : DropdownPalette.Text;
 
             // Icon — không Dock, luôn hiện
             _iconBox = new IconPictureBox
@@ -271,8 +273,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             if (_hover)
             {
                 using (var brush = new SolidBrush(_isDanger
-                    ? Color.FromArgb(40, LayoutColors.Danger)
-                    : LayoutColors.RowHover))
+                    ? DropdownPalette.DangerHover
+                    : DropdownPalette.RowHover))
                 using (var path = RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), 8))
                     g.FillPath(brush, path);
             }

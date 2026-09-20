@@ -47,6 +47,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private static readonly (string PageKey, string LabelKey)[] PageLabelKeys =
         {
             ("dashboard", "sidebar.page.dashboard"),
+            ("profile", "header.dropdown.profile"),
             ("pos", "sidebar.page.pos"),
             ("orders", "sidebar.page.orders"),
             ("invoices", "sidebar.page.invoices"),
@@ -144,6 +145,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
                 new ucDashboard(_getDisplayName()), IconChar.House);
             layout.AddSection(Lang.Get("sidebar.section.users"));
+            layout.AddPage("profile", Lang.Get("header.dropdown.profile"), new SIMS_WinFormsApp.Forms.Profile.ucMyProfile(), IconChar.UserCircle, showInSidebar: false);
             layout.AddPage("accounts", Lang.Get("sidebar.page.accounts"), ManagementTablePage.Accounts(_userManagementService), IconChar.UsersCog);
             layout.AddPage("employees", Lang.Get("sidebar.page.employees"), ManagementTablePage.Employees(_userManagementService), IconChar.User);
             layout.AddPage("customers", Lang.Get("sidebar.page.customers"), ManagementTablePage.Customers(_userManagementService), IconChar.AddressBook);
@@ -279,7 +281,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         private void OnProfileRequested(object sender, EventArgs e)
         {
-            _view.ShowMessage("Mở form hồ sơ cá nhân (chưa gắn).", "Hồ sơ", MessageBoxIcon.Information);
+            if (_layout == null) return;
+
+            _layout.ShowPage("profile");
+            _view.NavigateTo("profile");
         }
 
         private void OnPageChanged(object sender, string pageKey)

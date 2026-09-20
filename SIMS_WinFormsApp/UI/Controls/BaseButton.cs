@@ -24,7 +24,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected BaseButton()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint | ControlStyles.SupportsTransparentBackColor, true);
             FlatStyle = FlatStyle.Flat;
             UseVisualStyleBackColor = false;
             BackColor = Color.Transparent;
@@ -142,6 +142,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 _isPressed = true;
                 Capture = true;
+                UpdateLayout();
                 Invalidate();
             }
         }
@@ -153,6 +154,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 _isPressed = false;
                 Capture = false;
+                UpdateLayout();
                 Invalidate();
             }
         }
@@ -171,25 +173,80 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            // Không để WinForms vẽ nền mặc định dưới custom rounded surface.
-            // Điều này tránh hiện tượng nền đen / khối viền nhỏ xung quanh nút.
-            pevent.Graphics.Clear(Color.Transparent);
+            // Cố ý để trống. ButtonBase bật ControlStyles.Opaque nên WinForms KHÔNG gọi hàm này;
+            // nền được vẽ trực tiếp trong OnPaint thông qua PaintBackdrop().
+        }
+
+        /// <summary>
+        /// Vẽ nền phía sau nút (khớp với control cha) TRƯỚC khi vẽ hình bo tròn.
+        /// Nếu bỏ qua bước này, bitmap double-buffer chưa được tô nên các pixel nằm ngoài
+        /// đường bo tròn (4 góc + viền đáy/phải do rect = Width-1/Height-1) sẽ hiện màu đen.
+        /// </summary>
+        private void PaintBackdrop(PaintEventArgs pevent)
+        {
+            // Bước 1: tô sẵn 1 màu ĐẶC lấy từ control cha (đảm bảo không còn pixel chưa tô).
+            pevent.Graphics.Clear(ResolveOpaqueParentColor());
+
+            // Bước 2: để WinForms vẽ lại nền thật của control cha (hỗ trợ BackColor trong suốt
+            // nhờ ControlStyles.SupportsTransparentBackColor) để 4 góc khớp đúng nền phía sau nút.
+            base.OnPaintBackground(pevent);
+        }
+
+        private Color ResolveOpaqueParentColor()
+        {
+            for (Control c = Parent; c != null; c = c.Parent)
+            {
+                if (c.BackColor.A == 255)
+                    return c.BackColor;
+            }
+
+            return SystemColors.Control;
+        }
+
+        /// <summary>
+        /// Số pixel chừa ở đáy control để lớp con vẽ bóng đổ. Mặc định 0 —
+        /// các nút không dùng bóng giữ nguyên hình dạng như trước.
+        /// </summary>
+        protected virtual int ShadowDepth => 0;
+
+        /// <summary>
+        /// Vùng vẽ THẬT của mặt nút (đã trừ chỗ cho bóng và đã dịch xuống khi đang nhấn).
+        /// Mọi thứ thuộc về nút (nền, viền, chữ, icon) đều canh theo vùng này để khi
+        /// bấm thì cả khối "lún xuống" thay vì chỉ đổi màu.
+        /// </summary>
+        protected Rectangle GetSurfaceBounds()
+        {
+            int shadow = Math.Max(0, ShadowDepth);
+            int top = (_isPressed && Enabled && shadow > 0) ? Math.Min(shadow, 2) : 0;
+            int height = Math.Max(1, Height - 1 - shadow);
+            return new Rectangle(0, top, Math.Max(1, Width - 1), height);
+        }
+
+        /// <summary>
+        /// Điểm mở rộng (Template Method): vẽ nền + viền của mặt nút.
+        /// Mặc định là tô đặc + viền 1px; lớp con có thể thay bằng gradient, bóng đổ...
+        /// </summary>
+        protected virtual void PaintSurface(Graphics g, Rectangle surface, GraphicsPath path)
+        {
+            using (var brush = new SolidBrush(GetBackgroundColor()))
+                g.FillPath(brush, path);
+
+            using (var pen = new Pen(GetBorderColor(), 1f))
+                g.DrawPath(pen, path);
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            PaintBackdrop(pevent);
+
             var g = pevent.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using (var path = AppRadius.GetRoundedPath(rect, CornerRadius))
+            var surface = GetSurfaceBounds();
+            using (var path = AppRadius.GetRoundedPath(surface, CornerRadius))
             {
-                using (var brush = new SolidBrush(GetBackgroundColor()))
-                    g.FillPath(brush, path);
-
-                using (var pen = new Pen(GetBorderColor(), 1f))
-                    g.DrawPath(pen, path);
+                PaintSurface(g, surface, path);
             }
 
             DrawText(g);
@@ -223,16 +280,18 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (string.IsNullOrEmpty(Text)) return;
 
+            var surface = GetSurfaceBounds();
             var iconBox = EnsureIconBox();
             var totalTextWidth = TextRenderer.MeasureText(Text, Font).Width;
             var iconSpacing = iconBox.Visible ? IconSize + 10 : 0;
             var startX = Math.Max(0, (Width - (iconSpacing + totalTextWidth)) / 2);
-            var textRect = new Rectangle(startX + iconSpacing, 0, Width - startX - iconSpacing, Height);
+            var textRect = new Rectangle(startX + iconSpacing, surface.Top,
+                Math.Max(0, Width - startX - iconSpacing), surface.Height);
 
             if (iconBox.Visible)
             {
                 iconBox.IconColor = GetTextColor();
-                iconBox.Location = new Point(startX, (Height - iconBox.Height) / 2);
+                iconBox.Location = new Point(startX, surface.Top + (surface.Height - iconBox.Height) / 2);
             }
 
             TextRenderer.DrawText(g, Text, Font, textRect, GetTextColor(),
@@ -244,10 +303,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             var iconBox = EnsureIconBox();
             if (Width <= 0 || Height <= 0 || iconBox == null) return;
 
+            var surface = GetSurfaceBounds();
             var totalTextWidth = string.IsNullOrEmpty(Text) ? 0 : TextRenderer.MeasureText(Text, Font).Width;
             var iconSpacing = iconBox.Visible ? iconBox.Width + 10 : 0;
             var startX = Math.Max(0, (Width - (iconSpacing + totalTextWidth)) / 2);
-            iconBox.Location = new Point(startX, (Height - iconBox.Height) / 2);
+            iconBox.Location = new Point(startX, surface.Top + (surface.Height - iconBox.Height) / 2);
             Invalidate();
         }
 

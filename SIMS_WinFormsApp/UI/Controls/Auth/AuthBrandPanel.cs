@@ -9,6 +9,9 @@ namespace SIMS_WinFormsApp.UI.Controls
 
     public class AuthBrandPanel : Panel
     {
+        // Khoảng cách từ mép dưới panel đến mép dưới của dòng footer.
+        private const int FooterBottomMargin = 22;
+
         private string _brandName = "SIMS";
         private string _tagline = "";
         private string[] _features = new string[0];
@@ -68,7 +71,6 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             var bounds = new Rectangle(0, 0, Width, Height);
 
-       
             using (var brush = new LinearGradientBrush(bounds, AppColors.DarkTop, AppColors.DarkBottom, 55f))
             {
                 g.FillRectangle(brush, bounds);
@@ -130,14 +132,34 @@ namespace SIMS_WinFormsApp.UI.Controls
                 cursorY += rowHeight + 10;
             }
 
-    
-            if (!string.IsNullOrEmpty(_footerText))
+            DrawFooter(g, paddingX);
+        }
+
+        /// <summary>
+        /// Vẽ dòng footer (copyright) sát đáy panel.
+        /// Chiều cao rect được ĐO theo font/DPI thực tế thay vì số px cố định,
+        /// nếu không DrawString sẽ cắt chân chữ khi Windows scale > 100%.
+        /// </summary>
+        private void DrawFooter(Graphics g, int paddingX)
+        {
+            if (string.IsNullOrEmpty(_footerText)) return;
+
+            int footerWidth = System.Math.Max(80, Width - paddingX * 2);
+
+            using (var footerBrush = new SolidBrush(AppColors.DarkFooter))
+            using (var format = new StringFormat(StringFormatFlags.NoClip))
             {
-                using (var footerBrush = new SolidBrush(AppColors.DarkFooter))
-                {
-                    var footerRect = new Rectangle(paddingX, Height - 46, Width - paddingX * 2, 24);
-                    g.DrawString(_footerText, AppFonts.Small, footerBrush, footerRect);
-                }
+                int footerHeight = (int)System.Math.Ceiling(
+                    g.MeasureString(_footerText, AppFonts.Small, footerWidth, format).Height);
+
+                // Neo mép dưới của rect vào đáy panel, phần dư ra (nếu có) mở rộng lên trên.
+                var footerRect = new Rectangle(
+                    paddingX,
+                    Height - FooterBottomMargin - footerHeight,
+                    footerWidth,
+                    footerHeight);
+
+                g.DrawString(_footerText, AppFonts.Small, footerBrush, footerRect, format);
             }
         }
 

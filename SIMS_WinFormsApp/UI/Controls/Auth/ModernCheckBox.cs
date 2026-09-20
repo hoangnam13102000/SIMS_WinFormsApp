@@ -49,6 +49,32 @@ namespace SIMS_WinFormsApp.UI.Controls
             return new Size(BoxSize + 8 + textSize.Width, Math.Max(BoxSize + 4, textSize.Height + 4));
         }
 
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            FitToContent();
+            Invalidate();
+        }
+
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
+            FitToContent();
+            Invalidate();
+        }
+
+        // Kích thước thiết kế (vd. 220x30) chỉ là mức tối thiểu: khi chữ/font cần chỗ hơn (Windows scale > 100%,
+        // hoặc đổi ngôn ngữ) thì control tự nới ra, tránh chữ bị cắt ngang hoặc mất chân chữ.
+        private void FitToContent()
+        {
+            Size preferred = GetPreferredSize(Size.Empty);
+            int width = Math.Max(Width, preferred.Width);
+            int height = Math.Max(Height, preferred.Height);
+
+            if (width != Width || height != Height)
+                Size = new Size(width, height);
+        }
+
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);

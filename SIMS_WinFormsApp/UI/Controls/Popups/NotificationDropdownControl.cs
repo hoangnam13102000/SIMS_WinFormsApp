@@ -10,9 +10,7 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    /// <summary>Một thông báo hiển thị trong <see cref="NotificationDropdownControl"/>.
-    /// Đây thuần tuý là DTO cho lớp UI — KHÔNG kết nối DB/Service nào; dữ liệu (nếu có)
-    /// phải do lớp gọi (Presenter) truyền vào qua <see cref="NotificationDropdownControl.SetItems"/>.</summary>
+   
     public class NotificationItem
     {
         public string Title { get; set; }
@@ -20,12 +18,6 @@ namespace SIMS_WinFormsApp.UI.Controls
         public bool IsUnread { get; set; }
     }
 
-    /// <summary>
-    /// Panel thông báo thả xuống dưới icon chuông trên Header. Vì project hiện tại
-    /// CHƯA có nguồn dữ liệu/notification service thật (không tự thêm backend mới theo
-    /// yêu cầu), control này mặc định hiển thị empty-state; nếu sau này có dữ liệu thật,
-    /// Presenter chỉ cần gọi SetItems(...) trước khi ShowBelow().
-    /// </summary>
     public class NotificationDropdownControl : PopupFormBase
     {
         private const int Width_ = 320;
@@ -41,14 +33,14 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         public NotificationDropdownControl()
         {
-            BackColor = LayoutColors.DropdownBg;
+            BackColor = DropdownPalette.Surface;
             Width = Width_;
             Height = 200;
 
             _host = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = LayoutColors.DropdownBg,
+                BackColor = DropdownPalette.Surface,
                 Padding = new Padding(0)
             };
             Controls.Add(_host);
@@ -62,7 +54,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
             headerPanel.Paint += (s, e) =>
             {
-                using (var pen = new Pen(LayoutColors.DropdownBorder))
+                using (var pen = new Pen(DropdownPalette.Border))
                     e.Graphics.DrawLine(pen, 14, headerPanel.Height - 1, headerPanel.Width - 14, headerPanel.Height - 1);
             };
 
@@ -71,7 +63,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 AutoSize = true,
                 Text = Lang.Get("header.notifications.title"),
                 Font = new Font("Segoe UI Semibold", 10.5f, FontStyle.Bold),
-                ForeColor = LayoutColors.TextWhite,
+                ForeColor = DropdownPalette.Text,
                 BackColor = Color.Transparent,
                 Location = new Point(16, 12)
             };
@@ -105,7 +97,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             var emptyIcon = new IconPictureBox
             {
                 IconChar = IconChar.Bell,
-                IconColor = LayoutColors.SidebarTextMuted,
+                IconColor = DropdownPalette.TextMuted,
                 IconSize = 30,
                 Size = new Size(36, 36),
                 BackColor = Color.Transparent
@@ -116,7 +108,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Text = Lang.Get("header.notifications.empty"),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Segoe UI", 9f),
-                ForeColor = LayoutColors.SidebarTextMuted,
+                ForeColor = DropdownPalette.TextMuted,
                 BackColor = Color.Transparent,
                 Size = new Size(Width_ - 32, 24)
             };
@@ -204,7 +196,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 Size = new Size(8, 8),
                 Location = new Point(16, 26),
-                BackColor = item.IsUnread ? LayoutColors.Accent : Color.Transparent
+                BackColor = item.IsUnread ? DropdownPalette.Accent : Color.Transparent
             };
 
             var title = new Label
@@ -213,7 +205,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 AutoEllipsis = true,
                 Text = item.Title ?? string.Empty,
                 Font = new Font("Segoe UI", 9f, item.IsUnread ? FontStyle.Bold : FontStyle.Regular),
-                ForeColor = LayoutColors.TextWhite,
+                ForeColor = DropdownPalette.Text,
                 BackColor = Color.Transparent,
                 Location = new Point(32, 10),
                 Size = new Size(Width_ - 32 - 16, 20)
@@ -224,7 +216,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 AutoSize = false,
                 Text = item.TimeText ?? string.Empty,
                 Font = new Font("Segoe UI", 8f),
-                ForeColor = LayoutColors.TextMuted,
+                ForeColor = DropdownPalette.TextMuted,
                 BackColor = Color.Transparent,
                 Location = new Point(32, 32),
                 Size = new Size(Width_ - 32 - 16, 18)
@@ -237,7 +229,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             row.Paint += (s, e) =>
             {
                 if (!hover) return;
-                using (var b = new SolidBrush(LayoutColors.RowHover))
+                using (var b = new SolidBrush(DropdownPalette.RowHover))
                     e.Graphics.FillRectangle(b, 0, 0, row.Width, row.Height);
             };
 
@@ -274,7 +266,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             base.OnPaint(e);
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var pen = new Pen(LayoutColors.DropdownBorder, 1f))
+            using (var pen = new Pen(DropdownPalette.Border, 1f))
             using (var path = RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), 11))
                 g.DrawPath(pen, path);
         }

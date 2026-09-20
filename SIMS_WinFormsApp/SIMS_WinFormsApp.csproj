@@ -133,6 +133,8 @@
     <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
+    <!-- MỚI: Header -->
+    <Compile Include="MVP\ViewModels\HeaderUserViewModel.cs" />
     <Compile Include="Repositories\Implementations\AuditLogRepository.cs" />
     <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
@@ -198,6 +200,19 @@
     <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
     <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
+    <!-- MỚI: Header -->
+    <Compile Include="UI\Controls\Header\AvatarControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Header\HeaderInteractiveControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Header\NotificationBellButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Header\HeaderAccountButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Loading\ILoadingIndicator.cs" />
     <Compile Include="UI\Controls\Loading\LoadingOverlayHost.cs">
       <SubType>Component</SubType>
@@ -238,9 +253,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\Toast\ToastService.cs" />
+    <Compile Include="UI\Layouts\VerticalStackLayout.cs" />
+    <Compile Include="UI\Theme\DropdownPalette.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
     <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
+    <!-- MỚI: Header -->
+    <Compile Include="Views\Interfaces\IHeaderView.cs" />
     <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -497,7 +516,6 @@
     <Compile Include="UI\Controls\Dialogs\DialogType.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogButtons.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogHelper.cs" />
-    <!-- ✅ ĐÃ THÊM: HeaderSection.cs (bị thiếu trước đây) -->
     <Compile Include="UI\Controls\Tables\HeaderSection.cs" />
     <Compile Include="UI\Controls\Popups\NotificationDropdownControl.cs" />
     <Compile Include="UI\Controls\Pagination\IPaginationView.cs" />
@@ -558,6 +576,7 @@
     <Compile Include="UI\Layouts\SidebarItemControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UI\Layouts\VerticalStackLayout.cs" />
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />

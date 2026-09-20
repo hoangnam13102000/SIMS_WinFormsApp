@@ -187,7 +187,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _currentSectionHeader = label;
         }
 
-        public void AddPage(string key, string label, Control page, IconChar iconChar = IconChar.Circle)
+        public void AddPage(string key, string label, Control page, IconChar iconChar = IconChar.Circle, bool showInSidebar = true)
         {
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("key is required", nameof(key));
@@ -205,6 +205,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
             _pages[key] = page;
             _contentHost.Controls.Add(page);
+
+            if (!showInSidebar) return;
 
             string groupKey = string.IsNullOrEmpty(_currentSectionKey) ? "__root__" : _currentSectionKey;
             string groupHeader = string.IsNullOrEmpty(_currentSectionHeader) ? "KHÁC" : _currentSectionHeader;

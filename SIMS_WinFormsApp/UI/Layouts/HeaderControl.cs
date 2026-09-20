@@ -1,41 +1,40 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.IO;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.MVP.ViewModels;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.UI.Layouts
 {
-    public class HeaderControl : UserControl
+    /// <summary>
+    /// Header của shell chính (View thụ động): chỉ hiển thị và phát sự kiện,
+    /// mọi xử lý (mở hồ sơ, đăng xuất...) do Presenter đảm nhiệm qua MainLayoutControl/IMainView.
+    /// </summary>
+    public class HeaderControl : UserControl, IHeaderView
     {
-        private readonly Panel _leftPanel;
-        private readonly Panel _rightPanel;
+        private const int PadX = 24;
+        private const int LogoSize = 52;
+        private const int LogoTextGap = 14;
+        private const int ClusterGap = 16;
+        private const int DividerHeight = 40;
+        private const int NarrowBreakpoint = 900;
+        private const int MediumBreakpoint = 1100;
 
-        private readonly PictureBox _headerLogo;
+        private readonly PictureBox _logo;
         private readonly Label _titleLabel;
         private readonly Label _subtitleLabel;
+        private readonly NotificationBellButton _bell;
+        private readonly HeaderAccountButton _account;
 
-        private readonly Panel _bellPanel;
-        private readonly IconPictureBox _bellIcon;
-        private readonly Label _badgeDot;
+        private readonly Font _titleFont = new Font("Segoe UI Semibold", 20f, FontStyle.Bold);
+        private readonly Font _subtitleFont = new Font("Segoe UI", 10.5f);
 
-        private readonly Panel _accountPanel;
-        private readonly Label _avatarLabel;
-        private readonly Label _userNameLabel;
-        private readonly Label _userEmailLabel;
-
-        private int _unreadCount;
-        private bool _bellHover;
-        private bool _accountHover;
-        private string _displayName = "Admin";
-        private string _email = "admin@sims.local";
-        private string _role = string.Empty;
-        private string _avatarInitial = "A";
-        private Image _avatarImage;
+        private HeaderUserViewModel _user = new HeaderUserViewModel("Admin", "admin@sims.local");
+        private int _dividerX;
 
         private Form _openPopup;
         private Control _openPopupTrigger;
@@ -57,354 +56,164 @@ namespace SIMS_WinFormsApp.UI.Layouts
             Height = LayoutColors.HeaderHeight;
             MinimumSize = new Size(0, LayoutColors.HeaderHeight);
             BackColor = LayoutColors.HeaderBg;
-            Padding = new Padding(0);
+            Padding = Padding.Empty;
 
-            // ===== Logo =====
-            _headerLogo = new PictureBox
+            // ===== Thương hiệu (trái) =====
+            _logo = new PictureBox
             {
-                Size = new Size(42, 42),
+                Size = new Size(LogoSize, LogoSize),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = Color.Transparent
             };
-            try { _headerLogo.Image = Properties.Resources.logo_icon; }
-            catch { _headerLogo.BackColor = LayoutColors.Accent; }
+            try { _logo.Image = Properties.Resources.logo_icon; }
+            catch { _logo.BackColor = LayoutColors.Accent; }
 
             _titleLabel = new Label
             {
                 AutoSize = false,
+                UseMnemonic = false,
                 Text = "SIMS",
-                Font = new Font("Segoe UI Semibold", 14f, FontStyle.Bold),
-                ForeColor = LayoutColors.TextWhite,
-                BackColor = Color.Transparent
+                Font = _titleFont,
+                ForeColor = LayoutColors.HeaderText,
+                BackColor = Color.Transparent,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
             };
 
             _subtitleLabel = new Label
             {
                 AutoSize = false,
+                UseMnemonic = false,
                 Text = subtitle ?? string.Empty,
-                Font = new Font("Segoe UI", 8.5f),
-                ForeColor = LayoutColors.HeaderSubtitle,
-                BackColor = Color.Transparent
-            };
-
-            _leftPanel = new Panel
-            {
-                Dock = DockStyle.Left,
-                Width = 420,
-                BackColor = LayoutColors.HeaderBg
-            };
-            _leftPanel.Controls.Add(_headerLogo);
-            _leftPanel.Controls.Add(_titleLabel);
-            _leftPanel.Controls.Add(_subtitleLabel);
-
-            // ===== Bell =====
-            _bellIcon = new IconPictureBox
-            {
-                IconChar = IconChar.Bell,
-                IconFont = IconFont.Solid,
-                IconColor = LayoutColors.TextWhite,
-                IconSize = 26,
-                Size = new Size(32, 32),
-                BackColor = Color.Transparent,
-                Cursor = Cursors.Hand,
-                Location = new Point(14, 14)
-            };
-            _bellIcon.Click += (_, __) => ShowNotificationMenu();
-
-            _badgeDot = new Label
-            {
-                AutoSize = false,
-                Size = new Size(22, 22),
-                Location = new Point(38, 2),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
-                ForeColor = Color.White,
-                BackColor = LayoutColors.RedDot,
-                Text = "0",
-                Visible = false,
-                Cursor = Cursors.Hand
-            };
-            _badgeDot.Paint += BadgeDot_Paint;
-            _badgeDot.Click += (_, __) => ShowNotificationMenu();
-
-            _bellPanel = new Panel
-            {
-                Size = new Size(64, 60),
-                BackColor = LayoutColors.HeaderBg,
-                Cursor = Cursors.Hand
-            };
-            // Do not clip the parent to an ellipse: the badge sits near the
-            // top-right edge and must remain a complete circle.
-            _bellPanel.Controls.Add(_bellIcon);
-            _bellPanel.Controls.Add(_badgeDot);
-            // The badge must always remain above the bell glyph and receive clicks.
-            _badgeDot.BringToFront();
-            _bellPanel.Click += (_, __) => ShowNotificationMenu();
-            _bellPanel.Paint += PaintBellPanel;
-            _bellPanel.MouseEnter += (_, __) => { _bellHover = true; _bellPanel.Invalidate(); };
-            _bellPanel.MouseLeave += (_, __) => { _bellHover = false; _bellPanel.Invalidate(); };
-
-            // ===== Account =====
-            _avatarLabel = new Label
-            {
-                Size = new Size(42, 42),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI Semibold", 12f),
-                ForeColor = Color.White,
-                BackColor = LayoutColors.Accent,
-                Text = _avatarInitial,
-                Cursor = Cursors.Hand
-            };
-            _avatarLabel.Paint += AvatarLabel_Paint;
-            _avatarLabel.Click += (_, __) => ShowAccountMenu();
-
-            _userNameLabel = new Label
-            {
-                AutoSize = false,
-                AutoEllipsis = false,
-                Text = _displayName,
-                Font = new Font("Segoe UI Semibold", 10f, FontStyle.Bold),
-                ForeColor = LayoutColors.TextWhite,
-                BackColor = Color.Transparent,
-                Cursor = Cursors.Hand
-            };
-            _userNameLabel.Click += (_, __) => ShowAccountMenu();
-
-            _userEmailLabel = new Label
-            {
-                AutoSize = false,
-                AutoEllipsis = false,
-                Text = _email,
-                Font = new Font("Segoe UI", 8f),
+                Font = _subtitleFont,
                 ForeColor = LayoutColors.HeaderSubtitle,
                 BackColor = Color.Transparent,
-                Cursor = Cursors.Hand
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
             };
-            _userEmailLabel.Click += (_, __) => ShowAccountMenu();
 
-            _accountPanel = new Panel
-            {
-                Height = 52,
-                BackColor = LayoutColors.HeaderBg,
-                Cursor = Cursors.Hand
-            };
-            _accountPanel.Controls.Add(_avatarLabel);
-            _accountPanel.Controls.Add(_userNameLabel);
-            _accountPanel.Controls.Add(_userEmailLabel);
-            _accountPanel.Click += (_, __) => ShowAccountMenu();
-            _accountPanel.Paint += PaintAccountPanel;
-            _accountPanel.MouseEnter += (_, __) => { _accountHover = true; _accountPanel.Invalidate(); };
-            _accountPanel.MouseLeave += (_, __) => { _accountHover = false; _accountPanel.Invalidate(); };
+            // ===== Cụm bên phải: chuông + tài khoản =====
+            _bell = new NotificationBellButton();
+            _bell.Click += (_, __) => ShowNotificationMenu();
 
-            _rightPanel = new Panel
-            {
-                Dock = DockStyle.Right,
-                Width = 400,
-                BackColor = LayoutColors.HeaderBg
-            };
-            _rightPanel.Controls.Add(_bellPanel);
-            _rightPanel.Controls.Add(_accountPanel);
+            _account = new HeaderAccountButton();
+            _account.Bind(_user);
+            _account.Click += (_, __) => ShowAccountMenu();
 
-            Controls.Add(_rightPanel);
-            Controls.Add(_leftPanel);
+            Controls.Add(_logo);
+            Controls.Add(_titleLabel);
+            Controls.Add(_subtitleLabel);
+            Controls.Add(_bell);
+            Controls.Add(_account);
+
+            FitLabel(_titleLabel);
+            FitLabel(_subtitleLabel);
 
             Resize += (_, __) => LayoutHeader();
             LayoutHeader();
         }
 
-        private void LayoutHeader()
-        {
-            int h = Height > 0 ? Height : LayoutColors.HeaderHeight;
-            int clientW = Width > 0 ? Width : 1200;
-
-            bool narrow = clientW < 900;
-            bool medium = clientW < 1100;
-
-            _userEmailLabel.Visible = !narrow;
-            _subtitleLabel.Visible = !narrow;
-
-            const int padLeft = 20;
-            int logoY = (h - _headerLogo.Height) / 2;
-            _headerLogo.Location = new Point(padLeft, logoY);
-
-            Size titleSize = TextRenderer.MeasureText(
-                _titleLabel.Text ?? "", _titleLabel.Font,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-            Size subSize = TextRenderer.MeasureText(
-                _subtitleLabel.Text ?? "", _subtitleLabel.Font,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-
-            int textX = _headerLogo.Right + 12;
-            if (_subtitleLabel.Visible)
-            {
-                int blockH = titleSize.Height + 3 + subSize.Height;
-                int textY = Math.Max(0, (h - blockH) / 2);
-                _titleLabel.Size = new Size(titleSize.Width + 8, titleSize.Height + 2);
-                _titleLabel.Location = new Point(textX, textY);
-                _subtitleLabel.Size = new Size(subSize.Width + 8, subSize.Height + 2);
-                _subtitleLabel.Location = new Point(textX, textY + titleSize.Height + 3);
-            }
-            else
-            {
-                _titleLabel.Size = new Size(titleSize.Width + 8, titleSize.Height + 2);
-                _titleLabel.Location = new Point(textX, (h - titleSize.Height) / 2);
-            }
-
-            int leftNeeded = Math.Max(_titleLabel.Right,
-                _subtitleLabel.Visible ? _subtitleLabel.Right : 0) + 24;
-            _leftPanel.Width = Math.Max(220, Math.Min(leftNeeded, clientW / 2));
-
-            const int padRight = 20;
-
-            Size nameSize = TextRenderer.MeasureText(
-                _userNameLabel.Text ?? "", _userNameLabel.Font,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-            Size emailSize = TextRenderer.MeasureText(
-                _userEmailLabel.Text ?? "", _userEmailLabel.Font,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-
-            int textW = _userEmailLabel.Visible
-                ? Math.Max(nameSize.Width, emailSize.Width) + 16
-                : nameSize.Width + 16;
-
-            if (medium && !narrow)
-                textW = Math.Min(textW, 180);
-
-            int accountW = 8 + 42 + 12 + textW + 16;
-            _accountPanel.Width = accountW;
-            _accountPanel.Height = 52;
-
-            int rightNeeded = padRight + accountW + 20 + _bellPanel.Width + 16;
-            _rightPanel.Width = Math.Max(200, rightNeeded);
-
-            int accountX = _rightPanel.Width - padRight - accountW;
-            int accountY = (h - _accountPanel.Height) / 2;
-            _accountPanel.Location = new Point(Math.Max(0, accountX), accountY);
-
-            _avatarLabel.Location = new Point(8, (_accountPanel.Height - 42) / 2);
-
-            int utX = _avatarLabel.Right + 12;
-            if (_userEmailLabel.Visible)
-            {
-                int utBlockH = nameSize.Height + 2 + emailSize.Height;
-                int utY = Math.Max(0, (_accountPanel.Height - utBlockH) / 2);
-                _userNameLabel.Size = new Size(nameSize.Width + 8, nameSize.Height + 2);
-                _userNameLabel.Location = new Point(utX, utY);
-                _userEmailLabel.Size = new Size(emailSize.Width + 12, emailSize.Height + 2);
-                _userEmailLabel.Location = new Point(utX, utY + nameSize.Height + 2);
-            }
-            else
-            {
-                _userNameLabel.Size = new Size(nameSize.Width + 8, nameSize.Height + 2);
-                _userNameLabel.Location = new Point(utX, (_accountPanel.Height - nameSize.Height) / 2);
-            }
-
-            int bellX = _accountPanel.Left - 20 - _bellPanel.Width;
-            int bellY = (h - _bellPanel.Height) / 2;
-            _bellPanel.Location = new Point(Math.Max(0, bellX), bellY);
-        }
-
-        private void BadgeDot_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, _badgeDot.Width - 1, _badgeDot.Height - 1);
-            using (var clip = new GraphicsPath())
-            {
-                clip.AddEllipse(rect);
-                e.Graphics.SetClip(clip);
-                using (var brush = new SolidBrush(_badgeDot.BackColor))
-                    e.Graphics.FillRectangle(brush, rect);
-                TextRenderer.DrawText(e.Graphics, _badgeDot.Text, _badgeDot.Font, rect,
-                    _badgeDot.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
-                e.Graphics.ResetClip();
-            }
-        }
-
-        private void AvatarLabel_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, _avatarLabel.Width - 1, _avatarLabel.Height - 1);
-            using (var clip = new GraphicsPath())
-            {
-                clip.AddEllipse(rect);
-                e.Graphics.SetClip(clip);
-                using (var bg = new SolidBrush(_avatarLabel.BackColor))
-                    e.Graphics.FillRectangle(bg, rect);
-
-                if (_avatarLabel.Image != null)
-                {
-                    e.Graphics.DrawImage(_avatarLabel.Image, rect, new Rectangle(0, 0, _avatarLabel.Image.Width, _avatarLabel.Image.Height), GraphicsUnit.Pixel);
-                }
-                else
-                {
-                    TextRenderer.DrawText(e.Graphics, _avatarLabel.Text, _avatarLabel.Font, rect,
-                        _avatarLabel.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
-                }
-
-                e.Graphics.ResetClip();
-            }
-        }
+        // ================= IHeaderView =================
 
         public void SetSubtitle(string subtitle)
         {
             _subtitleLabel.Text = subtitle ?? string.Empty;
+            FitLabel(_subtitleLabel);
             LayoutHeader();
         }
 
+        public void SetUser(HeaderUserViewModel user)
+        {
+            _user = user ?? throw new ArgumentNullException(nameof(user));
+            _account.Bind(_user);
+            LayoutHeader();
+        }
+
+        /// <summary>Giữ chữ ký cũ để MainLayoutControl/frmMain không phải sửa.</summary>
         public void SetUser(string displayName, string email, string avatarInitial = null,
             string role = null, string avatarPath = null)
-        {
-            _displayName = string.IsNullOrWhiteSpace(displayName) ? "User" : displayName;
-            _email = email ?? string.Empty;
-            _role = role ?? string.Empty;
-            _userNameLabel.Text = _displayName;
-            _userEmailLabel.Text = _email;
-
-            if (string.IsNullOrWhiteSpace(avatarInitial))
-            {
-                avatarInitial = string.IsNullOrEmpty(_displayName)
-                    ? "?"
-                    : _displayName.Trim().Substring(0, 1).ToUpperInvariant();
-            }
-            _avatarInitial = avatarInitial;
-            SetAvatar(avatarPath, avatarInitial);
-            LayoutHeader();
-        }
-
-        private void SetAvatar(string avatarPath, string avatarInitial)
-        {
-            _avatarImage?.Dispose();
-            _avatarImage = null;
-            _avatarLabel.Image = null;
-            _avatarLabel.Text = avatarInitial;
-
-            if (string.IsNullOrWhiteSpace(avatarPath) || !File.Exists(avatarPath)) return;
-
-            try
-            {
-                using (var source = Image.FromFile(avatarPath))
-                    _avatarImage = new Bitmap(source);
-                _avatarLabel.Image = _avatarImage;
-                _avatarLabel.Text = string.Empty;
-                _avatarLabel.ImageAlign = ContentAlignment.MiddleCenter;
-            }
-            catch (Exception)
-            {
-                _avatarImage = null;
-            }
-        }
+            => SetUser(new HeaderUserViewModel(displayName, email, role, avatarInitial, avatarPath));
 
         public void SetUnreadCount(int count)
         {
-            _unreadCount = Math.Max(0, count);
-            if (_unreadCount <= 0)
-                _badgeDot.Visible = false;
+            _bell.Count = count;
+        }
+
+        // ================= Layout =================
+
+        private static void FitLabel(Label label)
+        {
+            Size s = TextRenderer.MeasureText(label.Text ?? string.Empty, label.Font,
+                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
+            label.Size = new Size(s.Width + 6, s.Height + 2);
+        }
+
+        private void LayoutHeader()
+        {
+            int h = Height > 0 ? Height : LayoutColors.HeaderHeight;
+            int w = Width > 0 ? Width : 1200;
+
+            bool narrow = w < NarrowBreakpoint;
+            bool medium = w < MediumBreakpoint;
+
+            _subtitleLabel.Visible = !narrow;
+            _account.ShowEmail = !narrow;
+            _account.MaxTextWidth = medium ? 180 : 280;
+
+            // --- Trái: logo + tên + phụ đề ---
+            _logo.Location = new Point(PadX, (h - _logo.Height) / 2);
+            int textX = _logo.Right + LogoTextGap;
+
+            if (_subtitleLabel.Visible)
+            {
+                int blockH = _titleLabel.Height + _subtitleLabel.Height - 2;
+                int y = Math.Max(0, (h - blockH) / 2);
+                _titleLabel.Location = new Point(textX, y);
+                _subtitleLabel.Location = new Point(textX, _titleLabel.Bottom - 2);
+            }
             else
             {
-                _badgeDot.Text = _unreadCount > 9 ? "9+" : _unreadCount.ToString();
-                _badgeDot.Visible = true;
+                _titleLabel.Location = new Point(textX, (h - _titleLabel.Height) / 2);
             }
+
+            // --- Phải: [chuông] | [tài khoản] ---
+            _account.Location = new Point(
+                Math.Max(0, w - PadX - _account.Width),
+                (h - _account.Height) / 2);
+
+            _dividerX = _account.Left - ClusterGap;
+
+            _bell.Location = new Point(
+                Math.Max(0, _dividerX - ClusterGap - _bell.Width),
+                (h - _bell.Height) / 2);
+
+            Invalidate();
         }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            using (var pen = new Pen(LayoutColors.HeaderBorder))
+                e.Graphics.DrawLine(pen, 0, Height - 1, Width, Height - 1);
+
+            int y = (Height - DividerHeight) / 2;
+            using (var pen = new Pen(LayoutColors.HeaderDivider))
+                e.Graphics.DrawLine(pen, _dividerX, y, _dividerX, y + DividerHeight);
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            BeginInvoke(new Action(() =>
+            {
+                if (IsDisposed) return;
+                LayoutHeader();
+                BeginInvoke(new Action(() => { if (!IsDisposed) LayoutHeader(); }));
+            }));
+        }
+
+        // ================= Popup =================
 
         private bool ToggleIfSameTrigger(Control trigger)
         {
@@ -440,10 +249,10 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
         private void ShowAccountMenu()
         {
-            if (ToggleIfSameTrigger(_accountPanel)) return;
+            if (ToggleIfSameTrigger(_account)) return;
             CloseOpenPopup();
 
-            var menu = new ModernDropdownMenu { Width = 320 };
+            var menu = new ModernDropdownMenu { Width = 340 };
             menu.AddHeader(BuildAccountHeader());
             menu.AddSeparator();
             menu.AddItem("profile", Lang.Get("header.dropdown.profile"), IconChar.UserCircle)
@@ -457,130 +266,96 @@ namespace SIMS_WinFormsApp.UI.Layouts
                     LogoutClicked?.Invoke(this, EventArgs.Empty);
             };
 
-            RegisterOpenPopup(menu, _accountPanel);
-            menu.ShowBelow(_accountPanel, offsetY: 8);
+            RegisterOpenPopup(menu, _account);
+            menu.ShowBelow(_account, offsetY: 8);
         }
 
         private Control BuildAccountHeader()
         {
-            var nameFont = new Font("Segoe UI Semibold", 10f, FontStyle.Bold);
-            var emailFont = new Font("Segoe UI", 8.5f);
-            var roleFont = new Font("Segoe UI", 8f, FontStyle.Bold);
-
-            Size nameSz = TextRenderer.MeasureText(
-                _displayName ?? "", nameFont,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-            Size emailSz = TextRenderer.MeasureText(
-                _email ?? "", emailFont,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-            Size roleSz = TextRenderer.MeasureText(
-                _role ?? "", roleFont,
-                Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
-
-            int textW = Math.Max(nameSz.Width, Math.Max(emailSz.Width, roleSz.Width)) + 16;
-            textW = Math.Max(textW, 180);
-
-            const int avatarSize = 42;
-            const int leftPad = 6;
-            const int gap = 12;
+            const int avatarSize = 56;
+            const int leftPad = 8;
+            const int gap = 14;
             const int rightPad = 12;
+            const TextFormatFlags measureFlags = TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
+
+            var nameFont = new Font("Segoe UI Semibold", 11f, FontStyle.Bold);
+            var emailFont = new Font("Segoe UI", 9f);
+            var roleFont = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+
+            Size nameSz = TextRenderer.MeasureText(_user.DisplayName, nameFont, Size.Empty, measureFlags);
+            Size emailSz = TextRenderer.MeasureText(_user.Email, emailFont, Size.Empty, measureFlags);
+            Size roleSz = TextRenderer.MeasureText(_user.Role, roleFont, Size.Empty, measureFlags);
+
+            bool hasRole = _user.HasRole;
+            int widest = Math.Max(nameSz.Width, Math.Max(emailSz.Width, hasRole ? roleSz.Width : 0));
+            int textW = Math.Max(widest + 16, 180);
             int contentW = leftPad + avatarSize + gap + textW + rightPad;
 
-            bool hasRole = !string.IsNullOrEmpty(_role);
-            int line1 = nameSz.Height;
-            int line2 = emailSz.Height;
-            int line3 = hasRole ? roleSz.Height : 0;
-            int textBlockH = line1 + 3 + line2 + (hasRole ? 3 + line3 : 0);
+            int textBlockH = nameSz.Height + 3 + emailSz.Height + (hasRole ? 3 + roleSz.Height : 0);
             int headerH = Math.Max(avatarSize + 20, textBlockH + 20);
 
             var panel = new Panel
             {
-                Height = headerH,
-                Width = contentW,
-                BackColor = Color.Transparent,
-                MinimumSize = new Size(contentW, headerH)
+                Size = new Size(contentW, headerH),
+                MinimumSize = new Size(contentW, headerH),
+                BackColor = Color.Transparent
+            };
+            panel.Disposed += (_, __) =>
+            {
+                nameFont.Dispose();
+                emailFont.Dispose();
+                roleFont.Dispose();
             };
 
-            var avatar = new Label
+            var avatar = new AvatarControl
             {
                 Size = new Size(avatarSize, avatarSize),
                 Location = new Point(leftPad, (headerH - avatarSize) / 2),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI Semibold", 12f),
-                ForeColor = Color.White,
-                BackColor = LayoutColors.Accent,
-                Text = _avatarInitial
+                Initial = _user.AvatarInitial
             };
-            avatar.Paint += (s, e) =>
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                var avatarRect = new Rectangle(0, 0, avatar.Width - 1, avatar.Height - 1);
-                using (var clip = new GraphicsPath())
-                {
-                    clip.AddEllipse(avatarRect);
-                    e.Graphics.SetClip(clip);
-                    using (var bg = new SolidBrush(avatar.BackColor))
-                        e.Graphics.FillRectangle(bg, avatarRect);
-
-                    if (avatar.Image != null)
-                    {
-                        e.Graphics.DrawImage(avatar.Image, avatarRect, new Rectangle(0, 0, avatar.Image.Width, avatar.Image.Height), GraphicsUnit.Pixel);
-                    }
-                    else
-                    {
-                        TextRenderer.DrawText(e.Graphics, avatar.Text, avatar.Font, avatarRect,
-                            avatar.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
-                    }
-
-                    e.Graphics.ResetClip();
-                }
-            };
+            avatar.TryLoadImage(_user.AvatarPath);
+            panel.Controls.Add(avatar);
 
             int textX = leftPad + avatarSize + gap;
             int textY = Math.Max(10, (headerH - textBlockH) / 2);
 
-            var name = new Label
+            panel.Controls.Add(new Label
             {
                 AutoSize = false,
-                AutoEllipsis = false,
-                Text = _displayName,
+                UseMnemonic = false,
+                Text = _user.DisplayName,
                 Font = nameFont,
-                ForeColor = LayoutColors.TextWhite,
+                ForeColor = LayoutColors.DropdownText,
                 BackColor = Color.Transparent,
                 Location = new Point(textX, textY),
                 Size = new Size(textW, nameSz.Height + 2)
-            };
+            });
 
-            var email = new Label
+            panel.Controls.Add(new Label
             {
                 AutoSize = false,
-                AutoEllipsis = false,
-                Text = _email,
+                UseMnemonic = false,
+                Text = _user.Email,
                 Font = emailFont,
                 ForeColor = LayoutColors.TextMuted,
                 BackColor = Color.Transparent,
-                Location = new Point(textX, textY + line1 + 3),
+                Location = new Point(textX, textY + nameSz.Height + 3),
                 Size = new Size(textW, emailSz.Height + 2)
-            };
-
-            panel.Controls.Add(avatar);
-            panel.Controls.Add(name);
-            panel.Controls.Add(email);
+            });
 
             if (hasRole)
             {
-                var role = new Label
+                panel.Controls.Add(new Label
                 {
                     AutoSize = false,
-                    AutoEllipsis = false,
-                    Text = _role,
+                    UseMnemonic = false,
+                    Text = _user.Role,
                     Font = roleFont,
                     ForeColor = LayoutColors.Accent,
                     BackColor = Color.Transparent,
-                    Location = new Point(textX, textY + line1 + 3 + line2 + 3),
+                    Location = new Point(textX, textY + nameSz.Height + 3 + emailSz.Height + 3),
                     Size = new Size(textW, roleSz.Height + 2)
-                };
-                panel.Controls.Add(role);
+                });
             }
 
             return panel;
@@ -588,69 +363,22 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
         private void ShowNotificationMenu()
         {
-            if (ToggleIfSameTrigger(_bellPanel)) return;
+            if (ToggleIfSameTrigger(_bell)) return;
             CloseOpenPopup();
+
             var panel = new NotificationDropdownControl();
             panel.SetItems(null);
-            RegisterOpenPopup(panel, _bellPanel);
-            panel.ShowBelow(_bellPanel, offsetY: 8);
-        }
-
-        private void PaintBellPanel(object sender, PaintEventArgs e)
-        {
-            if (!_bellHover) return;
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var brush = new SolidBrush(LayoutColors.HeaderIconBgHover))
-                e.Graphics.FillEllipse(brush, 0, 0, _bellPanel.Width - 1, _bellPanel.Height - 1);
-        }
-
-        private void PaintAccountPanel(object sender, PaintEventArgs e)
-        {
-            if (!_accountHover) return;
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var brush = new SolidBrush(LayoutColors.HeaderAccountHover))
-                e.Graphics.FillRoundedRectangle(brush, 0, 0, _accountPanel.Width - 1, _accountPanel.Height - 1, 12);
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            using (var pen = new Pen(LayoutColors.HeaderBorder))
-                e.Graphics.DrawLine(pen, 0, Height - 1, Width, Height - 1);
+            RegisterOpenPopup(panel, _bell);
+            panel.ShowBelow(_bell, offsetY: 8);
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) _avatarImage?.Dispose();
             base.Dispose(disposing);
-        }
-
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            BeginInvoke(new Action(() =>
+            if (disposing)
             {
-                if (IsDisposed) return;
-                _bellIcon.Invalidate();
-                LayoutHeader();
-                BeginInvoke(new Action(() => { if (!IsDisposed) LayoutHeader(); }));
-            }));
-        }
-    }
-
-    internal static class GraphicsExtensions
-    {
-        public static void FillRoundedRectangle(this Graphics g, Brush brush, int x, int y, int w, int h, int radius)
-        {
-            using (var path = new GraphicsPath())
-            {
-                int d = radius * 2;
-                path.AddArc(x, y, d, d, 180, 90);
-                path.AddArc(x + w - d, y, d, d, 270, 90);
-                path.AddArc(x + w - d, y + h - d, d, d, 0, 90);
-                path.AddArc(x, y + h - d, d, d, 90, 90);
-                path.CloseFigure();
-                g.FillPath(brush, path);
+                _titleFont.Dispose();
+                _subtitleFont.Dispose();
             }
         }
     }

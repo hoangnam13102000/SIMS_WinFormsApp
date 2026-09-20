@@ -14,14 +14,6 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    /// <summary>
-    /// Popup "Chi tiết tài khoản nhân viên" - kế thừa khung sườn dùng chung
-    /// <see cref="BaseDetailDialogForm"/> và đóng vai trò View trong mô hình MVP
-    /// (implement <see cref="IUserAccountDetailView"/>). Form chỉ lo việc dựng control và
-    /// đổ dữ liệu đã được định dạng sẵn lên UI - không tự tính toán màu/định dạng
-    /// (việc đó do <see cref="UserAccountDetailPresenter"/> và
-    /// <see cref="IUserAccountDetailViewModelBuilder"/> đảm nhiệm).
-    /// </summary>
     public sealed class frmUserAccountDetail : BaseDetailDialogForm, IUserAccountDetailView
     {
         private readonly UserAccountDetailPresenter _presenter;
@@ -137,7 +129,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             for (int i = 0; i < rowCount; i++)
-                grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 88f));
+                grid.RowStyles.Add(new RowStyle(SizeType.Absolute, 108f));
             return grid;
         }
 

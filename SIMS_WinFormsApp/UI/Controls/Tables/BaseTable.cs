@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq; 
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using Guna.UI2.WinForms;
-using SIMS_WinFormsApp.Models.DTOs; 
+using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
 using SIMS_WinFormsApp.UI.Controls.Search;
@@ -194,8 +194,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 Text = addButtonText,
                 IsPrimary = true,
-                Size = new Size(textWidth + 48, 42),
-                CornerRadius = AppRadius.Medium,
+                Size = new Size(textWidth + 64, 48), // [SIZE MỚI] nút to & cân đối hơn
+                CornerRadius = AppRadius.Medium,       // [SIZE MỚI] bo góc vừa phải, khớp mẫu (không pill)
                 Font = AppFonts.Button,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
@@ -206,7 +206,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             void Reposition()
             {
                 btnAdd.Location = new Point(
-                    host.ClientSize.Width - btnAdd.Width - 24,
+                    host.ClientSize.Width - btnAdd.Width - 28, // [SIZE MỚI]
                     (host.ClientSize.Height - btnAdd.Height) / 2);
             }
             host.Resize += (s, e) => Reposition();
@@ -223,7 +223,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (overflowActions == null || overflowActions.Count == 0) return headerRow;
 
-            var trigger = new OverflowMenuButton { Height = 42 };
+            var trigger = new OverflowMenuButton { Height = 48 }; // [SIZE MỚI]
             trigger.Click += (s, e) => ShowOverflowMenu(trigger, overflowActions);
 
             if (headerRow is Panel existingHost)
@@ -239,7 +239,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
                 void Reposition()
                 {
-                    int rightEdge = addButton != null ? addButton.Left - 12 : existingHost.ClientSize.Width - 24;
+                    int rightEdge = addButton != null ? addButton.Left - 14 : existingHost.ClientSize.Width - 28; // [SIZE MỚI]
                     trigger.Location = new Point(rightEdge - trigger.Width, (existingHost.ClientSize.Height - trigger.Height) / 2);
                 }
                 existingHost.Resize += (s, e) => Reposition();
@@ -260,7 +260,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             void RepositionNoAddButton()
             {
-                trigger.Location = new Point(host.ClientSize.Width - trigger.Width - 24, (host.ClientSize.Height - trigger.Height) / 2);
+                trigger.Location = new Point(host.ClientSize.Width - trigger.Width - 28, (host.ClientSize.Height - trigger.Height) / 2); // [SIZE MỚI]
             }
             host.Resize += (s, e) => RepositionNoAddButton();
             RepositionNoAddButton();

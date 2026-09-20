@@ -4,9 +4,7 @@ namespace SIMS_WinFormsApp.UI.Theme
 {
     public static class LayoutColors
     {
-        // ===== Kích thước theo chuẩn Java (100% scale) =====
-        // Tăng vừa phải để các ô menu và top bar không quá gầy so với mockup Java.
-        public const int HeaderHeight = 80;
+        public const int HeaderHeight = 96;
         public const int FooterHeight = 36;
         public const int SidebarWidth = 260;
         public const int SidebarWidthCollapsed = 60;
@@ -24,6 +22,7 @@ namespace SIMS_WinFormsApp.UI.Theme
 
         public static readonly Color HeaderBg = Color.FromArgb(15, 23, 42);
         public static readonly Color HeaderBorder = Color.FromArgb(30, 41, 59);
+        public static readonly Color HeaderDivider = Color.FromArgb(51, 65, 85);
         public static readonly Color HeaderText = Color.White;
         public static readonly Color HeaderSubtitle = Color.FromArgb(148, 163, 184);
         public static readonly Color HeaderIconBgHover = Color.FromArgb(30, 41, 59);
@@ -36,6 +35,7 @@ namespace SIMS_WinFormsApp.UI.Theme
 
         public static readonly Color DropdownBg = Color.FromArgb(255, 255, 255);
         public static readonly Color DropdownBorder = Color.FromArgb(226, 232, 240);
+        public static readonly Color DropdownText = Color.FromArgb(15, 23, 42);
         public static readonly Color RowHover = Color.FromArgb(244, 246, 249);
 
         public static readonly Color Accent = Color.FromArgb(124, 58, 237);

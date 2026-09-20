@@ -9,6 +9,7 @@ using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.UI.I18n;
+using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Auth
@@ -17,7 +18,15 @@ namespace SIMS_WinFormsApp.Forms.Auth
     {
         private enum Step { Identify, VerifyOtp, ResetPassword }
 
+        // Khoảng trống dưới cùng của form so với panel bước hiện tại (bằng lề trên trong Designer).
+        private const int FormBottomMargin = 40;
+
         private readonly ForgotPasswordPresenter _presenter;
+
+        // Mỗi bước có 1 bộ xếp dọc riêng: tự đo chiều cao chữ theo Font/DPI thật để không bị cắt.
+        private VerticalStackLayout _stackStep1;
+        private VerticalStackLayout _stackStep2;
+        private VerticalStackLayout _stackStep3;
 
         private Step _currentStep = Step.Identify;
         private string _challengeId;
@@ -35,6 +44,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
         public frmForgotPassword(string initialUsername, IPasswordResetService resetService = null)
         {
             InitializeComponent();
+            BuildStepLayouts();
             _presenter = new ForgotPasswordPresenter(
                 this,
                 resetService ?? AppComposition.CreatePasswordResetService());
@@ -77,7 +87,6 @@ namespace SIMS_WinFormsApp.Forms.Auth
             txtEmail1.PlaceholderText = Lang.Get("forgot.identify.email.placeholder");
             btnSubmit1.Text = Lang.Get("forgot.identify.submit");
             lnkBack1.Text = Lang.Get("forgot.backToLogin");
-            CenterLink(lnkBack1);   // <-- thêm dòng này
 
             lblStep2.Text = Lang.Get("forgot.step.counter", 2, 3);
             lblTitle2.Text = Lang.Get("forgot.otp.title");
@@ -100,12 +109,100 @@ namespace SIMS_WinFormsApp.Forms.Auth
             lblRequirements3.Text = Lang.Get("forgot.password.requirements");
             btnReset3.Text = Lang.Get("forgot.password.submit");
             lnkCancel3.Text = Lang.Get("forgot.backToLogin");
-            CenterLink(lnkCancel3);  
+
+            RelayoutAllSteps();
         }
 
-        private void CenterLink(Label link)
+        // ===================== Bố cục (đo theo Font/DPI thật) =====================
+
+        private void BuildStepLayouts()
         {
-            link.Left = (ContentWidth - link.Width) / 2;
+            // Các khoảng cách (gapAfter) giữ đúng như bố cục thiết kế ban đầu trong Designer.
+            // Chiều cao thiết kế của từng control là mức tối thiểu; Label sẽ tự cao thêm khi chữ
+            // (hoặc chữ tự xuống dòng) cần nhiều chỗ hơn -> không bị cắt chân / mất dòng.
+            _stackStep1 = new VerticalStackLayout(pnlStep1, ContentWidth)
+                .Add(lblStep1, 6)
+                .Add(lblTitle1, 4)
+                .Add(lblSubtitle1, 8)
+                .Add(lblUsernameLabel1, 4)
+                .Add(txtUsername1, 16)
+                .Add(lblEmailLabel1, 4)
+                .Add(txtEmail1, 10)
+                .Add(lblMessage1, 4)
+                .Add(btnSubmit1, 14)
+                .AddCenteredLink(lnkBack1, 0);
+
+            // Link "Gửi lại mã" canh trái sát tâm, đối xứng với link "Quay lại" canh phải sát tâm.
+            lnkResend2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+
+            _stackStep2 = new VerticalStackLayout(pnlStep2, ContentWidth)
+                .Add(lblStep2, 6)
+                .Add(lblTitle2, 4)
+                .Add(lblSentTo2, 12)
+                .Add(lblOtpLabel2, 4)
+                .Add(txtOtp2, 10)
+                .Add(lblMessage2, 4)
+                .Add(btnVerify2, 14)
+                .AddLinkPair(lnkBack2, lnkResend2, 24, 0);
+
+            _stackStep3 = new VerticalStackLayout(pnlStep3, ContentWidth)
+                .Add(lblStep3, 6)
+                .Add(lblTitle3, 4)
+                .Add(lblNewPasswordLabel3, 4)
+                .Add(txtNewPassword3, 16)
+                .Add(lblConfirmPasswordLabel3, 4)
+                .Add(txtConfirmPassword3, 8)
+                .Add(lblRequirements3, 2)
+                .Add(lblMatch3, 2)
+                .Add(lblMessage3, 4)
+                .Add(btnReset3, 14)
+                .AddCenteredLink(lnkCancel3, 0);
+
+            // Các nhãn đổi nội dung trong lúc chạy: chữ dài hơn/ngắn hơn -> xếp lại bước tương ứng.
+            lblMessage1.TextChanged += (s, e) => RelayoutStep(Step.Identify);
+            lblSentTo2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
+            lblMessage2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
+            lnkResend2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
+            lblMessage3.TextChanged += (s, e) => RelayoutStep(Step.ResetPassword);
+            lblMatch3.TextChanged += (s, e) => RelayoutStep(Step.ResetPassword);
+        }
+
+        private void RelayoutAllSteps()
+        {
+            RelayoutStep(Step.Identify);
+            RelayoutStep(Step.VerifyOtp);
+            RelayoutStep(Step.ResetPassword);
+        }
+
+        private void RelayoutStep(Step step)
+        {
+            VerticalStackLayout stack;
+            Panel panel;
+
+            switch (step)
+            {
+                case Step.VerifyOtp:
+                    stack = _stackStep2;
+                    panel = pnlStep2;
+                    break;
+                case Step.ResetPassword:
+                    stack = _stackStep3;
+                    panel = pnlStep3;
+                    break;
+                default:
+                    stack = _stackStep1;
+                    panel = pnlStep1;
+                    break;
+            }
+
+            int contentHeight = stack.Apply();
+            if (contentHeight > panel.Height)
+                panel.Height = contentHeight;
+
+            // Nếu nội dung cao hơn form (Windows scale rất lớn) thì nới form ra để không bị cắt.
+            int requiredClientHeight = panel.Top + panel.Height + FormBottomMargin;
+            if (requiredClientHeight > ClientSize.Height)
+                ClientSize = new System.Drawing.Size(ClientSize.Width, requiredClientHeight);
         }
 
         // ===================== STEP 1: Identify =====================
@@ -517,6 +614,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             pnlStep1.Visible = step == Step.Identify;
             pnlStep2.Visible = step == Step.VerifyOtp;
             pnlStep3.Visible = step == Step.ResetPassword;
+            RelayoutStep(step);
 
             switch (step)
             {

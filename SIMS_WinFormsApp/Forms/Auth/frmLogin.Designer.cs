@@ -40,6 +40,14 @@ namespace SIMS_WinFormsApp.Forms.Auth
             base.Dispose(disposing);
         }
 
+        // Chiều cao 1 dòng chữ đo theo Font/DPI THẬT (gồm cả dấu tiếng Việt và chân chữ g/p/q/y),
+        // không thấp hơn chiều cao thiết kế. Số px cố định sẽ làm chữ bị cắt khi Windows scale > 100%.
+        private static int FitTextHeight(Font font, int minHeight)
+        {
+            const string heightProbe = "Ầệgy";
+            return System.Math.Max(minHeight, TextRenderer.MeasureText(heightProbe, font).Height + 2);
+        }
+
         #region Windows Form Designer generated code
 
         private void InitializeComponent()
@@ -122,29 +130,33 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // Title
             this.lblTitle.AutoSize = false;
             this.lblTitle.Location = new Point(-5, y);
-            this.lblTitle.Size = new Size(cardWidth + 5, 78);
+            int titleHeight = FitTextHeight(AppFonts.Title, 78);
+            this.lblTitle.Size = new Size(cardWidth + 5, titleHeight);
             this.lblTitle.Font = AppFonts.Title;
             this.lblTitle.ForeColor = AppColors.TextTitle;
             this.lblTitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += 78 + 12;
+            y += titleHeight + 12;
 
             // Subtitle
             this.lblSubtitle.AutoSize = false;
             this.lblSubtitle.Location = new Point(0, y);
-            this.lblSubtitle.Size = new Size(cardWidth, 34);
+            int subtitleHeight = FitTextHeight(AppFonts.Body, 34);
+            this.lblSubtitle.Size = new Size(cardWidth, subtitleHeight);
             this.lblSubtitle.Font = AppFonts.Body;
             this.lblSubtitle.ForeColor = AppColors.TextMuted;
             this.lblSubtitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += 34 + 36;
+            y += subtitleHeight + 36;
 
             // Username label + field
+            int fieldLabelHeight = FitTextHeight(AppFonts.BodyBold, 32);
+
             this.lblUsername.AutoSize = false;
             this.lblUsername.Location = new Point(0, y);
-            this.lblUsername.Size = new Size(cardWidth, 32);
+            this.lblUsername.Size = new Size(cardWidth, fieldLabelHeight);
             this.lblUsername.Font = AppFonts.BodyBold;
             this.lblUsername.ForeColor = AppColors.TextPrimary;
             this.lblUsername.TextAlign = ContentAlignment.MiddleLeft;
-            y += 36;
+            y += fieldLabelHeight + 4;
 
             this.txtUsername.Location = new Point(0, y);
             this.txtUsername.Size = new Size(cardWidth, 52);
@@ -155,11 +167,11 @@ namespace SIMS_WinFormsApp.Forms.Auth
             // Password label + field
             this.lblPassword.AutoSize = false;
             this.lblPassword.Location = new Point(0, y);
-            this.lblPassword.Size = new Size(cardWidth, 32);
+            this.lblPassword.Size = new Size(cardWidth, fieldLabelHeight);
             this.lblPassword.Font = AppFonts.BodyBold;
             this.lblPassword.ForeColor = AppColors.TextPrimary;
             this.lblPassword.TextAlign = ContentAlignment.MiddleLeft;
-            y += 36;
+            y += fieldLabelHeight + 4;
 
             this.txtPassword.Location = new Point(0, y);
             this.txtPassword.Size = new Size(cardWidth, 52);
@@ -168,43 +180,53 @@ namespace SIMS_WinFormsApp.Forms.Auth
             y += 52 + 10;
 
             // Remember me + Forgot password row
+            this.lnkForgotPassword.AutoSize = false;
+            this.lnkForgotPassword.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold, GraphicsUnit.Point);
+            int linkHeight = FitTextHeight(this.lnkForgotPassword.Font, 30);
+            int optionsRowHeight = System.Math.Max(40, linkHeight + 10);
+
             this.pnlOptionsRow.Location = new Point(0, y);
-            this.pnlOptionsRow.Size = new Size(cardWidth, 40);
+            this.pnlOptionsRow.Size = new Size(cardWidth, optionsRowHeight);
             this.pnlOptionsRow.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
+            // Kích thước thật của ô "Ghi nhớ đăng nhập" do chính ModernCheckBox tự nới theo chữ/font.
             this.chkRemember.AutoSize = false;
             this.chkRemember.Size = new Size(220, 30);
             this.chkRemember.Location = new Point(0, 5);
             this.chkRemember.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
-            this.lnkForgotPassword.AutoSize = false;
-            this.lnkForgotPassword.Size = new Size(200, 30);
-            this.lnkForgotPassword.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold, GraphicsUnit.Point);
+            this.lnkForgotPassword.Size = new Size(200, linkHeight);
             this.lnkForgotPassword.TextAlign = ContentAlignment.MiddleRight;
             this.lnkForgotPassword.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.lnkForgotPassword.Location = new Point(cardWidth - 200, 4);
 
             this.pnlOptionsRow.Controls.Add(this.chkRemember);
             this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
-            this.pnlOptionsRow.Resize += (s, e) => AlignForgotPassword();
-            this.lnkForgotPassword.SizeChanged += (s, e) => AlignForgotPassword();
-            y += 30 + 6;
+            this.pnlOptionsRow.Resize += (s, e) => AlignOptionsRow();
+            this.chkRemember.SizeChanged += (s, e) => AlignOptionsRow();
+            this.lnkForgotPassword.SizeChanged += (s, e) => AlignOptionsRow();
+            this.lnkForgotPassword.TextChanged += (s, e) => FitForgotPasswordLink();
+            y += optionsRowHeight - 4;
 
             // Error label
             this.lblError.AutoSize = false;
             this.lblError.Location = new Point(0, y);
-            this.lblError.Size = new Size(cardWidth, 26);
+            int errorHeight = FitTextHeight(AppFonts.Small, 26);
+            this.lblError.Size = new Size(cardWidth, errorHeight);
             this.lblError.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.lblError.ForeColor = AppColors.Error;
             this.lblError.Font = AppFonts.Small;
             this.lblError.Text = "";
-            y += 30;
+            y += errorHeight + 4;
 
             this.btnLogin.Location = new Point(0, y);
             this.btnLogin.Size = new Size(cardWidth, 58);
             this.btnLogin.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.btnLogin.IsPrimary = true;
             y += 58 + 20;
+
+            // Nếu nội dung (đo theo DPI thật) cao hơn chiều cao thiết kế thì nới card ra để không bị cắt chân.
+            this.pnlFormCard.Height = System.Math.Max(cardHeight, y);
 
             this.pnlFormCard.Controls.Add(this.btnLogin);
             this.pnlFormCard.Controls.Add(this.lblError);
@@ -230,12 +252,27 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.ResumeLayout(false);
         }
 
-        private void AlignForgotPassword()
+        // Link "Quên mật khẩu?" canh sát mép phải, ô "Ghi nhớ" canh sát mép trái; cả hai căn giữa theo chiều dọc của hàng.
+        private void AlignOptionsRow()
         {
-            if (pnlOptionsRow == null || lnkForgotPassword == null) return;
+            if (pnlOptionsRow == null || lnkForgotPassword == null || chkRemember == null) return;
 
-            int x = System.Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
-            lnkForgotPassword.Location = new Point(x, lnkForgotPassword.Location.Y);
+            int linkX = System.Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
+            int linkY = System.Math.Max(0, (pnlOptionsRow.Height - lnkForgotPassword.Height) / 2);
+            lnkForgotPassword.Location = new Point(linkX, linkY);
+
+            int checkY = System.Math.Max(0, (pnlOptionsRow.Height - chkRemember.Height) / 2);
+            chkRemember.Location = new Point(0, checkY);
+        }
+
+        // Link chỉ nới rộng khi chữ dài hơn bề rộng hiện tại (tránh bị cắt thành "Quên mật khẩ...").
+        private void FitForgotPasswordLink()
+        {
+            if (lnkForgotPassword == null) return;
+
+            int neededWidth = lnkForgotPassword.GetPreferredSize(Size.Empty).Width + 4;
+            if (neededWidth > lnkForgotPassword.Width)
+                lnkForgotPassword.Width = neededWidth;
         }
 
         private void CenterFormCard()
@@ -274,7 +311,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             pnlOptionsRow.Width = width;
             lblError.Width = width;
             btnLogin.Width = width;
-            AlignForgotPassword();
+            AlignOptionsRow();
         }
 
         #endregion

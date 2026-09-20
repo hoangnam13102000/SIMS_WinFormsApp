@@ -15,11 +15,13 @@ namespace SIMS_WinFormsApp.UI.Controls
     /// </summary>
     public sealed class OverflowMenuButton : Control
     {
-        private const int HorizontalPadding = 14;
-        private const int ChevronSize = 8;
-        private const int TextChevronGap = 8;
+        private const int HorizontalPadding = 22;
+        private const int ChevronWidth = 11;
+        private const int ChevronHeight = 7;
+        private const int TextChevronGap = 12;
 
         private bool _isHover;
+        private bool _isPressed;
 
         public OverflowMenuButton()
         {
@@ -34,7 +36,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             Font = AppFonts.Button;
             Text = "Tùy chọn";
             Cursor = Cursors.Hand;
-            Height = 42;
+            Height = 48;
             TabStop = true;
             RecalculateWidth();
 
@@ -47,13 +49,25 @@ namespace SIMS_WinFormsApp.UI.Controls
         private void RecalculateWidth()
         {
             int textWidth = TextRenderer.MeasureText(Text, Font, Size.Empty, TextFormatFlags.NoPadding).Width;
-            Width = textWidth + TextChevronGap + ChevronSize + HorizontalPadding * 2;
+            Width = HorizontalPadding + textWidth + TextChevronGap + ChevronWidth + HorizontalPadding;
         }
 
         // Invalidate(true) - không chỉ Invalidate() - để đảm bảo toàn bộ vùng vẽ được yêu cầu vẽ
         // lại ngay khi hover, tránh sót lại "bóng ma" từ lần vẽ trước.
         protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); _isHover = true; Invalidate(true); }
-        protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); _isHover = false; Invalidate(true); }
+        protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); _isHover = false; _isPressed = false; Invalidate(true); }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left) { _isPressed = true; Invalidate(true); }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if (e.Button == MouseButtons.Left) { _isPressed = false; Invalidate(true); }
+        }
 
         // Tự vẽ nền = màu nền của Parent trước khi vẽ nút, để tránh "bóng ma" (chữ/nền lần vẽ
         // trước còn sót lại) mỗi khi Invalidate() lúc hover - cùng cách HeaderSection xử lý
@@ -70,38 +84,56 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             Color accent = AppColors.Accent;
-            Color bg = _isHover ? Color.FromArgb(30, accent.R, accent.G, accent.B) : AppColors.White;
+            Color fill = _isPressed
+                ? Color.FromArgb(36, accent.R, accent.G, accent.B)
+                : _isHover
+                    ? Color.FromArgb(18, accent.R, accent.G, accent.B)
+                    : AppColors.White;
 
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-            using (var brush = new SolidBrush(bg))
-            using (var pen = new Pen(accent, 1f))
+            using (var brush = new SolidBrush(fill))
+            using (var pen = new Pen(accent, 1.5f))
             {
                 g.FillPath(brush, path);
                 g.DrawPath(pen, path);
             }
 
-            var textRect = new Rectangle(HorizontalPadding, 0, Width - HorizontalPadding * 2 - ChevronSize - TextChevronGap, Height);
+            var textRect = new Rectangle(
+                HorizontalPadding, 0,
+                Width - HorizontalPadding * 2 - ChevronWidth - TextChevronGap,
+                Height);
+
             TextRenderer.DrawText(g, Text, Font, textRect, accent,
-                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
 
             DrawChevron(g, accent);
         }
 
+        /// <summary>Chevron mảnh dạng chữ V (thay cho tam giác đặc trước đây), khớp mẫu thiết kế.</summary>
         private void DrawChevron(Graphics g, Color color)
         {
-            int cx = Width - HorizontalPadding - ChevronSize / 2;
+            int cx = Width - HorizontalPadding - ChevronWidth / 2;
             int cy = Height / 2;
-            var points = new[]
+
+            using (var pen = new Pen(color, 2f)
             {
-                new Point(cx - ChevronSize / 2, cy - ChevronSize / 4),
-                new Point(cx + ChevronSize / 2, cy - ChevronSize / 4),
-                new Point(cx, cy + ChevronSize / 3)
-            };
-            using (var brush = new SolidBrush(color))
-                g.FillPolygon(brush, points);
+                StartCap = LineCap.Round,
+                EndCap = LineCap.Round,
+                LineJoin = LineJoin.Round
+            })
+            {
+                g.DrawLines(pen, new[]
+                {
+                    new Point(cx - ChevronWidth / 2, cy - ChevronHeight / 2 + 1),
+                    new Point(cx, cy + ChevronHeight / 2 - 1),
+                    new Point(cx + ChevronWidth / 2, cy - ChevronHeight / 2 + 1)
+                });
+            }
         }
     }
 }

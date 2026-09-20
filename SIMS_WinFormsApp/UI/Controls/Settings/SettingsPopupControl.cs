@@ -17,10 +17,34 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         // Tăng kích thước popup để dễ nhìn hơn. Dùng màu nền elevated (BgLighter)
         // thay vì AppColors.White (gần trùng PageBg ở dark mode → khó phân biệt).
-        private const int PopupWidth = 380;
+        private const int MinPopupWidth = 380;
+        private const int MaxPopupWidth = 560;
         private const int RowHeight = 48;
         private const int SwatchSize = 36;
         private const int ContentPadding = 20;
+
+        // Vùng dành cho icon bên trái + toggle/dấu check bên phải trong mỗi dòng.
+        private const int RowIconArea = 48;
+        private const int RowTrailingArea = 64;
+
+        // Các chuỗi hiển thị trong dòng / nhãn mục: dùng để đo chiều rộng cần thiết.
+        private static readonly string[] RowTextKeys =
+        {
+            "settings.theme.light",
+            "settings.theme.dark",
+            "settings.notification.sound",
+            "settings.notification.hideNewOrder",
+            "settings.language.vi",
+            "settings.language.en"
+        };
+
+        private static readonly string[] SectionTextKeys =
+        {
+            "settings.section.appearance",
+            "settings.section.accent",
+            "settings.section.notification",
+            "settings.section.language"
+        };
 
         private readonly Panel _host;
 
@@ -28,12 +52,15 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly List<AccentSwatchControl> _accentSwatches = new List<AccentSwatchControl>();
         private readonly List<SettingsOptionRowControl> _languageRows = new List<SettingsOptionRowControl>();
         private readonly List<Label> _sectionLabels = new List<Label>();
+        private readonly List<Panel> _separators = new List<Panel>();
         private SettingsToggleRowControl _soundToggleRow;
         private SettingsToggleRowControl _hideOrderToggleRow;
 
         public SettingsPopupControl()
         {
-            Width = PopupWidth;
+            // Chiều rộng tính theo nội dung thật (font theo point phình ra theo DPI,
+            // còn layout pixel cố định nên không thể hard-code).
+            Width = MeasureRequiredWidth();
             // BgLighter: dark ≈ (38,42,53) nổi rõ trên PageBg (18,20,25);
             // light ≈ (241,245,249) nhẹ nhàng trên nền trắng.
             BackColor = AppColors.BgLighter;
@@ -52,12 +79,40 @@ namespace SIMS_WinFormsApp.UI.Controls
             BuildContent();
         }
 
+        // ===================== ĐO KÍCH THƯỚC =====================
+
+        private static int MeasureTextWidth(string text, Font font)
+        {
+            return TextRenderer.MeasureText(text ?? string.Empty, font, Size.Empty,
+                TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
+        }
+
+        /// <summary>
+        /// Chiều rộng popup đủ chứa chữ dài nhất (dùng font đậm vì dòng đang chọn in đậm),
+        /// cộng vùng icon + toggle/check và lề. Kẹp trong [MinPopupWidth, MaxPopupWidth].
+        /// </summary>
+        private static int MeasureRequiredWidth()
+        {
+            int rowText = 0;
+            foreach (string key in RowTextKeys)
+                rowText = Math.Max(rowText, MeasureTextWidth(Lang.Get(key), AppFonts.BodyBold));
+
+            int sectionText = 0;
+            foreach (string key in SectionTextKeys)
+                sectionText = Math.Max(sectionText, MeasureTextWidth(Lang.Get(key), AppFonts.SmallBold));
+
+            int contentW = Math.Max(RowIconArea + rowText + RowTrailingArea, sectionText);
+            int width = contentW + ContentPadding * 2 + 8;
+
+            return Math.Max(MinPopupWidth, Math.Min(width, MaxPopupWidth));
+        }
+
         // ===================== XÂY NỘI DUNG =====================
 
         private void BuildContent()
         {
             int y = ContentPadding;          // margin trên
-            int contentW = PopupWidth - ContentPadding * 2;
+            int contentW = Width - ContentPadding * 2;
             int x = ContentPadding;          // margin trái
 
             y = AddSectionLabel("settings.section.appearance", y, x, contentW);
@@ -81,9 +136,14 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private int AddSectionLabel(string i18nKey, int y, int x, int contentW)
         {
+            // Chiều cao theo font thật (không hard-code) để dấu tiếng Việt không bị cắt.
+            int labelHeight = Math.Max(26, AppFonts.SmallBold.Height + 8);
+
             var label = new Label
             {
                 AutoSize = false,
+                UseMnemonic = false,
+                AutoEllipsis = true,
                 Text = Lang.Get(i18nKey),
                 Tag = i18nKey,
                 Font = AppFonts.SmallBold,
@@ -91,7 +151,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Location = new Point(x, y),
-                Size = new Size(contentW, 22)
+                Size = new Size(contentW, labelHeight)
             };
             _host.Controls.Add(label);
             _sectionLabels.Add(label);
@@ -108,6 +168,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 BackColor = AppColors.Border
             };
             _host.Controls.Add(sep);
+            _separators.Add(sep);
             return sepY + 1 + 12;
         }
 
@@ -246,6 +307,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             RefreshAllTexts();
         }
+
         private void RefreshAllTexts()
         {
             foreach (var label in _sectionLabels)
@@ -262,6 +324,33 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             _soundToggleRow?.SetText(Lang.Get("settings.notification.sound"));
             _hideOrderToggleRow?.SetText(Lang.Get("settings.notification.hideNewOrder"));
+
+            // Ngôn ngữ mới có thể dài/ngắn hơn -> co giãn popup cho vừa nội dung.
+            ResizeToFitContent();
+        }
+
+        /// <summary>
+        /// Tính lại chiều rộng theo ngôn ngữ hiện tại, cập nhật mọi hàng và giữ nguyên mép phải
+        /// (popup được canh theo mép phải nút Cài đặt nên không được trôi sang phải).
+        /// </summary>
+        private void ResizeToFitContent()
+        {
+            int newWidth = MeasureRequiredWidth();
+            if (newWidth == Width) return;
+
+            int delta = newWidth - Width;
+            int contentW = newWidth - ContentPadding * 2;
+
+            foreach (var label in _sectionLabels) label.Width = contentW;
+            foreach (var sep in _separators) sep.Width = contentW;
+            foreach (var row in _themeRows) row.Width = contentW;
+            foreach (var row in _languageRows) row.Width = contentW;
+            if (_soundToggleRow != null) _soundToggleRow.Width = contentW;
+            if (_hideOrderToggleRow != null) _hideOrderToggleRow.Width = contentW;
+
+            SetBounds(Left - delta, Top, newWidth, Height);
+            ApplyRoundedRegion();
+            Invalidate(true);
         }
 
         private void RefreshColorsAfterThemeChange()
@@ -362,6 +451,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             _textLabel = new Label
             {
                 AutoSize = false,
+                UseMnemonic = false,
+                AutoEllipsis = true,
                 Text = text,
                 Font = AppFonts.Body,
                 ForeColor = AppColors.TextPrimary,
@@ -482,6 +573,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             _textLabel = new Label
             {
                 AutoSize = false,
+                UseMnemonic = false,
+                AutoEllipsis = true,
                 Text = text,
                 Font = AppFonts.Body,
                 ForeColor = AppColors.TextPrimary,
