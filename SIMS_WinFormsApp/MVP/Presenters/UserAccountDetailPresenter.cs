@@ -10,11 +10,16 @@ namespace SIMS_WinFormsApp.MVP.Presenters
     {
         private readonly IUserAccountDetailView _view;
         private readonly IUserAccountDetailViewModelBuilder _viewModelBuilder;
+        private readonly IUserManagementService _userManagementService;
 
-        public UserAccountDetailPresenter(IUserAccountDetailView view, IUserAccountDetailViewModelBuilder viewModelBuilder)
+        public UserAccountDetailPresenter(
+            IUserAccountDetailView view,
+            IUserAccountDetailViewModelBuilder viewModelBuilder,
+            IUserManagementService userManagementService = null)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _viewModelBuilder = viewModelBuilder ?? throw new ArgumentNullException(nameof(viewModelBuilder));
+            _userManagementService = userManagementService;
 
             _view.CloseRequested += OnCloseRequested;
         }
@@ -23,7 +28,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var viewModel = _viewModelBuilder.Build(user);
+            var employeeProfile = _userManagementService?.GetEmployeeProfile(user.UserId);
+
+            var viewModel = _viewModelBuilder.Build(user, employeeProfile);
             _view.Render(viewModel);
         }
 

@@ -20,6 +20,11 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
         public AccountStatusDisplay LockStatus { get; }
         public string FailedLoginCountText { get; }
 
+        // MỚI: chỉ có ý nghĩa với tài khoản nhân viên (null/"—" với khách hàng - View quyết định
+        // có hiện 2 ô này hay không dựa trên RoleCode, không dựa trên 2 field này).
+        public string GenderText { get; }
+        public string SalaryText { get; }
+
         public UserAccountDetailViewModel(
             string avatarInitial,
             Color avatarColor,
@@ -33,7 +38,9 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
             string createdAtText,
             AccountStatusDisplay accountStatus,
             AccountStatusDisplay lockStatus,
-            string failedLoginCountText)
+            string failedLoginCountText,
+            string genderText,
+            string salaryText)
         {
             AvatarInitial = avatarInitial;
             AvatarColor = avatarColor;
@@ -48,6 +55,8 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
             AccountStatus = accountStatus;
             LockStatus = lockStatus;
             FailedLoginCountText = failedLoginCountText;
+            GenderText = genderText;
+            SalaryText = salaryText;
         }
     }
 }

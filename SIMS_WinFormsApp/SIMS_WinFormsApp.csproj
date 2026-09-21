@@ -84,6 +84,7 @@
     <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
     <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
+    <Compile Include="Models\DTOs\EmployeeProfileDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
     <Compile Include="Models\DTOs\PermissionDto.cs" />
     <Compile Include="Models\DTOs\Permission\PermissionGroupEntryViewModel.cs" />
@@ -197,9 +198,22 @@
     </Compile>
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerView.cs" />
+    <Compile Include="UI\Controls\BaseDetailDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DetailAvatarPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
+    <Compile Include="UI\Controls\Dialogs\DialogCloseButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Dialogs\DialogSizing.cs" />
+    <Compile Include="UI\Controls\Dialogs\FieldGridPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
+    <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoBox.cs" />
+    <Compile Include="UI\Controls\Dialogs\RoundedDialogFrame.cs" />
     <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
+    <Compile Include="UI\Controls\Dialogs\AvatarSectionFormPanel.cs" />
+    <Compile Include="UI\Controls\Forms\GenderOption.cs" />
     <!-- MỚI: Header -->
     <Compile Include="UI\Controls\Header\AvatarControl.cs">
       <SubType>Component</SubType>
@@ -217,6 +231,7 @@
     <Compile Include="UI\Controls\Loading\LoadingOverlayHost.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Controls\ManagementTablePage.cs" />
     <Compile Include="UI\Controls\Permission\PermissionGroupCardControl.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -253,20 +268,15 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\Toast\ToastService.cs" />
-    <Compile Include="UI\Layouts\VerticalStackLayout.cs" />
     <Compile Include="UI\Theme\DropdownPalette.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
     <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
     <!-- MỚI: Header -->
     <Compile Include="Views\Interfaces\IHeaderView.cs" />
-    <Compile Include="UI\Controls\Dialogs\BaseDetailDialogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="UI\Controls\Dialogs\BaseFormDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Dialogs\DetailAvatarPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\DetailInfoItemControl.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
     <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
@@ -288,7 +298,6 @@
     <Compile Include="UI\Controls\Filter\FilterOption.cs" />
     <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
     <Compile Include="UI\Controls\Filter\IFilterView.cs" />
-    <Compile Include="UI\Controls\Tables\ManagementTablePage.cs" />
     <!-- MỚI: nút trigger menu "Tùy chọn" cạnh nút "+ Thêm..." -->
     <Compile Include="UI\Controls\Popups\OverflowMenuButton.cs">
       <SubType>Component</SubType>

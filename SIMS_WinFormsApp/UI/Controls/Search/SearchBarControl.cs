@@ -25,7 +25,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
         private readonly Label _placeholderLabel;
         private readonly IconPictureBox _searchIcon;
         private readonly SuggestionPopup _popup;
-        private bool _isFocused;
 
         public SearchBarControl()
         {
@@ -54,8 +53,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
                 BorderColor = AppColors.FieldBorder,
                 Cursor = Cursors.IBeam
             };
-            _textBox.GotFocus += (_, __) => { _isFocused = true; Invalidate(); };
-            _textBox.LostFocus += (_, __) => { _isFocused = false; Invalidate(); HideSuggestions(); };
+            _textBox.LostFocus += (_, __) => HideSuggestions();
             _textBox.TextChanged += (_, __) =>
             {
                 _placeholderLabel.Visible = _textBox.Text.Length == 0;

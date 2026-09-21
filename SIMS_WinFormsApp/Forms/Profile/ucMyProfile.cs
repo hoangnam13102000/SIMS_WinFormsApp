@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Forms.Dashboard;
 using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces;
@@ -40,6 +41,13 @@ namespace SIMS_WinFormsApp.Forms.Profile
         private LabeledIconField _fieldEmail;
         private Label _lblProfileError;
         private PrimaryButton _btnSaveProfile;
+
+        // Trang cá nhân không hiển thị các trường hồ sơ nhân viên, nhưng Presenter dùng
+        // chung IEditUserAccountView nên vẫn cần giữ các giá trị này trong suốt vòng đời view.
+        private DateTime? _dateOfBirth;
+        private Gender? _selectedGender;
+        private DateTime _hireDate = DateTime.Today;
+        private string _salaryText = string.Empty;
 
         // ----- Khối "Đổi mật khẩu" (IChangePasswordView) -----
         private RoundedPasswordTextBox _txtCurrentPassword;
@@ -144,6 +152,36 @@ namespace SIMS_WinFormsApp.Forms.Profile
         }
 
         public string AvatarFilePath => _avatarPanel?.SelectedFilePath;
+
+        public DateTime? DateOfBirth
+        {
+            get => _dateOfBirth;
+            set => _dateOfBirth = value;
+        }
+
+        public Gender? SelectedGender
+        {
+            get => _selectedGender;
+            set => _selectedGender = value;
+        }
+
+        public DateTime HireDate
+        {
+            get => _hireDate;
+            set => _hireDate = value;
+        }
+
+        public string SalaryText
+        {
+            get => _salaryText;
+            set => _salaryText = value;
+        }
+
+        public void SetEmployeeProfileVisible(bool visible)
+        {
+            // Các trường hồ sơ nhân viên không có trên trang cá nhân; dữ liệu vẫn được
+            // giữ qua các property ở trên để Presenter không làm mất dữ liệu khi lưu.
+        }
 
         public event EventHandler SaveRequested;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.Views.Interfaces;
@@ -8,16 +9,17 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 {
     /// <summary>
     /// Presenter cho popup "Cập nhật tài khoản" (dùng chung cho nhân viên lẫn khách hàng).
-    /// Đảm nhiệm validate input + gọi <see cref="IUserManagementService.UpdateAccount"/> -
-    /// <c>frmEditUserAccount</c> chỉ lo dựng UI và đọc/ghi giá trị field, không tự validate hay
-    /// biết gì về Service (giống cách UserAccountDetailPresenter/ChangePasswordPresenter đã
-    /// tách trong project).
+    /// Đảm nhiệm nạp hồ sơ nhân viên (nếu có) lên View, validate input + gọi
+    /// <see cref="IUserManagementService.UpdateAccount"/> - <c>frmEditUserAccount</c> chỉ lo
+    /// dựng UI và đọc/ghi giá trị field, không tự validate hay biết gì về Service (giống cách
+    /// UserAccountDetailPresenter/ChangePasswordPresenter đã tách trong project).
     /// </summary>
     public sealed class EditUserAccountPresenter
     {
         private readonly IEditUserAccountView _view;
         private readonly IUserManagementService _userManagementService;
         private readonly int _userId;
+        private bool _hasEmployeeProfile;
 
         public EditUserAccountPresenter(IEditUserAccountView view, IUserManagementService userManagementService, int userId)
         {
@@ -26,6 +28,22 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _userId = userId;
 
             _view.SaveRequested += OnSaveRequested;
+            LoadEmployeeProfile();
+        }
+
+        // Tài khoản có hồ sơ nhân viên -> đổ lên form; không có (khách hàng...) -> ẩn các trường
+        // đó đi và khi lưu sẽ không đụng tới bảng Employees.
+        private void LoadEmployeeProfile()
+        {
+            EmployeeProfileDto profile = _userManagementService.GetEmployeeProfile(_userId);
+            _hasEmployeeProfile = profile != null;
+            _view.SetEmployeeProfileVisible(_hasEmployeeProfile);
+            if (!_hasEmployeeProfile) return;
+
+            _view.DateOfBirth = profile.DateOfBirth;
+            _view.SelectedGender = profile.Gender;
+            _view.HireDate = profile.HireDate;
+            _view.SalaryText = profile.Salary.HasValue ? profile.Salary.Value.ToString("0.##") : string.Empty;
         }
 
         private async void OnSaveRequested(object sender, EventArgs e) => await SaveAsync();
@@ -60,11 +78,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 return;
             }
 
+            EmployeeProfileDto employeeProfile = null;
+            if (_hasEmployeeProfile && !TryReadEmployeeProfile(out employeeProfile))
+                return;
+
             _view.SetSaving(true);
             try
             {
                 var result = await Task.Run(() =>
-                    _userManagementService.UpdateAccount(_userId, fullName, email, phone, _view.AvatarFilePath));
+                    _userManagementService.UpdateAccount(_userId, fullName, email, phone, _view.AvatarFilePath, employeeProfile));
 
                 switch (result)
                 {
@@ -87,6 +109,33 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             {
                 _view.SetSaving(false);
             }
+        }
+
+        // Cùng quy tắc validate Lương với AddEmployeePresenter (số không âm, để trống = chưa xác định).
+        private bool TryReadEmployeeProfile(out EmployeeProfileDto profile)
+        {
+            profile = null;
+
+            decimal? salary = null;
+            string salaryText = (_view.SalaryText ?? string.Empty).Trim();
+            if (!string.IsNullOrEmpty(salaryText))
+            {
+                if (!decimal.TryParse(salaryText, out var parsedSalary) || parsedSalary < 0)
+                {
+                    _view.ShowError("Lương phải là một số không âm.");
+                    return false;
+                }
+                salary = parsedSalary;
+            }
+
+            profile = new EmployeeProfileDto
+            {
+                DateOfBirth = _view.DateOfBirth,
+                Gender = _view.SelectedGender,
+                HireDate = _view.HireDate,
+                Salary = salary
+            };
+            return true;
         }
 
         public void Dispose()

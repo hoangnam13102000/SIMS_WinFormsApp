@@ -128,9 +128,12 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             }
         }
 
-        // Cập nhật thông tin liên hệ (họ tên/email/SĐT) cho popup "Cập nhật tài khoản".
-        // Trả về false nếu không tìm thấy user (ví dụ đã bị xóa) để Service báo lỗi phù hợp.
-        public bool UpdateContactInfo(int userId, string fullName, string email, string phone, string avatarUrl = null)
+        // Cập nhật thông tin liên hệ (họ tên/email/SĐT) cho popup "Cập nhật tài khoản", kèm hồ
+        // sơ nhân viên nếu có. Users + Employees cùng nằm trong 1 lần SubmitChanges nên LINQ to
+        // SQL tự bọc trong 1 transaction. Trả về false nếu không tìm thấy user (ví dụ đã bị xóa).
+        public bool UpdateContactInfo(
+            int userId, string fullName, string email, string phone,
+            string avatarUrl = null, EmployeeProfileDto employeeProfile = null)
         {
             using (var db = new SimsDataContext())
             {
@@ -141,8 +144,44 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 user.Email = email;
                 user.Phone = phone;
                 if (!string.IsNullOrWhiteSpace(avatarUrl)) user.AvatarUrl = avatarUrl;
+
+                if (employeeProfile != null)
+                {
+                    var employee = db.Employees.FirstOrDefault(e => e.UserID == userId);
+                    if (employee != null)
+                    {
+                        employee.DateOfBirth = employeeProfile.DateOfBirth;
+                        employee.Gender = employeeProfile.Gender.HasValue
+                            ? employeeProfile.Gender.Value.ToString().ToUpperInvariant()
+                            : null;
+                        employee.Salary = employeeProfile.Salary;
+                        employee.HireDate = employeeProfile.HireDate;
+                    }
+                }
+
                 db.SubmitChanges();
                 return true;
+            }
+        }
+
+        // Đọc hồ sơ nhân viên (Employees) để đổ lên popup sửa. Gender trong DB lưu dạng
+        // "MALE"/"FEMALE"/"OTHER" (xem CreateEmployee) -> đổi ngược về enum, giá trị lạ/null => null.
+        public EmployeeProfileDto GetEmployeeProfile(int userId)
+        {
+            using (var db = new SimsDataContext())
+            {
+                var employee = db.Employees.FirstOrDefault(e => e.UserID == userId);
+                if (employee == null) return null;
+
+                return new EmployeeProfileDto
+                {
+                    DateOfBirth = employee.DateOfBirth,
+                    Gender = Enum.TryParse(employee.Gender, true, out Gender parsedGender)
+                        ? parsedGender
+                        : (Gender?)null,
+                    HireDate = employee.HireDate,
+                    Salary = employee.Salary
+                };
             }
         }
 

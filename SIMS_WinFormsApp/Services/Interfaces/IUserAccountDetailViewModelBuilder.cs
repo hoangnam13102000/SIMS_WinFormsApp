@@ -5,6 +5,6 @@ namespace SIMS_WinFormsApp.Services.Interfaces
 {
     public interface IUserAccountDetailViewModelBuilder
     {
-        UserAccountDetailViewModel Build(UserDetailDto user);
+        UserAccountDetailViewModel Build(UserDetailDto user, EmployeeProfileDto employeeProfile);
     }
 }

@@ -17,7 +17,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int FooterHeight = 76;
         private const int HeaderIconContainerSize = 40;
         private const int HeaderIconSize = 20;
-        private const int CloseButtonSize = 32;
+        private const int CloseButtonSize = 40;
         private const int CornerRadius = 16;
         private const int ContentPadding = 28;
 
@@ -32,15 +32,15 @@ namespace SIMS_WinFormsApp.UI.Controls
         #endregion
 
         #region Fields
+        private readonly RoundedDialogFrame _frame = new RoundedDialogFrame(CornerRadius, DialogTheme.BorderWidth);
+
         private readonly Panel _headerPanel;
         private readonly Panel _bodyScrollPanel;
         private readonly Panel _footerPanel;
 
         private readonly IconPictureBox _headerIconBox;
         private readonly Label _titleLabel;
-        private readonly Button _closeButton;
-        private readonly IconPictureBox _closeIconBox;
-        private bool _isCloseHover;
+        private readonly DialogCloseButton _closeButton;
 
         private readonly List<PrimaryButton> _footerButtons = new List<PrimaryButton>();
         #endregion
@@ -151,7 +151,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             Padding = new Padding((int)DialogTheme.BorderWidth);
 
             // ===== Header (icon + tiêu đề + nút đóng) =====
-            _headerPanel = new Panel { Dock = DockStyle.Top, Height = HeaderHeight, BackColor = DialogTheme.SurfaceColor };
+            _headerPanel = new Panel { Dock = DockStyle.Top, Height = HeaderHeight, BackColor = Color.Transparent };
 
             var headerIconHolder = new Panel
             {
@@ -190,34 +190,11 @@ namespace SIMS_WinFormsApp.UI.Controls
                 UseMnemonic = false
             };
 
-            _closeButton = new Button
+            _closeButton = new DialogCloseButton
             {
-                Size = new Size(CloseButtonSize, CloseButtonSize),
-                FlatStyle = FlatStyle.Flat,
-                BackColor = Color.Transparent,
-                ForeColor = Color.Transparent,
-                Cursor = Cursors.Hand,
-                Text = string.Empty,
-                TabStop = false
+                Size = new Size(CloseButtonSize, CloseButtonSize)
             };
-            _closeButton.FlatAppearance.BorderSize = 0;
-            _closeButton.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            _closeButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
             _closeButton.Click += (s, e) => RaiseCloseRequested();
-            _closeButton.Paint += CloseButton_Paint;
-            _closeButton.MouseEnter += (s, e) => { _isCloseHover = true; UpdateCloseIconColor(); _closeButton.Invalidate(); };
-            _closeButton.MouseLeave += (s, e) => { _isCloseHover = false; UpdateCloseIconColor(); _closeButton.Invalidate(); };
-
-            _closeIconBox = new IconPictureBox
-            {
-                Size = new Size(16, 16),
-                Location = new Point((CloseButtonSize - 16) / 2, (CloseButtonSize - 16) / 2),
-                BackColor = Color.Transparent,
-                IconChar = IconChar.Xmark,
-                IconColor = AppColors.TextMuted,
-                IconSize = 16
-            };
-            _closeButton.Controls.Add(_closeIconBox);
 
             _headerPanel.Controls.Add(_titleLabel);
             _headerPanel.Controls.Add(headerIconHolder);
@@ -233,7 +210,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             };
 
             // ===== Footer =====
-            _footerPanel = new Panel { Dock = DockStyle.Bottom, Height = FooterHeight, BackColor = DialogTheme.SurfaceColor };
+            _footerPanel = new Panel { Dock = DockStyle.Bottom, Height = FooterHeight, BackColor = Color.Transparent };
             _footerPanel.Paint += FooterPanel_Paint;
 
             // ===== Ráp control =====
@@ -242,11 +219,18 @@ namespace SIMS_WinFormsApp.UI.Controls
             Controls.Add(_headerPanel);
 
             KeyDown += BaseFormDialogForm_KeyDown;
-            Resize += (s, e) => { RepositionHeaderControls(); RepositionFooterButtons(); Invalidate(); };
+            Resize += (s, e) =>
+            {
+                RepositionHeaderControls();
+                RepositionFooterButtons();
+                _frame.ApplyClip(this);
+                Invalidate(true);
+            };
             ThemeManager.Instance.ThemeChanged += ThemeManager_ThemeChanged;
 
             RepositionHeaderControls();
             RepositionFooterButtons();
+            _frame.ApplyClip(this);
         }
 
         public BaseFormDialogForm(IWin32Window owner) : this()
@@ -338,12 +322,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            var contentRect = new Rectangle(1, 1, Math.Max(1, ClientSize.Width - 2), Math.Max(1, ClientSize.Height - 2));
-            using (var path = AppRadius.GetRoundedPath(contentRect, CornerRadius - 2))
-            using (var pen = new Pen(DialogTheme.BorderColor, DialogTheme.BorderWidth))
-            {
-                g.DrawPath(pen, path);
-            }
+            _frame.PaintBorder(g, ClientSize, DialogTheme.BorderColor);
         }
 
         private void FooterPanel_Paint(object sender, PaintEventArgs e)
@@ -352,25 +331,9 @@ namespace SIMS_WinFormsApp.UI.Controls
                 e.Graphics.DrawLine(pen, 20, 0, _footerPanel.ClientSize.Width - 20, 0);
         }
 
-        private void CloseButton_Paint(object sender, PaintEventArgs e)
-        {
-            if (!_isCloseHover) return;
-
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, CloseButtonSize, CloseButtonSize);
-            using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Small))
-            using (var brush = new SolidBrush(AppColors.CancelHover))
-                e.Graphics.FillPath(brush, path);
-        }
-
-        private void UpdateCloseIconColor()
-        {
-            _closeIconBox.IconColor = _isCloseHover ? AppColors.Error : AppColors.TextMuted;
-        }
-
         private void RepositionHeaderControls()
         {
-            _closeButton.Location = new Point(_headerPanel.ClientSize.Width - CloseButtonSize - 12, (HeaderHeight - CloseButtonSize) / 2);
+            _closeButton.Location = new Point(_headerPanel.ClientSize.Width - CloseButtonSize - 16, (HeaderHeight - CloseButtonSize) / 2);
         }
 
         private void ThemeManager_ThemeChanged(object sender, EventArgs e)
@@ -380,7 +343,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             _bodyScrollPanel.BackColor = DialogTheme.SurfaceColor;
             _footerPanel.BackColor = DialogTheme.SurfaceColor;
             _titleLabel.ForeColor = AppColors.TextTitle;
-            UpdateCloseIconColor();
+            _frame.ApplyClip(this);
             Invalidate(true);
         }
 

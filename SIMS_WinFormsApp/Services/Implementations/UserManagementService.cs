@@ -46,7 +46,9 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 pageIndex, pageSize, searchTerm, roleFilter, statusFilter);
         }
 
-        public UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone, string avatarFilePath = null)
+        public UpdateAccountResult UpdateAccount(
+            int userId, string fullName, string email, string phone,
+            string avatarFilePath = null, EmployeeProfileDto employeeProfile = null)
         {
             string normalizedEmail = (email ?? string.Empty).Trim();
 
@@ -59,10 +61,13 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 (fullName ?? string.Empty).Trim(),
                 normalizedEmail,
                 (phone ?? string.Empty).Trim(),
-                avatarUrl);
+                avatarUrl,
+                employeeProfile);
 
             return updated ? UpdateAccountResult.Success : UpdateAccountResult.UserNotFound;
         }
+
+        public EmployeeProfileDto GetEmployeeProfile(int userId) => _userRepository.GetEmployeeProfile(userId);
 
         public SetAccountLockResult SetAccountLocked(int userId, bool isLocked)
         {

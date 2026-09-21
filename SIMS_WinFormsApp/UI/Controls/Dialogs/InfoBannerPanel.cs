@@ -109,10 +109,32 @@ namespace SIMS_WinFormsApp.UI.Controls
             set { _lblDescription.Text = value ?? string.Empty; LayoutChildren(); }
         }
 
+        /// <summary>
+        /// Vẽ nền phía sau banner (khớp với control cha) TRƯỚC khi OnPaint tô hình bo góc.
+        /// Control này bật OptimizedDoubleBuffer + UserPaint nên nếu để trống hàm này, bitmap
+        /// double-buffer chưa được tô và các pixel nằm NGOÀI đường bo góc (4 góc + đường viền
+        /// đáy/phải do rect = Width-1/Height-1) sẽ hiện màu ĐEN - chính là viền đen đậm quanh
+        /// banner. Cùng cách xử lý với BaseButton.PaintBackdrop.
+        /// </summary>
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            // Nền do OnPaint tự vẽ bo góc - bỏ qua nền mặc định để tránh vệt hình chữ nhật lộ ra
-            // ở 4 góc (cùng lý do OnPaintBackground rỗng ở PillTabButton/PrimaryButton).
+            // Bước 1: tô sẵn 1 màu ĐẶC lấy từ control cha (đảm bảo không còn pixel chưa tô).
+            pevent.Graphics.Clear(ResolveOpaqueParentColor());
+
+            // Bước 2: để WinForms vẽ lại nền thật của control cha (BackColor trong suốt nhờ
+            // ControlStyles.SupportsTransparentBackColor) để 4 góc khớp đúng nền phía sau.
+            base.OnPaintBackground(pevent);
+        }
+
+        private Color ResolveOpaqueParentColor()
+        {
+            for (Control c = Parent; c != null; c = c.Parent)
+            {
+                if (c.BackColor.A == 255)
+                    return c.BackColor;
+            }
+
+            return SystemColors.Control;
         }
 
         protected override void OnPaint(PaintEventArgs e)

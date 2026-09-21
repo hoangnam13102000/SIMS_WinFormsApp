@@ -15,6 +15,11 @@ namespace SIMS_WinFormsApp.Services.Implementations
 
         public UserAccountDetailViewModel Build(UserDetailDto user)
         {
+            return Build(user, null);
+        }
+
+        public UserAccountDetailViewModel Build(UserDetailDto user, EmployeeProfileDto employeeProfile)
+        {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             string fullName = string.IsNullOrWhiteSpace(user.FullName) ? user.Username ?? "N/A" : user.FullName;
@@ -32,7 +37,26 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 createdAtText: user.CreatedAt.HasValue ? user.CreatedAt.Value.ToString(DateFormat) : "—",
                 accountStatus: DescribeAccountStatus(user.Status),
                 lockStatus: DescribeLockStatus(user.IsLocked),
-                failedLoginCountText: user.FailedLoginCount.ToString());
+                failedLoginCountText: user.FailedLoginCount.ToString(),
+                genderText: DescribeGender(employeeProfile?.Gender),
+                salaryText: employeeProfile?.Salary.HasValue == true
+                    ? employeeProfile.Salary.Value.ToString("0.##")
+                    : "Chưa cập nhật");
+        }
+
+        private static string DescribeGender(Gender? gender)
+        {
+            switch (gender)
+            {
+                case Gender.Male:
+                    return "Nam";
+                case Gender.Female:
+                    return "Nữ";
+                case Gender.Other:
+                    return "Khác";
+                default:
+                    return "Chưa cập nhật";
+            }
         }
 
         private static string BuildInitial(string fullName)

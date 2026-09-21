@@ -15,7 +15,17 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         void ResetFailedLogin(int userId);
         void UpdatePassword(int userId, string newPasswordHash);
         bool IsEmailInUseByOthers(string email, int excludeUserId);
-        bool UpdateContactInfo(int userId, string fullName, string email, string phone, string avatarUrl = null);
+
+        /// <summary>Cập nhật thông tin liên hệ; nếu truyền <paramref name="employeeProfile"/> thì
+        /// cập nhật luôn hồ sơ nhân viên trong CÙNG 1 lần SubmitChanges (cùng thành công hoặc
+        /// cùng thất bại).</summary>
+        bool UpdateContactInfo(
+            int userId, string fullName, string email, string phone,
+            string avatarUrl = null, EmployeeProfileDto employeeProfile = null);
+
+        /// <summary>Hồ sơ nhân viên (bảng Employees); null nếu tài khoản không có hồ sơ này.</summary>
+        EmployeeProfileDto GetEmployeeProfile(int userId);
+
         void SetLocked(int userId, bool isLocked);
         IReadOnlyList<User> GetPage(int pageIndex, int pageSize, string searchTerm = null);
         IReadOnlyDictionary<string, int> CountUsersByRole();

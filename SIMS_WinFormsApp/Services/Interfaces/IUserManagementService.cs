@@ -45,7 +45,16 @@ namespace SIMS_WinFormsApp.Services.Interfaces
             string searchTerm,
             string roleFilter,
             string statusFilter);
-        UpdateAccountResult UpdateAccount(int userId, string fullName, string email, string phone, string avatarFilePath = null);
+
+        /// <summary>Cập nhật thông tin tài khoản. <paramref name="employeeProfile"/> khác null thì
+        /// cập nhật luôn hồ sơ nhân viên (Ngày sinh/Giới tính/Ngày vào làm/Lương) cùng lúc.</summary>
+        UpdateAccountResult UpdateAccount(
+            int userId, string fullName, string email, string phone,
+            string avatarFilePath = null, EmployeeProfileDto employeeProfile = null);
+
+        /// <summary>Hồ sơ nhân viên của tài khoản; null nếu tài khoản không phải nhân viên.</summary>
+        EmployeeProfileDto GetEmployeeProfile(int userId);
+
         SetAccountLockResult SetAccountLocked(int userId, bool isLocked);
         IReadOnlyList<RoleOptionDto> GetAssignableRoles();
 

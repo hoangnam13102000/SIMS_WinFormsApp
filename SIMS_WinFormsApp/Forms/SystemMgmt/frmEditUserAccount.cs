@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -17,17 +16,22 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
     public sealed class frmEditUserAccount : BaseFormDialogForm, IEditUserAccountView
     {
-        /// <summary>Kích thước popup khi chuyển sang layout ngang (avatar + 2 cột) - rộng hơn
-        /// DefaultDialogSize (620x720) của BaseFormDialogForm vốn dành cho layout 1 cột dọc.</summary>
-        private static readonly Size HorizontalDialogSize = new Size(900, 560);
+        /// <summary>Độ rộng mong muốn của popup (avatar + lưới 3 cột) - đủ rộng để hiện trọn
+        /// nội dung không cần cuộn; tự thu lại nếu màn hình nhỏ hơn.</summary>
+        private const int PreferredDialogWidth = 1240;
 
         private readonly EditUserAccountPresenter _presenter;
 
         private LabeledIconField _fieldFullName;
         private LabeledIconField _fieldEmail;
         private LabeledIconField _fieldPhone;
-        private AvatarUploadPanel _avatarPanel;
-        private ThreeColumnFieldsPanel _fieldsGrid;
+        private LabeledIconField _fieldSalary;
+        private LabeledDateField _fieldDateOfBirth;
+        private LabeledDateField _fieldHireDate;
+        private LabeledComboField _fieldGender;
+        private FieldGridPanel _personalGrid;
+        private FieldGridPanel _workGrid;
+        private AvatarSectionFormPanel _formLayout;
         private PrimaryButton _btnSave;
 
         public frmEditUserAccount(UserDetailDto user, IWin32Window owner, IUserManagementService userManagementService)
@@ -36,14 +40,15 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (userManagementService == null) throw new ArgumentNullException(nameof(userManagementService));
 
-            // Đặt kích thước popup TRƯỚC khi dựng nội dung để ThreeColumnFieldsPanel tính đúng
-            // độ rộng từng cột ngay từ lần layout đầu tiên (ContentHost đã có ClientSize đúng).
-            Size = HorizontalDialogSize;
+            // Đặt kích thước popup TRƯỚC khi dựng nội dung để layout tính đúng độ rộng ngay từ
+            // lần đầu. Chiều cao sẽ được co vừa khít nội dung ở OnContentReady().
+            Size = new Size(DialogSizing.FitWidthToScreen(owner, PreferredDialogWidth), DefaultDialogSize.Height);
 
             BuildContent(user);
 
             CloseRequested += (s, e) => Close();
 
+            // Presenter nạp hồ sơ nhân viên (nếu có) và ẩn/hiện các trường tương ứng ngay khi khởi tạo.
             _presenter = new EditUserAccountPresenter(this, userManagementService, user.UserId);
         }
 
@@ -69,17 +74,37 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             var fieldFullName = CreateFullNameField();
             var fieldEmail = CreateEmailField();
             var fieldPhone = CreatePhoneField();
+            var fieldDob = CreateDateOfBirthField();
+            var fieldGender = CreateGenderField();
+            var fieldHireDate = CreateHireDateField();
+            var fieldSalary = CreateSalaryField();
 
-            // Layout ngang: cột trái là ảnh đại diện, cột giữa "Thông tin cá nhân" (các trường có
-            // thể sửa), cột phải "Thông tin tài khoản" (Mã tài khoản/Tên đăng nhập - chỉ đọc,
-            // giống hình mẫu). Thay cho layout xếp dọc 1 cột + khối readonly nằm ngang trước đây.
-            var fieldsGrid = new ThreeColumnFieldsPanel { Margin = new Padding(0, 0, 0, 4) };
-            fieldsGrid.SetSecondColumnFields(
-                CreatePersonalInfoHeader(), fieldFullName, fieldEmail, fieldPhone);
-            fieldsGrid.SetThirdColumnFields(
-                CreateAccountInfoHeader(), CreateReadOnlyInfoBox(user));
+            // Nhóm "Thông tin cá nhân" - lưới 3 cột:
+            //   Hàng 1: Họ tên | Email (chiếm 2 cột để hint hiện trên 1 dòng)
+            //   Hàng 2: Số điện thoại | Ngày sinh | Giới tính
+            // (Ngày sinh/Giới tính chỉ hiện với tài khoản nhân viên - xem SetEmployeeProfileVisible.)
+            var personalGrid = new FieldGridPanel(3);
+            personalGrid.AddField(fieldFullName);
+            personalGrid.AddField(fieldEmail, 2);
+            personalGrid.AddField(fieldPhone);
+            personalGrid.AddField(fieldDob);
+            personalGrid.AddField(fieldGender);
 
-            var avatarPanel = fieldsGrid.Avatar;
+            // Nhóm "Thông tin công việc" (chỉ nhân viên): Ngày vào làm | Lương.
+            var workGrid = new FieldGridPanel(3);
+            workGrid.AddField(fieldHireDate);
+            workGrid.AddField(fieldSalary);
+
+            // Nhóm "Thông tin tài khoản": khối chỉ đọc trải hết chiều ngang.
+            var accountGrid = new FieldGridPanel(3);
+            accountGrid.AddField(CreateAccountInfoBox(user), 3);
+
+            var formLayout = new AvatarSectionFormPanel();
+            formLayout.AddSection(CreatePersonalInfoHeader(), personalGrid);
+            formLayout.AddSection(CreateWorkInfoHeader(), workGrid);
+            formLayout.AddSection(CreateAccountInfoHeader(), accountGrid);
+
+            var avatarPanel = formLayout.Avatar;
             avatarPanel.Initial = GetInitial(user.FullName);
             if (!string.IsNullOrWhiteSpace(user.AvatarUrl) && File.Exists(user.AvatarUrl))
             {
@@ -94,32 +119,29 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 }
             }
 
-            var headerContentGap = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 16,
-                BackColor = Color.Transparent,
-                Margin = Padding.Empty
-            };
-
             // Với các control con đều Dock=Top trong cùng 1 Panel, WinForms xếp control ADD SAU
             // CÙNG lên vị trí TRÊN CÙNG, nên add theo thứ tự NGƯỢC LẠI với thứ tự hiển thị mong
-            // muốn (banner -> khoảng cách -> fieldsGrid, từ trên xuống).
-            ContentHost.Controls.Add(fieldsGrid);
-            ContentHost.Controls.Add(headerContentGap);
+            // muốn (banner -> formLayout, từ trên xuống). Khoảng cách giữa banner và formLayout
+            // do Padding.Top của AvatarSectionFormPanel đảm nhiệm (Dock bỏ qua Margin).
+            ContentHost.Controls.Add(formLayout);
             ContentHost.Controls.Add(banner);
 
-            // KHÔNG gọi fieldsGrid.Reflow() ở đây: tại thời điểm BuildContent() chạy (bên trong
-            // constructor), Form CHƯA có handle cửa sổ nên ContentHost/fieldsGrid có thể chưa
-            // mang đúng Width theo HorizontalDialogSize (900x560) - gọi Reflow() sớm với Width
-            // "rác" là nguyên nhân khiến popup từng bị cắt/co 2 cột nội dung xuống vài px. Việc
-            // Reflow lần đầu được dời sang OnContentReady() (chạy trong OnLoad, sau khi handle đã
-            // tạo và ClientSize đã chắc chắn đúng) - xem BaseFormDialogForm.OnContentReady.
-            _fieldsGrid = fieldsGrid;
+            // KHÔNG gọi formLayout.Reflow() ở đây: Form CHƯA có handle cửa sổ tại thời điểm
+            // BuildContent() chạy trong constructor - xem BaseFormDialogForm.OnContentReady.
+            _formLayout = formLayout;
+            _personalGrid = personalGrid;
+            _workGrid = workGrid;
             _fieldFullName = fieldFullName;
             _fieldEmail = fieldEmail;
             _fieldPhone = fieldPhone;
-            _avatarPanel = avatarPanel;
+            _fieldDateOfBirth = fieldDob;
+            _fieldGender = fieldGender;
+            _fieldHireDate = fieldHireDate;
+            _fieldSalary = fieldSalary;
+
+            _fieldGender.SetItems(GenderOption.All);
+            _fieldDateOfBirth.AllowEmpty = true;
+            _fieldHireDate.MaxDate = DateTime.Today.AddYears(1);
 
             _fieldFullName.Value = user.FullName;
             _fieldEmail.Value = user.Email;
@@ -129,16 +151,14 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             _btnSave = AddFooterButton("Lưu thay đổi", true, (s, e) => RaiseSaveRequested());
         }
 
-        /// <summary>Layout ngang (avatar + 2 cột) chỉ được tính lại lần đầu ở đây - SAU KHI Form
-        /// đã có handle cửa sổ và ContentHost đã có ClientSize thật theo HorizontalDialogSize.
-        /// Xem giải thích chi tiết ở BaseFormDialogForm.OnContentReady.</summary>
+        /// <summary>Reflow lần đầu phải chạy sau khi Form đã có handle cửa sổ (xem
+        /// BaseFormDialogForm.OnContentReady), rồi co chiều cao popup vừa khít nội dung để
+        /// không xuất hiện thanh cuộn.</summary>
         protected override void OnContentReady()
         {
             base.OnContentReady();
-            _fieldsGrid.Reflow();
-            // Co Height Form theo đúng nội dung thật (banner + fieldsGrid) - tránh hiện scroll
-            // bar không cần thiết khi HorizontalDialogSize.Height (560) chỉ là số đoán trước, có
-            // thể lệch với chiều cao thật của nội dung 3 cột.
+            _formLayout.Reflow();
+            ContentHost.PerformLayout();
             FitHeightToContent();
         }
 
@@ -164,8 +184,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             {
                 Icon = IconChar.UserGear,
                 TitleText = "Cập nhật tài khoản " + accountType,
-                DescriptionText = "Chỉnh thông tin liên hệ, vai trò hoặc trạng thái tài khoản.",
-                Margin = Padding.Empty
+                DescriptionText = "Chỉnh thông tin liên hệ, vai trò hoặc trạng thái tài khoản."
             };
         }
 
@@ -174,12 +193,17 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             return new FieldGroupHeader { Icon = IconChar.IdCard, HeaderText = "Thông tin cá nhân" };
         }
 
+        private static FieldGroupHeader CreateWorkInfoHeader()
+        {
+            return new FieldGroupHeader { Icon = IconChar.Briefcase, HeaderText = "Thông tin công việc" };
+        }
+
         private static FieldGroupHeader CreateAccountInfoHeader()
         {
             return new FieldGroupHeader { Icon = IconChar.UserTag, HeaderText = "Thông tin tài khoản" };
         }
 
-        private LabeledIconField CreateFullNameField()
+        private static LabeledIconField CreateFullNameField()
         {
             return new LabeledIconField
             {
@@ -192,7 +216,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             };
         }
 
-        private LabeledIconField CreateEmailField()
+        private static LabeledIconField CreateEmailField()
         {
             return new LabeledIconField
             {
@@ -205,7 +229,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             };
         }
 
-        private LabeledIconField CreatePhoneField()
+        private static LabeledIconField CreatePhoneField()
         {
             return new LabeledIconField
             {
@@ -218,120 +242,40 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             };
         }
 
-        /// <summary>Khối xám bo góc hiển thị "Mã tài khoản" / "Tên đăng nhập" - chỉ đọc, không
-        /// cho sửa (giống hình mẫu). Trước đây 2 chip này nằm CẠNH NHAU trong 1 hàng ngang riêng;
-        /// giờ xếp CHỒNG lên nhau (Dock=Top) để vừa vặn làm nội dung của 1 cột dọc trong
-        /// ThreeColumnFieldsPanel. Chỉ dùng 1 lần ở form này nên dựng trực tiếp thay vì tách
-        /// thành 1 control tái sử dụng riêng.</summary>
-        private static Panel CreateReadOnlyInfoBox(UserDetailDto user)
+        private static LabeledDateField CreateDateOfBirthField()
         {
-            const int Padding = 14;
-            const int ChipGap = 14;
-
-            var chipMaNhanVien = CreateReadOnlyChip(IconChar.Hashtag, "Mã tài khoản", user.UserId.ToString());
-            var chipTenDangNhap = CreateReadOnlyChip(IconChar.UserTag, "Tên đăng nhập", user.Username);
-
-            var box = new Panel
-            {
-                Dock = DockStyle.Top,
-                Margin = new Padding(0, 0, 0, 16),
-                BackColor = Color.Transparent
-            };
-            box.Paint += (s, e) =>
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                var rect = new Rectangle(0, 0, box.Width - 1, box.Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-                using (var brush = new SolidBrush(AppColors.BgLighter))
-                    e.Graphics.FillPath(brush, path);
-            };
-
-            void LayoutChips()
-            {
-                int contentWidth = Math.Max(10, box.Width - Padding * 2);
-                chipMaNhanVien.Location = new Point(Padding, Padding);
-                chipMaNhanVien.Width = contentWidth;
-
-                chipTenDangNhap.Location = new Point(Padding, chipMaNhanVien.Bottom + ChipGap);
-                chipTenDangNhap.Width = contentWidth;
-
-                box.Height = chipTenDangNhap.Bottom + Padding;
-            }
-
-            box.Controls.Add(chipTenDangNhap);
-            box.Controls.Add(chipMaNhanVien);
-            box.Resize += (s, e) => LayoutChips();
-
-            return box;
+            return new LabeledDateField { LabelText = "Ngày sinh", IsRequired = false };
         }
 
-        private static Control CreateReadOnlyChip(IconChar icon, string caption, string value)
+        private static LabeledComboField CreateGenderField()
         {
-            var lblCaption = new Label
+            return new LabeledComboField { LabelText = "Giới tính", IsRequired = false };
+        }
+
+        private static LabeledDateField CreateHireDateField()
+        {
+            return new LabeledDateField { LabelText = "Ngày vào làm", IsRequired = true };
+        }
+
+        private static LabeledIconField CreateSalaryField()
+        {
+            return new LabeledIconField
             {
-                AutoSize = true,
-                Text = caption,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent
+                LabelText = "Lương (VNĐ)",
+                IsRequired = false,
+                Icon = IconChar.MoneyBillWave,
+                PlaceholderText = "Để trống nếu chưa có",
+                MaxLength = 15
             };
-            var lblValue = new Label
-            {
-                AutoSize = false,
-                Dock = DockStyle.Fill,
-                Text = value,
-                Font = AppFonts.BodyBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                AutoEllipsis = false,
-                UseMnemonic = false
-            };
+        }
 
-            // Đo đúng chiều cao 1 dòng chữ theo Font/DPI THẬT đang dùng (thay vì đoán cố định
-            // 20f/26f trước đây) - số cố định là nguyên nhân "10"/"khach le" bị cắt chân khi dòng
-            // chữ thật cao hơn khoảng đã đoán (đặc biệt ở DPI > 100%).
-            int captionHeight = Math.Max(16, TextRenderer.MeasureText(
-                caption, lblCaption.Font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height);
-            int valueHeight = Math.Max(20, TextRenderer.MeasureText(
-                value, lblValue.Font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height);
-
-            var host = new TableLayoutPanel
-            {
-                Height = captionHeight + valueHeight,
-                ColumnCount = 2,
-                RowCount = 1,
-                BackColor = Color.Transparent
-            };
-            host.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 22f));
-            host.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-
-            var iconBox = new IconPictureBox
-            {
-                IconChar = icon,
-                IconColor = AppColors.TextMuted,
-                IconSize = 14,
-                Size = new Size(14, 14),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Margin = new Padding(0, 4, 6, 0),
-                BackColor = Color.Transparent
-            };
-
-            var textStack = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 1,
-                RowCount = 2,
-                BackColor = Color.Transparent
-            };
-            textStack.RowStyles.Add(new RowStyle(SizeType.Absolute, captionHeight));
-            textStack.RowStyles.Add(new RowStyle(SizeType.Absolute, valueHeight));
-
-            textStack.Controls.Add(lblCaption, 0, 0);
-            textStack.Controls.Add(lblValue, 0, 1);
-
-            host.Controls.Add(iconBox, 0, 0);
-            host.Controls.Add(textStack, 1, 0);
-            return host;
+        private static ReadOnlyInfoBox CreateAccountInfoBox(UserDetailDto user)
+        {
+            var box = new ReadOnlyInfoBox(3);
+            box.AddItem(IconChar.Hashtag, "Mã tài khoản", user.UserId.ToString());
+            box.AddItem(IconChar.UserTag, "Tên đăng nhập", user.Username);
+            box.AddItem(IconChar.UserShield, "Vai trò", user.RoleName);
+            return box;
         }
         #endregion
 
@@ -354,7 +298,38 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             set => _fieldPhone.Value = value;
         }
 
-        public string AvatarFilePath => _avatarPanel?.SelectedFilePath;
+        public string AvatarFilePath => _formLayout?.Avatar?.SelectedFilePath;
+
+        public DateTime? DateOfBirth
+        {
+            get => _fieldDateOfBirth.Value;
+            set => _fieldDateOfBirth.Value = value;
+        }
+
+        public Gender? SelectedGender
+        {
+            get => (_fieldGender.SelectedItem as GenderOption)?.Value;
+            set => _fieldGender.SelectedItem = GenderOption.From(value);
+        }
+
+        public DateTime HireDate
+        {
+            get => _fieldHireDate.Value ?? DateTime.Today;
+            set => _fieldHireDate.Value = value;
+        }
+
+        public string SalaryText
+        {
+            get => _fieldSalary.Value;
+            set => _fieldSalary.Value = value;
+        }
+
+        public void SetEmployeeProfileVisible(bool visible)
+        {
+            _personalGrid.SetFieldVisible(_fieldDateOfBirth, visible);
+            _personalGrid.SetFieldVisible(_fieldGender, visible);
+            _formLayout.SetSectionVisible(_workGrid, visible);
+        }
 
         public event EventHandler SaveRequested;
 
