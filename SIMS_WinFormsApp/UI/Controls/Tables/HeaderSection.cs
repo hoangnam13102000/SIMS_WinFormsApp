@@ -25,6 +25,14 @@ namespace SIMS_WinFormsApp.UI.Controls
         private Panel _actionHost;
         private int _actionWidth;
 
+        // _actionHost trước đây LUÔN cố định 320px cho mọi trang gọi SetActions(...). Khi cụm
+        // nút thực tế rộng hơn 320px (vd trang Phân quyền vai trò: "Khôi phục mặc định" 205px +
+        // "Lưu thay đổi" 150px + khoảng cách ~ 363px), Dock=Fill vẫn ép cụm nút vào khung 320px
+        // chật hơn nội dung của nó => chữ trên nút bị cắt như bị chia đôi. Nay actionHost tự co
+        // giãn theo đúng kích thước cụm nút cần, chỉ giữ mức tối thiểu để không quá nhỏ khi trang
+        // chỉ có 1 nút bé.
+        private const int ActionHostMinWidth = 260;
+
         private string _title = "Tổng quan";
         private string _subtitle = string.Empty;
         private IconChar _icon = IconChar.GaugeHigh;
@@ -213,9 +221,18 @@ namespace SIMS_WinFormsApp.UI.Controls
             if (actions == null) throw new ArgumentNullException(nameof(actions));
 
             _actionHost.Controls.Clear();
+
+            // Đo độ rộng THẬT SỰ cần thiết của cụm nút TRƯỚC KHI gán Dock=Fill - một khi Dock=Fill
+            // được gán, Width của "actions" sẽ bị ép theo khung chứa nên không còn phản ánh kích
+            // thước cần để hiển thị đủ chữ trên nút nữa.
+            int desiredContentWidth = actions.AutoSize
+                ? actions.GetPreferredSize(Size.Empty).Width
+                : actions.Width;
+            _actionWidth = Math.Max(ActionHostMinWidth, desiredContentWidth + _actionHost.Padding.Horizontal);
+
             actions.Dock = DockStyle.Fill;
+            _actionHost.Width = _actionWidth;
             _actionHost.Controls.Add(actions);
-            _actionWidth = _actionHost.Width;
             _actionHost.Visible = true;
             PerformLayout();
             UpdateTextLayout();

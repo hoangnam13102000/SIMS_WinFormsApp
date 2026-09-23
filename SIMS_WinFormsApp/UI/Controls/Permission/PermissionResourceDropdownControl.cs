@@ -10,36 +10,42 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.UI.Controls.Permission
 {
+    /// <summary>
+    /// 1 dòng tài nguyên có thể mở/đóng (vd "Tài khoản &amp; nhân viên") bên trong 1 nhóm
+    /// quyền. Bấm vào phần tiêu đề sẽ xổ ra danh sách các nấc quyền (Xem/Sửa/Quản lý đầy đủ...).
+    ///
+    /// THIẾT KẾ LẠI: viền bo góc (thay vì hình chữ nhật vuông góc trước đây) để đồng bộ với
+    /// ngôn ngữ thiết kế bo tròn dùng xuyên suốt trang (card vai trò, card nhóm quyền...).
+    /// </summary>
     public sealed class PermissionResourceDropdownControl : VerticalStackPanel
     {
-        private const int HeaderHeight = 80;
-        private const int SummaryHostWidth = 190;
+        private const int HeaderHeight = 88;
+        private const int SummaryHostWidth = 180;
 
         /// <summary>Người dùng đổi trạng thái 1 nấc quyền bên trong resource này.</summary>
         public event EventHandler<PermissionToggledEventArgs> Toggled;
 
         private readonly PermissionResourceViewModel _model;
         private readonly VerticalStackPanel _body;
-        private readonly Label _summaryLabel;
+        private readonly PillBadgeLabel _summaryBadge;
         private readonly IconPictureBox _chevron;
         private bool _open;
+        private Action _syncSummaryHost = () => { };
+        private readonly ToolTip _headerToolTip = new ToolTip { InitialDelay = 400, ReshowDelay = 100, AutoPopDelay = 4000 };
 
         public PermissionResourceDropdownControl(PermissionResourceViewModel model, bool isAdminRole)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            Margin = new Padding(0, 0, 0, 8);
+            Margin = new Padding(0, 0, 0, 10);
             Padding = new Padding(1);
             BackColor = Color.Transparent;
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
-            _summaryLabel = new Label
+            _summaryBadge = new PillBadgeLabel
             {
-                AutoSize = true,
-                BackColor = Color.Transparent,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                TextAlign = ContentAlignment.MiddleRight
+                Font = AppFonts.SmallBold,
+                Height = PermissionUiHelpers.MeasureLineHeight(AppFonts.SmallBold) + 10
             };
             _chevron = new IconPictureBox
             {
@@ -83,14 +89,24 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
                 Height = HeaderHeight,
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
-                Padding = new Padding(12, 8, 12, 8)
+                Padding = new Padding(14, 8, 14, 8)
             };
 
             var summaryHost = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
-            _summaryLabel.Location = new Point(0, (HeaderHeight - 16 - _summaryLabel.Height) / 2);
-            _chevron.Location = new Point(SummaryHostWidth - _chevron.Width - 8, (HeaderHeight - 16 - _chevron.Height) / 2);
             summaryHost.Controls.Add(_chevron);
-            summaryHost.Controls.Add(_summaryLabel);
+            summaryHost.Controls.Add(_summaryBadge);
+            void SyncSummaryHost()
+            {
+                _chevron.Location = new Point(
+                    summaryHost.Width - _chevron.Width - 8,
+                    (summaryHost.Height - _chevron.Height) / 2);
+                _summaryBadge.Location = new Point(
+                    Math.Max(0, _chevron.Left - 8 - _summaryBadge.Width),
+                    (summaryHost.Height - _summaryBadge.Height) / 2);
+            }
+            summaryHost.Resize += (s, e) => SyncSummaryHost();
+            _syncSummaryHost = SyncSummaryHost;
+
             // Bố cục hai cột ngăn vùng tên/mô tả chồng lên vùng trạng thái.
             var headerLayout = new TableLayoutPanel
             {
@@ -110,14 +126,17 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             {
                 AutoSize = false,
                 Dock = DockStyle.Top,
-                Height = 24,
+                Height = 28,
                 Location = new Point(0, 2),
                 BackColor = Color.Transparent,
                 Font = AppFonts.BodyBold,
                 ForeColor = AppColors.TextPrimary,
                 Text = _model.Name ?? string.Empty,
                 TextAlign = ContentAlignment.MiddleLeft,
-                UseCompatibleTextRendering = true,
+                UseCompatibleTextRendering = false,
+                // Tên resource lấy từ PermissionDisplayLayout có thể chứa "&" (vd "Tài khoản &
+                // nhân viên") - Label mặc định coi "&" là mnemonic và âm thầm xoá khỏi hiển thị.
+                UseMnemonic = false,
                 AutoEllipsis = true
             };
             var descLabel = new Label
@@ -130,7 +149,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
                 Text = _model.Description ?? string.Empty,
                 TextAlign = ContentAlignment.TopLeft,
                 Padding = new Padding(0, 0, 0, 3),
-                UseCompatibleTextRendering = true,
+                UseCompatibleTextRendering = false,
+                UseMnemonic = false,
                 AutoEllipsis = true
             };
             textCol.Controls.Add(descLabel);
@@ -139,6 +159,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             headerLayout.Controls.Add(summaryHost, 1, 0);
             header.Controls.Add(headerLayout);
 
+            if (!string.IsNullOrWhiteSpace(_model.Name)) _headerToolTip.SetToolTip(nameLabel, _model.Name);
+            if (!string.IsNullOrWhiteSpace(_model.Description)) _headerToolTip.SetToolTip(descLabel, _model.Description);
+
             header.Click += (s, e) => ToggleOpen();
             headerLayout.Click += (s, e) => ToggleOpen();
             summaryHost.Click += (s, e) => ToggleOpen();
@@ -146,6 +169,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             nameLabel.Click += (s, e) => ToggleOpen();
             descLabel.Click += (s, e) => ToggleOpen();
 
+            SyncSummaryHost();
             return header;
         }
 
@@ -155,6 +179,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             _open = !_open;
             _body.Visible = _open;
             _chevron.IconChar = _open ? IconChar.ChevronUp : IconChar.ChevronDown;
+            _chevron.IconColor = _open ? AppColors.Accent : AppColors.TextMuted;
             ResumeLayout(false);
 
             var stack = Parent as VerticalStackPanel;
@@ -167,20 +192,23 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
 
             var scrollHost = stack?.Parent;
             scrollHost?.PerformLayout();
+            Invalidate();
         }
 
         private void RefreshSummary()
         {
-            var currentOn = _body.Controls.OfType<PermissionToggleRowControl>()
-                .Zip(_model.Tiers, (row, tier) => new { row, tier })
-                .Where(x => x.row.IsChecked)
-                .Select(x => x.tier.Label)
-                .ToList();
+            int total = _model.Tiers.Count;
+            int on = _body.Controls.OfType<PermissionToggleRowControl>().Count(row => row.IsChecked);
 
-            _summaryLabel.Text = currentOn.Count == 0 ? "Chưa gán" : string.Join(" · ", currentOn);
-            _summaryLabel.Location = new Point(
-                SummaryHostWidth - _chevron.Width - 8 - 8 - _summaryLabel.Width,
-                (HeaderHeight - 16 - _summaryLabel.Height) / 2);
+            string text = on == 0 ? "Chưa gán" : on + "/" + total + " quyền";
+            bool isFull = total > 0 && on == total;
+
+            _summaryBadge.Text = text;
+            _summaryBadge.ForeColor = on == 0 ? AppColors.TextMuted : (isFull ? AppColors.Success : AppColors.Accent);
+            _summaryBadge.PillBackColor = on == 0 ? AppColors.BgLighter : (isFull ? AppColors.SuccessBg : AppColors.AccentBgSoft);
+            _summaryBadge.Width = PillBadgeLabel.MeasureWidth(text, _summaryBadge.Font) + 12;
+
+            _syncSummaryHost();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -188,9 +216,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             base.OnPaint(e);
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var pen = new Pen(AppColors.Border, 1f))
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
+            using (var pen = new Pen(_open ? AppColors.Accent : AppColors.Border, 1f))
             {
-                g.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
+                g.DrawPath(pen, path);
             }
         }
     }

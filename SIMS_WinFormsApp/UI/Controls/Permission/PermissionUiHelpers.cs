@@ -16,5 +16,27 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             }
             return AppColors.White;
         }
+
+        public static int MeasureLineHeight(Font font)
+        {
+            const string tallAndDeepSample = "Ặẩộ";
+            var size = TextRenderer.MeasureText(
+                tallAndDeepSample,
+                font,
+                new Size(int.MaxValue, int.MaxValue),
+                TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
+            return size.Height;
+        }
+
+        public static int MeasureTextWidth(string text, Font font)
+        {
+            const int SafetyBuffer = 4;
+            var size = TextRenderer.MeasureText(
+                text ?? string.Empty,
+                font,
+                new Size(int.MaxValue, int.MaxValue),
+                TextFormatFlags.SingleLine);
+            return size.Width + SafetyBuffer;
+        }
     }
 }

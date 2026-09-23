@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using Guna.UI2.WinForms;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls.Search
@@ -25,12 +26,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
         private readonly Label _placeholderLabel;
         private readonly IconPictureBox _searchIcon;
         private readonly SuggestionPopup _popup;
+        private readonly RoundedDialogFrame _frame = new RoundedDialogFrame(AppRadius.Medium, 1f);
 
         public SearchBarControl()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
                       ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
-            BackColor = Color.Transparent;
+            BackColor = AppColors.White;
             Height = 42;
 
             _searchIcon = new IconPictureBox
@@ -147,6 +149,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Search
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            _frame.PaintBorder(e.Graphics, ClientSize, AppColors.FieldBorder);
+        }
+
+        protected override void OnParentBackColorChanged(EventArgs e)
+        {
+            base.OnParentBackColorChanged(e);
+            Invalidate(true);
         }
 
         protected override void Dispose(bool disposing)

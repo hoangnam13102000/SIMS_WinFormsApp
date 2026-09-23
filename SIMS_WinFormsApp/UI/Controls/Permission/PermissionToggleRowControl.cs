@@ -9,9 +9,14 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls.Permission
 {
+    /// <summary>
+    /// 1 dòng quyền đơn (công tắc bật/tắt + tên + mô tả). Dùng cho cả quyền "phẳng" (vd
+    /// "Xem trang tổng quan") lẫn từng nấc quyền lồng bên trong 1
+    /// <see cref="PermissionResourceDropdownControl"/> (tham số <c>nested</c> = true).
+    /// </summary>
     public sealed class PermissionToggleRowControl : Panel
     {
-        private const int ControlHostWidth = 92;
+        private const int ControlHostWidth = 72;
 
         public AppPermission Permission { get; }
 
@@ -33,7 +38,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             _nested = nested;
             _isLocked = isLocked;
 
-            int rowHeight = nested ? 72 : 84;
+            int rowHeight = nested ? 80 : 96;
 
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
                      ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw |
@@ -42,7 +47,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             Dock = DockStyle.Top;
             Height = rowHeight;
             BackColor = Color.Transparent;
-            Padding = nested ? new Padding(4, 8, 4, 8) : new Padding(0, 10, 0, 10);
+            Padding = nested ? new Padding(4, 8, 4, 8) : new Padding(2, 12, 2, 12);
 
             var rowLayout = new TableLayoutPanel
             {
@@ -75,13 +80,18 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
             {
                 AutoSize = false,
                 Dock = DockStyle.Top,
-                Height = 24,
+                Height = 28,
                 BackColor = Color.Transparent,
                 Font = AppFonts.BodyBold,
                 ForeColor = AppColors.TextPrimary,
                 Text = model.Label ?? string.Empty,
                 TextAlign = ContentAlignment.MiddleLeft,
-                UseCompatibleTextRendering = true,
+                UseCompatibleTextRendering = false,
+                // Nhãn quyền lấy trực tiếp từ PermissionCatalog, có nội dung chứa "&" (vd
+                // "Quản lý tài khoản & NV") - mặc định Label coi "&" là ký tự mnemonic (phím tắt)
+                // và ÂM THẦM XOÁ nó khỏi phần hiển thị (chỉ để lại 2 khoảng trắng). Tắt
+                // UseMnemonic để "&" hiển thị đúng như dữ liệu gốc.
+                UseMnemonic = false,
                 AutoEllipsis = true
             };
             var descLabel = new Label
@@ -94,7 +104,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
                 Text = model.Description ?? string.Empty,
                 TextAlign = ContentAlignment.TopLeft,
                 Padding = new Padding(0, 0, 0, 3),
-                UseCompatibleTextRendering = true,
+                UseCompatibleTextRendering = false,
+                UseMnemonic = false,
                 AutoEllipsis = true
             };
             textCol.Controls.Add(descLabel);
@@ -154,8 +165,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Permission
         {
             base.OnPaint(e);
 
-            // Đường kẻ mảnh phân cách giữa các dòng quyền liền kề (tương đương
-            // JSeparator giữa các buildPermissionRow/buildNestedToggleRow bên Java).
             using (var pen = new Pen(AppColors.Border, 1f))
             {
                 e.Graphics.DrawLine(pen, 0, Height - 1, Width, Height - 1);

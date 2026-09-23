@@ -242,6 +242,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\Permission\PermissionUiHelpers.cs" />
+    <Compile Include="UI\Controls\Permission\PillBadgeLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Permission\RoleListItemControl.cs">
       <SubType>Component</SubType>
     </Compile>

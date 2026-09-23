@@ -303,14 +303,19 @@ namespace SIMS_WinFormsApp.Forms.Profile
             var split = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                ColumnCount = 2,
+                ColumnCount = 3,
                 RowCount = 1,
                 BackColor = AppColors.PageBg,
                 Margin = new Padding(0),
                 Padding = new Padding(0)
             };
+            // MỚI: tách "Thông tin cá nhân" và "Đổi mật khẩu" thành 2 cột riêng (thay vì xếp
+            // chồng dọc trong cùng 1 cột như trước) - tận dụng chiều ngang còn dư của trang thay
+            // vì kéo dài xuống dưới, để toàn bộ nội dung vừa đủ trong màn hình mà không cần
+            // thanh cuộn dọc như trước (khi 2 card cộng dồn chiều cao vượt quá vùng hiển thị).
             split.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 320f));
-            split.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            split.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            split.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             split.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
 
             var leftHost = new Panel
@@ -323,23 +328,29 @@ namespace SIMS_WinFormsApp.Forms.Profile
             leftHost.Controls.Add(BuildLeftCard());
             split.Controls.Add(leftHost, 0, 0);
 
-            var rightHost = new BufferedPanel
+            // MỚI: mỗi card giờ nằm trong 1 host riêng (Fill theo đúng cột của nó) thay vì cùng
+            // xếp Dock=Top chồng lên nhau trong 1 host duy nhất như trước - AutoScroll vẫn giữ
+            // lại trên từng host để làm lưới an toàn (chỉ hiện thanh cuộn nếu cửa sổ bị thu nhỏ
+            // bất thường), không phải điều kiện bình thường sau khi bố cục đã gọn lại.
+            var profileHost = new BufferedPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
                 BackColor = AppColors.PageBg,
-                Padding = new Padding(0)
+                Padding = new Padding(0, 0, 8, 0)
             };
-            var profileCard = BuildProfileCard();
-            var spacer = new Panel { Dock = DockStyle.Top, Height = 16, BackColor = Color.Transparent };
-            var passwordCard = BuildPasswordCard();
+            profileHost.Controls.Add(BuildProfileCard());
+            split.Controls.Add(profileHost, 1, 0);
 
-            // Control add SAU CÙNG lên vị trí TRÊN CÙNG khi Dock=Top trong cùng 1 Panel - quy
-            // ước đang dùng xuyên suốt dự án (xem frmEditUserAccount/ThreeColumnFieldsPanel).
-            rightHost.Controls.Add(passwordCard);
-            rightHost.Controls.Add(spacer);
-            rightHost.Controls.Add(profileCard);
-            split.Controls.Add(rightHost, 1, 0);
+            var passwordHost = new BufferedPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = AppColors.PageBg,
+                Padding = new Padding(8, 0, 0, 0)
+            };
+            passwordHost.Controls.Add(BuildPasswordCard());
+            split.Controls.Add(passwordHost, 2, 0);
 
             root.Controls.Add(split, 0, 1);
 
@@ -370,15 +381,37 @@ namespace SIMS_WinFormsApp.Forms.Profile
                 BackColor = Color.Transparent
             };
 
+            // MỚI: badge vai trò trước đây là 1 Label cao cố định 24px, TopCenter - dấu tiếng
+            // Việt (ví dụ "Quản trị viên" có dấu hỏi/nặng) cần nhiều hơn 24px theo chiều dọc cho
+            // 1 dòng chữ đậm, nên bị cắt ngang qua giữa chữ như trong ảnh chụp thực tế. Đổi
+            // sang dạng "pill" bo tròn hoàn toàn (nền AccentBgSoft, chữ Accent) tự đo đúng kích
+            // thước cần thiết theo nội dung thay vì đặt cứng - vừa hết cảnh bị cắt, vừa đẹp hơn
+            // (đây cũng là màu/kiểu badge đã dùng nhất quán ở nhiều nơi khác trong dự án, xem
+            // CreateInfoItem() trong frmUserAccountDetail.cs).
             _lblRoleBadge = new Label
             {
                 AutoSize = false,
-                Height = 24,
-                TextAlign = ContentAlignment.TopCenter,
                 Font = AppFonts.SmallBold,
                 ForeColor = AppColors.Accent,
-                BackColor = Color.Transparent
+                BackColor = Color.Transparent,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty,
+                TextAlign = ContentAlignment.MiddleCenter
             };
+
+            const int roleBadgePadH = 16;
+            const int roleBadgePadV = 6;
+            var roleBadgeHost = new Panel { AutoSize = false, BackColor = Color.Transparent };
+            roleBadgeHost.Paint += (s, e) =>
+            {
+                var g = e.Graphics;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                var rect = new Rectangle(0, 0, roleBadgeHost.Width - 1, roleBadgeHost.Height - 1);
+                using (var path = AppRadius.GetRoundedPath(rect, roleBadgeHost.Height / 2))
+                using (var brush = new SolidBrush(AppColors.AccentBgSoft))
+                    g.FillPath(brush, path);
+            };
+            roleBadgeHost.Controls.Add(_lblRoleBadge);
 
             var separator1 = CreateSeparator();
             var rowEmail = CreateContactRow(IconChar.Envelope, "Email", out _lblSidebarEmail);
@@ -394,26 +427,6 @@ namespace SIMS_WinFormsApp.Forms.Profile
             };
 
             var separator3 = CreateSeparator();
-
-            var lblBarcodeTitle = new Label
-            {
-                AutoSize = true,
-                Text = "Mã vạch thành viên",
-                Font = AppFonts.SmallBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent
-            };
-
-            // Dự án hiện CHƯA có trường lưu mã vạch thành viên ở Model/DTO/Service nào (đã kiểm
-            // tra User/UserDetailDto) - để đúng tinh thần "không thêm logic mới", ô này chỉ hiển
-            // thị placeholder mô tả đúng hiện trạng, giống cách AvatarUploadPanel đang tự giới
-            // hạn ở mức chọn/xem trước ảnh phía client.
-            var barcodeBox = new RoundedTextBox
-            {
-                Height = 40,
-                Enabled = false,
-                PlaceholderText = "Chỉ áp dụng cho tài khoản khách hàng"
-            };
 
             void Layout()
             {
@@ -434,9 +447,20 @@ namespace SIMS_WinFormsApp.Forms.Profile
                 _lblFullName.Location = new Point(card.Padding.Left, y);
                 y = _lblFullName.Bottom + 2;
 
-                _lblRoleBadge.Width = contentWidth;
-                _lblRoleBadge.Location = new Point(card.Padding.Left, y);
-                y = _lblRoleBadge.Bottom + 16;
+                // "Pill" badge vai trò: đo đúng kích thước chữ (không ngắt dòng - badge chỉ có
+                // 1 dòng ngắn) rồi cộng thêm khoảng đệm đều 2 bên, canh giữa theo chiều ngang.
+                Size roleTextSize = TextRenderer.MeasureText(
+                    _lblRoleBadge.Text ?? string.Empty,
+                    _lblRoleBadge.Font,
+                    new Size(int.MaxValue, int.MaxValue),
+                    TextFormatFlags.NoPadding | TextFormatFlags.SingleLine);
+                int badgeWidth = roleTextSize.Width + roleBadgePadH * 2;
+                int badgeHeight = roleTextSize.Height + roleBadgePadV * 2;
+                roleBadgeHost.Size = new Size(badgeWidth, badgeHeight);
+                roleBadgeHost.Location = new Point(card.Padding.Left + Math.Max(0, (contentWidth - badgeWidth) / 2), y);
+                _lblRoleBadge.Size = roleBadgeHost.Size;
+                _lblRoleBadge.Location = Point.Empty;
+                y = roleBadgeHost.Bottom + 16;
 
                 y = PlaceSeparator(separator1, card.Padding.Left, contentWidth, y) + 16;
 
@@ -453,23 +477,25 @@ namespace SIMS_WinFormsApp.Forms.Profile
                 _lblJoinedAt.Location = new Point(card.Padding.Left, y);
                 y = _lblJoinedAt.Bottom + 16;
 
-                y = PlaceSeparator(separator3, card.Padding.Left, contentWidth, y) + 16;
-
-                lblBarcodeTitle.Location = new Point(card.Padding.Left, y);
-                y = lblBarcodeTitle.Bottom + 8;
-
-                barcodeBox.Width = contentWidth;
-                barcodeBox.Location = new Point(card.Padding.Left, y);
-                y = barcodeBox.Bottom;
+                // MỚI: bỏ khối "Mã vạch thành viên" (không dùng đến ở trang cá nhân nhân
+                // viên/quản trị viên - dự án cũng chưa có trường dữ liệu này, xem ghi chú cũ đã
+                // xoá). separator3 giữ lại làm đường kẻ kết thúc card cho cân đối, không kèm nội
+                // dung phía sau.
+                y = PlaceSeparator(separator3, card.Padding.Left, contentWidth, y);
 
                 int newHeight = y + card.Padding.Bottom;
                 if (card.Height != newHeight) card.Height = newHeight;
             }
 
+            // Text vai trò được LoadCurrentUser() gán SAU khi BuildLeftCard() đã dựng xong -
+            // phải tính lại kích thước "pill" mỗi khi Text đổi (kể cả sau lần lưu hồ sơ khiến
+            // LoadCurrentUser() chạy lại), không chỉ lúc Resize.
+            _lblRoleBadge.TextChanged += (s, e) => Layout();
+
             card.Controls.AddRange(new Control[]
             {
-                _avatarPanel, _lblFullName, _lblRoleBadge, separator1, rowEmail, rowPhone,
-                separator2, _lblJoinedAt, separator3, lblBarcodeTitle, barcodeBox
+                _avatarPanel, _lblFullName, roleBadgeHost, separator1, rowEmail, rowPhone,
+                separator2, _lblJoinedAt, separator3
             });
 
             card.Resize += (s, e) => Layout();
