@@ -24,7 +24,7 @@ namespace SIMS_WinFormsApp.UI.Controls.AuditLog
             Cursor = Cursors.Hand;
             Height = 40;
             Font = AppFonts.SmallBold;
-            BackColor = Color.Transparent;
+            BackColor = AppColors.BgLighter;
             ThemeManager.Instance.ThemeChanged += OnThemeInvalidate;
         }
 

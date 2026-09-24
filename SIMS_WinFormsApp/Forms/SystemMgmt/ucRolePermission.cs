@@ -10,6 +10,7 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Models.DTOs.Permission;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Controls.Permission;
+using SIMS_WinFormsApp.UI.Controls.Search;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
@@ -47,6 +48,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private readonly RolePermissionPresenter _presenter;
 
         private Label _roleCountLabel;
+        private SearchBarControl _roleSearch;
         private VerticalStackPanel _roleListStack;
         private Panel _roleScrollHost;
         private Label _permissionsTitleLabel;
@@ -271,11 +273,20 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             card.Controls.Add(headerRowLabel);
             card.Controls.Add(_roleCountLabel);
 
+            _roleSearch = new SearchBarControl
+            {
+                Location = new Point(pad, headerRowLabel.Bottom + 6),
+                Height = 40,
+                PlaceholderText = "Tìm vai trò..."
+            };
+            _roleSearch.TextEdited += (_, text) => RoleSearchTextChanged?.Invoke(this, text);
+            card.Controls.Add(_roleSearch);
+
             var scrollHost = new Panel
             {
                 AutoScroll = true,
                 BackColor = Color.Transparent,
-                Location = new Point(pad, headerRowLabel.Bottom + pad)
+                Location = new Point(pad, _roleSearch.Bottom + pad)
             };
             _roleScrollHost = scrollHost;
             _roleListStack = new VerticalStackPanel { Dock = DockStyle.Top, BackColor = Color.Transparent };
@@ -288,6 +299,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 int countLeft = headerRowLabel.Right + 4;
                 _roleCountLabel.Location = new Point(countLeft, pad);
                 _roleCountLabel.Width = Math.Max(0, pad + innerWidth - countLeft);
+                _roleSearch.Width = innerWidth;
                 scrollHost.Width = innerWidth;
                 scrollHost.Height = Math.Max(0, card.ClientSize.Height - pad - scrollHost.Top);
                 _roleListStack.Width = Math.Max(0,

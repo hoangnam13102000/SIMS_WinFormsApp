@@ -60,7 +60,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             var diffHeader = new Label
             {
                 Dock = DockStyle.Top,
-                Height = 24,
+                Height = AppFonts.SmallBold.Height + 8,
                 Text = Lang.Get("audit.detail.diff"),
                 Font = AppFonts.SmallBold,
                 ForeColor = AppColors.TextMuted,
@@ -114,7 +114,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             var lblLabel = new Label
             {
                 Dock = DockStyle.Top,
-                Height = 18,
+                Height = AppFonts.Small.Height + 6,
                 Text = label,
                 Font = AppFonts.Small,
                 ForeColor = AppColors.TextMuted,
@@ -147,7 +147,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             var badge = new Label
             {
                 Dock = DockStyle.Top,
-                Height = 26,
+                Height = AppFonts.SmallBold.Height + 10,
                 Text = title,
                 Font = AppFonts.SmallBold,
                 ForeColor = badgeFg,

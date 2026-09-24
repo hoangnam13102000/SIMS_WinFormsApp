@@ -57,7 +57,6 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private bool _dataLoadedOnce;
         private bool _arranging;
         private bool _bindingFilters;
-        private bool _wheelHooked;
 
         public ucAuditLog(IAuditLogRepository repository = null)
         {

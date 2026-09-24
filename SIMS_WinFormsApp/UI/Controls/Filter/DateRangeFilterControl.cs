@@ -28,7 +28,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
         private readonly DateBoundField _fromField;
         private readonly DateBoundField _toField;
         private readonly Label _arrow;
-        private readonly DateCalendarPopup _popup;
+        private DateCalendarPopup _popup;
 
         private DateRangeBound _openBound = DateRangeBound.None;
         private Control _lastClosedAnchor;
@@ -64,7 +64,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 ForeColor = AppColors.TextMuted,
                 BackColor = Color.Transparent
             };
-            _popup = new DateCalendarPopup();
+            _popup = CreatePopup();
 
             Controls.Add(_caption);
             Controls.Add(_todayChip);
@@ -83,9 +83,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             _clearButton.Click += (_, __) => ClearRequested?.Invoke(this, EventArgs.Empty);
             _fromField.Click += (_, __) => OpenPopup(DateRangeBound.From, _fromField);
             _toField.Click += (_, __) => OpenPopup(DateRangeBound.To, _toField);
-            _popup.DateChosen += (_, date) => OnPopupDate(date);
-            _popup.Cleared += (_, __) => OnPopupCleared();
-            _popup.PopupClosed += (_, __) =>
+            ApplyLocalization();
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        }
+
+        private DateCalendarPopup CreatePopup()
+        {
+            var popup = new DateCalendarPopup();
+            popup.DateChosen += (_, date) => OnPopupDate(date);
+            popup.Cleared += (_, __) => OnPopupCleared();
+            popup.PopupClosed += (_, __) =>
             {
                 _lastClosedAnchor = _openBound == DateRangeBound.From ? _fromField : _toField;
                 _lastClosedAt = DateTime.UtcNow;
@@ -93,9 +100,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 _fromField.IsOpen = false;
                 _toField.IsOpen = false;
             };
-
-            ApplyLocalization();
-            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+            return popup;
         }
 
         public void ShowRange(DateRange range, DateRangePreset activePreset)
@@ -130,7 +135,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
         public int Arrange(int width)
         {
             width = Math.Max(width, _fromField.MinimumContentWidth);
-            int captionH = 22;
+            int captionH = _caption.Font.Height + 8;
             int chipH = 34;
             int fieldH = DateBoundField.FieldHeight;
             int gap = 8;
@@ -226,6 +231,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             if (_lastClosedAnchor == field && (DateTime.UtcNow - _lastClosedAt).TotalMilliseconds < 280)
                 return;
 
+            if (_popup == null || _popup.IsDisposed)
+            {
+                _popup = CreatePopup();
+                _popup.ApplyLocalization();
+            }
+
             _openBound = bound;
             _fromField.IsOpen = bound == DateRangeBound.From;
             _toField.IsOpen = bound == DateRangeBound.To;
@@ -256,7 +267,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             if (disposing)
             {
                 ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
-                _popup.Dispose();
+                if (_popup != null && !_popup.IsDisposed)
+                    _popup.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -396,7 +408,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
 
         private sealed class DateBoundField : Control
         {
-            public const int FieldHeight = 58;
+            public static int FieldHeight => Math.Max(64, AppFonts.Small.Height + AppFonts.Body.Height + 18);
 
             private string _caption = string.Empty;
             private string _placeholder = string.Empty;
@@ -478,8 +490,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 int textLeft = 40;
                 int textRight = Width - 28;
                 int textWidth = Math.Max(20, textRight - textLeft);
-                var captionRect = new Rectangle(textLeft, 8, textWidth, 18);
-                var valueRect = new Rectangle(textLeft, 26, textWidth, 24);
+                int captionTop = 7;
+                int captionHeight = AppFonts.Small.Height + 3;
+                int valueTop = captionTop + captionHeight;
+                var captionRect = new Rectangle(textLeft, captionTop, textWidth, captionHeight);
+                var valueRect = new Rectangle(textLeft, valueTop, textWidth,
+                    Math.Max(20, Height - valueTop - 6));
 
                 TextRenderer.DrawText(g, Caption, AppFonts.Small, captionRect, AppColors.TextMuted,
                     TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding |
@@ -528,8 +544,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                     Close();
                 };
 
-                _todayLink = CreateLink(true);
-                _clearLink = CreateLink(false);
+                _todayLink = CreateActionLabel(true);
+                _clearLink = CreateActionLabel(false);
                 _todayLink.Click += (_, __) =>
                 {
                     DateChosen?.Invoke(this, DateTime.Today);
@@ -585,8 +601,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
 
             private void FitToCalendar()
             {
-                int calW = Math.Max(227, _calendar.Width);
-                int calH = Math.Max(162, _calendar.Height);
+                Size preferred = _calendar.GetPreferredSize(new Size(320, 240));
+                int calW = Math.Max(300, preferred.Width) + 12;
+                int calH = Math.Max(190, preferred.Height) + 12;
                 _calendar.SetBounds(12, 10, calW, calH);
                 int linkH = Math.Max(22, Math.Max(_todayLink.PreferredSize.Height, _clearLink.PreferredSize.Height));
                 int footerTop = _calendar.Bottom + 10;
