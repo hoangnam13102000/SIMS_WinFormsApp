@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.UI.Controls.Loading;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
@@ -27,7 +28,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         public void Load()
         {
-            _loadingIndicator?.ShowLoading("Đang tải nhật ký hệ thống...");
+            _loadingIndicator?.ShowLoading(Lang.Get("audit.loading.page"));
             Application.DoEvents();
             try
             {
@@ -38,7 +39,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
             catch (Exception ex)
             {
-                _view.ShowError("Không thể tải nhật ký hệ thống: " + ex.Message);
+                _view.ShowError(Lang.Get("audit.error.load", ex.Message));
             }
             finally
             {
@@ -48,7 +49,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         private void LoadPage()
         {
-            _loadingIndicator?.ShowLoading("Đang tải nhật ký...");
+            _loadingIndicator?.ShowLoading(Lang.Get("audit.loading.list"));
             Application.DoEvents();
             try
             {
@@ -56,7 +57,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
             catch (Exception ex)
             {
-                _view.ShowError("Không thể tải nhật ký: " + ex.Message);
+                _view.ShowError(Lang.Get("audit.error.page", ex.Message));
             }
             finally
             {
@@ -76,11 +77,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             {
                 var detail = _repository.GetById(logId);
                 if (detail != null) _view.ShowDetail(detail);
-                else _view.ShowError("Không tìm thấy nhật ký này (có thể đã bị xóa).");
+                else _view.ShowError(Lang.Get("audit.error.missing"));
             }
             catch (Exception ex)
             {
-                _view.ShowError("Không thể tải chi tiết nhật ký: " + ex.Message);
+                _view.ShowError(Lang.Get("audit.error.detail", ex.Message));
             }
         }
     }
