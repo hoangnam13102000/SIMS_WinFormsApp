@@ -9,15 +9,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.UI.Controls.Permission
 {
-    /// <summary>
-    /// 1 khối nhóm quyền bên phải trang Phân quyền vai trò (vd "Người dùng", "Hàng hoá").
-    ///
-    /// THIẾT KẾ LẠI: viền card đổi từ "trắng trên trắng" (gần như vô hình) sang màu
-    /// <see cref="AppColors.Border"/> để mỗi nhóm quyền có ranh giới rõ ràng, nhất quán với
-    /// quy ước card dùng chung của trang (xem RoundedCardPanel trong ucRolePermission và
-    /// PermissionResourceDropdownControl) - giúp mắt dễ tách bạch từng nhóm khi cuộn danh
-    /// sách dài thay vì các nhóm dính liền nhau.
-    /// </summary>
+
     public sealed class PermissionGroupCardControl : VerticalStackPanel
     {
         public event EventHandler<PermissionToggledEventArgs> Toggled;
