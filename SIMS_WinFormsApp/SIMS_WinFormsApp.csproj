@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
+    <Compile Include="Models\DTOs\DateRange.cs" />
     <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
     <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <!-- MỚI: Header -->
     <Compile Include="MVP\ViewModels\HeaderUserViewModel.cs" />
+    <Compile Include="MVP\ViewModels\AuditLogGridRow.cs" />
     <Compile Include="Repositories\Implementations\AuditLogRepository.cs" />
     <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
@@ -301,6 +303,22 @@
     <Compile Include="UI\Controls\Filter\FilterOption.cs" />
     <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
     <Compile Include="UI\Controls\Filter\IFilterView.cs" />
+    <Compile Include="UI\Controls\Filter\DateRangePreset.cs" />
+    <Compile Include="UI\Controls\Filter\IDateRangeFilterView.cs" />
+    <Compile Include="UI\Controls\Filter\DateRangeFilterPresenter.cs" />
+    <Compile Include="UI\Controls\Filter\DateRangeFilterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AuditLog\SegmentedTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AuditLog\AuditLogPageHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AuditLog\AuditLogFilterSurface.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AuditLog\AuditLogGridPainter.cs" />
     <!-- MỚI: nút trigger menu "Tùy chọn" cạnh nút "+ Thêm..." -->
     <Compile Include="UI\Controls\Popups\OverflowMenuButton.cs">
       <SubType>Component</SubType>
