@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs;
@@ -519,9 +520,17 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
 
         private sealed class DateCalendarPopup : PopupFormBase
         {
+            // MCM_FIRST + 9. Kích thước tối thiểu để vẽ đủ một tháng — Width/GetPreferredSize hay trả nhỏ hơn vùng control thực sự vẽ.
+            private const int McmGetMinReqRect = 0x1009;
+            private const uint SwpNoZOrder = 0x0004;
+            private const uint SwpNoActivate = 0x0010;
+
             private readonly MonthCalendar _calendar;
             private readonly Label _todayLink;
             private readonly Label _clearLink;
+            private Rectangle _anchorScreen = Rectangle.Empty;
+            private Rectangle _workingArea = Rectangle.Empty;
+            private bool _fitting;
 
             public event EventHandler<DateTime> DateChosen;
             public event EventHandler Cleared;
@@ -529,19 +538,31 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             public DateCalendarPopup()
             {
                 BackColor = AppColors.White;
-                Padding = new Padding(12, 8, 12, 8);
+                Padding = Padding.Empty;
+                // Tạo HWND cha đủ rộng trước, kẻo MonthCalendar bị kẹp ngay lúc tạo handle.
+                ClientSize = new Size(480, 360);
 
                 _calendar = new MonthCalendar
                 {
                     MaxSelectionCount = 1,
+                    CalendarDimensions = new Size(1, 1),
                     ShowToday = false,
                     ShowTodayCircle = true,
-                    Font = AppFonts.Small
+                    Font = AppFonts.Small,
+                    Anchor = AnchorStyles.Left | AnchorStyles.Top
                 };
                 _calendar.DateSelected += (_, e) =>
                 {
                     DateChosen?.Invoke(this, e.Start.Date);
                     Close();
+                };
+                _calendar.SizeChanged += (_, __) =>
+                {
+                    if (_fitting || IsDisposed || !Visible) return;
+                    int neededW = _calendar.Left + _calendar.Width + 20;
+                    int neededH = _calendar.Bottom + 44;
+                    if (ClientSize.Width >= neededW && ClientSize.Height >= neededH) return;
+                    Refit();
                 };
 
                 _todayLink = CreateActionLabel(true);
@@ -578,40 +599,199 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             {
                 if (anchor == null || anchor.IsDisposed) return;
                 if (!IsHandleCreated) CreateHandle();
+                if (!_calendar.IsHandleCreated) _calendar.CreateControl();
 
                 var day = selected ?? DateTime.Today;
                 _calendar.SetDate(day);
+
+                _workingArea = Screen.FromControl(anchor).WorkingArea;
+                Point origin = anchor.PointToScreen(Point.Empty);
+                _anchorScreen = new Rectangle(origin, anchor.Size);
+
                 FitToCalendar();
-
-                var working = Screen.FromControl(anchor).WorkingArea;
-                var below = anchor.PointToScreen(new Point(0, anchor.Height + 6));
-                int x = below.X;
-                int y = below.Y;
-                if (x + Width > working.Right) x = Math.Max(working.Left, working.Right - Width - 8);
-                if (y + Height > working.Bottom)
-                {
-                    int above = anchor.PointToScreen(Point.Empty).Y - Height - 6;
-                    y = above >= working.Top ? above : working.Top;
-                }
-
-                Location = new Point(x, y);
+                PlaceNearAnchor();
                 Show(anchor.FindForm());
                 _calendar.Focus();
             }
 
+            protected override void OnShown(EventArgs e)
+            {
+                base.OnShown(e);
+                // Kích thước native đôi khi chỉ ổn định sau khi cửa sổ đã hiện trên màn hình của anchor.
+                Refit();
+                BeginInvoke(new Action(Refit));
+            }
+
+            private void Refit()
+            {
+                if (IsDisposed || !Visible) return;
+                FitToCalendar();
+                PlaceNearAnchor();
+            }
+
+            private void PlaceNearAnchor()
+            {
+                if (_anchorScreen.IsEmpty || _workingArea.IsEmpty) return;
+
+                int x = _anchorScreen.Left;
+                int y = _anchorScreen.Bottom + 6;
+                if (x + Width > _workingArea.Right)
+                    x = Math.Max(_workingArea.Left, _workingArea.Right - Width - 8);
+                if (x < _workingArea.Left)
+                    x = _workingArea.Left;
+                if (y + Height > _workingArea.Bottom)
+                {
+                    int above = _anchorScreen.Top - Height - 6;
+                    y = above >= _workingArea.Top ? above : _workingArea.Top;
+                }
+
+                Location = new Point(x, y);
+            }
+
+            private Size MeasureCalendar()
+            {
+                if (!_calendar.IsHandleCreated)
+                    _calendar.CreateControl();
+
+                var native = new NativeRect();
+                int nativeW = 0;
+                int nativeH = 0;
+                if (SendMessage(_calendar.Handle, McmGetMinReqRect, IntPtr.Zero, ref native) != IntPtr.Zero)
+                {
+                    nativeW = Math.Max(0, native.Right - native.Left);
+                    nativeH = Math.Max(0, native.Bottom - native.Top);
+                }
+
+                Size month = _calendar.SingleMonthSize;
+                int width = Math.Max(nativeW, month.Width);
+                int height = Math.Max(nativeH, month.Height);
+
+                float dpiScale = 1f;
+                try
+                {
+                    using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+                        dpiScale = Math.Max(1f, g.DpiX / 96f);
+                }
+                catch (Exception)
+                {
+                    dpiScale = 1f;
+                }
+
+                // 227×162 là cỡ lịch 9pt ở 96 DPI. Nếu message trả về cỡ đó trong khi DPI hệ thống cao hơn,
+                // control vẫn vẽ theo pixel vật lý và cột cuối bị cắt. Chỉ nhân DPI khi số đo rõ ràng chưa scale.
+                int physicalFloorW = (int)Math.Ceiling(227 * dpiScale);
+                int physicalFloorH = (int)Math.Ceiling(162 * dpiScale);
+                if (width < 160) width = 227;
+                if (height < 120) height = 162;
+                if (dpiScale > 1.05f && width < physicalFloorW - 8)
+                {
+                    float fontScale = Math.Max(1f, _calendar.Font.SizeInPoints / 9f);
+                    width = (int)Math.Ceiling(width * dpiScale * fontScale);
+                    height = (int)Math.Ceiling(height * dpiScale * fontScale);
+                }
+
+                width = Math.Max(width, physicalFloorW);
+                height = Math.Max(height, physicalFloorH);
+
+                // Visual styles vẽ viền thêm vài pixel so với rect native báo về.
+                return new Size(width + 8, height + 6);
+            }
+
             private void FitToCalendar()
             {
-                Size preferred = _calendar.GetPreferredSize(new Size(320, 240));
-                int calW = Math.Max(300, preferred.Width) + 12;
-                int calH = Math.Max(190, preferred.Height) + 12;
-                _calendar.SetBounds(12, 10, calW, calH);
-                int linkH = Math.Max(22, Math.Max(_todayLink.PreferredSize.Height, _clearLink.PreferredSize.Height));
-                int footerTop = _calendar.Bottom + 10;
-                _todayLink.Location = new Point(14, footerTop);
-                _clearLink.Location = new Point(Math.Max(120, _calendar.Right - Math.Max(48, _clearLink.PreferredSize.Width)), footerTop);
-                ClientSize = new Size(_calendar.Right + 14, footerTop + linkH + 12);
-                AppRadius.ApplyRoundedCorners(this, AppRadius.Medium);
+                if (_fitting) return;
+                _fitting = true;
+                try
+                {
+                    Size required = MeasureCalendar();
+                    const int padLeft = 16;
+                    const int padRight = 20;
+                    const int padTop = 12;
+
+                    int linkH = Math.Max(22, Math.Max(_todayLink.PreferredSize.Height, _clearLink.PreferredSize.Height));
+                    int footerTop = padTop + required.Height + 8;
+                    int clientW = padLeft + required.Width + padRight;
+                    int clientH = footerTop + linkH + 14;
+
+                    // Nới form trước. Nếu form còn hẹp, HWND của lịch bị kẹp và không nở ra được.
+                    MinimumSize = Size.Empty;
+                    MaximumSize = Size.Empty;
+                    Region = null;
+                    ClientSize = new Size(clientW, clientH);
+
+                    _calendar.CalendarDimensions = new Size(1, 1);
+                    _calendar.Bounds = new Rectangle(padLeft, padTop, required.Width, required.Height);
+                    if (_calendar.IsHandleCreated)
+                    {
+                        SetWindowPos(_calendar.Handle, IntPtr.Zero, padLeft, padTop,
+                            required.Width, required.Height, SwpNoZOrder | SwpNoActivate);
+                    }
+
+                    var window = new NativeRect();
+                    if (_calendar.IsHandleCreated && GetWindowRect(_calendar.Handle, ref window))
+                    {
+                        int windowW = window.Right - window.Left;
+                        int windowH = window.Bottom - window.Top;
+                        if (windowW > required.Width) required.Width = windowW;
+                        if (windowH > required.Height) required.Height = windowH;
+                    }
+
+                    // Không thu form theo Width: MonthCalendar hay báo hẹp hơn vùng nó vẽ.
+                    int calW = Math.Max(required.Width, _calendar.Width);
+                    int calH = Math.Max(required.Height, _calendar.Height);
+                    footerTop = padTop + calH + 8;
+                    clientW = padLeft + calW + padRight;
+                    clientH = footerTop + linkH + 14;
+
+                    if (_calendar.Width != calW || _calendar.Height != calH)
+                    {
+                        _calendar.Bounds = new Rectangle(padLeft, padTop, calW, calH);
+                        if (_calendar.IsHandleCreated)
+                        {
+                            SetWindowPos(_calendar.Handle, IntPtr.Zero, padLeft, padTop,
+                                calW, calH, SwpNoZOrder | SwpNoActivate);
+                        }
+                    }
+
+                    _todayLink.Location = new Point(padLeft, footerTop);
+                    int clearW = Math.Max(48, _clearLink.PreferredSize.Width);
+                    _clearLink.Location = new Point(Math.Max(padLeft, clientW - padRight - clearW), footerTop);
+
+                    // FormBorderStyle.None: ép cả Size lẫn ClientSize, rồi bo đúng hình đó.
+                    // ApplyRoundedCorners đọc Width — nếu Width còn cỡ cũ, Region cắt mất cột CN.
+                    Size = new Size(clientW, clientH);
+                    ClientSize = new Size(clientW, clientH);
+                    MinimumSize = Size;
+
+                    Region oldRegion = Region;
+                    using (var path = AppRadius.GetRoundedPath(new Rectangle(0, 0, clientW, clientH), AppRadius.Medium))
+                        Region = new Region(path);
+                    if (oldRegion != null)
+                        oldRegion.Dispose();
+                }
+                finally
+                {
+                    _fitting = false;
+                }
             }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct NativeRect
+            {
+                public int Left;
+                public int Top;
+                public int Right;
+                public int Bottom;
+            }
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, ref NativeRect rect);
+
+            [DllImport("user32.dll")]
+            private static extern bool GetWindowRect(IntPtr hWnd, ref NativeRect rect);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
 
             protected override void OnPaint(PaintEventArgs e)
             {
