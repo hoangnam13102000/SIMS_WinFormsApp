@@ -34,6 +34,19 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
         private DateRangeBound _openBound = DateRangeBound.None;
         private Control _lastClosedAnchor;
         private DateTime _lastClosedAt = DateTime.MinValue;
+        private bool _showCaption = true;
+
+        /// <summary>Ẩn dòng tiêu đề khi nhúng vào thanh lọc của trang khác — vẫn dùng cùng presenter.</summary>
+        public bool ShowCaption
+        {
+            get => _showCaption;
+            set
+            {
+                if (_showCaption == value) return;
+                _showCaption = value;
+                _caption.Visible = value;
+            }
+        }
 
         public event EventHandler<DateRangePreset> PresetRequested;
         public event EventHandler<DateTime> FromPicked;
@@ -136,14 +149,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
         public int Arrange(int width)
         {
             width = Math.Max(width, 160);
-            int captionH = _caption.Font.Height + 8;
+            int captionH = _showCaption ? _caption.Font.Height + 8 : 0;
             int chipH = 34;
             int fieldH = DateBoundField.FieldHeight;
             int gap = 8;
             int groupGap = 12;
             int arrowW = 28;
 
-            _caption.SetBounds(0, 0, width, captionH);
+            _caption.Visible = _showCaption;
+            _caption.SetBounds(0, 0, _showCaption ? width : 0, captionH);
 
             int chipsWidth = _todayChip.Width + gap + _weekChip.Width + gap +
                              _monthChip.Width + gap + _thisMonthChip.Width;
