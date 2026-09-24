@@ -294,7 +294,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Catalog
                     return;
                 }
 
-                DialogHelper.ShowWarning(owner ?? table, result.Message);
+                DialogHelper.ShowWarning((IWin32Window)owner ?? (IWin32Window)table, result.Message);
                 draft = edited;
             }
         }
@@ -325,7 +325,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Catalog
                     return;
                 }
 
-                DialogHelper.ShowWarning(owner ?? table, result.Message);
+                DialogHelper.ShowWarning((IWin32Window)owner ?? (IWin32Window)table, result.Message);
                 draft = edited;
             }
         }
@@ -356,7 +356,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Catalog
                     return;
                 }
 
-                DialogHelper.ShowWarning(owner ?? table, result.Message);
+                DialogHelper.ShowWarning((IWin32Window)owner ?? (IWin32Window)table, result.Message);
                 draft = edited;
             }
         }
