@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -26,7 +27,8 @@ namespace SIMS_WinFormsApp.UI.Controls
     {
         View = 0,
         Edit = 1,
-        Lock = 2
+        Lock = 2,
+        Delete = 3
     }
 
     public sealed class TableActionEventArgs : EventArgs
@@ -64,6 +66,11 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly int _statusColumnIndex = -1;
         private readonly int _lockColumnIndex = -1;
         private readonly int _actionColumnIndex = -1;
+        private readonly int _imageColumnIndex = -1;
+        private readonly int _suggestionColumnIndex;
+        private readonly bool _trailingActionIsDelete;
+        private readonly bool _lockFollowsInactiveStatus;
+        private readonly string _searchPlaceholder;
 
         // Trạng thái hover của các nút icon trong cột "Thao tác"
         private int _hoverRowIndex = -1;
@@ -96,11 +103,17 @@ namespace SIMS_WinFormsApp.UI.Controls
             IList<OverflowMenuAction> overflowActions = null,
             Control customFilterPanel = null,
             int customFilterHeight = 86,
-            bool externalData = false) // externalData: Presenter owns loading, BaseTable owns layout/paging
+            bool externalData = false, // externalData: Presenter owns loading, BaseTable owns layout/paging
+            bool trailingActionIsDelete = false,
+            bool lockFollowsInactiveStatus = false,
+            string searchPlaceholder = null)
         {
             _loadPage = loadPage ?? throw new ArgumentNullException(nameof(loadPage));
             _statusOptions = statusOptions ?? DefaultStatusOptions();
             _externalData = externalData;
+            _trailingActionIsDelete = trailingActionIsDelete;
+            _lockFollowsInactiveStatus = lockFollowsInactiveStatus;
+            _searchPlaceholder = searchPlaceholder;
             _paginationPresenter = new PaginationPresenter(_pagination, pageSize);
             _paginationPresenter.PageChanged += (_, __) =>
             {
@@ -115,6 +128,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             _statusColumnIndex = Array.IndexOf(columns, "Trạng thái");
             _lockColumnIndex = Array.IndexOf(columns, "Khóa");
             _actionColumnIndex = Array.IndexOf(columns, "Thao tác");
+            _imageColumnIndex = Array.IndexOf(columns, "Ảnh");
+            _suggestionColumnIndex = SuggestionColumn(columns);
 
             _root = new TableLayoutPanel
             {
@@ -146,6 +161,8 @@ namespace SIMS_WinFormsApp.UI.Controls
             _filterPanel = customFilterPanel as Panel ?? (Panel)CreateFilterBar();
             _root.Controls.Add(_filterPanel, 0, 1);
             _grid = CreateGrid(columns);
+            if (_imageColumnIndex >= 0)
+                ConfigureImageColumn();
             AttachActionCellHandlers();
             _gridCard = (Panel)CreateGridCard();
             _root.Controls.Add(_gridCard, 0, 2);
@@ -337,7 +354,9 @@ namespace SIMS_WinFormsApp.UI.Controls
             // qua Win32 (SetCueBanner) như bản cũ.
             _searchBar = new SearchBarControl
             {
-                PlaceholderText = "Tìm theo tên, email...",
+                PlaceholderText = string.IsNullOrWhiteSpace(_searchPlaceholder)
+                    ? "Tìm theo tên, email..."
+                    : _searchPlaceholder,
                 Location = new Point(panelPadding.Left, top),
                 Size = new Size(420, controlHeight)
             };
@@ -363,16 +382,18 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
 
         /// <summary>Nguồn gợi ý autocomplete: tái sử dụng thẳng _loadPage hiện có (chỉ lấy vài
-        /// dòng đầu khớp từ khoá), lấy giá trị cột đầu tiên làm gợi ý — không thêm truy vấn
-        /// hay logic dữ liệu mới nào ngoài _loadPage đã có sẵn.</summary>
+        /// dòng đầu khớp từ khoá). Gợi ý lấy từ cột tên, bỏ qua ảnh/trạng thái/thao tác.</summary>
         private IList<string> BuildSuggestions(string keyword)
         {
             var result = _loadPage(0, 8, keyword, _filterPresenter?.CurrentValue);
             var suggestions = new List<string>();
             foreach (var row in result.Rows)
             {
-                if (row.Length == 0) continue;
-                var value = Convert.ToString(row[0]);
+                if (row == null || row.Length == 0) continue;
+                int index = _suggestionColumnIndex >= 0 && _suggestionColumnIndex < row.Length
+                    ? _suggestionColumnIndex
+                    : 0;
+                var value = Convert.ToString(row[index]);
                 if (!string.IsNullOrWhiteSpace(value) && !suggestions.Contains(value))
                     suggestions.Add(value);
             }
@@ -537,7 +558,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             try
             {
-                if (e.ColumnIndex == _statusColumnIndex || e.ColumnIndex == _lockColumnIndex)
+                if (e.ColumnIndex == _imageColumnIndex)
+                {
+                    PaintImageCell(e);
+                }
+                else if (e.ColumnIndex == _statusColumnIndex || e.ColumnIndex == _lockColumnIndex)
                 {
                     PaintPillCell(e);
                 }
@@ -553,6 +578,67 @@ namespace SIMS_WinFormsApp.UI.Controls
                 // sẽ tự vẽ lại đúng ở lần Invalidate/Paint kế tiếp, không mất dữ liệu.
                 e.Handled = true;
             }
+        }
+
+        private void ConfigureImageColumn()
+        {
+            var column = _grid.Columns[_imageColumnIndex];
+            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            column.Width = 84;
+            column.MinimumWidth = 84;
+            column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            _grid.RowTemplate.Height = 72;
+            var guna = _grid as Guna2DataGridView;
+            if (guna != null)
+                guna.ThemeStyle.RowsStyle.Height = 72;
+        }
+
+        private static int SuggestionColumn(string[] columns)
+        {
+            for (int i = 0; i < columns.Length; i++)
+            {
+                if (columns[i] == "Ảnh" || columns[i] == "Thao tác" || columns[i] == "Trạng thái" || columns[i] == "Khóa")
+                    continue;
+                if (columns[i].IndexOf("Tên", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return i;
+            }
+            for (int i = 0; i < columns.Length; i++)
+            {
+                if (columns[i] != "Ảnh") return i;
+            }
+            return 0;
+        }
+
+        private void PaintImageCell(DataGridViewCellPaintingEventArgs e)
+        {
+            e.PaintBackground(e.CellBounds, true);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            const int size = 48;
+            var box = new Rectangle(
+                e.CellBounds.X + (e.CellBounds.Width - size) / 2,
+                e.CellBounds.Y + (e.CellBounds.Height - size) / 2,
+                size, size);
+            var image = ProductThumbCache.Get(Convert.ToString(e.Value));
+            using (var clip = AppRadius.GetRoundedPath(box, 8))
+            {
+                e.Graphics.SetClip(clip);
+                if (image != null)
+                    e.Graphics.DrawImage(image, box);
+                else
+                {
+                    using (var brush = new SolidBrush(AppColors.BgLighter))
+                        e.Graphics.FillRectangle(brush, box);
+                }
+                e.Graphics.ResetClip();
+                using (var pen = new Pen(AppColors.Border))
+                    e.Graphics.DrawPath(pen, clip);
+            }
+
+            DrawCellBottomBorder(e);
+            e.Handled = true;
         }
 
         private void PaintPillCell(DataGridViewCellPaintingEventArgs e)
@@ -614,14 +700,13 @@ namespace SIMS_WinFormsApp.UI.Controls
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
             var rects = GetActionButtonRects(e.CellBounds.Size);
-            bool isLocked = _lockColumnIndex >= 0
-                && Convert.ToString(_grid.Rows[e.RowIndex].Cells[_lockColumnIndex].Value)
-                    .IndexOf("Đang khóa", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool isLocked = IsTrailingLocked(e.RowIndex);
             for (int i = 0; i < rects.Length; i++)
             {
                 var abs = new Rectangle(e.CellBounds.X + rects[i].X, e.CellBounds.Y + rects[i].Y, rects[i].Width, rects[i].Height);
                 bool hovered = _hoverRowIndex == e.RowIndex && _hoverButtonIndex == i;
-                DrawActionButton(e.Graphics, abs, (TableActionType)i, hovered, isLocked);
+                var action = ActionAt(i);
+                DrawActionButton(e.Graphics, abs, action, hovered, action == TableActionType.Lock && isLocked);
             }
 
             DrawCellBottomBorder(e);
@@ -632,6 +717,31 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             using (var pen = new Pen(AppColors.TableGrid))
                 e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+        }
+
+        private TableActionType ActionAt(int index)
+        {
+            if (index == 2 && _trailingActionIsDelete) return TableActionType.Delete;
+            return (TableActionType)index;
+        }
+
+        private bool IsTrailingLocked(int rowIndex)
+        {
+            if (_lockColumnIndex >= 0)
+            {
+                string text = Convert.ToString(_grid.Rows[rowIndex].Cells[_lockColumnIndex].Value) ?? string.Empty;
+                if (text.IndexOf("Đang khóa", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+
+            if (_lockFollowsInactiveStatus && _statusColumnIndex >= 0)
+            {
+                string status = Convert.ToString(_grid.Rows[rowIndex].Cells[_statusColumnIndex].Value) ?? string.Empty;
+                if (status.IndexOf("Vô hiệu", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>Toạ độ 3 nút icon, TƯƠNG ĐỐI so với góc trên-trái của ô (0,0).</summary>
@@ -657,6 +767,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case TableActionType.View: return AppColors.TableViewAction;
                 case TableActionType.Edit: return AppColors.TableEditAction;
                 case TableActionType.Lock: return AppColors.Warning;
+                case TableActionType.Delete: return AppColors.Error;
                 default: return AppColors.TableViewAction;
             }
         }
@@ -705,6 +816,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 case TableActionType.View: return IconChar.Eye;
                 case TableActionType.Edit: return IconChar.PenToSquare;
                 case TableActionType.Lock: return isLocked ? IconChar.LockOpen : IconChar.Lock;
+                case TableActionType.Delete: return IconChar.Trash;
                 default: return IconChar.CircleQuestion;
             }
         }
@@ -771,7 +883,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             {
                 if (rects[i].Contains(e.Location))
                 {
-                    ActionButtonClicked?.Invoke(this, new TableActionEventArgs(e.RowIndex, (TableActionType)i));
+                    ActionButtonClicked?.Invoke(this, new TableActionEventArgs(e.RowIndex, ActionAt(i)));
                     break;
                 }
             }
@@ -803,6 +915,44 @@ namespace SIMS_WinFormsApp.UI.Controls
                 _searchPresenter?.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private static class ProductThumbCache
+        {
+            private const int Size = 48;
+            private static readonly Dictionary<string, Image> Cache =
+                new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
+
+            public static Image Get(string path)
+            {
+                if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+
+                Image cached;
+                if (Cache.TryGetValue(path, out cached)) return cached;
+
+                try
+                {
+                    using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var source = Image.FromStream(stream))
+                    {
+                        var thumb = new Bitmap(Size, Size);
+                        using (var graphics = Graphics.FromImage(thumb))
+                        {
+                            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                            graphics.Clear(Color.Transparent);
+                            graphics.DrawImage(source, new Rectangle(0, 0, Size, Size));
+                        }
+
+                        Cache[path] = thumb;
+                        return thumb;
+                    }
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
         }
     }
 }
