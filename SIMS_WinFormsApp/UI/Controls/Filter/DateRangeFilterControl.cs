@@ -13,8 +13,8 @@ using RoundedDialogFrame = SIMS_WinFormsApp.UI.Controls.RoundedDialogFrame;
 namespace SIMS_WinFormsApp.UI.Controls.Filter
 {
     /// <summary>
-    /// Bộ lọc khoảng ngày: mốc nhanh + hai ô ngày luôn đủ chỗ cho "31/12/2026".
-    /// Khi bề ngang không đủ, ô ngày xuống dòng thay vì bị cắt chữ.
+    /// Bộ lọc khoảng ngày: mốc nhanh + hai ô ngày vừa đủ "31/12/2026".
+    /// Ô ngày không kéo full card. Khi bề ngang không đủ, ô ngày xuống dòng.
     /// </summary>
     public sealed class DateRangeFilterControl : UserControl, IDateRangeFilterView
     {
@@ -135,43 +135,41 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
         /// <summary>Xếp chip + ô ngày trong bề ngang cho trước và trả về chiều cao cần thiết.</summary>
         public int Arrange(int width)
         {
-            width = Math.Max(width, _fromField.MinimumContentWidth);
+            width = Math.Max(width, 160);
             int captionH = _caption.Font.Height + 8;
             int chipH = 34;
             int fieldH = DateBoundField.FieldHeight;
             int gap = 8;
+            int groupGap = 12;
+            int arrowW = 28;
 
             _caption.SetBounds(0, 0, width, captionH);
 
             int chipsWidth = _todayChip.Width + gap + _weekChip.Width + gap +
                              _monthChip.Width + gap + _thisMonthChip.Width;
-            int fieldMin = Math.Max(_fromField.MinimumContentWidth, _toField.MinimumContentWidth);
-            int arrowW = 28;
+            // Ô ngày chỉ rộng vừa "31/12/2026". Kéo full card làm hai ô trống rất lớn, lệch với chip.
+            int fieldW = Math.Max(_fromField.MinimumContentWidth, _toField.MinimumContentWidth);
             int clearW = _clearButton.Width;
-            int fieldsBlock = fieldMin * 2 + arrowW;
-            bool oneRow = width >= chipsWidth + 16 + fieldsBlock + 8 + clearW;
-
+            int fieldsBlock = fieldW * 2 + arrowW;
             int y = captionH + 6;
-            if (oneRow)
+
+            if (width >= chipsWidth + groupGap + fieldsBlock + groupGap + clearW)
             {
-                int chipY = y + (fieldH - chipH) / 2;
+                int chipY = y + Math.Max(0, (fieldH - chipH) / 2);
                 PlaceChips(0, chipY, chipH, gap);
-                _clearButton.SetBounds(width - clearW, y + (fieldH - _clearButton.Height) / 2, clearW, _clearButton.Height);
-                int fieldsLeft = chipsWidth + 12;
-                int fieldsRight = width - clearW - 12;
-                int fieldW = Math.Max(fieldMin, (fieldsRight - fieldsLeft - arrowW) / 2);
-                int maxField = Math.Max(fieldMin, (fieldsRight - fieldsLeft - arrowW) / 2);
-                fieldW = Math.Min(fieldW, maxField);
-                PlaceFields(fieldsLeft, y, fieldW, fieldH, arrowW, sideBySide: true);
+                int x = chipsWidth + groupGap;
+                PlaceFields(x, y, fieldW, fieldH, arrowW, sideBySide: true);
+                x += fieldsBlock + groupGap;
+                _clearButton.SetBounds(x, y + Math.Max(0, (fieldH - _clearButton.Height) / 2), clearW, _clearButton.Height);
                 Height = y + fieldH;
             }
             else
             {
-                bool clearFits = chipsWidth + 8 + clearW <= width;
+                bool clearFits = chipsWidth + groupGap + clearW <= width;
                 PlaceChips(0, y, chipH, gap);
                 if (clearFits)
                 {
-                    _clearButton.SetBounds(width - clearW, y + (chipH - _clearButton.Height) / 2, clearW, _clearButton.Height);
+                    _clearButton.SetBounds(chipsWidth + groupGap, y + (chipH - _clearButton.Height) / 2, clearW, _clearButton.Height);
                     y += chipH + 10;
                 }
                 else
@@ -181,17 +179,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                     y += _clearButton.Height + 8;
                 }
 
-                bool sideBySide = width >= fieldMin * 2 + arrowW + 8;
-                if (sideBySide)
+                if (width >= fieldsBlock)
                 {
-                    int fieldW = Math.Max(fieldMin, (width - arrowW) / 2);
-                    if (fieldW * 2 + arrowW > width) fieldW = Math.Max(1, (width - arrowW) / 2);
                     PlaceFields(0, y, fieldW, fieldH, arrowW, sideBySide: true);
                     y += fieldH;
                 }
                 else
                 {
-                    PlaceFields(0, y, width, fieldH, arrowW, sideBySide: false);
+                    int stackedW = Math.Min(width, Math.Max(fieldW, 160));
+                    PlaceFields(0, y, stackedW, fieldH, arrowW, sideBySide: false);
                     y += fieldH * 2 + 8;
                 }
                 Height = y;
@@ -539,8 +535,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
             {
                 BackColor = AppColors.White;
                 Padding = Padding.Empty;
-                // Tạo HWND cha đủ rộng trước, kẻo MonthCalendar bị kẹp ngay lúc tạo handle.
-                ClientSize = new Size(480, 360);
+                ClientSize = new Size(260, 240);
 
                 _calendar = new MonthCalendar
                 {
@@ -558,11 +553,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 };
                 _calendar.SizeChanged += (_, __) =>
                 {
-                    if (_fitting || IsDisposed || !Visible) return;
-                    int neededW = _calendar.Left + _calendar.Width + 20;
-                    int neededH = _calendar.Bottom + 44;
-                    if (ClientSize.Width >= neededW && ClientSize.Height >= neededH) return;
-                    Refit();
+                    if (_fitting || IsDisposed) return;
+                    if (IsSingleMonth) return;
+                    LockSingleMonth();
+                    if (Visible) Refit();
                 };
 
                 _todayLink = CreateActionLabel(true);
@@ -648,10 +642,26 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 Location = new Point(x, y);
             }
 
-            private Size MeasureCalendar()
+            private bool IsSingleMonth
+            {
+                get { return _calendar.CalendarDimensions.Width <= 1 && _calendar.CalendarDimensions.Height <= 1; }
+            }
+
+            private void LockSingleMonth()
+            {
+                if (IsSingleMonth) return;
+                _calendar.CalendarDimensions = new Size(1, 1);
+            }
+
+            private Size MeasureSingleMonth()
             {
                 if (!_calendar.IsHandleCreated)
                     _calendar.CreateControl();
+
+                LockSingleMonth();
+                Size single = _calendar.SingleMonthSize;
+                if (single.Width < 80 || single.Height < 80)
+                    single = new Size(227, 162);
 
                 var native = new NativeRect();
                 int nativeW = 0;
@@ -662,39 +672,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                     nativeH = Math.Max(0, native.Bottom - native.Top);
                 }
 
-                Size month = _calendar.SingleMonthSize;
-                int width = Math.Max(nativeW, month.Width);
-                int height = Math.Max(nativeH, month.Height);
+                // MCM_GETMINREQRECT của lưới nhiều tháng lớn hơn SingleMonthSize rất nhiều.
+                // Chỉ nhận số đo khi nó vẫn là một tháng — nếu không, gán Size lớn sẽ bung thành 2×2.
+                int width = single.Width;
+                int height = single.Height;
+                if (nativeW >= single.Width && nativeW <= single.Width + 8)
+                    width = nativeW;
+                if (nativeH >= single.Height && nativeH <= single.Height + 8)
+                    height = nativeH;
 
-                float dpiScale = 1f;
-                try
-                {
-                    using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
-                        dpiScale = Math.Max(1f, g.DpiX / 96f);
-                }
-                catch (Exception)
-                {
-                    dpiScale = 1f;
-                }
-
-                // 227×162 là cỡ lịch 9pt ở 96 DPI. Nếu message trả về cỡ đó trong khi DPI hệ thống cao hơn,
-                // control vẫn vẽ theo pixel vật lý và cột cuối bị cắt. Chỉ nhân DPI khi số đo rõ ràng chưa scale.
-                int physicalFloorW = (int)Math.Ceiling(227 * dpiScale);
-                int physicalFloorH = (int)Math.Ceiling(162 * dpiScale);
-                if (width < 160) width = 227;
-                if (height < 120) height = 162;
-                if (dpiScale > 1.05f && width < physicalFloorW - 8)
-                {
-                    float fontScale = Math.Max(1f, _calendar.Font.SizeInPoints / 9f);
-                    width = (int)Math.Ceiling(width * dpiScale * fontScale);
-                    height = (int)Math.Ceiling(height * dpiScale * fontScale);
-                }
-
-                width = Math.Max(width, physicalFloorW);
-                height = Math.Max(height, physicalFloorH);
-
-                // Visual styles vẽ viền thêm vài pixel so với rect native báo về.
-                return new Size(width + 8, height + 6);
+                return new Size(width, height);
             }
 
             private void FitToCalendar()
@@ -703,62 +690,60 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
                 _fitting = true;
                 try
                 {
-                    Size required = MeasureCalendar();
-                    const int padLeft = 16;
-                    const int padRight = 20;
+                    LockSingleMonth();
+                    Size month = MeasureSingleMonth();
+                    const int padLeft = 14;
+                    const int padRight = 16;
                     const int padTop = 12;
 
                     int linkH = Math.Max(22, Math.Max(_todayLink.PreferredSize.Height, _clearLink.PreferredSize.Height));
-                    int footerTop = padTop + required.Height + 8;
-                    int clientW = padLeft + required.Width + padRight;
-                    int clientH = footerTop + linkH + 14;
+                    int footerTop = padTop + month.Height + 8;
+                    int clientW = padLeft + month.Width + padRight;
+                    int clientH = footerTop + linkH + 12;
 
-                    // Nới form trước. Nếu form còn hẹp, HWND của lịch bị kẹp và không nở ra được.
                     MinimumSize = Size.Empty;
                     MaximumSize = Size.Empty;
                     Region = null;
+                    Size = new Size(clientW, clientH);
                     ClientSize = new Size(clientW, clientH);
 
                     _calendar.CalendarDimensions = new Size(1, 1);
-                    _calendar.Bounds = new Rectangle(padLeft, padTop, required.Width, required.Height);
+                    _calendar.Bounds = new Rectangle(padLeft, padTop, month.Width, month.Height);
                     if (_calendar.IsHandleCreated)
                     {
                         SetWindowPos(_calendar.Handle, IntPtr.Zero, padLeft, padTop,
-                            required.Width, required.Height, SwpNoZOrder | SwpNoActivate);
+                            month.Width, month.Height, SwpNoZOrder | SwpNoActivate);
                     }
 
-                    var window = new NativeRect();
-                    if (_calendar.IsHandleCreated && GetWindowRect(_calendar.Handle, ref window))
+                    if (!IsSingleMonth)
                     {
-                        int windowW = window.Right - window.Left;
-                        int windowH = window.Bottom - window.Top;
-                        if (windowW > required.Width) required.Width = windowW;
-                        if (windowH > required.Height) required.Height = windowH;
+                        _calendar.CalendarDimensions = new Size(1, 1);
+                        month = _calendar.SingleMonthSize.Width >= 80
+                            ? _calendar.SingleMonthSize
+                            : month;
+                        _calendar.Bounds = new Rectangle(padLeft, padTop, month.Width, month.Height);
                     }
 
-                    // Không thu form theo Width: MonthCalendar hay báo hẹp hơn vùng nó vẽ.
-                    int calW = Math.Max(required.Width, _calendar.Width);
-                    int calH = Math.Max(required.Height, _calendar.Height);
+                    int calW = month.Width;
+                    int calH = month.Height;
+                    if (IsSingleMonth)
+                    {
+                        calW = Math.Max(month.Width, _calendar.Width);
+                        calH = Math.Max(month.Height, _calendar.Height);
+                        // Không nhận chiều rộng của lưới nhiều tháng nếu control vừa nở ra.
+                        if (calW > month.Width + 8) calW = month.Width;
+                        if (calH > month.Height + 8) calH = month.Height;
+                    }
+
                     footerTop = padTop + calH + 8;
                     clientW = padLeft + calW + padRight;
-                    clientH = footerTop + linkH + 14;
-
-                    if (_calendar.Width != calW || _calendar.Height != calH)
-                    {
-                        _calendar.Bounds = new Rectangle(padLeft, padTop, calW, calH);
-                        if (_calendar.IsHandleCreated)
-                        {
-                            SetWindowPos(_calendar.Handle, IntPtr.Zero, padLeft, padTop,
-                                calW, calH, SwpNoZOrder | SwpNoActivate);
-                        }
-                    }
+                    clientH = footerTop + linkH + 12;
+                    _calendar.Bounds = new Rectangle(padLeft, padTop, calW, calH);
 
                     _todayLink.Location = new Point(padLeft, footerTop);
                     int clearW = Math.Max(48, _clearLink.PreferredSize.Width);
                     _clearLink.Location = new Point(Math.Max(padLeft, clientW - padRight - clearW), footerTop);
 
-                    // FormBorderStyle.None: ép cả Size lẫn ClientSize, rồi bo đúng hình đó.
-                    // ApplyRoundedCorners đọc Width — nếu Width còn cỡ cũ, Region cắt mất cột CN.
                     Size = new Size(clientW, clientH);
                     ClientSize = new Size(clientW, clientH);
                     MinimumSize = Size;
@@ -786,9 +771,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Filter
 
             [DllImport("user32.dll", CharSet = CharSet.Auto)]
             private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, ref NativeRect rect);
-
-            [DllImport("user32.dll")]
-            private static extern bool GetWindowRect(IntPtr hWnd, ref NativeRect rect);
 
             [DllImport("user32.dll", SetLastError = true)]
             private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
