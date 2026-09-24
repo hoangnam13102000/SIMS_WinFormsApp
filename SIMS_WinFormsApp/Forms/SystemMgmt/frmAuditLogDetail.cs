@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
@@ -21,7 +22,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             BuildContent(detail);
 
             CloseRequested += (s, e) => Close();
-            AddFooterButton("Đóng", isPrimary: true, onClick: (s, e) => RaiseCloseRequested());
+            AddFooterButton(Lang.Get("common.close"), isPrimary: true, onClick: (s, e) => RaiseCloseRequested());
         }
 
         public static DialogResult Show(IWin32Window owner, AuditLogDetailDto detail)
@@ -34,8 +35,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private void BuildContent(AuditLogDetailDto detail)
         {
-            HeaderTitle = "Chi tiết nhật ký #" + detail.LogId;
-            SetHeaderIcon(IconChar.ClockRotateLeft, AppColors.Accent);
+            HeaderTitle = Lang.Get("audit.detail.title", detail.LogId);
+            SetHeaderIcon(IconChar.Eye, AppColors.Accent);
 
             var infoGrid = new TableLayoutPanel
             {
@@ -48,19 +49,19 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
 
-            AddInfoField(infoGrid, "Thời gian", detail.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"));
-            AddInfoField(infoGrid, "Người dùng", detail.Username);
-            AddInfoField(infoGrid, "Hành động", AuditLogDisplayMapper.GetActionLabel(detail.Action));
-            AddInfoField(infoGrid, "Đối tượng", AuditLogDisplayMapper.GetTableLabel(detail.TableName)
+            AddInfoField(infoGrid, Lang.Get("audit.detail.time"), detail.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"));
+            AddInfoField(infoGrid, Lang.Get("audit.detail.user"), detail.Username);
+            AddInfoField(infoGrid, Lang.Get("audit.detail.action"), AuditLogDisplayMapper.GetActionLabel(detail.Action));
+            AddInfoField(infoGrid, Lang.Get("audit.detail.target"), AuditLogDisplayMapper.GetTableLabel(detail.TableName)
                 + (detail.RecordId.HasValue ? " #" + detail.RecordId.Value : ""));
-            AddInfoField(infoGrid, "Địa chỉ IP", string.IsNullOrWhiteSpace(detail.IPAddress) ? "-" : detail.IPAddress);
-            AddInfoField(infoGrid, "Mô tả", string.IsNullOrWhiteSpace(detail.Detail) ? "-" : detail.Detail);
+            AddInfoField(infoGrid, Lang.Get("audit.detail.ip"), string.IsNullOrWhiteSpace(detail.IPAddress) ? "-" : detail.IPAddress);
+            AddInfoField(infoGrid, Lang.Get("audit.detail.description"), string.IsNullOrWhiteSpace(detail.Detail) ? "-" : detail.Detail);
 
             var diffHeader = new Label
             {
                 Dock = DockStyle.Top,
                 Height = 24,
-                Text = "So sánh dữ liệu",
+                Text = Lang.Get("audit.detail.diff"),
                 Font = AppFonts.SmallBold,
                 ForeColor = AppColors.TextMuted,
                 BackColor = Color.Transparent
@@ -81,8 +82,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 diffGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
                 diffGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
 
-                diffGrid.Controls.Add(CreateDiffPanel("Trước khi thay đổi", detail.OldValue, AppColors.ErrorBg, AppColors.Error), 0, 0);
-                diffGrid.Controls.Add(CreateDiffPanel("Sau khi thay đổi", detail.NewValue, AppColors.SuccessBg, AppColors.Success), 1, 0);
+                diffGrid.Controls.Add(CreateDiffPanel(Lang.Get("audit.detail.before"), detail.OldValue, AppColors.ErrorBg, AppColors.Error), 0, 0);
+                diffGrid.Controls.Add(CreateDiffPanel(Lang.Get("audit.detail.after"), detail.NewValue, AppColors.SuccessBg, AppColors.Success), 1, 0);
                 diffContent = diffGrid;
             }
             else
@@ -90,7 +91,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 diffContent = new Label
                 {
                     Dock = DockStyle.Fill,
-                    Text = "Bản ghi này không có dữ liệu trước/sau để so sánh.",
+                    Text = Lang.Get("audit.detail.noDiff"),
                     Font = AppFonts.Body,
                     ForeColor = AppColors.TextMuted,
                     BackColor = Color.Transparent,
@@ -123,7 +124,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             {
                 Dock = DockStyle.Top,
                 AutoSize = true,
-                MaximumSize = new Size(320, 0),
+                MaximumSize = new Size(340, 0),
                 Text = string.IsNullOrWhiteSpace(value) ? "-" : value,
                 Font = AppFonts.BodyBold,
                 ForeColor = AppColors.TextTitle,
@@ -165,7 +166,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 ForeColor = AppColors.TextPrimary,
                 BackColor = AppColors.BgLighter,
                 BorderStyle = BorderStyle.FixedSingle,
-                Text = string.IsNullOrWhiteSpace(value) ? "(trống)" : value
+                Text = string.IsNullOrWhiteSpace(value) ? Lang.Get("audit.detail.empty") : value
             };
 
             panel.Controls.Add(textBox);

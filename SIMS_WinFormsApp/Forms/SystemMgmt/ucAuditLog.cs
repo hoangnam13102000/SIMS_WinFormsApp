@@ -1,367 +1,402 @@
-﻿using FontAwesome.Sharp;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
+using FontAwesome.Sharp;
+using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.MVP.Presenters;
+using SIMS_WinFormsApp.MVP.ViewModels;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.AuditLog;
 using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Loading;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
 using SIMS_WinFormsApp.UI.Controls.Search;
 using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
     /// <summary>
-    /// Trang "Nhật ký hệ thống" - nhúng vào MainLayoutControl như 1 mục sidebar (giống
-    /// ucDashboard/ucMyProfile), View trong mô hình MVP cho <see cref="AuditLogPresenter"/>.
-    ///
-    /// Toàn bộ mảnh ghép UI đều TÁI SỬ DỤNG control có sẵn của dự án, không viết lại: StatCard
-    /// (dashboard), SearchBarControl+SearchPresenter, FilterComboBox, PaginationControl,
-    /// LoadingOverlayHost (đã dựng ở tính năng trước), OverflowMenuButton+ModernDropdownMenu
-    /// (đang dùng ở BaseTable), TableExportRunner+CsvTableExporter+ExcelTableExporter (đang dùng
-    /// ở ManagementTablePage). Chỉ có cách GHÉP các mảnh này lại theo đúng bố cục màn hình là mới.
-    ///
-    /// Dữ liệu chỉ được tải LẦN ĐẦU khi trang thật sự hiển thị (VisibleChanged), không tải ngay
-    /// lúc dựng layout ứng dụng (constructor) - tránh làm chậm khởi động app với 1 trang quản trị
-    /// ít khi được mở tới, và để LoadingOverlayHost có cơ hội hiển thị trước khi câu truy vấn
-    /// (có thể mất vài giây) chạy.
+    /// Trang Nhật ký hệ thống — View của <see cref="AuditLogPresenter"/>.
+    /// Layout tự co giãn: bộ lọc ngày luôn đủ chỗ hiện dd/MM/yyyy, cột thao tác là icon mắt,
+    /// và cả trang cuộn khi cửa sổ thấp để không cắt thẻ thống kê hay ô lọc.
     /// </summary>
     public sealed class ucAuditLog : UserControl, IAuditLogView
     {
         private readonly IAuditLogRepository _repository;
         private readonly AuditLogPresenter _presenter;
-        private LoadingOverlayHost _overlayHost;
+        private readonly DateRangeFilterPresenter _datePresenter;
+        private readonly PaginationPresenter _paginationPresenter;
+        private readonly SearchPresenter _searchPresenter;
+        private readonly AuditLogGridPainter _gridPainter;
+        private readonly LoadingOverlayHost _overlayHost;
 
-        private SearchBarControl _searchBar;
-        private SearchPresenter _searchPresenter;
-        private FilterComboBox _filterAction;
-        private FilterComboBox _filterTable;
-        private DateTimePicker _dtFrom;
-        private DateTimePicker _dtTo;
-        private Label _lblTotalCount;
-        private PrimaryButton _btnTabAudit;
-        private PrimaryButton _btnTabIncident;
-        private bool _incidentOnly;
+        private readonly Panel _body;
+        private readonly AuditLogPageHeader _header;
+        private readonly AuditLogFilterSurface _surface;
+        private readonly Panel _tableCard;
+        private readonly Panel _gridHost;
+        private readonly Guna2DataGridView _grid;
+        private readonly PaginationControl _pagination;
+        private readonly Label _emptyLabel;
 
-        private DataGridView _grid;
-        private BaseTable _table;
-        private int _actionColIndex, _tableColIndex, _viewColIndex;
+        private IReadOnlyList<string> _actionCodes = Array.Empty<string>();
+        private IReadOnlyList<string> _tableCodes = Array.Empty<string>();
         private IReadOnlyList<AuditLogRowDto> _currentRows = Array.Empty<AuditLogRowDto>();
-
+        private int _totalCount;
         private bool _dataLoadedOnce;
+        private bool _arranging;
+        private bool _bindingFilters;
+        private bool _wheelHooked;
 
         public ucAuditLog(IAuditLogRepository repository = null)
         {
             AutoScaleMode = AutoScaleMode.None;
-            Font = new Font("Segoe UI", 9f);
+            Font = AppFonts.Body;
             DoubleBuffered = true;
             Dock = DockStyle.Fill;
             BackColor = AppColors.PageBg;
-            Padding = new Padding(20, 16, 20, 20);
 
             _repository = repository ?? AppComposition.CreateAuditLogRepository();
+            _body = new Panel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = AppColors.PageBg
+            };
+            _header = new AuditLogPageHeader { Height = 112 };
+            _surface = new AuditLogFilterSurface();
+            _pagination = new PaginationControl();
+            _paginationPresenter = new PaginationPresenter(_pagination, 10);
+            _grid = CreateGrid();
+            _gridPainter = new AuditLogGridPainter(_grid);
+            _emptyLabel = new Label
+            {
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = AppFonts.Body,
+                ForeColor = AppColors.TextMuted,
+                BackColor = Color.Transparent,
+                Visible = false
+            };
+            _gridHost = new Panel { Dock = DockStyle.Fill, BackColor = AppColors.White };
+            _gridHost.Controls.Add(_grid);
+            _gridHost.Controls.Add(_emptyLabel);
+            _emptyLabel.BringToFront();
 
-            BuildUI();
+            var paginationHost = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 64,
+                BackColor = AppColors.White,
+                Padding = new Padding(8, 4, 8, 4)
+            };
+            _pagination.Dock = DockStyle.Fill;
+            paginationHost.Controls.Add(_pagination);
 
+            _tableCard = new Panel { BackColor = AppColors.Border, Padding = new Padding(1) };
+            var tableInner = new Panel { Dock = DockStyle.Fill, BackColor = AppColors.White };
+            tableInner.Controls.Add(_gridHost);
+            tableInner.Controls.Add(paginationHost);
+            _tableCard.Controls.Add(tableInner);
+
+            _body.Controls.Add(_header);
+            _body.Controls.Add(_surface);
+            _body.Controls.Add(_tableCard);
+
+            _overlayHost = new LoadingOverlayHost(_body) { Dock = DockStyle.Fill };
+            Controls.Add(_overlayHost);
+
+            _datePresenter = new DateRangeFilterPresenter(_surface.DateRange);
+            _searchPresenter = new SearchPresenter(_surface.SearchBar, SuggestAuditSearchTerms);
             _presenter = new AuditLogPresenter(this, _repository, _overlayHost);
 
-            VisibleChanged += (s, e) =>
-            {
-                if (Visible && !_dataLoadedOnce)
-                {
-                    _dataLoadedOnce = true;
-                    _presenter.Load();
-                }
-            };
+            WireEvents();
+            ApplyLocalization();
+            _body.Resize += (_, __) => ArrangePage();
+            LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+            VisibleChanged += OnVisibleChanged;
         }
 
-        #region IAuditLogView
-        public AuditLogQuery CurrentQuery => new AuditLogQuery
+        public AuditLogQuery CurrentQuery
         {
-            PageIndex = _table.PageIndex,
-            PageSize = _table.PageSize,
-            Search = _searchBar.Text,
-            ActionFilter = _filterAction.SelectedOption?.Value,
-            TableFilter = _filterTable.SelectedOption?.Value,
-            IncidentOnly = _incidentOnly,
-            FromDate = _dtFrom.Checked ? _dtFrom.Value.Date : (DateTime?)null,
-            ToDate = _dtTo.Checked ? _dtTo.Value.Date : (DateTime?)null
-        };
+            get
+            {
+                var range = _datePresenter.Current ?? DateRange.Empty;
+                return new AuditLogQuery
+                {
+                    PageIndex = _paginationPresenter.PageIndex,
+                    PageSize = _paginationPresenter.PageSize,
+                    Search = _surface.SearchBar.Text,
+                    ActionFilter = _surface.ActionFilter.SelectedOption?.Value,
+                    TableFilter = _surface.TableFilter.SelectedOption?.Value,
+                    IncidentOnly = _surface.Tabs.SelectedIndex == 1,
+                    FromDate = range.From,
+                    ToDate = range.To
+                };
+            }
+        }
 
         public event EventHandler QueryChanged;
         public event EventHandler<long> DetailRequested;
 
         public void DisplayStats(AuditLogStatsDto stats)
         {
-            _statTotal.ValueText = stats.TotalCount.ToString();
-            _statToday.ValueText = stats.TodayCount.ToString();
-            _statFailedLogin.ValueText = stats.FailedLoginCount.ToString();
-            _statActiveUsers.ValueText = stats.ActiveUserCount.ToString();
+            stats = stats ?? new AuditLogStatsDto();
+            _surface.SetStats(stats.TotalCount, stats.TodayCount, stats.FailedLoginCount, stats.ActiveUserCount);
         }
 
         public void DisplayRows(IReadOnlyList<AuditLogRowDto> rows, int totalCount)
         {
+            int requestedPage = _paginationPresenter.PageIndex;
+            _paginationPresenter.ApplyResult(totalCount);
+            if (_paginationPresenter.PageIndex != requestedPage)
+            {
+                QueryChanged?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             _currentRows = rows ?? Array.Empty<AuditLogRowDto>();
-
-                var displayRows = _currentRows.Select(r => new object[]
-                {
-                    r.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
-                    r.Username,
-                    AuditLogDisplayMapper.GetActionLabel(r.Action),
-                    AuditLogDisplayMapper.GetTableLabel(r.TableName),
-                    string.IsNullOrWhiteSpace(r.Detail) ? "-" : r.Detail,
-                    "Xem"
-                }).ToList();
-                _table.SetPageResult(displayRows, totalCount);
-
-            _lblTotalCount.Text = "Tổng cộng: " + totalCount + " nhật ký";
+            _totalCount = totalCount;
+            RenderRows();
+            _surface.SetCount(totalCount);
+            _emptyLabel.Visible = totalCount == 0;
+            _emptyLabel.Text = Lang.Get("audit.empty");
         }
 
         public void DisplayActionOptions(IReadOnlyList<string> actions)
         {
-            _filterAction.OptionChanged -= OnFilterOptionChanged;
-            var options = new List<FilterOption> { new FilterOption("Tất cả hành động", null) };
-            options.AddRange((actions ?? Array.Empty<string>())
-                .Select(a => new FilterOption(AuditLogDisplayMapper.GetActionLabel(a), a)));
-            _filterAction.SetOptions(options);
-            _filterAction.OptionChanged += OnFilterOptionChanged;
+            _actionCodes = actions ?? Array.Empty<string>();
+            BindOptions(_surface.ActionFilter, _actionCodes, Lang.Get("audit.filter.allActions"), AuditLogDisplayMapper.GetActionLabel);
         }
 
         public void DisplayTableOptions(IReadOnlyList<string> tables)
         {
-            _filterTable.OptionChanged -= OnFilterOptionChanged;
-            var options = new List<FilterOption> { new FilterOption("Tất cả đối tượng", null) };
-            options.AddRange((tables ?? Array.Empty<string>())
-                .Select(t => new FilterOption(AuditLogDisplayMapper.GetTableLabel(t), t)));
-            _filterTable.SetOptions(options);
-            _filterTable.OptionChanged += OnFilterOptionChanged;
+            _tableCodes = tables ?? Array.Empty<string>();
+            BindOptions(_surface.TableFilter, _tableCodes, Lang.Get("audit.filter.allTables"), AuditLogDisplayMapper.GetTableLabel);
         }
 
         public void ShowDetail(AuditLogDetailDto detail) => frmAuditLogDetail.Show(FindForm(), detail);
 
         public void ShowError(string message) => AppToast.Error(this, message);
 
+        private void WireEvents()
+        {
+            _paginationPresenter.PageChanged += (_, __) => QueryChanged?.Invoke(this, EventArgs.Empty);
+            _searchPresenter.SearchCommitted += (_, __) => _paginationPresenter.ResetToFirstPage();
+            _datePresenter.RangeChanged += (_, __) => _paginationPresenter.ResetToFirstPage();
+            _surface.Tabs.SelectedIndexChanged += (_, __) => _paginationPresenter.ResetToFirstPage();
+            _surface.ActionFilter.OptionChanged += OnFilterOptionChanged;
+            _surface.TableFilter.OptionChanged += OnFilterOptionChanged;
+            _gridPainter.ViewRequested += (_, index) => RequestDetail(index);
+            _grid.CellDoubleClick += (_, e) =>
+            {
+                if (e.RowIndex >= 0) RequestDetail(e.RowIndex);
+            };
+            _header.OptionsButton.Click += (_, __) => ShowExportMenu();
+            _gridHost.Resize += (_, __) => CenterEmptyLabel();
+        }
+
         private void OnFilterOptionChanged(object sender, EventArgs e)
         {
-            // ResetToFirstPage() đã tự phát PageChanged (đăng ký ở constructor để chuyển tiếp
-            // thành QueryChanged) - không cần raise QueryChanged thêm 1 lần ở đây nữa.
-            ResetToFirstPage();
+            if (_bindingFilters) return;
+            _paginationPresenter.ResetToFirstPage();
         }
-        #endregion
 
-        #region Dựng giao diện (chỉ chạy 1 lần lúc khởi tạo)
-        private StatCard _statTotal, _statToday, _statFailedLogin, _statActiveUsers;
-
-        private void BuildUI()
+        private void OnVisibleChanged(object sender, EventArgs e)
         {
-            SuspendLayout();
+            if (!Visible || _dataLoadedOnce) return;
+            _dataLoadedOnce = true;
+            if (IsHandleCreated)
+                BeginInvoke(new Action(LoadWhenShown));
+            else
+                LoadWhenShown();
+        }
 
-            var filterSurface = new Panel { Dock = DockStyle.Fill, BackColor = AppColors.White };
-            filterSurface.Controls.Add(BuildFilterBar());
-            filterSurface.Controls.Add(BuildTabsRow());
-            filterSurface.Controls.Add(BuildStatsRow());
+        private void LoadWhenShown()
+        {
+            ArrangePage();
+            _presenter.Load();
+        }
 
-            var overflowActions = new List<OverflowMenuAction>
+        private void RequestDetail(int rowIndex)
+        {
+            if (rowIndex < 0 || rowIndex >= _currentRows.Count) return;
+            DetailRequested?.Invoke(this, _currentRows[rowIndex].LogId);
+        }
+
+        private void RenderRows()
+        {
+            var viewRows = _currentRows.Select(ToGridRow).ToList();
+            _gridPainter.SetRows(viewRows);
+            _grid.Rows.Clear();
+            foreach (var row in viewRows)
             {
-                new OverflowMenuAction("Xuất CSV", IconChar.FileCsv, () => ExportAudit("csv")),
-                new OverflowMenuAction("Xuất Excel", IconChar.FileExcel, () => ExportAudit("excel"))
+                _grid.Rows.Add(
+                    row.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
+                    row.Username,
+                    row.ActionLabel,
+                    row.TableLabel,
+                    string.IsNullOrWhiteSpace(row.DetailText) ? "-" : row.DetailText,
+                    string.Empty);
+            }
+            CenterEmptyLabel();
+        }
+
+        private static AuditLogGridRow ToGridRow(AuditLogRowDto row)
+        {
+            var actionColors = AuditLogDisplayMapper.GetActionColors(row.Action);
+            var tableColors = AuditLogDisplayMapper.GetTableColors(row.TableName);
+            return new AuditLogGridRow
+            {
+                LogId = row.LogId,
+                CreatedAt = row.CreatedAt,
+                Username = row.Username,
+                ActionLabel = AuditLogDisplayMapper.GetActionLabel(row.Action),
+                TableLabel = AuditLogDisplayMapper.GetTableLabel(row.TableName),
+                DetailText = string.IsNullOrWhiteSpace(row.Detail) ? "-" : row.Detail,
+                ActionBackground = actionColors.Bg,
+                ActionForeground = actionColors.Fg,
+                TableBackground = tableColors.Bg,
+                TableForeground = tableColors.Fg
             };
-
-            _table = new BaseTable(
-                "Nhật ký hệ thống",
-                "Lịch sử thao tác người dùng và ghi nhận sự cố hệ thống",
-                IconChar.ClockRotateLeft,
-                new[] { "Thời gian", "Người dùng", "Hành động", "Đối tượng", "Mô tả", "Thao tác" },
-                (pageIndex, pageSize, search, filter) => new TablePageResult(),
-                pageSize: 10,
-                overflowActions: overflowActions,
-                customFilterPanel: filterSurface,
-                customFilterHeight: 252,
-                externalData: true);
-            _grid = _table.Grid;
-            ConfigureAuditGrid();
-            _table.PageChanged += (s, e) => QueryChanged?.Invoke(this, EventArgs.Empty);
-            _overlayHost = new LoadingOverlayHost(_table) { Dock = DockStyle.Fill };
-            Controls.Add(_overlayHost);
-            ResumeLayout(true);
         }
 
-        private void ResetToFirstPage()
+        private void BindOptions(FilterComboBox box, IReadOnlyList<string> codes, string allLabel, Func<string, string> labelOf)
         {
-            _table?.ResetToFirstPage();
+            string selected = box.SelectedOption?.Value;
+            var options = new List<FilterOption> { new FilterOption(allLabel, null) };
+            foreach (var code in codes ?? Array.Empty<string>())
+                options.Add(new FilterOption(labelOf(code), code));
+
+            _bindingFilters = true;
+            box.OptionChanged -= OnFilterOptionChanged;
+            box.SetOptions(options);
+            if (!string.IsNullOrEmpty(selected))
+                SelectOption(box, selected);
+            box.OptionChanged += OnFilterOptionChanged;
+            _bindingFilters = false;
         }
 
-        private Control BuildStatsRow()
+        private static void SelectOption(FilterComboBox box, string value)
         {
-            var row = new TableLayoutPanel
+            for (int i = 0; i < box.Items.Count; i++)
             {
-                Dock = DockStyle.Top,
-                Height = 100,
-                ColumnCount = 4,
-                RowCount = 1,
-                Margin = new Padding(0, 16, 0, 0),
-                BackColor = Color.Transparent
-            };
-            for (int i = 0; i < 4; i++) row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
-            row.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-
-            _statTotal = CreateStat("0", "Tổng nhật ký", IconChar.ClockRotateLeft, AppColors.Accent, AppColors.AccentBgSoft);
-            _statToday = CreateStat("0", "Hoạt động hôm nay", IconChar.Bolt, AppColors.Success, AppColors.SuccessBg);
-            _statFailedLogin = CreateStat("0", "Đăng nhập thất bại", IconChar.TriangleExclamation, AppColors.Error, AppColors.ErrorBg);
-            _statActiveUsers = CreateStat("0", "Người dùng hoạt động", IconChar.Users, AppColors.Warning, AppColors.WarningBg);
-
-            row.Controls.Add(Wrap(_statTotal, 0), 0, 0);
-            row.Controls.Add(Wrap(_statToday, 12), 1, 0);
-            row.Controls.Add(Wrap(_statFailedLogin, 12), 2, 0);
-            row.Controls.Add(Wrap(_statActiveUsers, 12), 3, 0);
-            return row;
-
-            Control Wrap(StatCard c, int leftGap)
-            {
-                c.Dock = DockStyle.Fill;
-                c.Margin = new Padding(leftGap, 0, 0, 0);
-                return c;
+                var option = box.Items[i] as FilterOption;
+                if (option != null && string.Equals(option.Value, value, StringComparison.Ordinal))
+                {
+                    box.SelectedIndex = i;
+                    return;
+                }
             }
         }
 
-        private static StatCard CreateStat(string value, string title, IconChar icon, Color iconColor, Color iconBg) =>
-            new StatCard
-            {
-                ValueText = value,
-                TitleText = title,
-                TrendText = string.Empty,
-                Icon = icon,
-                IconColor = iconColor,
-                IconBackground = iconBg,
-                TopBorderColor = iconColor,
-                Dock = DockStyle.Fill
-            };
-
-        private void ConfigureAuditGrid()
+        private void ApplyLocalization()
         {
-            _grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            _grid.ColumnHeadersHeight = 44;
-            _grid.RowTemplate.Height = 52;
-            _grid.CellBorderStyle = DataGridViewCellBorderStyle.None;
-            _grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-            _grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            _grid.ColumnHeadersDefaultCellStyle.Font = AppFonts.SmallBold;
-            _grid.DefaultCellStyle.Font = AppFonts.Body;
-            _grid.DefaultCellStyle.SelectionForeColor = AppColors.TableRowText;
-
-            _grid.Columns["Thời gian"].Width = 155;
-            _grid.Columns["Người dùng"].Width = 110;
-            _grid.Columns["Hành động"].Width = 190;
-            _grid.Columns["Đối tượng"].Width = 130;
-            _grid.Columns["Mô tả"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _grid.Columns["Thao tác"].Width = 90;
-
-            _actionColIndex = _grid.Columns["Hành động"].Index;
-            _tableColIndex = _grid.Columns["Đối tượng"].Index;
-            _viewColIndex = _grid.Columns["Thao tác"].Index;
-
-            _grid.CellPainting += Grid_CellPainting;
-            _grid.CellMouseUp += (s, e) =>
-            {
-                if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count) return;
-                if (e.ColumnIndex == _viewColIndex)
-                    DetailRequested?.Invoke(this, _currentRows[e.RowIndex].LogId);
-            };
-            _grid.CellMouseMove += (s, e) =>
-                _grid.Cursor = (e.RowIndex >= 0 && e.ColumnIndex == _viewColIndex) ? Cursors.Hand : Cursors.Default;
+            _header.ApplyLocalization();
+            _surface.ApplyLocalization();
+            _gridPainter.ApplyLocalization();
+            _emptyLabel.Text = Lang.Get("audit.empty");
+            if (_actionCodes.Count > 0 || _surface.ActionFilter.Items.Count > 0)
+                DisplayActionOptions(_actionCodes);
+            if (_tableCodes.Count > 0 || _surface.TableFilter.Items.Count > 0)
+                DisplayTableOptions(_tableCodes);
+            if (_currentRows.Count > 0)
+                RenderRows();
+            _surface.SetCount(_totalCount);
         }
 
-        private Control BuildTabsRow()
+        private void OnLanguageChanged(object sender, EventArgs e)
         {
-            var row = new Panel { Dock = DockStyle.Top, Height = 56, Margin = new Padding(0, 16, 0, 0), BackColor = Color.Transparent };
-
-            _btnTabAudit = new PrimaryButton { Text = "Nhật ký audit", IsPrimary = true, Width = 160, Height = 40, Location = new Point(0, 8) };
-            _btnTabIncident = new PrimaryButton { Text = "Nhật ký sự cố", IsPrimary = false, Width = 160, Height = 40, Location = new Point(172, 8) };
-            _btnTabAudit.Click += (s, e) => SetIncidentTab(false);
-            _btnTabIncident.Click += (s, e) => SetIncidentTab(true);
-
-            row.Controls.Add(_btnTabAudit);
-            row.Controls.Add(_btnTabIncident);
-            return row;
+            ApplyLocalization();
+            ArrangePage();
         }
 
-        private void SetIncidentTab(bool incident)
+        private void OnThemeChanged(object sender, EventArgs e)
         {
-            if (_incidentOnly == incident) return;
-            _incidentOnly = incident;
-            _btnTabAudit.IsPrimary = !incident;
-            _btnTabIncident.IsPrimary = incident;
-            _btnTabAudit.Invalidate();
-            _btnTabIncident.Invalidate();
-
-            ResetToFirstPage();
+            BackColor = AppColors.PageBg;
+            _body.BackColor = AppColors.PageBg;
+            _tableCard.BackColor = AppColors.Border;
+            ApplyGridTheme();
+            _emptyLabel.ForeColor = AppColors.TextMuted;
+            Invalidate(true);
         }
 
-        private Control BuildFilterBar()
+        private void ArrangePage()
         {
-            var row = new TableLayoutPanel
+            if (_arranging || _body.ClientSize.Width <= 0 || _body.ClientSize.Height <= 0) return;
+            _arranging = true;
+            try
             {
-                Dock = DockStyle.Top,
-                Height = 52,
-                ColumnCount = 6,
-                RowCount = 1,
-                Margin = new Padding(0, 12, 0, 0),
-                BackColor = Color.Transparent
-            };
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 28f));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18f));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18f));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120f));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120f));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18f));
-            row.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
+                _body.SuspendLayout();
+                int viewW = _body.ClientSize.Width;
+                int viewH = _body.ClientSize.Height;
+                const int padL = 20;
+                const int padR = 20;
+                const int padT = 16;
+                const int padB = 12;
+                const int headerH = 112;
+                const int paginationH = 64;
+                const int gridMin = 240;
 
-            _searchBar = new SearchBarControl
+                int innerW = Math.Max(560, viewW - padL - padR);
+                int contentH = PlaceContent(innerW, viewH, padL, padT, padB, headerH, paginationH, gridMin);
+
+                // ClientSize đã trừ scrollbar nếu nó đang hiện. Chỉ trừ thêm khi scrollbar
+                // sắp xuất hiện, tránh mỗi lần resize lại hẹp thêm một lần.
+                if (contentH > viewH && !_body.VerticalScroll.Visible)
+                {
+                    int narrowed = Math.Max(560, viewW - SystemInformation.VerticalScrollBarWidth - padL - padR);
+                    if (narrowed != innerW)
+                    {
+                        innerW = narrowed;
+                        contentH = PlaceContent(innerW, viewH, padL, padT, padB, headerH, paginationH, gridMin);
+                    }
+                }
+
+                int contentW = innerW + padL + padR;
+                _body.AutoScrollMinSize = new Size(contentW > viewW ? contentW : 0, contentH);
+                CenterEmptyLabel();
+            }
+            finally
             {
-                Dock = DockStyle.Fill,
-                Margin = new Padding(0, 0, 8, 0),
-                PlaceholderText = "Tìm theo người dùng, mô tả, đối tượng..."
-            };
-            _searchPresenter = new SearchPresenter(_searchBar, SuggestAuditSearchTerms);
-            _searchPresenter.SearchCommitted += (s, e) => ResetToFirstPage();
+                _body.ResumeLayout(true);
+                _arranging = false;
+            }
+        }
 
-            _filterAction = new FilterComboBox { Dock = DockStyle.Fill, Margin = new Padding(0, 0, 8, 0) };
-            _filterAction.OptionChanged += OnFilterOptionChanged;
+        private int PlaceContent(int innerW, int viewH, int padL, int padT, int padB, int headerH, int paginationH, int gridMin)
+        {
+            int y = padT;
+            _header.SetBounds(padL, y, innerW, headerH);
+            y += headerH + 12;
 
-            _filterTable = new FilterComboBox { Dock = DockStyle.Fill, Margin = new Padding(0, 0, 8, 0) };
-            _filterTable.OptionChanged += OnFilterOptionChanged;
+            int filterH = _surface.Arrange(innerW);
+            _surface.SetBounds(padL, y, innerW, filterH);
+            y += filterH + 12;
 
-            _dtFrom = CreateDatePicker();
-            _dtTo = CreateDatePicker();
+            int available = viewH - y - paginationH - padB;
+            int gridH = Math.Max(gridMin, available);
+            _tableCard.SetBounds(padL, y, innerW, gridH + paginationH);
+            y += gridH + paginationH + padB;
+            return Math.Max(viewH, y);
+        }
 
-            _lblTotalCount = new Label
-            {
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleRight,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent,
-                Margin = new Padding(8, 0, 0, 0)
-            };
-
-            row.Controls.Add(_searchBar, 0, 0);
-            row.Controls.Add(_filterAction, 1, 0);
-            row.Controls.Add(_filterTable, 2, 0);
-            row.Controls.Add(_dtFrom, 3, 0);
-            row.Controls.Add(_dtTo, 4, 0);
-            row.Controls.Add(_lblTotalCount, 5, 0);
-            return row;
+        private void CenterEmptyLabel()
+        {
+            if (_emptyLabel == null || _gridHost.ClientSize.Width <= 0) return;
+            _emptyLabel.SetBounds(0, _grid.ColumnHeadersHeight, _gridHost.ClientSize.Width,
+                Math.Max(40, _gridHost.ClientSize.Height - _grid.ColumnHeadersHeight));
         }
 
         private IList<string> SuggestAuditSearchTerms(string keyword)
@@ -371,14 +406,12 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             query.PageSize = 8;
             var result = _repository.GetPage(query);
             var suggestions = new List<string>();
-
             foreach (var row in result.Rows ?? Array.Empty<AuditLogRowDto>())
             {
                 AddSuggestion(suggestions, row.Username);
                 AddSuggestion(suggestions, AuditLogDisplayMapper.GetActionLabel(row.Action));
                 AddSuggestion(suggestions, AuditLogDisplayMapper.GetTableLabel(row.TableName));
             }
-
             return suggestions;
         }
 
@@ -388,105 +421,34 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             suggestions.Add(value);
         }
 
-        private DateTimePicker CreateDatePicker()
+        private void ShowExportMenu()
         {
-            var picker = new DateTimePicker
-            {
-                Dock = DockStyle.Fill,
-                Margin = new Padding(0, 5, 8, 0),
-                Format = DateTimePickerFormat.Custom,
-                CustomFormat = "dd/MM/yyyy",
-                ShowCheckBox = true,
-                Checked = false,
-                Font = AppFonts.Body
-            };
-            picker.ValueChanged += (s, e) =>
-            {
-                if (!picker.Checked) return;
-                ResetToFirstPage();
-            };
-            return picker;
-        }
-
-        private void Grid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.CellBounds.Width <= 0 || e.CellBounds.Height <= 0) return;
-            if (e.RowIndex >= _currentRows.Count) return;
-
-            try
-            {
-                if (e.ColumnIndex == _actionColIndex || e.ColumnIndex == _tableColIndex)
-                    PaintPillCell(e);
-                else if (e.ColumnIndex == _viewColIndex)
-                    PaintViewLinkCell(e);
-            }
-            catch (ArgumentException)
-            {
-                e.Handled = true;
-            }
-        }
-
-        private void PaintPillCell(DataGridViewCellPaintingEventArgs e)
-        {
-            e.PaintBackground(e.CellBounds, true);
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-
-            var row = _currentRows[e.RowIndex];
-            bool isActionColumn = e.ColumnIndex == _actionColIndex;
-            string text = Convert.ToString(e.Value ?? string.Empty);
-            var (bg, fg) = isActionColumn
-                ? AuditLogDisplayMapper.GetActionColors(row.Action)
-                : AuditLogDisplayMapper.GetTableColors(row.TableName);
-
-            if (!string.IsNullOrEmpty(text))
-            {
-                var textSize = e.Graphics.MeasureString(text, AppFonts.SmallBold);
-                const int paddingX = 12;
-                const int pillHeight = 28;
-                int pillWidth = Math.Min(e.CellBounds.Width - 8, (int)Math.Ceiling(textSize.Width) + paddingX * 2);
-                var pillRect = new Rectangle(
-                    e.CellBounds.X + (e.CellBounds.Width - pillWidth) / 2,
-                    e.CellBounds.Y + (e.CellBounds.Height - pillHeight) / 2,
-                    pillWidth, pillHeight);
-
-                using (var path = AppRadius.GetRoundedPath(pillRect, pillHeight / 2))
-                using (var brush = new SolidBrush(bg))
-                    e.Graphics.FillPath(brush, path);
-
-                TextRenderer.DrawText(e.Graphics, text, AppFonts.SmallBold, pillRect, fg,
-                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
-            }
-
-            DrawCellBottomBorder(e);
-            e.Handled = true;
-        }
-
-        private void PaintViewLinkCell(DataGridViewCellPaintingEventArgs e)
-        {
-            e.PaintBackground(e.CellBounds, true);
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            TextRenderer.DrawText(e.Graphics, "Xem", AppFonts.SmallBold, e.CellBounds, AppColors.Accent,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
-            DrawCellBottomBorder(e);
-            e.Handled = true;
-        }
-
-        private static void DrawCellBottomBorder(DataGridViewCellPaintingEventArgs e)
-        {
-            using (var pen = new Pen(AppColors.TableGrid))
-                e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+            var csv = Lang.Get("audit.export.csv");
+            var excel = Lang.Get("audit.export.excel");
+            var menu = new ModernDropdownMenu { Width = 220 };
+            menu.AddItem("csv", csv, IconChar.FileCsv);
+            menu.AddItem("excel", excel, IconChar.FileExcel);
+            menu.ItemClicked += (_, key) => ExportAudit(key);
+            menu.ShowBelow(_header.OptionsButton, 6);
         }
 
         private void ExportAudit(string format)
         {
-            string[] headers = { "Thời gian", "Người dùng", "Hành động", "Đối tượng", "Mô tả" };
+            string[] headers =
+            {
+                Lang.Get("audit.column.time"),
+                Lang.Get("audit.column.user"),
+                Lang.Get("audit.column.action"),
+                Lang.Get("audit.column.table"),
+                Lang.Get("audit.column.detail")
+            };
             Func<IReadOnlyList<object[]>> fetchAll = () =>
             {
                 var query = CurrentQuery;
                 query.PageIndex = 0;
                 query.PageSize = 100000;
                 var result = _repository.GetPage(query);
-                return result.Rows.Select(r => new object[]
+                return (result.Rows ?? Array.Empty<AuditLogRowDto>()).Select(r => new object[]
                 {
                     r.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"),
                     r.Username,
@@ -501,6 +463,132 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             else if (format == "excel")
                 TableExportRunner.Run(FindForm(), new ExcelTableExporter(), "NhatKyHeThong", () => headers, fetchAll);
         }
-        #endregion
+
+        private Guna2DataGridView CreateGrid()
+        {
+            var grid = new Guna2DataGridView
+            {
+                Dock = DockStyle.Fill,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                AllowUserToResizeRows = false,
+                AutoGenerateColumns = false,
+                RowHeadersVisible = false,
+                BackgroundColor = AppColors.White,
+                GridColor = AppColors.TableGrid,
+                BorderStyle = BorderStyle.None,
+                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                ColumnHeadersHeight = 48,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+                RowTemplate = { Height = 56 },
+                EnableHeadersVisualStyles = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false,
+                ReadOnly = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                ScrollBars = ScrollBars.Both,
+                ShowCellToolTips = true,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
+            };
+
+            AddColumn(grid, AuditLogGridPainter.TimeColumn, 128, 16, false);
+            AddColumn(grid, AuditLogGridPainter.UserColumn, 132, 16, false);
+            AddColumn(grid, AuditLogGridPainter.ActionColumn, 150, 18, false);
+            AddColumn(grid, AuditLogGridPainter.TableColumn, 118, 14, false);
+            AddColumn(grid, AuditLogGridPainter.DetailColumn, 160, 28, false);
+            AddColumn(grid, AuditLogGridPainter.ViewColumn, 76, 8, true);
+
+            ApplyGridTheme(grid);
+            var doubleBuffered = typeof(DataGridView).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            doubleBuffered?.SetValue(grid, true, null);
+            return grid;
+        }
+
+        private static void AddColumn(DataGridView grid, string name, int minWidth, float weight, bool center)
+        {
+            grid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = name,
+                HeaderText = name,
+                MinimumWidth = minWidth,
+                FillWeight = weight,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                DefaultCellStyle =
+                {
+                    Alignment = center ? DataGridViewContentAlignment.MiddleCenter : DataGridViewContentAlignment.MiddleLeft,
+                    Padding = new Padding(8, 0, 8, 0)
+                }
+            });
+        }
+
+        private void ApplyGridTheme() => ApplyGridTheme(_grid);
+
+        private static void ApplyGridTheme(Guna2DataGridView grid)
+        {
+            grid.BackgroundColor = AppColors.White;
+            grid.GridColor = AppColors.TableGrid;
+            grid.DefaultCellStyle.Font = AppFonts.Body;
+            grid.DefaultCellStyle.ForeColor = AppColors.TableRowText;
+            grid.DefaultCellStyle.BackColor = AppColors.White;
+            grid.DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
+            grid.DefaultCellStyle.SelectionForeColor = AppColors.TextPrimary;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
+            grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            grid.ColumnHeadersDefaultCellStyle.Font = AppFonts.BodyBold;
+            grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            grid.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
+            grid.ThemeStyle.AlternatingRowsStyle.BackColor = AppColors.TableRowOdd;
+            grid.ThemeStyle.HeaderStyle.BackColor = AppColors.TableHeaderBg;
+            grid.ThemeStyle.HeaderStyle.ForeColor = Color.White;
+            grid.ThemeStyle.HeaderStyle.Font = AppFonts.BodyBold;
+            grid.ThemeStyle.RowsStyle.BackColor = AppColors.White;
+            grid.ThemeStyle.RowsStyle.ForeColor = AppColors.TableRowText;
+            grid.ThemeStyle.RowsStyle.SelectionBackColor = AppColors.AccentBgSoft;
+            grid.ThemeStyle.RowsStyle.SelectionForeColor = AppColors.TextPrimary;
+            grid.ThemeStyle.RowsStyle.Height = 56;
+            grid.ThemeStyle.GridColor = AppColors.TableGrid;
+            grid.ThemeStyle.HeaderStyle.BorderStyle = DataGridViewHeaderBorderStyle.None;
+        }
+
+        private void HookWheel(Control root)
+        {
+            root.MouseWheel += OnMouseWheel;
+            foreach (Control child in root.Controls)
+            {
+                if (child is DataGridView) continue;
+                HookWheel(child);
+            }
+        }
+
+        private void OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            if (!_body.VerticalScroll.Visible) return;
+            int next = _body.VerticalScroll.Value - e.Delta / 2;
+            next = Math.Max(_body.VerticalScroll.Minimum, Math.Min(_body.VerticalScroll.Maximum - _body.VerticalScroll.LargeChange + 1, next));
+            if (next < _body.VerticalScroll.Minimum) next = _body.VerticalScroll.Minimum;
+            try { _body.VerticalScroll.Value = next; }
+            catch (ArgumentException) { }
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            HookWheel(_body);
+            ArrangePage();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+                _searchPresenter?.Dispose();
+                _gridPainter?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
