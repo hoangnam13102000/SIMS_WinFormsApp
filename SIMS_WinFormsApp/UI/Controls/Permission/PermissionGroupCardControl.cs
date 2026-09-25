@@ -9,7 +9,6 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.UI.Controls.Permission
 {
-
     public sealed class PermissionGroupCardControl : VerticalStackPanel
     {
         public event EventHandler<PermissionToggledEventArgs> Toggled;
