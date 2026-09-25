@@ -6,6 +6,7 @@ using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services;
 using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations;
+using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
@@ -118,6 +119,13 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IProductCatalogService CreateProductCatalogService()
         {
             return new SqlProductCatalogService(CreateConnectionFactory());
+        }
+
+        public static ICatalogAdminService CreateCatalogAdminService()
+        {
+            return new CatalogAdminService(
+                new CatalogRepository(CreateConnectionFactory()),
+                new LocalProductImageStore());
         }
 
         public static ICustomerLookupService CreateCustomerLookupService()
