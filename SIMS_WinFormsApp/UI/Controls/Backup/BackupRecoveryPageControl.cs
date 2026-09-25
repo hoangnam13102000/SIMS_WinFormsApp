@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,6 +10,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Backup;
 using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Controls.Pagination;
 using SIMS_WinFormsApp.UI.Controls.Search;
 using SIMS_WinFormsApp.UI.Controls.Toast;
@@ -25,11 +26,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
 
         private SearchBarControl _searchBar;
         private SearchPresenter _searchPresenter;
-        private DateTimePicker _fromDate;
-        private DateTimePicker _toDate;
+        private DateRangeFilterControl _dateFilter;
+        private DateRangeFilterPresenter _datePresenter;
+        private TableLayoutPanel _listLayout;
+        private Panel _filterHost;
+        private bool _reflowingFilter;
 
         private DataGridView _grid;
         private List<BackupRowDto> _currentPageRows = new List<BackupRowDto>();
+        private int _hoverRow = -1;
+        private int _hoverAction = -1;
 
         private PaginationControl _paginationControl;
         private PaginationPresenter _paginationPresenter;
@@ -60,6 +66,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
 
             _searchPresenter = new SearchPresenter(_searchBar, null, 300);
             _searchPresenter.SearchCommitted += (s, text) => RaiseQueryChanged();
+
+            _datePresenter = new DateRangeFilterPresenter(_dateFilter);
+            _datePresenter.RangeChanged += (s, e) =>
+            {
+                if (_paginationPresenter.PageIndex != 0)
+                    _paginationPresenter.ResetToFirstPage();
+                else
+                    RaiseQueryChanged();
+            };
 
             _paginationPresenter = new PaginationPresenter(_paginationControl, 10);
             _paginationPresenter.PageChanged += (s, e) => RaiseQueryChanged();
@@ -179,9 +194,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
 
             var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, BackColor = Color.Transparent };
             layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 148));
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+            _listLayout = layout;
             card.Controls.Add(layout);
 
             layout.Controls.Add(BuildFilterRow(), 0, 0);
@@ -204,76 +220,49 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.Transparent,
-                Padding = new Padding(5)
+                Padding = new Padding(4, 2, 4, 0)
             };
+            _filterHost = panel;
 
             _searchBar = new SearchBarControl { PlaceholderText = "Tìm theo tên file backup..." };
-
-            var fromLabel = new Label
-            {
-                Text = "Từ ngày",
-                Font = AppFonts.Body,
-                ForeColor = AppColors.TextSecondary,
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleLeft,
-                BackColor = Color.Transparent
-            };
-            _fromDate = CreateDateFilterPicker();
-            _fromDate.ValueChanged += (s, e) => RaiseQueryChanged();
-
-            var toLabel = new Label
-            {
-                Text = "đến",
-                Font = AppFonts.Body,
-                ForeColor = AppColors.TextSecondary,
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleLeft,
-                BackColor = Color.Transparent
-            };
-            _toDate = CreateDateFilterPicker();
-            _toDate.ValueChanged += (s, e) => RaiseQueryChanged();
+            _dateFilter = new DateRangeFilterControl { ShowCaption = false };
 
             panel.Controls.Add(_searchBar);
-            panel.Controls.Add(fromLabel);
-            panel.Controls.Add(_fromDate);
-            panel.Controls.Add(toLabel);
-            panel.Controls.Add(_toDate);
-
-            void Reflow()
-            {
-                const int pickerWidth = 170, gap = 8, h = 40;
-                int xStart = panel.Padding.Left;
-                int y = panel.Padding.Top + (panel.ClientSize.Height - panel.Padding.Vertical - h) / 2;
-
-                _searchBar.Location = new Point(xStart, y);
-                _searchBar.Size = new Size(Math.Max(100, panel.ClientSize.Width - panel.Padding.Horizontal - pickerWidth * 2 - 180), h);
-
-                fromLabel.Location = new Point(_searchBar.Right + gap, y + (h - fromLabel.Height) / 2);
-
-                _fromDate.Size = new Size(pickerWidth, h);
-                _fromDate.Location = new Point(fromLabel.Right + gap, y);
-
-                toLabel.Location = new Point(_fromDate.Right + gap, y + (h - toLabel.Height) / 2);
-
-                _toDate.Size = new Size(pickerWidth, h);
-                _toDate.Location = new Point(toLabel.Right + gap, y);
-            }
-            panel.Resize += (s, e) => Reflow();
-            Reflow();
+            panel.Controls.Add(_dateFilter);
+            panel.Resize += (s, e) => ReflowFilter();
             return panel;
         }
 
-        private static DateTimePicker CreateDateFilterPicker()
+        private void ReflowFilter()
         {
-            return new DateTimePicker
+            if (_reflowingFilter || _filterHost == null || _dateFilter == null || _searchBar == null) return;
+            _reflowingFilter = true;
+            try
             {
-                Format = DateTimePickerFormat.Short,
-                ShowCheckBox = true,
-                Checked = false,
-                Font = AppFonts.Body,
-                Width = 170,
-                Height = 40
-            };
+                int widthBefore = _filterHost.ClientSize.Width;
+                int innerW = Math.Max(200, _filterHost.ClientSize.Width - _filterHost.Padding.Horizontal);
+                int x = _filterHost.Padding.Left;
+                int y = _filterHost.Padding.Top;
+
+                _searchBar.SetBounds(x, y, innerW, 40);
+                y += 48;
+                int dateH = _dateFilter.Arrange(innerW);
+                _dateFilter.SetBounds(x, y, innerW, dateH);
+
+                int needed = y + dateH + 6;
+                if (_listLayout != null && Math.Abs(_listLayout.RowStyles[0].Height - needed) > 1)
+                    _listLayout.RowStyles[0].Height = needed;
+
+                if (_filterHost.ClientSize.Width != widthBefore)
+                {
+                    _reflowingFilter = false;
+                    ReflowFilter();
+                }
+            }
+            finally
+            {
+                _reflowingFilter = false;
+            }
         }
         #endregion
 
@@ -321,37 +310,23 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
             cloudColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             grid.Columns.Add(cloudColumn);
 
-            var restoreColumn = new DataGridViewButtonColumn
+            var actionColumn = new DataGridViewTextBoxColumn
             {
-                Name = "Restore",
+                Name = "Actions",
                 HeaderText = string.Empty,
-                Text = "Khôi phục",
-                UseColumnTextForButtonValue = true,
-                FlatStyle = FlatStyle.Flat,
-                Width = 110,
-                MinimumWidth = 110
+                Width = 88,
+                MinimumWidth = 88,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+                ReadOnly = true
             };
-            restoreColumn.DefaultCellStyle.BackColor = AppColors.BgLighter;
-            restoreColumn.DefaultCellStyle.ForeColor = AppColors.Accent;
-            restoreColumn.DefaultCellStyle.SelectionBackColor = AppColors.BgLighter;
-            restoreColumn.DefaultCellStyle.SelectionForeColor = AppColors.Accent;
-            grid.Columns.Add(restoreColumn);
-
-            var deleteColumn = new DataGridViewButtonColumn
-            {
-                Name = "Delete",
-                HeaderText = string.Empty,
-                Text = "Xóa",
-                UseColumnTextForButtonValue = true,
-                FlatStyle = FlatStyle.Flat,
-                Width = 70,
-                MinimumWidth = 70
-            };
-            deleteColumn.DefaultCellStyle.BackColor = AppColors.BgLighter;
-            deleteColumn.DefaultCellStyle.ForeColor = AppColors.Error;
-            deleteColumn.DefaultCellStyle.SelectionBackColor = AppColors.BgLighter;
-            deleteColumn.DefaultCellStyle.SelectionForeColor = AppColors.Error;
-            grid.Columns.Add(deleteColumn);
+            actionColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            grid.Columns.Add(actionColumn);
+            grid.CellPainting += PaintActionCell;
+            grid.CellMouseMove += OnActionMouseMove;
+            grid.CellMouseLeave += OnActionMouseLeave;
+            grid.CellMouseClick += OnActionMouseClick;
+            grid.CellToolTipTextNeeded += OnCellToolTip;
 
             grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
@@ -388,9 +363,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
             var row = _currentPageRows[e.RowIndex];
             string columnName = _grid.Columns[e.ColumnIndex].Name;
 
-            if (columnName == "Restore") RestoreRowRequested?.Invoke(this, row);
-            else if (columnName == "Delete") DeleteRowRequested?.Invoke(this, row);
-            else if (columnName == "Local" && File.Exists(row.FilePath))
+            if (columnName == "Local" && File.Exists(row.FilePath))
             {
                 Process.Start(new ProcessStartInfo
                 {
@@ -407,6 +380,117 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
                     UseShellExecute = true
                 });
             }
+        }
+
+        private void PaintActionCell(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || _grid.Columns[e.ColumnIndex].Name != "Actions") return;
+
+            e.PaintBackground(e.CellBounds, true);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            bool rowHot = _hoverRow == e.RowIndex;
+            DrawActionIcon(e.Graphics, ActionRect(e.CellBounds, 0), IconChar.RotateLeft,
+                AppColors.Accent, AppColors.AccentBgSoft, rowHot && _hoverAction == 0);
+            DrawActionIcon(e.Graphics, ActionRect(e.CellBounds, 1), IconChar.TrashCan,
+                AppColors.Error, AppColors.ErrorBg, rowHot && _hoverAction == 1);
+
+            using (var pen = new Pen(AppColors.TableGrid))
+                e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+            e.Handled = true;
+        }
+
+        private static void DrawActionIcon(Graphics g, Rectangle button, IconChar icon, Color color, Color hotBackground, bool hovered)
+        {
+            using (var brush = new SolidBrush(hovered ? hotBackground : AppColors.BgLighter))
+                g.FillEllipse(brush, button);
+
+            var iconRect = new Rectangle(button.X + 7, button.Y + 7, 18, 18);
+            var bitmap = IconBitmapCache.Get(icon, color, iconRect.Size);
+            if (bitmap != null) g.DrawImageUnscaled(bitmap, iconRect.Location);
+        }
+
+        private static Rectangle ActionRect(Rectangle cell, int index)
+        {
+            const int size = 32;
+            const int gap = 8;
+            int total = size * 2 + gap;
+            int x = cell.X + Math.Max(4, (cell.Width - total) / 2);
+            int y = cell.Y + (cell.Height - size) / 2;
+            return new Rectangle(x + index * (size + gap), y, size, size);
+        }
+
+        private void OnActionMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || _grid.Columns[e.ColumnIndex].Name != "Actions")
+            {
+                ClearActionHover();
+                return;
+            }
+
+            var cell = _grid.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
+            int action = -1;
+            if (ActionRect(new Rectangle(Point.Empty, cell.Size), 0).Contains(e.Location)) action = 0;
+            else if (ActionRect(new Rectangle(Point.Empty, cell.Size), 1).Contains(e.Location)) action = 1;
+
+            if (_hoverRow == e.RowIndex && _hoverAction == action) return;
+            int previous = _hoverRow;
+            _hoverRow = e.RowIndex;
+            _hoverAction = action;
+            InvalidateAction(previous);
+            InvalidateAction(e.RowIndex);
+            _grid.Cursor = action >= 0 ? Cursors.Hand : Cursors.Default;
+        }
+
+        private void OnActionMouseLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex >= 0 && _grid.Columns[e.ColumnIndex].Name == "Actions")
+                ClearActionHover();
+        }
+
+        private void OnActionMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= _currentPageRows.Count) return;
+            if (e.ColumnIndex < 0 || _grid.Columns[e.ColumnIndex].Name != "Actions") return;
+
+            var cell = _grid.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
+            var local = new Rectangle(Point.Empty, cell.Size);
+            var row = _currentPageRows[e.RowIndex];
+            if (ActionRect(local, 0).Contains(e.Location))
+                RestoreRowRequested?.Invoke(this, row);
+            else if (ActionRect(local, 1).Contains(e.Location))
+                DeleteRowRequested?.Invoke(this, row);
+        }
+
+        private void OnCellToolTip(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || e.RowIndex >= _currentPageRows.Count) return;
+            string name = _grid.Columns[e.ColumnIndex].Name;
+            var row = _currentPageRows[e.RowIndex];
+            if (name == "Actions")
+            {
+                e.ToolTipText = _hoverAction == 1 ? "Xóa" : "Khôi phục";
+                return;
+            }
+            if (name == "FileName") e.ToolTipText = row.FileName;
+            else if (name == "CreatedAt") e.ToolTipText = row.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss");
+        }
+
+        private void ClearActionHover()
+        {
+            if (_hoverRow < 0 && _hoverAction < 0) return;
+            int previous = _hoverRow;
+            _hoverRow = -1;
+            _hoverAction = -1;
+            InvalidateAction(previous);
+            if (_grid != null) _grid.Cursor = Cursors.Default;
+        }
+
+        private void InvalidateAction(int rowIndex)
+        {
+            if (_grid == null || rowIndex < 0 || rowIndex >= _grid.Rows.Count) return;
+            int column = _grid.Columns["Actions"] == null ? -1 : _grid.Columns["Actions"].Index;
+            if (column >= 0) _grid.InvalidateCell(column, rowIndex);
         }
 
         private static DataGridViewLinkColumn CreateLinkColumn(string name, string header, int minWidth)
@@ -450,9 +534,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
         {
             QueryChanged?.Invoke(this, new BackupQuery
             {
-                Keyword = _searchBar.Text,
-                From = _fromDate.Checked ? _fromDate.Value.Date : (DateTime?)null,
-                To = _toDate.Checked ? _toDate.Value.Date : (DateTime?)null,
+                Keyword = _searchBar == null ? null : _searchBar.Text,
+                From = _datePresenter == null ? null : _datePresenter.Current.From,
+                To = _datePresenter == null ? null : _datePresenter.Current.To,
                 PageIndex = _paginationPresenter.PageIndex,
                 PageSize = _paginationPresenter.PageSize
             });
@@ -470,10 +554,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Backup
                 _grid.Rows.Add(
                     row.FileName,
                     row.StrategyName,
-                    row.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy"),
+                    row.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
                     BackupFormat.Size(row.SizeBytes),
                     File.Exists(row.FilePath) ? "Mở Local" : "Không có",
-                    row.IsUploadedToCloud ? "Mở Cloud" : "Chưa upload");
+                    row.IsUploadedToCloud ? "Mở Cloud" : "Chưa upload",
+                    string.Empty);
             }
 
             _grid.ClearSelection();

@@ -15,6 +15,7 @@ using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Controls.Catalog;
 using SIMS_WinFormsApp.UI.Controls.Pos;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Permission;
@@ -53,6 +54,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("invoices", "sidebar.page.invoices"),
             ("returns", "sidebar.page.returns"),
             ("products", "sidebar.page.products"),
+            ("categories", "sidebar.page.categories"),
+            ("suppliers", "sidebar.page.suppliers"),
             ("inventory", "sidebar.page.inventory"),
             ("purchase", "sidebar.page.purchase"),
             ("stock-alert", "sidebar.page.stockAlert"),
@@ -155,7 +158,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddPage("invoices", Lang.Get("sidebar.page.invoices"), CreatePlaceholder("placeholder.invoices.title", "placeholder.invoices.description"), IconChar.Receipt);
             layout.AddPage("returns", Lang.Get("sidebar.page.returns"), CreatePlaceholder("placeholder.returns.title", "placeholder.returns.description"), IconChar.RotateLeft);
             layout.AddSection(Lang.Get("sidebar.section.warehouse"));
-            layout.AddPage("products", Lang.Get("sidebar.page.products"), CreatePlaceholder("placeholder.products.title", "placeholder.products.description"), IconChar.Box);
+            layout.AddPage("products", Lang.Get("sidebar.page.products"), CatalogPages.Products(), IconChar.Box);
+            layout.AddPage("categories", Lang.Get("sidebar.page.categories"), CatalogPages.Categories(), IconChar.Tags);
+            layout.AddPage("suppliers", Lang.Get("sidebar.page.suppliers"), CatalogPages.Suppliers(), IconChar.Building);
             layout.AddPage("inventory", Lang.Get("sidebar.page.inventory"), CreatePlaceholder("placeholder.inventory.title", "placeholder.inventory.description"), IconChar.Warehouse);
             layout.AddPage("purchase", Lang.Get("sidebar.page.purchase"), CreatePlaceholder("placeholder.purchase.title", "placeholder.purchase.description"), IconChar.Truck);
             layout.AddPage("stock-alert", Lang.Get("sidebar.page.stockAlert"), CreatePlaceholder("placeholder.stockAlert.title", "placeholder.stockAlert.description"), IconChar.TriangleExclamation);

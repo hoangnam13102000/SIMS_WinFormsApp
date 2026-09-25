@@ -188,6 +188,24 @@
     <Compile Include="Services\Implementations\Import\ImportColumnMapper.cs" />
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
+    <Compile Include="Models\DTOs\Catalog\CatalogDtos.cs" />
+    <Compile Include="Repositories\Interfaces\ICatalogRepository.cs" />
+    <Compile Include="Repositories\Implementations\CatalogRepository.cs" />
+    <Compile Include="Services\Interfaces\ICatalogAdminService.cs" />
+    <Compile Include="Services\Implementations\Catalog\CatalogAdminService.cs" />
+    <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
+    <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
+    <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
+    <Compile Include="Forms\Catalog\frmProductEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Catalog\frmCategoryEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Catalog\frmSupplierEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Catalog\CatalogPages.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
     <Compile Include="UI\Controls\Backup\BackupPage.cs" />
     <Compile Include="UI\Controls\Backup\BackupRecoveryPageControl.cs">
