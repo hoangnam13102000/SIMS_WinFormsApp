@@ -48,9 +48,20 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             ContentHost.Controls.Add(_phone);
             ContentHost.Controls.Add(_name);
 
+            CloseRequested += (s, e) =>
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+            };
+
             AddFooterButton("Đóng", false, (s, e) => { DialogResult = DialogResult.Cancel; Close(); });
             if (!readOnly)
                 AddFooterButton("Lưu", true, (s, e) => SaveAndClose());
+        }
+
+        protected override void OnContentReady()
+        {
+            FitHeightToContent();
         }
 
         public static bool TryEdit(IWin32Window owner, SupplierEditDto model, bool readOnly, out SupplierEditDto result)
