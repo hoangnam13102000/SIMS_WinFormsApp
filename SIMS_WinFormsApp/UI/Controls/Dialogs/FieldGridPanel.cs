@@ -1,4 +1,5 @@
-﻿using System;
+﻿// UI/Controls/Dialogs/FieldGridPanel.cs
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,15 +15,25 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int DefaultColumnGap = 24;
         private const int MinColumnWidth = 40;
 
+        // Trước đây các hàng xếp sát nhau tuyệt đối (y += rowHeight, không có khoảng đệm dọc).
+        // Khi hàng phía trên là 1 khối tự vẽ nền riêng (CardPanel/Pill - xem
+        // ProductDetailPrimitives.cs), phần rìa/góc của khối đó ép sát ngay lên nội dung hàng kế
+        // tiếp, dễ tạo cảm giác chữ hàng dưới (vd. "Danh mục", "Giá nhập/Giá bán") bị đè/cắt mất
+        // phần trên do không đủ khoảng cách. Thêm 1 khoảng đệm dọc nhỏ giữa các hàng (không đệm
+        // sau hàng cuối) để mỗi hàng có đủ "kích thước" hiển thị độc lập, không ảnh hưởng cột
+        // ngang hay thứ tự Tab hiện có.
+        private const int RowGap = 12;
+
         private sealed class GridCell
         {
-            public GridCell(Panel host, Control field, int row, int column, int columnSpan)
+            public GridCell(Panel host, Control field, int row, int column, int columnSpan, int rowGapAfter)
             {
                 Host = host;
                 Field = field;
                 Row = row;
                 Column = column;
                 ColumnSpan = columnSpan;
+                RowGapAfter = rowGapAfter;
             }
 
             public Panel Host { get; }
@@ -30,6 +41,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             public int Row { get; }
             public int Column { get; }
             public int ColumnSpan { get; }
+            public int RowGapAfter { get; }
 
             // Tự theo dõi cờ hiển thị thay vì đọc Control.Visible (getter đó trả false khi Form
             // chưa được Show, sẽ làm layout sai ở lần Reflow đầu).
@@ -39,17 +51,20 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly List<GridCell> _cells = new List<GridCell>();
         private readonly int _columnCount;
         private readonly int _columnGap;
+        private readonly int _rowGap;
         private int _nextRow;
         private int _nextColumn;
         private bool _isReflowing;
 
-        public FieldGridPanel(int columnCount = 3, int columnGap = DefaultColumnGap)
+        public FieldGridPanel(int columnCount = 3, int columnGap = DefaultColumnGap, int rowGap = RowGap)
         {
             if (columnCount < 1) throw new ArgumentOutOfRangeException(nameof(columnCount));
             if (columnGap < 0) throw new ArgumentOutOfRangeException(nameof(columnGap));
+            if (rowGap < 0) throw new ArgumentOutOfRangeException(nameof(rowGap));
 
             _columnCount = columnCount;
             _columnGap = columnGap;
+            _rowGap = rowGap;
 
             BackColor = Color.Transparent;
             Dock = DockStyle.Top;
@@ -59,9 +74,10 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         /// <summary>Thêm 1 field vào ô kế tiếp (đọc từ trái sang phải, từ trên xuống dưới).
         /// Thứ tự gọi AddField cũng là thứ tự Tab của các field.</summary>
-        public void AddField(Control field, int columnSpan = 1)
+        public void AddField(Control field, int columnSpan = 1, int rowGapAfter = -1)
         {
             if (field == null) throw new ArgumentNullException(nameof(field));
+            if (rowGapAfter < -1) throw new ArgumentOutOfRangeException(nameof(rowGapAfter));
 
             int span = Math.Min(Math.Max(1, columnSpan), _columnCount);
             if (_nextColumn + span > _columnCount)
@@ -75,7 +91,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             host.Controls.Add(field);
             Controls.Add(host);
 
-            _cells.Add(new GridCell(host, field, _nextRow, _nextColumn, span));
+            _cells.Add(new GridCell(host, field, _nextRow, _nextColumn, span, rowGapAfter));
 
             _nextColumn += span;
             if (_nextColumn >= _columnCount)
@@ -140,6 +156,16 @@ namespace SIMS_WinFormsApp.UI.Controls
                     }
 
                     y += rowHeight;
+                    if (i < _cells.Count)
+                    {
+                        int rowGap = _rowGap;
+                        for (int j = rowStart; j < i; j++)
+                        {
+                            if (_cells[j].IsVisible && _cells[j].RowGapAfter >= 0)
+                                rowGap = Math.Max(rowGap, _cells[j].RowGapAfter);
+                        }
+                        y += rowGap;
+                    }
                 }
 
                 if (Height != y) Height = y;

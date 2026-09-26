@@ -221,6 +221,7 @@
     <Compile Include="UI\Controls\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Catalog\ProductDetailPrimitives.cs" />
     <Compile Include="UI\Controls\DetailAvatarPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogCloseButton.cs">
