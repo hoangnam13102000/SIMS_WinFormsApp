@@ -151,34 +151,56 @@ namespace SIMS_WinFormsApp.UI.Controls
             if (string.IsNullOrEmpty(Text)) return;
 
             var surface = GetSurfaceBounds();
-            var iconWidth = Icon.HasValue ? IconSize + 10 : 0;
-            var textWidth = TextRenderer.MeasureText(Text, Font).Width;
-            var totalWidth = iconWidth + textWidth;
-            var startX = Math.Max(0, (Width - totalWidth) / 2);
+            var iconBox = Controls.Count > 0 ? Controls[0] as IconPictureBox : null;
+            int iconWidth = iconBox != null && iconBox.Visible ? IconSize + 8 : 0;
+            int availableTextWidth = Math.Max(1, surface.Width - iconWidth - 16);
+            Font textFont = Font;
+            Font fittedFont = null;
 
-            if (Icon.HasValue)
+            while (TextRenderer.MeasureText(Text, textFont, Size.Empty,
+                       TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > availableTextWidth
+                   && textFont.Size > 9f)
             {
-                var iconBox = Controls[0] as IconPictureBox;
-                if (iconBox != null)
-                {
-                    iconBox.IconColor = GetTextColor();
-                    iconBox.Location = new Point(startX, surface.Top + (surface.Height - IconSize) / 2);
-                }
+                fittedFont?.Dispose();
+                textFont = new Font(Font.FontFamily, Math.Max(9f, textFont.Size - 0.5f), Font.Style, GraphicsUnit.Point);
+                fittedFont = textFont;
             }
 
-            var textBounds = new Rectangle(
-                startX + iconWidth,
-                surface.Top,
-                Math.Max(0, Width - startX - iconWidth),
-                surface.Height);
+            try
+            {
+                int textWidth = TextRenderer.MeasureText(Text, textFont, Size.Empty,
+                    TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
+                int totalWidth = iconWidth + textWidth;
+                int startX = Math.Max(8, (surface.Width - totalWidth) / 2);
 
-            TextRenderer.DrawText(
-                g,
-                Text,
-                Font,
-                textBounds,
-                GetTextColor(),
-                TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
+                if (iconBox != null)
+                {
+                    iconBox.Visible = Icon.HasValue;
+                    if (iconBox.Visible)
+                    {
+                        iconBox.IconColor = GetTextColor();
+                        iconBox.Location = new Point(startX, surface.Top + (surface.Height - IconSize) / 2);
+                    }
+                }
+
+                var textBounds = new Rectangle(
+                    startX + iconWidth,
+                    surface.Top,
+                    Math.Max(1, surface.Width - startX - iconWidth - 8),
+                    surface.Height);
+
+                TextRenderer.DrawText(
+                    g,
+                    Text,
+                    textFont,
+                    textBounds,
+                    GetTextColor(),
+                    TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding);
+            }
+            finally
+            {
+                fittedFont?.Dispose();
+            }
         }
 
         private static Color Scale(Color c, double factor)

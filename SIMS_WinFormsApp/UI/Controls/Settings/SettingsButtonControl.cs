@@ -23,7 +23,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.ResizeRedraw |
                      ControlStyles.SupportsTransparentBackColor, true);
 
-            Size = new Size(72, 72);
+            Size = new Size(60, 60);
             BackColor = Color.Transparent;
             ForeColor = Color.Transparent;
             Cursor = Cursors.Hand;
@@ -33,8 +33,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                 IconChar = IconChar.Gear,
                 IconFont = IconFont.Solid,
                 IconColor = Color.White,
-                IconSize = 30,
-                Size = new Size(36, 36),
+                IconSize = 25,
+                Size = new Size(30, 30),
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand
             };

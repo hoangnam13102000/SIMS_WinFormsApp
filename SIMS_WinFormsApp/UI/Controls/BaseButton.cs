@@ -295,7 +295,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
 
             TextRenderer.DrawText(g, Text, Font, textRect, GetTextColor(),
-                TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
+                TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding);
         }
 
         protected virtual void UpdateLayout()

@@ -115,6 +115,10 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             _sellPrice = Field("Giá bán", IconChar.Tags, true);
             _stock = Field("Tồn kho ban đầu", IconChar.BoxesStacked, false);
             _minStock = Field("Tồn kho tối thiểu", IconChar.TriangleExclamation, false);
+            _importPrice.UseThousandsSeparator = true;
+            _sellPrice.UseThousandsSeparator = true;
+            _stock.UseThousandsSeparator = true;
+            _minStock.UseThousandsSeparator = true;
             _description = Field("Mô tả sản phẩm", IconChar.AlignLeft, false);
             _status = Combo("Trạng thái", true);
 
@@ -435,9 +439,9 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             var card = new CardPanel { Dock = DockStyle.Top, Height = 160, FillColor = AppColors.BgLighter };
 
             var lblImportLabel = InfoLabel("Giá nhập", false);
-            var lblImportValue = InfoLabel($"{CatalogFormat.Money(_model.ImportPrice)} đ", true);
+            var lblImportValue = InfoLabel($"{CatalogFormat.Money(_model.ImportPrice)} VNĐ", true);
             var lblSellLabel = InfoLabel("Giá bán", false);
-            var lblSellValue = InfoLabel($"{CatalogFormat.Money(_model.SellPrice)} đ", true);
+            var lblSellValue = InfoLabel($"{CatalogFormat.Money(_model.SellPrice)} VNĐ", true);
             lblSellValue.ForeColor = AppColors.Accent;
 
             decimal profit = _model.SellPrice - _model.ImportPrice;
@@ -458,7 +462,7 @@ namespace SIMS_WinFormsApp.Forms.Catalog
                 Font = AppFonts.SmallBold,
                 ForeColor = positive ? AppColors.Success : AppColors.Error,
                 BackColor = Color.Transparent,
-                Text = $"Lợi nhuận mỗi sản phẩm: {(positive ? string.Empty : "-")}{CatalogFormat.Money(Math.Abs(profit))} đ ({percent:0.0}%)",
+                Text = $"Lợi nhuận mỗi sản phẩm: {(positive ? string.Empty : "-")}{CatalogFormat.Money(Math.Abs(profit))} VNĐ ({percent:0.0}%)",
                 Padding = new Padding(0, 4, 0, 4)
             };
 

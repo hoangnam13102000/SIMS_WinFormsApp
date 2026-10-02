@@ -122,11 +122,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             // Dùng cùng một chuẩn height cho toàn project, lấy theo dashboard để mọi page
             // đều có header đồng nhất. Không để từng page tự định nghĩa row khác nhau.
-            Height = 120;
-            MinimumSize = new Size(300, 120);
+            Height = 80;
+            MinimumSize = new Size(300, 80);
             BackColor = AppColors.White;
             Padding = new Padding(0);
-            Margin = new Padding(0, 0, 0, 12);
+            Margin = new Padding(0, 0, 0, 8);
 
             BuildUI();
         }
@@ -139,24 +139,31 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             SuspendLayout();
 
-            // Icon circle – canh giữa theo chiều cao mới (108px)
+            // Icon circle – vertically centered in the compact header.
+            const int iconCircleSize = 44;
             _iconCircle = new Panel
             {
-                Size = new Size(42, 42),
-                Location = new Point(20, (Height - 42) / 2),
+                Size = new Size(iconCircleSize, iconCircleSize),
+                Location = new Point(20, (Height - iconCircleSize) / 2),
                 BackColor = Color.Transparent
             };
             _iconCircle.Paint += IconCircle_Paint;
             Controls.Add(_iconCircle);
 
             // Icon
+            const int iconSize = 16;
+            const int iconBoxSize = 22;
             _iconBox = new IconPictureBox
             {
                 IconChar = _icon,
+                IconFont = IconFont.Solid,
                 IconColor = _iconColor,
-                IconSize = 24,
-                Size = new Size(28, 28),
-                Location = new Point(10, 10),
+                IconSize = iconSize,
+                Size = new Size(iconBoxSize, iconBoxSize),
+                Location = new Point(
+                    (_iconCircle.Width - iconBoxSize) / 2,
+                    (_iconCircle.Height - iconBoxSize) / 2),
+                SizeMode = PictureBoxSizeMode.CenterImage,
                 BackColor = Color.Transparent
             };
             _iconCircle.Controls.Add(_iconBox);
@@ -179,7 +186,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Text = _title,
                 Font = titleFont,
                 ForeColor = AppColors.TextTitle,
-                Location = new Point(78, 16),
+                Location = new Point(78, 0),
                 Size = new Size(Math.Max(80, Width - 104), titleH),
                 TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent,
@@ -194,7 +201,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Text = _subtitle,
                 Font = subtitleFont,
                 ForeColor = AppColors.TextSecondary,
-                Location = new Point(78, _lblTitle.Bottom + 3),
+                Location = new Point(78, 0),
                 Size = new Size(Math.Max(80, Width - 104), subtitleH),
                 TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent,
@@ -311,9 +318,13 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void UpdateTextLayout()
         {
-            int textW = Math.Max(80, ClientSize.Width - 104 - _actionWidth);
             if (_lblTitle == null || _lblSubtitle == null) return;
 
+            int textW = Math.Max(80, ClientSize.Width - _lblTitle.Left - 24 - _actionWidth);
+            int textHeight = _lblTitle.Height + 4 + _lblSubtitle.Height;
+            int textTop = Math.Max(0, (ClientSize.Height - textHeight) / 2);
+            _lblTitle.Top = textTop;
+            _lblSubtitle.Top = _lblTitle.Bottom + 4;
             _lblTitle.Width = textW;
             _lblSubtitle.Width = textW;
         }

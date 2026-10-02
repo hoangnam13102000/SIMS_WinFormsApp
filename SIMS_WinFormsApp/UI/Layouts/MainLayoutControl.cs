@@ -18,7 +18,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly Guna2Panel _contentHost;
         private readonly TableLayoutPanel _root;
         private readonly SettingsButtonControl _settingsButton;
-        private const int SettingsButtonMargin = 24;
+        private const int SettingsButtonMargin = 20;
 
         private readonly Dictionary<string, Control> _pages =
             new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);

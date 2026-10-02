@@ -4,9 +4,9 @@ namespace SIMS_WinFormsApp.UI.Theme
 {
     public static class LayoutColors
     {
-        public const int HeaderHeight = 96;
+        public const int HeaderHeight = 88;
         public const int FooterHeight = 36;
-        public const int SidebarWidth = 260;
+        public const int SidebarWidth = 244;
         public const int SidebarWidthCollapsed = 60;
         public const int SidebarItemHeight = 52;
 

@@ -305,6 +305,7 @@
     <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
     <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
     <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs" />
+    <Compile Include="UI\Controls\NumberInputFormatter.cs" />
     <Compile Include="UI\Controls\Forms\LabeledIconField.cs" />
     <Compile Include="UI\Controls\LabeledComboField.cs" />
     <Compile Include="UI\Controls\LabeledDateField.cs" />

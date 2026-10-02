@@ -17,10 +17,10 @@ namespace SIMS_WinFormsApp.UI.Layouts
     public class HeaderControl : UserControl, IHeaderView
     {
         private const int PadX = 24;
-        private const int LogoSize = 52;
+        private const int LogoSize = 48;
         private const int LogoTextGap = 14;
         private const int ClusterGap = 16;
-        private const int DividerHeight = 40;
+        private const int DividerHeight = 36;
         private const int NarrowBreakpoint = 900;
         private const int MediumBreakpoint = 1100;
 
@@ -30,8 +30,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly NotificationBellButton _bell;
         private readonly HeaderAccountButton _account;
 
-        private readonly Font _titleFont = new Font("Segoe UI Semibold", 20f, FontStyle.Bold);
-        private readonly Font _subtitleFont = new Font("Segoe UI", 10.5f);
+        private readonly Font _titleFont = new Font("Segoe UI Semibold", 18f, FontStyle.Bold);
+        private readonly Font _subtitleFont = new Font("Segoe UI", 10f);
 
         private HeaderUserViewModel _user = new HeaderUserViewModel("Admin", "admin@sims.local");
         private int _dividerX;

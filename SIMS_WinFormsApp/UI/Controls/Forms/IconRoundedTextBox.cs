@@ -14,6 +14,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int IconAreaWidth = 32;
 
         private readonly IconPictureBox _icon;
+        private bool _useThousandsSeparator;
 
         public IconRoundedTextBox()
         {
@@ -45,6 +46,32 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
 
         protected override int LeadingWidth => IconAreaWidth;
+
+        public bool UseThousandsSeparator
+        {
+            get => _useThousandsSeparator;
+            set
+            {
+                if (_useThousandsSeparator == value) return;
+                _useThousandsSeparator = value;
+                if (value)
+                    NumberInputFormatter.Attach(InputControl);
+            }
+        }
+
+        public new int MaxLength
+        {
+            get => _useThousandsSeparator
+                ? NumberInputFormatter.GetMaximumDigits(InputControl)
+                : base.MaxLength;
+            set
+            {
+                if (_useThousandsSeparator)
+                    NumberInputFormatter.SetMaximumDigits(InputControl, value);
+                else
+                    base.MaxLength = value;
+            }
+        }
 
         private void PositionIcon()
         {

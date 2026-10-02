@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Pos
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public int StockQuantity { get; set; }
+        public string ImagePath { get; set; }
 
         public Color TileColor { get; set; }
 

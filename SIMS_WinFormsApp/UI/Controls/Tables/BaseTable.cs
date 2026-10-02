@@ -141,7 +141,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 Padding = Padding.Empty
             };
             // Đồng bộ height header với chuẩn dashboard cho toàn bộ project.
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, customFilterPanel == null ? 72 : customFilterHeight));
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
@@ -460,7 +460,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 BackgroundColor = AppColors.White,
                 GridColor = AppColors.TableGrid,
                 BorderStyle = BorderStyle.None,
-                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                CellBorderStyle = DataGridViewCellBorderStyle.None,
                 ColumnHeadersHeight = 56,
                 RowTemplate = { Height = 48 },
                 EnableHeadersVisualStyles = false,
@@ -498,6 +498,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             grid.ThemeStyle.GridColor = AppColors.TableGrid;
             grid.ThemeStyle.RowsStyle.Height = 48;
             grid.ThemeStyle.HeaderStyle.BorderStyle = DataGridViewHeaderBorderStyle.None;
+            grid.AdvancedCellBorderStyle.All = DataGridViewAdvancedCellBorderStyle.None;
 
             foreach (var column in columns)
             {
@@ -569,6 +570,12 @@ namespace SIMS_WinFormsApp.UI.Controls
                 else if (e.ColumnIndex == _actionColumnIndex)
                 {
                     PaintActionCell(e);
+                }
+                else
+                {
+                    e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.Border);
+                    DrawCellBottomBorder(e);
+                    e.Handled = true;
                 }
             }
             catch (ArgumentException)

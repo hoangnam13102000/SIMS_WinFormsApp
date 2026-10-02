@@ -257,7 +257,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 IsRequired = false,
                 Icon = IconChar.MoneyBillWave,
                 PlaceholderText = "Để trống nếu chưa có",
-                MaxLength = 15
+                MaxLength = 15,
+                UseThousandsSeparator = true
             };
         }
         #endregion

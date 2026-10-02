@@ -168,6 +168,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Import
                 .Replace(".", string.Empty)
                 .Replace(",", string.Empty)
                 .Replace("đ", string.Empty)
+                .Replace("VNĐ", string.Empty)
                 .Replace("VND", string.Empty);
             return decimal.TryParse(cleaned, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
         }

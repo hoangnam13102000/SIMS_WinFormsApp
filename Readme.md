@@ -93,6 +93,13 @@ Dependency được truyền vào Presenter/Service qua constructor. Composition
 mặc định chỉ được thực hiện ở tầng khởi tạo ứng dụng hoặc constructor mặc định của adapter,
 giúp các Presenter và Service có thể test bằng mock/fake mà không cần database hoặc WinForms.
 
+Ảnh sản phẩm được lưu thành file trong `SIMS_WinFormsApp\Resources\ProductImages`, không nhúng
+vào `Properties.Resources` và không lưu trong thư mục build `bin\Debug`/`bin\Release`.
+Database lưu đường dẫn tương đối `Resources\ProductImages\<tên-file>`. Các ảnh cũ còn tồn tại
+trong `bin` hoặc `%LOCALAPPDATA%\SIMS_WinFormsApp\ProductImages` sẽ được chuyển sang thư mục
+này khi được đọc. Ứng dụng cần quyền ghi vào thư mục dự án; khi cài ở vị trí không ghi được
+(ví dụ `Program Files`), cần cấp quyền phù hợp hoặc đổi vị trí lưu trước khi triển khai.
+
 Dashboard hiện là màn hình trình bày mẫu: các thẻ thống kê và khu vực hoạt động chưa có module
 nghiệp vụ tương ứng nên chưa tạo repository/service giả. User/session display đã được điều phối
 qua `DashboardPresenter`; khi dữ liệu dashboard thật được triển khai, service/repository có thể

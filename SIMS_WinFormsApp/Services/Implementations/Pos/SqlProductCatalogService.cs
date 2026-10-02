@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Pos
@@ -21,10 +22,12 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
         };
 
         private readonly IDbConnectionFactory _connectionFactory;
+        private readonly LocalProductImageStore _images;
 
-        public SqlProductCatalogService(IDbConnectionFactory connectionFactory)
+        public SqlProductCatalogService(IDbConnectionFactory connectionFactory, LocalProductImageStore images = null)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            _images = images ?? new LocalProductImageStore();
         }
 
         public IReadOnlyList<CategoryOptionDto> GetCategories()
@@ -59,7 +62,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
         {
             const string sql = @"
                 SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock
+                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
                 FROM Products p
                 INNER JOIN Categories c ON c.CategoryID = p.CategoryID
                 WHERE p.Status = 'ACTIVE'
@@ -88,7 +91,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
         {
             const string sql = @"
                 SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock
+                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
                 FROM Products p
                 INNER JOIN Categories c ON c.CategoryID = p.CategoryID
                 WHERE p.ProductID = @ProductID
@@ -113,7 +116,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
 
             const string sql = @"
                 SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock
+                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
                 FROM Products p
                 INNER JOIN Categories c ON c.CategoryID = p.CategoryID
                 WHERE p.ProductCode = @ProductCode
@@ -141,7 +144,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
         }
 
-        private static ProductCatalogItemDto MapProduct(IDataRecord record)
+        private ProductCatalogItemDto MapProduct(IDataRecord record)
         {
             int productId = record.GetInt32(0);
             return new ProductCatalogItemDto
@@ -153,6 +156,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 CategoryName = record.GetString(4),
                 Price = record.GetDecimal(5),
                 StockQuantity = record.GetInt32(6),
+                ImagePath = _images.Resolve(record.IsDBNull(7) ? null : record.GetString(7)),
                 TileColor = TilePalette[Math.Abs(productId) % TilePalette.Length]
             };
         }

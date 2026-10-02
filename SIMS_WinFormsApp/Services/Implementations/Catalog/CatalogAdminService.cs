@@ -157,9 +157,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
 
         private string StoreImageIfNeeded(string path)
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return path;
-            string imagesRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProductImages");
-            if (path.StartsWith(imagesRoot, StringComparison.OrdinalIgnoreCase)) return path;
+            if (string.IsNullOrWhiteSpace(path)) return path;
+            string storedPath = _images.GetStoredPath(path);
+            if (storedPath != null) return storedPath;
+            if (!File.Exists(path)) return path;
             return _images.SaveCopy(path);
         }
 

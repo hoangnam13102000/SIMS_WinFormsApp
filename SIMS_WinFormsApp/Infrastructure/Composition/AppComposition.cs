@@ -118,7 +118,7 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
 
         public static IProductCatalogService CreateProductCatalogService()
         {
-            return new SqlProductCatalogService(CreateConnectionFactory());
+            return new SqlProductCatalogService(CreateConnectionFactory(), new LocalProductImageStore());
         }
 
         public static ICatalogAdminService CreateCatalogAdminService()

@@ -29,7 +29,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private int _customerPoints;
 
         private Label _cartHeaderLabel;
-        private Panel _cartListHost;
+        private FlowLayoutPanel _cartListHost;
+        private SplitContainer _cartPaymentSplitter;
+        private bool _cartPaymentSplitterInitialized;
 
         private RoundedTextBox _promoBox;
 
@@ -73,7 +75,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, BackColor = Color.Transparent };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 108));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             Controls.Add(root);
 
@@ -157,19 +159,46 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private Panel BuildRightCard()
         {
             var card = CreateCard();
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8, BackColor = Color.Transparent };
-            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 150));  // khách hàng
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));   // "Giỏ hàng"
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));   // danh sách giỏ hàng
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 14));   // tay cầm trang trí
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));   // mã KM
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 150));  // tổng tiền
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));   // hình thức thanh toán
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 96));   // tạm giữ / thanh toán
-            card.Controls.Add(layout);
+            _cartPaymentSplitter = new SplitContainer
+            {
+                Dock = DockStyle.Fill,
+                Orientation = Orientation.Horizontal,
+                SplitterWidth = 10,
+                BackColor = AppColors.White,
+                Cursor = Cursors.HSplit,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+            _cartPaymentSplitter.Panel1.BackColor = AppColors.White;
+            _cartPaymentSplitter.Panel2.BackColor = AppColors.White;
+            _cartPaymentSplitter.SplitterMoved += (s, e) => _cartListHost?.PerformLayout();
+            _cartPaymentSplitter.Paint += (s, e) =>
+            {
+                int gripX = (_cartPaymentSplitter.Width - 36) / 2;
+                int gripY = _cartPaymentSplitter.SplitterDistance + (_cartPaymentSplitter.SplitterWidth - 4) / 2;
+                using (var brush = new SolidBrush(AppColors.FieldBorder))
+                    e.Graphics.FillRectangle(brush, gripX, gripY, 36, 4);
+            };
+            _cartPaymentSplitter.SizeChanged += (s, e) => UpdateCartPaymentSplitter();
+            card.Controls.Add(_cartPaymentSplitter);
 
-            layout.Controls.Add(BuildCustomerSection(), 0, 0);
+            var customerSection = BuildCustomerSection();
+            customerSection.Margin = Padding.Empty;
+            var upperLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 3,
+                BackColor = AppColors.White,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+            upperLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            upperLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
+            upperLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+            upperLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
+            _cartPaymentSplitter.Panel1.Controls.Add(upperLayout);
+            upperLayout.Controls.Add(customerSection, 0, 0);
 
             _cartHeaderLabel = new Label
             {
@@ -178,29 +207,116 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 ForeColor = AppColors.TextTitle,
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.BottomLeft,
-                BackColor = Color.Transparent
+                BackColor = Color.Transparent,
+                Margin = Padding.Empty
             };
-            layout.Controls.Add(_cartHeaderLabel, 0, 1);
+            upperLayout.Controls.Add(_cartHeaderLabel, 0, 1);
 
-            _cartListHost = new Panel { Dock = DockStyle.Fill, AutoScroll = true, BackColor = Color.Transparent };
-            layout.Controls.Add(_cartListHost, 0, 2);
+            _cartListHost = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                AutoSize = false,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                BackColor = AppColors.White,
+                Padding = new Padding(0, 0, 2, 0),
+                Margin = Padding.Empty
+            };
+            _cartListHost.SizeChanged += (s, e) => LayoutCartRows();
+            upperLayout.Controls.Add(_cartListHost, 0, 2);
             BindCart(Array.Empty<CartLineDto>());
 
-            layout.Controls.Add(BuildGrip(), 0, 3);
-            layout.Controls.Add(BuildPromoRow(), 0, 4);
-            layout.Controls.Add(BuildTotalsBlock(), 0, 5);
+            var paymentScrollHost = new Panel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = AppColors.White,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+            _cartPaymentSplitter.Panel2.Controls.Add(paymentScrollHost);
+            var paymentLayout = new TableLayoutPanel
+            {
+                Location = Point.Empty,
+                ColumnCount = 1,
+                RowCount = 4,
+                BackColor = AppColors.White,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty,
+                Size = new Size(Math.Max(1, paymentScrollHost.ClientSize.Width - SystemInformation.VerticalScrollBarWidth), 342)
+            };
+            paymentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            paymentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+            paymentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
+            paymentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));
+            paymentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+            paymentScrollHost.Controls.Add(paymentLayout);
+            paymentScrollHost.SizeChanged += (s, e) =>
+                paymentLayout.Width = Math.Max(1, paymentScrollHost.ClientSize.Width - SystemInformation.VerticalScrollBarWidth);
+
+            var promoRow = BuildPromoRow();
+            promoRow.Margin = Padding.Empty;
+            paymentLayout.Controls.Add(promoRow, 0, 0);
+
+            var totalsBlock = BuildTotalsBlock();
+            totalsBlock.Margin = Padding.Empty;
+            paymentLayout.Controls.Add(totalsBlock, 0, 1);
 
             _paymentField = new LabeledComboField { LabelText = "Hình thức thanh toán" };
-            layout.Controls.Add(_paymentField, 0, 6);
+            _paymentField.Margin = Padding.Empty;
+            paymentLayout.Controls.Add(_paymentField, 0, 2);
 
-            layout.Controls.Add(BuildFooterButtons(), 0, 7);
+            var footerButtons = BuildFooterButtons();
+            footerButtons.Margin = Padding.Empty;
+            paymentLayout.Controls.Add(footerButtons, 0, 3);
 
             return card;
         }
 
+        private void UpdateCartPaymentSplitter()
+        {
+            if (_cartPaymentSplitter == null || _cartPaymentSplitter.Height <= 0) return;
+
+            const int requestedPanel1MinSize = 204;
+            const int requestedPanel2MinSize = 140;
+            int availableHeight = _cartPaymentSplitter.Height - _cartPaymentSplitter.SplitterWidth;
+            if (availableHeight < 100) return;
+
+            int panel1MinSize = Math.Min(requestedPanel1MinSize, availableHeight / 2);
+            int panel2MinSize = Math.Min(requestedPanel2MinSize, availableHeight - panel1MinSize);
+            if (_cartPaymentSplitter.Panel1MinSize + _cartPaymentSplitter.Panel2MinSize > availableHeight)
+            {
+                _cartPaymentSplitter.Panel1MinSize = 0;
+                _cartPaymentSplitter.Panel2MinSize = 0;
+            }
+            if (_cartPaymentSplitter.Panel1MinSize != panel1MinSize)
+                _cartPaymentSplitter.Panel1MinSize = panel1MinSize;
+            if (_cartPaymentSplitter.Panel2MinSize != panel2MinSize)
+                _cartPaymentSplitter.Panel2MinSize = panel2MinSize;
+
+            int minDistance = panel1MinSize;
+            int maxDistance = availableHeight - panel2MinSize;
+            if (maxDistance < minDistance) return;
+
+            int distance = _cartPaymentSplitter.SplitterDistance;
+            if (!_cartPaymentSplitterInitialized)
+            {
+                distance = Math.Min(maxDistance, Math.Max(minDistance, Math.Min(250, availableHeight - panel2MinSize)));
+                _cartPaymentSplitterInitialized = true;
+            }
+            else
+            {
+                distance = Math.Max(minDistance, Math.Min(distance, maxDistance));
+            }
+
+            if (_cartPaymentSplitter.SplitterDistance != distance)
+                _cartPaymentSplitter.SplitterDistance = distance;
+        }
+
         private Panel BuildCustomerSection()
         {
-            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Margin = Padding.Empty };
 
             var label = new Label
             {
@@ -241,20 +357,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             return panel;
         }
 
-        private Panel BuildGrip()
-        {
-            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
-            panel.Paint += (s, e) =>
-            {
-                const int barWidth = 40, barHeight = 4;
-                var rect = new Rectangle((panel.Width - barWidth) / 2, (panel.Height - barHeight) / 2, barWidth, barHeight);
-                using (var path = AppRadius.GetRoundedPath(rect, 2))
-                using (var brush = new SolidBrush(AppColors.Border))
-                    e.Graphics.FillPath(brush, path);
-            };
-            return panel;
-        }
-
         private Panel BuildPromoRow()
         {
             var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
@@ -292,7 +394,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private TableLayoutPanel BuildTotalsBlock()
         {
-            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 5, BackColor = Color.Transparent, Margin = new Padding(0, 8, 0, 0) };
+            var table = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 5, BackColor = Color.Transparent, Margin = Padding.Empty, Padding = Padding.Empty };
             table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             for (int i = 0; i < 5; i++) table.RowStyles.Add(new RowStyle(SizeType.Percent, 20));
@@ -319,7 +421,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             };
             var valueLabel = new Label
             {
-                Text = "0 đ",
+                Text = "0 VNĐ",
                 Font = bold ? AppFonts.Subtitle : AppFonts.BodyBold,
                 ForeColor = valueColor,
                 Dock = DockStyle.Fill,
@@ -333,7 +435,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private Panel BuildFooterButtons()
         {
-            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
+            var panel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Margin = Padding.Empty };
 
             _holdButton = new PrimaryButton { Text = "Tạm giữ", IsPrimary = false, CornerRadius = AppRadius.Medium };
             _heldCartsButton = new PrimaryButton { Text = "Giỏ đã giữ", IsPrimary = false, CornerRadius = AppRadius.Medium };
@@ -461,6 +563,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         public void BindCart(IReadOnlyList<CartLineDto> lines)
         {
+            int scrollPosition = Math.Abs(_cartListHost.AutoScrollPosition.Y);
             _cartListHost.SuspendLayout();
             foreach (Control c in _cartListHost.Controls) c.Dispose();
             _cartListHost.Controls.Clear();
@@ -469,14 +572,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             {
                 var empty = new Label
                 {
-                    Dock = DockStyle.Top,
+                    AutoSize = false,
                     Height = 60,
                     Text = "Giỏ hàng đang trống - bấm \"Thêm vào giỏ\" trên sản phẩm để bắt đầu.",
                     Font = AppFonts.Body,
                     ForeColor = AppColors.TextMuted,
                     TextAlign = ContentAlignment.TopLeft,
                     Padding = new Padding(2, 4, 2, 0),
-                    BackColor = Color.Transparent
+                    BackColor = AppColors.White,
+                    Margin = new Padding(0, 0, 0, 8)
                 };
                 _cartListHost.Controls.Add(empty);
             }
@@ -490,7 +594,24 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                     _cartListHost.Controls.Add(row);
                 }
             }
-            _cartListHost.ResumeLayout();
+            LayoutCartRows();
+            _cartListHost.ResumeLayout(true);
+            _cartListHost.PerformLayout();
+            _cartListHost.AutoScrollPosition = new Point(0, scrollPosition);
+        }
+
+        private void LayoutCartRows()
+        {
+            if (_cartListHost == null || _cartListHost.IsDisposed) return;
+
+            int scrollbarWidth = _cartListHost.VerticalScroll.Visible
+                ? SystemInformation.VerticalScrollBarWidth
+                : 0;
+            int rowWidth = Math.Max(120,
+                _cartListHost.ClientSize.Width - _cartListHost.Padding.Horizontal - scrollbarWidth);
+            foreach (Control row in _cartListHost.Controls)
+                row.Width = rowWidth;
+            _cartListHost.PerformLayout();
         }
 
         public void SetCustomer(CustomerLookupDto customer)

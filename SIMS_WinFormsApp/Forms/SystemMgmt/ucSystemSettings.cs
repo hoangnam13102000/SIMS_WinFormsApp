@@ -188,7 +188,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             var host = new Panel
             {
                 Dock = DockStyle.Fill,
-                Height = 108,
+                Height = 96,
                 // KHÔNG dùng Color.Transparent khi lồng 1 control tự vẽ (HeaderSection) vào Panel -
                 // cùng lý do đã ghi chú ở BaseTable.WrapHeaderWithAddButton (tránh viền/góc đen).
                 BackColor = AppColors.PageBg,
@@ -290,7 +290,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 Icon = IconChar.Coins,
                 PlaceholderText = "0",
                 HintText = "Giá bán = Giá nhập + số này.",
-                MaxLength = 12
+                MaxLength = 12,
+                UseThousandsSeparator = true
             };
 
             var fieldsRow = CreateTwoColumnRow(_fieldVatRate, _fieldDefaultMargin);
@@ -322,7 +323,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 Icon = IconChar.CalendarDays,
                 PlaceholderText = "0",
                 HintText = "Số ngày kể từ ngày mua.",
-                MaxLength = 5
+                MaxLength = 5,
+                UseThousandsSeparator = true
             };
             _fieldApprovalThreshold = new LabeledIconField
             {
@@ -330,7 +332,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 Icon = IconChar.UserShield,
                 PlaceholderText = "0",
                 HintText = "Lớn hơn số này ở trạng thái Chờ duyệt.",
-                MaxLength = 12
+                MaxLength = 12,
+                UseThousandsSeparator = true
             };
 
             var fieldsRow = CreateTwoColumnRow(_fieldReturnDays, _fieldApprovalThreshold);

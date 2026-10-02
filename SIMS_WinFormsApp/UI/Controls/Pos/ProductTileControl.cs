@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
@@ -11,15 +13,18 @@ using SIMS_WinFormsApp.UI.Theme;
 namespace SIMS_WinFormsApp.UI.Controls.Pos
 {
     /// <summary>
-    /// 1 thẻ sản phẩm trên lưới POS - khối màu minh họa (chưa có ảnh sản phẩm thật) + tên +
+    /// 1 thẻ sản phẩm trên lưới POS - ảnh + tên +
     /// giá + huy hiệu "Hết hàng" (khi hết hàng) + nút hành động (Thêm vào giỏ / Báo hết hàng).
     /// Chỉ phát sự kiện ra ngoài (không tự gọi service) - PosPresenter xử lý nghiệp vụ.
     /// </summary>
     internal sealed class ProductTileControl : UserControl
     {
         public const int TileWidth = 250;
-        public const int TileHeight = 280;
-        private const int ImageHeight = 150;
+        public const int TileHeight = 310;
+        private const int ImageHeight = 156;
+        private const int ContentPadding = 12;
+
+        private Image _productImage;
 
         public int ProductId { get; }
 
@@ -43,16 +48,30 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 Size = new Size(TileWidth, ImageHeight),
                 BackColor = product.TileColor
             };
-            var boxIcon = new IconPictureBox
+            _productImage = TryLoadProductImage(product.ImagePath);
+            if (_productImage != null)
             {
-                IconChar = IconChar.Box,
-                IconColor = Darken(product.TileColor, 0.55),
-                IconSize = 46,
-                Size = new Size(46, 46),
-                Location = new Point((TileWidth - 46) / 2, (ImageHeight - 46) / 2),
-                BackColor = Color.Transparent
-            };
-            imagePanel.Controls.Add(boxIcon);
+                imagePanel.Controls.Add(new PictureBox
+                {
+                    Dock = DockStyle.Fill,
+                    Image = _productImage,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    BackColor = Color.Transparent
+                });
+            }
+            else
+            {
+                var boxIcon = new IconPictureBox
+                {
+                    IconChar = IconChar.Box,
+                    IconColor = Darken(product.TileColor, 0.55),
+                    IconSize = 46,
+                    Size = new Size(46, 46),
+                    Location = new Point((TileWidth - 46) / 2, (ImageHeight - 46) / 2),
+                    BackColor = Color.Transparent
+                };
+                imagePanel.Controls.Add(boxIcon);
+            }
             Controls.Add(imagePanel);
 
             if (product.IsOutOfStock)
@@ -70,8 +89,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 Cursor = Cursors.Hand,
                 BackColor = Color.Transparent
             };
-            // Chỉ là icon trang trí (yêu thích) - project chưa có bảng "sản phẩm yêu thích" nên
-            // không phát sự kiện ra ngoài, chỉ đổi màu tại chỗ cho có phản hồi khi bấm.
             bool wishlisted = false;
             wishlistIcon.Click += (s, e) =>
             {
@@ -82,45 +99,55 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             var nameLabel = new Label
             {
-                Location = new Point(12, ImageHeight + 10),
-                Size = new Size(TileWidth - 24, 40),
+                Location = new Point(ContentPadding, ImageHeight + 12),
+                Size = new Size(TileWidth - (ContentPadding * 2), 56),
                 Text = product.Name,
-                Font = AppFonts.BodyBold,
+                Font = new Font("Segoe UI", 13f, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = AppColors.TextTitle,
-                AutoEllipsis = true,
-                BackColor = Color.Transparent
+                AutoEllipsis = false,
+                AutoSize = false,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(0),
+                UseMnemonic = false
             };
             Controls.Add(nameLabel);
 
             var priceLabel = new Label
             {
-                Location = new Point(12, nameLabel.Bottom),
-                Size = new Size(TileWidth - 24, 34),
+                Location = new Point(ContentPadding, nameLabel.Bottom + 4),
+                Size = new Size(TileWidth - (ContentPadding * 2), 30),
                 Text = PosFormat.Vnd(product.Price),
-                Font = AppFonts.Subtitle,
+                Font = new Font("Segoe UI", 18f, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = AppColors.TextTitle,
                 TextAlign = ContentAlignment.MiddleLeft,
-                BackColor = Color.Transparent
+                BackColor = Color.Transparent,
+                Padding = new Padding(0),
+                AutoSize = false,
+                AutoEllipsis = false
             };
             Controls.Add(priceLabel);
 
             var actionButton = new PrimaryButton
             {
-                Location = new Point(12, TileHeight - 46),
-                Size = new Size(TileWidth - 24, 34),
+                Location = new Point(ContentPadding, TileHeight - 46),
+                Size = new Size(TileWidth - (ContentPadding * 2), 40),
                 CornerRadius = AppRadius.Medium,
-                Font = AppFonts.Button
+                Font = new Font("Segoe UI", 15f, FontStyle.Bold, GraphicsUnit.Point),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0),
+                FlatStyle = FlatStyle.Flat
             };
             if (product.IsOutOfStock)
             {
-                actionButton.Text = "🔔  Báo hết hàng";
+                actionButton.Text = "Báo hết hàng";
                 actionButton.IsPrimary = false;
                 actionButton.CustomAccentColor = AppColors.Warning;
                 actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                actionButton.Text = "🛒  Thêm vào giỏ";
+                actionButton.Text = "Thêm vào giỏ";
                 actionButton.IsPrimary = true;
                 actionButton.Click += (s, e) => AddToCartClicked?.Invoke(this, EventArgs.Empty);
             }
@@ -153,6 +180,47 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             int R(int v) => Math.Max(0, (int)(v * factor));
             return Color.FromArgb(R(c.R), R(c.G), R(c.B));
+        }
+
+        private static Image TryLoadProductImage(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+
+            try
+            {
+                using (var source = Image.FromFile(path))
+                    return new Bitmap(source);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+            catch (ExternalException)
+            {
+                return null;
+            }
+            catch (OutOfMemoryException)
+            {
+                return null;
+            }
+            catch (IOException)
+            {
+                return null;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return null;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _productImage?.Dispose();
+                _productImage = null;
+            }
+            base.Dispose(disposing);
         }
 
         protected override void OnPaint(PaintEventArgs e)

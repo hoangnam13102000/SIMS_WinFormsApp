@@ -28,10 +28,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             ProductId = line.ProductId;
             _quantity = line.Quantity;
 
-            Dock = DockStyle.Top;
             Height = 76;
+            Width = 250;
             Margin = new Padding(0, 0, 0, 8);
-            BackColor = Color.Transparent;
+            BackColor = AppColors.White;
             DoubleBuffered = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw, true);
 
@@ -139,8 +139,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             var rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-            using (var brush = new SolidBrush(AppColors.BgLighter))
-                e.Graphics.FillPath(brush, path);
+            {
+                using (var brush = new SolidBrush(AppColors.White))
+                    e.Graphics.FillPath(brush, path);
+                using (var pen = new Pen(AppColors.Border))
+                    e.Graphics.DrawPath(pen, path);
+            }
         }
     }
 }

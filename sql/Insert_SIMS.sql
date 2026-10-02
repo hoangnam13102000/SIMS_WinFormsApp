@@ -884,16 +884,15 @@ INSERT INTO StoreConfig (ConfigKey, ConfigValue) VALUES
 ('POINT_RATE', '100000');
 GO
 
-UPDATE Products SET ImageUrl = 'uploads/products/tao-envy.jpg'               WHERE ProductName = N'Táo Envy';
-UPDATE Products SET ImageUrl = 'uploads/products/chuoi-gia.jpg'              WHERE ProductName = N'Chuối già';
-UPDATE Products SET ImageUrl = 'uploads/products/ca-chua.jpg'                WHERE ProductName = N'Cà chua';
-UPDATE Products SET ImageUrl = 'uploads/products/ca-rot.jpg'                 WHERE ProductName = N'Cà rốt';
-UPDATE Products SET ImageUrl = 'uploads/products/nuoc-suoi.jpg'              WHERE ProductName = N'Nước suối 500ml';
-UPDATE Products SET ImageUrl = 'uploads/products/tra-xanh.jpg'               WHERE ProductName = N'Trà xanh Không Độ 500ml';
-UPDATE Products SET ImageUrl = 'uploads/products/ca-phe-bot.jpg'             WHERE ProductName = N'Cà phê bột 500g';
-UPDATE Products SET ImageUrl = 'uploads/products/mi-tom-hao-hao.jpg'         WHERE ProductName = N'Mì tôm Hảo Hảo (thùng)';
-UPDATE Products SET ImageUrl = 'uploads/products/sua-tuoi-vinamilk.jpg'      WHERE ProductName = N'Sữa tươi Vinamilk 1L';
-UPDATE Products SET ImageUrl = 'uploads/products/banh-quy-bo.jpg'            WHERE ProductName = N'Bánh quy bơ 200g';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\tao-envy.jpg'         WHERE ProductName = N'Táo Envy';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\chuoi-gia.jpg'        WHERE ProductName = N'Chuối già';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\ca-chua.jpg'          WHERE ProductName = N'Cà chua';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\ca-rot.jpg'            WHERE ProductName = N'Cà rốt';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\nuoc-suoi.jpg'        WHERE ProductName = N'Nước suối 500ml';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\tra-xanh.jpg'         WHERE ProductName = N'Trà xanh Không Độ 500ml';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\ca-phe-bot.jpg'       WHERE ProductName = N'Cà phê bột 500g';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\mi-tom-hao-hao.jpg'   WHERE ProductName = N'Mì tôm Hảo Hảo (thùng)';
+UPDATE Products SET ImageUrl = 'Resources\ProductImages\banh-quy-bo.jpg'      WHERE ProductName = N'Bánh quy bơ 200g';
 GO
 
 /* ============================================================

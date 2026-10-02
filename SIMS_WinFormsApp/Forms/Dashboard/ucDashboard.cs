@@ -59,7 +59,7 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
                 Padding = new Padding(0)
             };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 120f)); // header 108 + gap 12
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 100f)); // header 80 + gap 12
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
 
             // ===== HeaderSection =====

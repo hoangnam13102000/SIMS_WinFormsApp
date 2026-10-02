@@ -34,16 +34,14 @@
     top-level tạo SAU thời điểm đó (vd. LoginForm mở lại sau Logout) có thể bị Windows
     áp virtualization khác với cửa sổ tạo TRƯỚC đó.
 
-    Khai báo dpiAware/dpiAwareness tường minh ở đây khiến Windows chốt 1 chính sách
-    DPI DUY NHẤT, cố định cho toàn bộ tiến trình ngay từ khi process khởi động. Chọn
-    "System" (không phải PerMonitorV2) vì toàn bộ layout trong app đang dùng pixel
-    tuyệt đối (AutoScaleMode.None ở mọi Form) và chưa xử lý WM_DPICHANGED để tự
-    relayout khi đổi màn hình.
+    Khai báo DPI awareness tường minh để Windows dùng cùng một chính sách cho mọi cửa sổ.
+    Chọn "Unaware" vì layout dùng pixel tuyệt đối (AutoScaleMode.None) và chưa tự
+    relayout theo DPI; Windows sẽ scale cả cửa sổ thay vì chỉ phóng to chữ.
   -->
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>
-      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
-      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">System</dpiAwareness>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">false</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">Unaware</dpiAwareness>
     </windowsSettings>
   </application>
 </assembly>

@@ -95,6 +95,12 @@ namespace SIMS_WinFormsApp.UI.Controls
             set => _textBox.MaxLength = value;
         }
 
+        public bool UseThousandsSeparator
+        {
+            get => _textBox.UseThousandsSeparator;
+            set => _textBox.UseThousandsSeparator = value;
+        }
+
         public string HintText
         {
             get => _lblHint.Text;
@@ -109,8 +115,12 @@ namespace SIMS_WinFormsApp.UI.Controls
         /// <summary>Giá trị hiện tại của ô nhập, đã Trim().</summary>
         public string Value
         {
-            get => (_textBox.Text ?? string.Empty).Trim();
-            set => _textBox.Text = value ?? string.Empty;
+            get => UseThousandsSeparator
+                ? NumberInputFormatter.DigitsOnly(_textBox.Text).Trim()
+                : (_textBox.Text ?? string.Empty).Trim();
+            set => _textBox.Text = UseThousandsSeparator
+                ? NumberInputFormatter.FormatInteger(value)
+                : value ?? string.Empty;
         }
 
         public void FocusInput() => _textBox.FocusInput();
