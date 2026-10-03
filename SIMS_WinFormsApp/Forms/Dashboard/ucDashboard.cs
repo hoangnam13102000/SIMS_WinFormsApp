@@ -84,7 +84,7 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
             _statsRow = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 144,
+                Height = 120,
                 ColumnCount = 4,
                 RowCount = 1,
                 BackColor = AppColors.PageBg,  

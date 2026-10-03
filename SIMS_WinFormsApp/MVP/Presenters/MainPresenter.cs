@@ -92,6 +92,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private void OnViewReady(object sender, EventArgs e)
         {
             _layout = BuildLayout();
+            _layout.AiChatRequested += OnAiChatRequested;
             _view.AttachLayout(_layout);
             _view.SetWindowTitle(Lang.Get("main.window.title"));
             var name = _getDisplayName() ?? "Admin";
@@ -297,8 +298,34 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             System.Diagnostics.Debug.WriteLine($"[MainPresenter] Navigated -> {pageKey}");
         }
 
+        private AiChatPopupForm _aiChatPopup;
+
+        private void OnAiChatRequested(object sender, EventArgs e)
+        {
+            if (_layout == null || _layout.ChatbotButton == null) return;
+
+            if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
+            {
+                _aiChatPopup.Close();
+                return;
+            }
+
+            var chatView = new ucAiChat(AppComposition.CreateAiChatService());
+            var popup = new AiChatPopupForm(chatView);
+            popup.FormClosed += (_, __) => _aiChatPopup = null;
+            _aiChatPopup = popup;
+            popup.ShowAbove(_layout.ChatbotButton, 12);
+        }
+
         public void Dispose()
         {
+            if (_layout != null)
+            {
+                _layout.AiChatRequested -= OnAiChatRequested;
+                if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
+                    _aiChatPopup.Close();
+                _aiChatPopup = null;
+            }
             _dailyBackupScheduler?.Dispose();
             _dailyBackupScheduler = null;
             _view.ViewReady -= OnViewReady;

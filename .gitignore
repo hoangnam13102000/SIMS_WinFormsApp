@@ -2,3 +2,5 @@
 bin/
 obj/
 .vscode/
+SIMS_WinFormsApp/secure-config.enc
+/secure-config.txt

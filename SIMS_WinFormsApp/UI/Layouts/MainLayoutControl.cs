@@ -18,7 +18,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private readonly Guna2Panel _contentHost;
         private readonly TableLayoutPanel _root;
         private readonly SettingsButtonControl _settingsButton;
+        private readonly ChatbotButtonControl _chatbotButton;
         private const int SettingsButtonMargin = 20;
+        private const int FloatingButtonsGap = 10;
 
         private readonly Dictionary<string, Control> _pages =
             new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
@@ -41,10 +43,12 @@ namespace SIMS_WinFormsApp.UI.Layouts
         public FooterControl Footer => _footer;
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
+        public Control ChatbotButton => _chatbotButton;
 
         public event EventHandler LogoutRequested;
         public event EventHandler ProfileRequested;
         public event EventHandler<string> PageChanged;
+        public event EventHandler AiChatRequested;
 
         public MainLayoutControl() : this("Cửa hàng điện thoại trực tuyến") { }
 
@@ -138,11 +142,14 @@ namespace SIMS_WinFormsApp.UI.Layouts
 
             Controls.Add(_root);
 
-            // Nút Cài đặt (FAB) nổi ở góc dưới-phải, hiển thị trên mọi trang của shell
-            // chính - thêm SAU _root và BringToFront() để luôn nằm trên cùng z-order.
             _settingsButton = new SettingsButtonControl();
             Controls.Add(_settingsButton);
             _settingsButton.BringToFront();
+
+            _chatbotButton = new ChatbotButtonControl();
+            _chatbotButton.Clicked += (_, __) => AiChatRequested?.Invoke(this, EventArgs.Empty);
+            Controls.Add(_chatbotButton);
+            _chatbotButton.BringToFront();
             PositionSettingsButton();
 
             // Auto-refresh: khi người dùng đổi theme/accent/ngôn ngữ trong popup Cài đặt,
@@ -178,6 +185,14 @@ namespace SIMS_WinFormsApp.UI.Layouts
             _settingsButton.Location = new Point(
                 Width - _settingsButton.Width - SettingsButtonMargin,
                 Height - _settingsButton.Height - SettingsButtonMargin);
+            if (_chatbotButton != null)
+            {
+                _chatbotButton.Location = new Point(
+                    _settingsButton.Left - _chatbotButton.Width - FloatingButtonsGap,
+                    _settingsButton.Top);
+                _chatbotButton.BringToFront();
+            }
+            _settingsButton.BringToFront();
         }
 
         public void AddSection(string label)

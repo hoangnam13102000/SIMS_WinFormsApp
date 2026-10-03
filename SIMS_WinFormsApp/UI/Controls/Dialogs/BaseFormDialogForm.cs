@@ -112,7 +112,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         /// dung cao hơn không gian màn hình cho phép, Height chỉ tăng tới giới hạn màn hình - khi
         /// đó ContentHost.AutoScroll vẫn hoạt động bình thường như lưới an toàn, không có gì vỡ.
         /// </summary>
-        protected void FitHeightToContent()
+        protected void FitHeightToContent(int screenEdgeMargin = 60)
         {
             if (ContentHost.Controls.Count == 0) return;
 
@@ -126,7 +126,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 + ContentHost.Padding.Top + contentHeight + ContentHost.Padding.Bottom
                 + Padding.Top + Padding.Bottom;
 
-            int maxScreenHeight = Screen.FromControl(this).WorkingArea.Height - 60;
+            int maxScreenHeight = Screen.FromControl(this).WorkingArea.Height - screenEdgeMargin;
             desiredHeight = Math.Max(MinimumSize.Height, Math.Min(desiredHeight, maxScreenHeight));
 
             if (Height != desiredHeight) Height = desiredHeight;

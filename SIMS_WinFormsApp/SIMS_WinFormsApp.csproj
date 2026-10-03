@@ -48,6 +48,12 @@
     <Compile Include="Forms\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\Chat\ucAiChat.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Chat\AiChatPopupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Profile\ucMyProfile.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -80,6 +86,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
+    <Compile Include="Models\AI\AiFunctionCall.cs" />
+    <Compile Include="Models\AI\AiLlmResponse.cs" />
+    <Compile Include="Models\AI\AiToolDefinition.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
     <Compile Include="Models\DTOs\DateRange.cs" />
     <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
@@ -121,6 +130,7 @@
     <Compile Include="MVP\Presenters\AuditLogPresenter.cs" />
     <Compile Include="MVP\Presenters\BackupRecoveryPresenter.cs" />
     <Compile Include="MVP\Presenters\ChatPresenter.cs" />
+    <Compile Include="MVP\Presenters\AI\AiChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\Pos\CartCalculator.cs" />
     <Compile Include="MVP\Presenters\Pos\HeldCartStore.cs" />
@@ -311,11 +321,34 @@
     <Compile Include="UI\Controls\LabeledDateField.cs" />
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
     <Compile Include="Views\Interfaces\IChatView.cs" />
+    <Compile Include="Views\Interfaces\IAiChatView.cs" />
     <Compile Include="Views\Interfaces\IDashboardView.cs" />
     <Compile Include="Services\Chat\ChatClientService.cs" />
     <Compile Include="Services\Chat\ChatServerHost.cs" />
     <Compile Include="Services\Chat\ChatWsConfig.cs" />
     <Compile Include="Services\Chat\IChatClientService.cs" />
+    <Compile Include="Services\AI\AiChatException.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiChatService.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiPromptBuilder.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiRateLimiter.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiTool.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiToolPermissionPolicy.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiToolDispatcher.cs" />
+    <Compile Include="Services\AI\Interfaces\IAiToolRegistry.cs" />
+    <Compile Include="Services\AI\Interfaces\ILlmClient.cs" />
+    <Compile Include="Services\AI\Implementations\AiChatService.cs" />
+    <Compile Include="Services\AI\Implementations\AiPromptBuilder.cs" />
+    <Compile Include="Services\AI\Implementations\AiRateLimiter.cs" />
+    <Compile Include="Services\AI\Implementations\AiToolArgumentValidator.cs" />
+    <Compile Include="Services\AI\Implementations\AiToolBase.cs" />
+    <Compile Include="Services\AI\Implementations\AiToolDispatcher.cs" />
+    <Compile Include="Services\AI\Implementations\AiToolRegistry.cs" />
+    <Compile Include="Services\AI\Implementations\AiToolPermissionPolicy.cs" />
+    <Compile Include="Services\AI\Implementations\GeminiClient.cs" />
+    <Compile Include="Services\AI\Implementations\Tools\GetProductDetailTool.cs" />
+    <Compile Include="Services\AI\Implementations\Tools\GetStockStatusTool.cs" />
+    <Compile Include="Services\AI\Implementations\Tools\ListCategoriesTool.cs" />
+    <Compile Include="Services\AI\Implementations\Tools\SearchProductsTool.cs" />
     <Compile Include="UI\Controls\Tables\BaseTable.cs" />
     <Compile Include="UI\Controls\Filter\FilterComboBox.cs">
       <SubType>Component</SubType>
@@ -522,6 +555,8 @@
     <Compile Include="Infrastructure\Configuration\ConnectionConfigurationService.cs" />
     <Compile Include="Infrastructure\Configuration\IConnectionConfigurationService.cs" />
     <Compile Include="Infrastructure\Composition\AppComposition.cs" />
+    <Compile Include="Infrastructure\Security\AppConfig.cs" />
+    <Compile Include="Infrastructure\Security\SecureConfigFile.cs" />
     <Compile Include="Infrastructure\SecureConfigStore.cs" />
     <Compile Include="Models\DTOs\LoginRequestDto.cs" />
     <Compile Include="Models\DTOs\UserManagementPageDto.cs" />
@@ -582,6 +617,9 @@
     </Compile>
     <Compile Include="UI\Controls\Search\SearchPresenter.cs" />
     <Compile Include="UI\Controls\Settings\SettingsButtonControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Settings\ChatbotButtonControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\Settings\SettingsPopupControl.cs">

@@ -8,6 +8,9 @@ using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
+using SIMS_WinFormsApp.Services.AI.Implementations;
+using SIMS_WinFormsApp.Services.AI.Implementations.Tools;
+using SIMS_WinFormsApp.Services.AI.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.Services.Mail;
@@ -119,6 +122,30 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IProductCatalogService CreateProductCatalogService()
         {
             return new SqlProductCatalogService(CreateConnectionFactory(), new LocalProductImageStore());
+        }
+
+        public static IAiChatService CreateAiChatService()
+        {
+            IProductCatalogService catalogService = CreateProductCatalogService();
+            IAiToolPermissionPolicy permissionPolicy =
+                new AiToolPermissionPolicy(CreateRolePermissionRepository());
+            IAiTool[] tools =
+            {
+                new SearchProductsTool(catalogService, permissionPolicy),
+                new GetProductDetailTool(catalogService, permissionPolicy),
+                new GetStockStatusTool(catalogService, permissionPolicy),
+                new ListCategoriesTool(catalogService, permissionPolicy)
+            };
+
+            var registry = new AiToolRegistry(tools);
+            var limiter = new AiRateLimiter(12, TimeSpan.FromMinutes(1));
+            var dispatcher = new AiToolDispatcher(registry, limiter);
+            return new AiChatService(
+                new GeminiClient(),
+                registry,
+                dispatcher,
+                new AiPromptBuilder(),
+                UserSession.Instance);
         }
 
         public static ICatalogAdminService CreateCatalogAdminService()

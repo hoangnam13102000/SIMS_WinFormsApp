@@ -119,7 +119,7 @@ namespace SIMS_WinFormsApp.UI.Controls.AuditLog
         private int ArrangeStats(int width)
         {
             const int gap = 12;
-            const int cardH = 128;
+            const int cardH = 112;
             int cols = width >= 190 * 4 + gap * 3 ? 4 : 2;
             int rows = cols == 4 ? 1 : 2;
             int cardW = (width - gap * (cols - 1)) / cols;
@@ -128,7 +128,7 @@ namespace SIMS_WinFormsApp.UI.Controls.AuditLog
             {
                 int col = i % cols;
                 int row = i / cols;
-                cards[i].MinimumSize = new Size(140, 124);
+                cards[i].MinimumSize = new Size(140, 108);
                 cards[i].SetBounds(col * (cardW + gap), row * (cardH + gap), cardW, cardH);
             }
             return rows * cardH + (rows - 1) * gap;

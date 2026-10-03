@@ -33,6 +33,13 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             }
         }
 
+        protected override void OnContentReady()
+        {
+            base.OnContentReady();
+            ContentHost.PerformLayout();
+            FitHeightToContent();
+        }
+
         private void BuildContent(AuditLogDetailDto detail)
         {
             HeaderTitle = Lang.Get("audit.detail.title", detail.LogId);

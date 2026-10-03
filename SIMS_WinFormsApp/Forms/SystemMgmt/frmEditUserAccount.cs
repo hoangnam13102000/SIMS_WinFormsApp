@@ -69,8 +69,6 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             HeaderTitle = "Cập nhật tài khoản " + accountType;
             SetHeaderIcon(IconChar.UserPen, AppColors.Accent);
 
-            var banner = CreateBanner(accountType);
-
             var fieldFullName = CreateFullNameField();
             var fieldEmail = CreateEmailField();
             var fieldPhone = CreatePhoneField();
@@ -119,12 +117,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
                 }
             }
 
-            // Với các control con đều Dock=Top trong cùng 1 Panel, WinForms xếp control ADD SAU
-            // CÙNG lên vị trí TRÊN CÙNG, nên add theo thứ tự NGƯỢC LẠI với thứ tự hiển thị mong
-            // muốn (banner -> formLayout, từ trên xuống). Khoảng cách giữa banner và formLayout
-            // do Padding.Top của AvatarSectionFormPanel đảm nhiệm (Dock bỏ qua Margin).
+            // Header đã nêu rõ mục đích popup nên không thêm banner lặp lại; giữ trọn chiều cao
+            // màn hình cho các trường nhân viên mà không cần thanh cuộn.
             ContentHost.Controls.Add(formLayout);
-            ContentHost.Controls.Add(banner);
 
             // KHÔNG gọi formLayout.Reflow() ở đây: Form CHƯA có handle cửa sổ tại thời điểm
             // BuildContent() chạy trong constructor - xem BaseFormDialogForm.OnContentReady.
@@ -159,7 +154,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             base.OnContentReady();
             _formLayout.Reflow();
             ContentHost.PerformLayout();
-            FitHeightToContent();
+            FitHeightToContent(screenEdgeMargin: 8);
         }
 
         private static string GetAccountTypeLabel(UserDetailDto user)
@@ -176,16 +171,6 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             return string.IsNullOrWhiteSpace(fullName)
                 ? "?"
                 : fullName.Trim().Substring(0, 1).ToUpperInvariant();
-        }
-
-        private static InfoBannerPanel CreateBanner(string accountType)
-        {
-            return new InfoBannerPanel
-            {
-                Icon = IconChar.UserGear,
-                TitleText = "Cập nhật tài khoản " + accountType,
-                DescriptionText = "Chỉnh thông tin liên hệ, vai trò hoặc trạng thái tài khoản."
-            };
         }
 
         private static FieldGroupHeader CreatePersonalInfoHeader()

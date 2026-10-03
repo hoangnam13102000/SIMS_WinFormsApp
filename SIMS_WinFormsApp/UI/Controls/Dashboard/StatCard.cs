@@ -118,8 +118,8 @@ namespace SIMS_WinFormsApp.UI.Controls
                      ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw, true);
 
-            Size = new Size(260, 136);
-            MinimumSize = new Size(180, 124);
+            Size = new Size(260, 116);
+            MinimumSize = new Size(180, 108);
             BackColor = AppColors.PageBg;
             BuildUI();
         }
