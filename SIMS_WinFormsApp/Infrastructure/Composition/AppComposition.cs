@@ -144,7 +144,7 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
                 new GeminiClient(),
                 registry,
                 dispatcher,
-                new AiPromptBuilder(),
+                new AiPromptBuilder(CreateStoreConfigRepository()),
                 UserSession.Instance);
         }
 
