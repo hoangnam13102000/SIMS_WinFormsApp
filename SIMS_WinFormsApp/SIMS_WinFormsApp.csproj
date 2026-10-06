@@ -149,10 +149,12 @@
     <Compile Include="MVP\ViewModels\HeaderUserViewModel.cs" />
     <Compile Include="MVP\ViewModels\AuditLogGridRow.cs" />
     <Compile Include="Repositories\Implementations\AuditLogRepository.cs" />
+    <Compile Include="Repositories\Implementations\DashboardRepository.cs" />
     <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
     <Compile Include="Repositories\Implementations\StoreConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\IAuditLogRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IDashboardRepository.cs" />
     <Compile Include="Repositories\Interfaces\IAuditLogWriter.cs" />
     <Compile Include="Repositories\Interfaces\IPermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRolePermissionRepository.cs" />
@@ -177,10 +179,12 @@
     <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
     <Compile Include="Services\Barcode\IWebcamCaptureSession.cs" />
     <Compile Include="Services\Implementations\Pos\DemoCustomerLookupService.cs" />
+    <Compile Include="Services\Implementations\DashboardService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlProductCatalogService.cs" />
     <Compile Include="Services\Implementations\Pos\DemoPromotionService.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
+    <Compile Include="Services\Interfaces\IDashboardService.cs" />
     <Compile Include="Services\Interfaces\Pos\ICustomerLookupService.cs" />
     <Compile Include="Services\Interfaces\Pos\IProductCatalogService.cs" />
     <Compile Include="Services\Interfaces\Pos\IPromotionService.cs" />
@@ -199,6 +203,7 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <Compile Include="Models\DTOs\Catalog\CatalogDtos.cs" />
+    <Compile Include="Models\DTOs\Dashboard\DashboardSummaryDto.cs" />
     <Compile Include="Repositories\Interfaces\ICatalogRepository.cs" />
     <Compile Include="Repositories\Implementations\CatalogRepository.cs" />
     <Compile Include="Services\Interfaces\ICatalogAdminService.cs" />
@@ -626,6 +631,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\Controls\Dashboard\StatCard.cs" />
+    <Compile Include="UI\Controls\Dashboard\RevenueTrendChart.cs" />
     <Compile Include="UI\Controls\Auth\ModernCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
