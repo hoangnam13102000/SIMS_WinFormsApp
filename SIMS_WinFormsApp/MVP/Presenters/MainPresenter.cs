@@ -147,7 +147,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             var layout = new MainLayoutControl(Lang.Get("main.header.subtitle"));
             layout.AddSection(Lang.Get("sidebar.section.overview"));
             layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
-                new ucDashboard(_getDisplayName()), IconChar.House);
+                new ucDashboard(_getDisplayName(), AppComposition.CreateDashboardService()), IconChar.House);
             layout.AddSection(Lang.Get("sidebar.section.users"));
             layout.AddPage("profile", Lang.Get("header.dropdown.profile"), new SIMS_WinFormsApp.Forms.Profile.ucMyProfile(), IconChar.UserCircle, showInSidebar: false);
             layout.AddPage("accounts", Lang.Get("sidebar.page.accounts"), ManagementTablePage.Accounts(_userManagementService), IconChar.UsersCog);
