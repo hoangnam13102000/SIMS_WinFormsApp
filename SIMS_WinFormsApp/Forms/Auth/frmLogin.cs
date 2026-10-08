@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using System;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -23,9 +24,24 @@ namespace SIMS_WinFormsApp.Forms.Auth
         private readonly IAuthService _authService;
         private readonly LoginPresenter _presenter;
 
+        public frmLogin()
+        {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
+
+            // Designer/preview and runtime must not call the parameterless constructor.
+            // The app always creates this form via the overload that receives IAuthService.
+            // Keeping this constructor silent avoids breaking the WinForms Designer while
+            // preserving the intended runtime guard at the call site.
+        }
+
         public frmLogin(IAuthService authService)
         {
             InitializeComponent();
+            LayoutLoginPanels();
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _presenter = new LoginPresenter(this, _authService);
 
@@ -44,11 +60,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
-            FormClosed += (s, e) =>
-            {
-                LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
-                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
-            };
+            FormClosed += FrmLogin_FormClosed;
 
             // Đồng bộ màu pnlRight theo theme đang active NGAY từ đầu (trước đây chỉ
             // được cập nhật khi ThemeChanged bắn ra sau này). Nếu app khởi động khi
@@ -60,14 +72,117 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         private void WireEvents()
         {
-            btnLogin.Click += async (s, e) => await DoLoginAsync();
-            lnkForgotPassword.Click += (s, e) =>
+            btnLogin.Click += BtnLogin_Click;
+            lnkForgotPassword.Click += LnkForgotPassword_Click;
+        }
+
+        private async void BtnLogin_Click(object sender, EventArgs e)
+        {
+            await DoLoginAsync();
+        }
+
+        private void LnkForgotPassword_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new frmForgotPassword(txtUsername.Text.Trim()))
             {
-                using (var dlg = new frmForgotPassword(txtUsername.Text.Trim()))
-                {
-                    dlg.ShowDialog(this);
-                }
-            };
+                dlg.ShowDialog(this);
+            }
+        }
+
+        private void FrmLogin_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+            ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+        }
+
+        private void PnlOptionsRow_Resize(object sender, EventArgs e)
+        {
+            AlignOptionsRow();
+        }
+
+        private void ChkRemember_SizeChanged(object sender, EventArgs e)
+        {
+            AlignOptionsRow();
+        }
+
+        private void LnkForgotPassword_SizeChanged(object sender, EventArgs e)
+        {
+            AlignOptionsRow();
+        }
+
+        private void LnkForgotPassword_TextChanged(object sender, EventArgs e)
+        {
+            FitForgotPasswordLink();
+        }
+
+        private void PnlRight_Resize(object sender, EventArgs e)
+        {
+            LayoutLoginPanels();
+        }
+
+        private void PnlFormCard_Resize(object sender, EventArgs e)
+        {
+            ResizeFormCardControls();
+        }
+
+        private void AlignOptionsRow()
+        {
+            if (pnlOptionsRow == null || lnkForgotPassword == null || chkRemember == null) return;
+
+            int linkX = Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
+            int linkY = Math.Max(0, (pnlOptionsRow.Height - lnkForgotPassword.Height) / 2);
+            lnkForgotPassword.Location = new Point(linkX, linkY);
+
+            int checkY = Math.Max(0, (pnlOptionsRow.Height - chkRemember.Height) / 2);
+            chkRemember.Location = new Point(0, checkY);
+        }
+
+        private void FitForgotPasswordLink()
+        {
+            if (lnkForgotPassword == null) return;
+
+            int neededWidth = lnkForgotPassword.GetPreferredSize(Size.Empty).Width + 4;
+            if (neededWidth > lnkForgotPassword.Width)
+                lnkForgotPassword.Width = neededWidth;
+        }
+
+        private void CenterFormCard()
+        {
+            if (pnlFormCard == null || pnlRight == null) return;
+
+            int x = Math.Max(24, (pnlRight.Width - pnlFormCard.Width) / 2);
+            int yPos = Math.Max(24, (pnlRight.Height - pnlFormCard.Height) / 2);
+            pnlFormCard.Location = new Point(x, yPos);
+            brandPanel.ContentTop = yPos;
+        }
+
+        private void LayoutLoginPanels()
+        {
+            if (pnlRight == null || pnlFormCard == null || brandPanel == null) return;
+
+            pnlAuthSplit.PerformLayout();
+            int availableCardWidth = Math.Max(1, pnlRight.ClientSize.Width - 80);
+            int cardWidth = Math.Max(1, Math.Min(560, (int)(availableCardWidth * 0.78f)));
+            pnlFormCard.Width = cardWidth;
+            ResizeFormCardControls();
+            CenterFormCard();
+        }
+
+        private void ResizeFormCardControls()
+        {
+            if (pnlFormCard == null) return;
+
+            int width = Math.Max(1, pnlFormCard.ClientSize.Width);
+            lblTitle.Width = width + 5;
+            lblSubtitle.Width = width;
+            lblUsername.Width = width;
+            txtUsername.Width = width;
+            lblPassword.Width = width;
+            txtPassword.Width = width;
+            pnlOptionsRow.Width = width;
+            lblError.Width = width;
+            btnLogin.Width = width;
+            AlignOptionsRow();
         }
 
         private void OnLanguageChanged(object sender, EventArgs e) => RefreshTexts();
@@ -184,6 +299,16 @@ namespace SIMS_WinFormsApp.Forms.Auth
         {
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void lnkForgotPassword_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void brandPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

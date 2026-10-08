@@ -48,11 +48,20 @@
     <Compile Include="Forms\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\Chat\ucChat.Designer.cs">
+      <DependentUpon>ucChat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Chat\ucAiChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\Chat\ucAiChat.Designer.cs">
+      <DependentUpon>ucAiChat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Chat\AiChatPopupForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Chat\AiChatPopupForm.Designer.cs">
+      <DependentUpon>AiChatPopupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Profile\ucMyProfile.cs">
       <SubType>UserControl</SubType>
@@ -63,27 +72,51 @@
     <Compile Include="Forms\SystemMgmt\frmAddEmployee.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\frmAddEmployee.Designer.cs">
+      <DependentUpon>frmAddEmployee.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\frmAuditLogDetail.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\frmAuditLogDetail.Designer.cs">
+      <DependentUpon>frmAuditLogDetail.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SystemMgmt\frmEditUserAccount.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\frmEditUserAccount.Designer.cs">
+      <DependentUpon>frmEditUserAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\frmUserAccountDetail.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\frmUserAccountDetail.Designer.cs">
+      <DependentUpon>frmUserAccountDetail.cs</DependentUpon>
     </Compile>
     <!-- MỚI: popup "Nhập dữ liệu" dùng chung (Export/Import) -->
     <Compile Include="Forms\SystemMgmt\frmImportData.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\frmImportData.Designer.cs">
+      <DependentUpon>frmImportData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\ucAuditLog.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\ucAuditLog.Designer.cs">
+      <DependentUpon>ucAuditLog.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SystemMgmt\ucRolePermission.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Forms\SystemMgmt\ucRolePermission.Designer.cs">
+      <DependentUpon>ucRolePermission.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SystemMgmt\ucSystemSettings.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\SystemMgmt\ucSystemSettings.Designer.cs">
+      <DependentUpon>ucSystemSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\AI\AiFunctionCall.cs" />
@@ -209,11 +242,20 @@
     <Compile Include="Forms\Catalog\frmProductEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Catalog\frmProductEditor.Designer.cs">
+      <DependentUpon>frmProductEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Catalog\frmCategoryEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Catalog\frmCategoryEditor.Designer.cs">
+      <DependentUpon>frmCategoryEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Catalog\frmSupplierEditor.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Catalog\frmSupplierEditor.Designer.cs">
+      <DependentUpon>frmSupplierEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Catalog\CatalogPages.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
@@ -226,23 +268,60 @@
     <Compile Include="UI\Controls\Barcode\frmBarcodeScannerDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Barcode\frmBarcodeScannerDialog.Designer.cs">
+      <DependentUpon>frmBarcodeScannerDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerView.cs" />
     <Compile Include="UI\Controls\BaseDetailDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Catalog\ProductDetailPrimitives.cs" />
-    <Compile Include="UI\Controls\DetailAvatarPanel.cs" />
-    <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
+    <Compile Include="UI\Controls\Catalog\CardPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Catalog\IconBadge.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Catalog\InfoItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Catalog\Pill.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DetailAvatarPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DialogPillTabButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AiChatMessageRow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\PermissionInfoBannerPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\PermissionRoundedCardPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Dialogs\DialogCloseButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\Dialogs\DialogSizing.cs" />
-    <Compile Include="UI\Controls\Dialogs\FieldGridPanel.cs" />
+    <Compile Include="UI\Controls\Dialogs\FieldGridPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
     <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoBox.cs" />
     <Compile Include="UI\Controls\Dialogs\RoundedDialogFrame.cs" />
-    <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
+    <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Dialogs\AvatarSectionFormPanel.cs" />
     <Compile Include="UI\Controls\Forms\GenderOption.cs" />
     <!-- MỚI: Header -->
@@ -285,9 +364,14 @@
     <Compile Include="UI\Controls\Pos\CartLineRowControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Pos\CustomerFieldControl.cs" />
+    <Compile Include="UI\Controls\Pos\CustomerFieldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Pos\frmListPickerDialog.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Pos\frmListPickerDialog.Designer.cs">
+      <DependentUpon>frmListPickerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Pos\PosPage.cs" />
     <Compile Include="UI\Controls\Pos\PosPageControl.cs">
@@ -311,14 +395,25 @@
     <Compile Include="UI\Controls\Dialogs\BaseFormDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Dialogs\BaseFormDialogForm.Designer.cs">
+      <DependentUpon>BaseFormDialogForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\Dialogs\DetailInfoItemControl.cs" />
     <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
     <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
-    <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs" />
+    <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\Controls\NumberInputFormatter.cs" />
-    <Compile Include="UI\Controls\Forms\LabeledIconField.cs" />
-    <Compile Include="UI\Controls\LabeledComboField.cs" />
-    <Compile Include="UI\Controls\LabeledDateField.cs" />
+    <Compile Include="UI\Controls\Forms\LabeledIconField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\LabeledComboField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\LabeledDateField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
     <Compile Include="Views\Interfaces\IChatView.cs" />
     <Compile Include="Views\Interfaces\IAiChatView.cs" />
@@ -641,6 +736,12 @@
     <Compile Include="UI\Controls\Auth\RoundedPasswordTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UI\Controls\Auth\PasswordEyeToggle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Header\NotificationBadgeControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Auth\RoundedTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -675,6 +776,21 @@
     <Compile Include="UI\Theme\ThemeMode.cs" />
     <EmbeddedResource Include="Forms\Auth\frmChangePassword.resx">
       <DependentUpon>frmChangePassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Auth\frmForgotPassword.resx">
+      <DependentUpon>frmForgotPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Auth\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Catalog\frmCategoryEditor.resx">
+      <DependentUpon>frmCategoryEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Catalog\frmProductEditor.resx">
+      <DependentUpon>frmProductEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Catalog\frmSupplierEditor.resx">
+      <DependentUpon>frmSupplierEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

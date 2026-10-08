@@ -16,7 +16,6 @@ namespace SIMS_WinFormsApp.UI.Controls
     /// <see cref="FieldGridPanel"/> đảm nhiệm; form cụ thể chỉ khai báo field và section
     /// (OCP: thêm/bớt section không phải sửa lớp này).
     /// </summary>
-    [ToolboxItem(false)]
     [DesignerCategory("Code")]
     public class AvatarSectionFormPanel : Panel
     {

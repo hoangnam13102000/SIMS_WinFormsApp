@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -14,7 +15,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    public sealed class frmUserAccountDetail : BaseDetailDialogForm, IUserAccountDetailView
+    public sealed partial class frmUserAccountDetail : BaseDetailDialogForm, IUserAccountDetailView
     {
         // MỚI: kích thước riêng cho popup này (lớn hơn DefaultDialogSize/MinimumDialogSize mặc
         // định của BaseDetailDialogForm). Lý do: tab "Tài khoản" của tài khoản NHÂN VIÊN có tới
@@ -50,6 +51,15 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private DetailInfoItemControl _itemGender;
         private DetailInfoItemControl _itemSalary;
 
+        public frmUserAccountDetail() : base()
+        {
+            _user = new UserDetailDto();
+            InitializeComponent();
+            HeaderTitle = "Chi tiết tài khoản";
+            SetHeaderIcon(IconChar.UsersCog, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         public frmUserAccountDetail(UserDetailDto user)
             : this(user, null, null, new UserAccountDetailViewModelBuilder())
         {
@@ -77,6 +87,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             IUserAccountDetailViewModelBuilder viewModelBuilder)
             : base(owner)
         {
+            InitializeComponent();
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (viewModelBuilder == null) throw new ArgumentNullException(nameof(viewModelBuilder));
 

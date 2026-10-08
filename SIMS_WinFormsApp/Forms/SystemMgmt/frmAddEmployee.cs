@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
 
-    public sealed class frmAddEmployee : BaseFormDialogForm, IAddEmployeeView
+    public sealed partial class frmAddEmployee : BaseFormDialogForm, IAddEmployeeView
     {
         /// <summary>Độ rộng mong muốn của popup (avatar + lưới 3 cột) - đủ rộng để hiện trọn
         /// nội dung không cần cuộn; tự thu lại nếu màn hình nhỏ hơn.</summary>
@@ -53,8 +54,18 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             new GenderOption(Gender.Other, "Khác")
         };
 
+        public frmAddEmployee()
+        {
+            InitializeComponent();
+            HeaderTitle = "Thêm nhân viên";
+            SetHeaderIcon(IconChar.UserPlus, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         public frmAddEmployee(IWin32Window owner, IUserManagementService userManagementService) : base(owner)
         {
+            InitializeComponent();
+            ContentHost.Controls.Clear();
             if (userManagementService == null) throw new ArgumentNullException(nameof(userManagementService));
 
             // Đặt kích thước popup TRƯỚC khi dựng nội dung để layout tính đúng độ rộng ngay từ

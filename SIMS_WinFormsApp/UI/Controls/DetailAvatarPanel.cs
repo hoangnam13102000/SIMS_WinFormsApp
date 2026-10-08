@@ -7,8 +7,6 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
     public class DetailAvatarPanel : Panel
     {
         private const int AvatarSize = 96;

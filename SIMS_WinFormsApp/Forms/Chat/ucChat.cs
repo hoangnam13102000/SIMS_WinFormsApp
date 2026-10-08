@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ using SIMS_WinFormsApp.UI.Theme;
 namespace SIMS_WinFormsApp.Forms.Chat
 {
 
-    public sealed class ucChat : UserControl, IChatView
+    public sealed partial class ucChat : UserControl, IChatView
     {
         public event Action ViewLoaded;
         public event Action ViewUnloaded;
@@ -42,6 +43,9 @@ namespace SIMS_WinFormsApp.Forms.Chat
 
         public ucChat()
         {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            Controls.Clear();
             Dock = DockStyle.Fill;
             BackColor = AppColors.PageBg;
             DoubleBuffered = true;

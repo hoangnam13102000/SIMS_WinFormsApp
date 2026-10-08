@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -12,18 +13,32 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
     /// <summary>Dialog "Xem" 1 dòng nhật ký - thuần hiển thị dữ liệu đã có sẵn, không có
     /// nghiệp vụ/validate nào nên không cần Presenter riêng (YAGNI).</summary>
-    public sealed class frmAuditLogDetail : BaseFormDialogForm
+    public sealed partial class frmAuditLogDetail : BaseFormDialogForm
     {
         private static readonly Size DialogSize = new Size(760, 620);
 
+        public frmAuditLogDetail()
+        {
+            InitializeComponent();
+            HeaderTitle = "Chi tiết nhật ký";
+            SetHeaderIcon(IconChar.Eye, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         private frmAuditLogDetail(IWin32Window owner, AuditLogDetailDto detail) : base(owner)
         {
+            InitializeComponent();
+            ContentHost.Controls.Clear();
             Size = DialogSize;
             BuildContent(detail);
 
-            CloseRequested += (s, e) => Close();
-            AddFooterButton(Lang.Get("common.close"), isPrimary: true, onClick: (s, e) => RaiseCloseRequested());
+            CloseRequested += CloseRequestedHandler;
+            AddFooterButton(Lang.Get("common.close"), isPrimary: true, onClick: CloseButton_Click);
         }
+
+        private void CloseRequestedHandler(object sender, EventArgs e) => Close();
+
+        private void CloseButton_Click(object sender, EventArgs e) => RaiseCloseRequested();
 
         public static DialogResult Show(IWin32Window owner, AuditLogDetailDto detail)
         {

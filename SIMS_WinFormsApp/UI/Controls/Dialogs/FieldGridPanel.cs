@@ -8,8 +8,6 @@ using System.Windows.Forms;
 namespace SIMS_WinFormsApp.UI.Controls
 {
 
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
     public class FieldGridPanel : Panel
     {
         private const int DefaultColumnGap = 24;
@@ -22,7 +20,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         // phần trên do không đủ khoảng cách. Thêm 1 khoảng đệm dọc nhỏ giữa các hàng (không đệm
         // sau hàng cuối) để mỗi hàng có đủ "kích thước" hiển thị độc lập, không ảnh hưởng cột
         // ngang hay thứ tự Tab hiện có.
-        private const int RowGap = 12;
+        private const int DefaultRowGap = 12;
 
         private sealed class GridCell
         {
@@ -49,14 +47,18 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
 
         private readonly List<GridCell> _cells = new List<GridCell>();
-        private readonly int _columnCount;
-        private readonly int _columnGap;
-        private readonly int _rowGap;
+        private int _columnCount;
+        private int _columnGap;
+        private int _rowGap;
         private int _nextRow;
         private int _nextColumn;
         private bool _isReflowing;
 
-        public FieldGridPanel(int columnCount = 3, int columnGap = DefaultColumnGap, int rowGap = RowGap)
+        public FieldGridPanel() : this(3, DefaultColumnGap, DefaultRowGap)
+        {
+        }
+
+        public FieldGridPanel(int columnCount = 3, int columnGap = DefaultColumnGap, int rowGap = DefaultRowGap)
         {
             if (columnCount < 1) throw new ArgumentOutOfRangeException(nameof(columnCount));
             if (columnGap < 0) throw new ArgumentOutOfRangeException(nameof(columnGap));
@@ -70,6 +72,42 @@ namespace SIMS_WinFormsApp.UI.Controls
             Dock = DockStyle.Top;
 
             Resize += (s, e) => Reflow();
+        }
+
+        [DefaultValue(3)]
+        public int ColumnCount
+        {
+            get { return _columnCount; }
+            set
+            {
+                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
+                _columnCount = value;
+                Reflow();
+            }
+        }
+
+        [DefaultValue(DefaultColumnGap)]
+        public int ColumnGap
+        {
+            get { return _columnGap; }
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                _columnGap = value;
+                Reflow();
+            }
+        }
+
+        [DefaultValue(DefaultRowGap)]
+        public int RowGap
+        {
+            get { return _rowGap; }
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                _rowGap = value;
+                Reflow();
+            }
         }
 
         /// <summary>Thêm 1 field vào ô kế tiếp (đọc từ trái sang phải, từ trên xuống dưới).

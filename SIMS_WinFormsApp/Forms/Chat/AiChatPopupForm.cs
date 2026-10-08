@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -6,10 +7,18 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Chat
 {
-    public sealed class AiChatPopupForm : PopupFormBase
+    public sealed partial class AiChatPopupForm : PopupFormBase
     {
+        public AiChatPopupForm()
+        {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         public AiChatPopupForm(ucAiChat chatView)
         {
+            InitializeComponent();
+            Controls.Clear();
             if (chatView == null)
                 throw new System.ArgumentNullException(nameof(chatView));
 

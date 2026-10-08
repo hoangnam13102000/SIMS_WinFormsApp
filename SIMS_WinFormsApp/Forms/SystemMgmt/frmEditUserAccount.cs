@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -14,7 +15,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    public sealed class frmEditUserAccount : BaseFormDialogForm, IEditUserAccountView
+    public sealed partial class frmEditUserAccount : BaseFormDialogForm, IEditUserAccountView
     {
         /// <summary>Độ rộng mong muốn của popup (avatar + lưới 3 cột) - đủ rộng để hiện trọn
         /// nội dung không cần cuộn; tự thu lại nếu màn hình nhỏ hơn.</summary>
@@ -34,9 +35,19 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private AvatarSectionFormPanel _formLayout;
         private PrimaryButton _btnSave;
 
+        public frmEditUserAccount()
+        {
+            InitializeComponent();
+            HeaderTitle = "Cập nhật tài khoản";
+            SetHeaderIcon(IconChar.UserPen, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         public frmEditUserAccount(UserDetailDto user, IWin32Window owner, IUserManagementService userManagementService)
             : base(owner)
         {
+            InitializeComponent();
+            ContentHost.Controls.Clear();
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (userManagementService == null) throw new ArgumentNullException(nameof(userManagementService));
 

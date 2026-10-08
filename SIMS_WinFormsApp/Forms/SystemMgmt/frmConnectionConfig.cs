@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
@@ -14,9 +15,20 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private readonly IDialogService _dialogService; 
         private readonly IConnectionConfigurationService _configurationService;
 
+        public frmConnectionConfig() : this(null)
+        {
+        }
+
         public frmConnectionConfig(IConnectionConfigurationService configurationService = null)
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _dialogService = null;
+                _configurationService = configurationService;
+                return;
+            }
+
             _dialogService = AppComposition.CreateDialogService();
             _configurationService = configurationService ??
                 AppComposition.CreateConnectionConfigurationService();

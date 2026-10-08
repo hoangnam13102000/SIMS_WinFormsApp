@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
     /// Layout tự co giãn: bộ lọc ngày luôn đủ chỗ hiện dd/MM/yyyy, cột thao tác là icon mắt,
     /// và cả trang cuộn khi cửa sổ thấp để không cắt thẻ thống kê hay ô lọc.
     /// </summary>
-    public sealed class ucAuditLog : UserControl, IAuditLogView
+    public sealed partial class ucAuditLog : UserControl, IAuditLogView
     {
         private readonly IAuditLogRepository _repository;
         private readonly AuditLogPresenter _presenter;
@@ -58,8 +59,15 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private bool _arranging;
         private bool _bindingFilters;
 
+        public ucAuditLog() : this((IAuditLogRepository)null)
+        {
+        }
+
         public ucAuditLog(IAuditLogRepository repository = null)
         {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            Controls.Clear();
             AutoScaleMode = AutoScaleMode.None;
             Font = AppFonts.Body;
             DoubleBuffered = true;

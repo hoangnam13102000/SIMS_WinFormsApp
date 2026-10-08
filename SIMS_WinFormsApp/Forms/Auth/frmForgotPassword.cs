@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,6 +21,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
         // Khoảng trống dưới cùng của form so với panel bước hiện tại (bằng lề trên trong Designer).
         private const int FormBottomMargin = 40;
+        private const int ContentWidth = 520;
 
         private readonly ForgotPasswordPresenter _presenter;
 
@@ -44,6 +46,11 @@ namespace SIMS_WinFormsApp.Forms.Auth
         public frmForgotPassword(string initialUsername, IPasswordResetService resetService = null)
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
+
             BuildStepLayouts();
             _presenter = new ForgotPasswordPresenter(
                 this,

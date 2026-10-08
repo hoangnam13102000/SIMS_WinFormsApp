@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using System;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,9 +19,28 @@ namespace SIMS_WinFormsApp.Forms.Auth
         private readonly IAuthService _authService;
         private readonly ChangePasswordPresenter _presenter;
 
+        public frmChangePassword() : this(null)
+        {
+        }
+
         public frmChangePassword(IAuthService authService = null)
         {
             InitializeComponent();
+            brandPanel.Logo = Properties.Resources.logo_icon;
+            brandPanel.Features = new[]
+            {
+                "Quản lý bán hàng",
+                "Theo dõi tồn kho",
+                "Báo cáo kinh doanh"
+            };
+
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _authService = authService;
+                _presenter = null;
+                return;
+            }
+
             _authService = authService ?? AppComposition.CreateAuthService();
             _presenter = new ChangePasswordPresenter(this, _authService);
 
@@ -32,32 +52,41 @@ namespace SIMS_WinFormsApp.Forms.Auth
 
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
-            FormClosed += (s, e) =>
-            {
-                LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
-                ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
-            };
+            FormClosed += FrmChangePassword_FormClosed;
         }
 
         private void WireEvents()
         {
-            btnCancel.Click += (s, e) =>
+            btnCancel.Click += BtnCancel_Click;
+            btnSubmit.Click += BtnSubmit_Click;
+            Load += FrmChangePassword_Load;
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private async void BtnSubmit_Click(object sender, EventArgs e)
+        {
+            await DoChangePasswordAsync();
+        }
+
+        private void FrmChangePassword_Load(object sender, EventArgs e)
+        {
+            if (!UserSession.Instance.IsLoggedIn)
             {
-                DialogResult = DialogResult.Cancel;
                 Close();
-            };
+                return;
+            }
+            txtCurrent.FocusInput();
+        }
 
-            btnSubmit.Click += async (s, e) => await DoChangePasswordAsync();
-
-            Load += (s, e) =>
-            {
-                if (!UserSession.Instance.IsLoggedIn)
-                {
-                    Close();
-                    return;
-                }
-                txtCurrent.FocusInput();
-            };
+        private void FrmChangePassword_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+            ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
         }
 
         private void OnLanguageChanged(object sender, EventArgs e) => RefreshTexts();
@@ -94,6 +123,7 @@ namespace SIMS_WinFormsApp.Forms.Auth
             btnSubmit.Text = Lang.Get("changepassword.submit");
 
             brandPanel.BrandName = Lang.Get("login.leftpanel.brand");
+            brandPanel.Logo = Properties.Resources.logo_icon;
             brandPanel.Tagline = Lang.Get("login.leftpanel.tagline");
             brandPanel.Features = new[]
             {
@@ -132,6 +162,11 @@ namespace SIMS_WinFormsApp.Forms.Auth
         {
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void brandPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

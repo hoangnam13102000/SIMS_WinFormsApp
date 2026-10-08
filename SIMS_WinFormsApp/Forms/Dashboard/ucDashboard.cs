@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -28,6 +29,10 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
         private TableLayoutPanel _statsRow;
         private BufferedPanel _contentPanel;
 
+        public ucDashboard() : this(null)
+        {
+        }
+
         public ucDashboard(string displayName = null)
         {
             AutoScaleMode = AutoScaleMode.None;
@@ -40,6 +45,12 @@ namespace SIMS_WinFormsApp.Forms.Dashboard
 
             InitializeComponent();
             BuildUI();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _presenter = null;
+                return;
+            }
+
             _presenter = new DashboardPresenter(this, displayName);
             _presenter.Load();
         }

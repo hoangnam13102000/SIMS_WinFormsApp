@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -40,18 +41,28 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private Panel _permissionListPanel;
         private LoadingOverlayHost _overlayHost;
 
+        public frmRoleManagement() : this(null, null, null)
+        {
+        }
+
         public frmRoleManagement(
             IWin32Window owner,
             IRoleRepository roleRepository = null,
             IPermissionRepository permissionRepository = null)
             : base(owner)
         {
+            InitializeComponent();
             Size = DialogSize;
 
             BuildContent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _presenter = null;
+                return;
+            }
 
-            CloseRequested += (s, e) => Close();
-            AddFooterButton("Đóng", isPrimary: true, onClick: (s, e) => RaiseCloseRequested());
+            CloseRequested += FrmRoleManagement_CloseRequested;
+            AddFooterButton("Đóng", isPrimary: true, onClick: FooterCloseButton_Click);
 
             _presenter = new RoleManagementPresenter(
                 this,
@@ -62,7 +73,22 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             // Tải dữ liệu SAU KHI dialog đã thực sự hiển thị (Shown), không phải trong
             // constructor hay Load - nếu tải ngay trong constructor, người dùng sẽ không thấy gì
             // trong 2-3 giây (dialog chưa kịp vẽ) và lớp phủ loading mất hết tác dụng.
-            Shown += (s, e) => _presenter.Load();
+            Shown += FrmRoleManagement_Shown;
+        }
+
+        private void FrmRoleManagement_CloseRequested(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void FooterCloseButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
+        }
+
+        private void FrmRoleManagement_Shown(object sender, EventArgs e)
+        {
+            _presenter.Load();
         }
 
         /// <summary>Cách gọi nhanh, gọn cho nơi khác trong ứng dụng:

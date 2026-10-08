@@ -15,6 +15,10 @@ namespace SIMS_WinFormsApp.Forms.Reports
         public frmInvoiceReport()
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
         }
     }
 }

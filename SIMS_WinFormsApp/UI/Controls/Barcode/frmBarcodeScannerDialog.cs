@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -21,18 +22,26 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
     /// mà không phải sửa lại UI đang hardcode "sản phẩm".
     /// </para>
     /// </summary>
-    public sealed class frmBarcodeScannerDialog : BaseFormDialogForm, IBarcodeScannerView
+    public sealed partial class frmBarcodeScannerDialog : BaseFormDialogForm, IBarcodeScannerView
     {
         private static readonly Size DialogSize = new Size(560, 560);
 
-        private readonly BarcodeScannerPresenter _presenter;
-        private readonly Label _instructionLabel;
-        private readonly Panel _videoHolder;
-        private readonly PictureBox _videoBox;
-        private readonly Label _errorLabel;
-        private readonly Label _statusLabel;
+        private BarcodeScannerPresenter _presenter;
+        private Label _instructionLabel;
+        private Panel _videoHolder;
+        private PictureBox _videoBox;
+        private Label _errorLabel;
+        private Label _statusLabel;
 
         private string _scannedCode;
+
+        public frmBarcodeScannerDialog()
+        {
+            InitializeComponent();
+            HeaderTitle = "Quét mã vạch sản phẩm";
+            SetHeaderIcon(IconChar.Barcode, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
 
         public frmBarcodeScannerDialog(
             IWin32Window owner,
@@ -41,70 +50,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             IWebcamCaptureSession captureSession,
             BarcodeScanEngine engine) : base(owner)
         {
+            InitializeComponent();
             Size = DialogSize;
             MinimumSize = DialogSize;
 
             HeaderTitle = dialogTitle;
             SetHeaderIcon(IconChar.Barcode, AppColors.Accent);
-
-            _instructionLabel = new Label
-            {
-                AutoSize = false,
-                Dock = DockStyle.Top,
-                Height = 30,
-                Text = instructionText,
-                Font = AppFonts.BodyBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                Margin = new Padding(0, 0, 0, 12)
-            };
-
-            _videoBox = new PictureBox
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Black,
-                SizeMode = PictureBoxSizeMode.Zoom
-            };
-
-            _errorLabel = new Label
-            {
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = AppFonts.Body,
-                ForeColor = AppColors.Error,
-                BackColor = Color.Transparent,
-                Visible = false
-            };
-
-            _videoHolder = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 330,
-                BackColor = AppColors.BgLighter,
-                Margin = new Padding(0, 0, 0, 8)
-            };
-            _videoHolder.Controls.Add(_errorLabel);
-            _videoHolder.Controls.Add(_videoBox);
-
-            _statusLabel = new Label
-            {
-                AutoSize = false,
-                Dock = DockStyle.Top,
-                Height = 22,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent
-            };
-
-            // ContentHost là Panel Dock=Top xếp chồng: add SAU CÙNG hiển thị TRÊN CÙNG (cùng quy
-            // ước với frmImportData/frmEditUserAccount) -> add theo thứ tự ngược lại mong muốn
-            // (hướng dẫn -> khung hình -> trạng thái, từ trên xuống).
-            ContentHost.Controls.Add(_statusLabel);
-            ContentHost.Controls.Add(_videoHolder);
-            ContentHost.Controls.Add(_instructionLabel);
-
-            AddFooterButton("Hủy", false, (s, e) => RaiseCloseRequested());
-            CloseRequested += (s, e) => Close();
+            _instructionLabel.Text = instructionText;
+            AddFooterButton("Hủy", false, CancelButton_Click);
+            CloseRequested += CloseRequestedHandler;
 
             _presenter = new BarcodeScannerPresenter(this, this, captureSession, engine);
             _presenter.Scanned += (s, code) =>
@@ -114,8 +68,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
                 Close();
             };
 
-            Shown += (s, e) => _presenter.Start();
+            Shown += Presenter_Start;
         }
+
+        private void CancelButton_Click(object sender, EventArgs e) => RaiseCloseRequested();
+
+        private void CloseRequestedHandler(object sender, EventArgs e) => Close();
+
+        private void Presenter_Start(object sender, EventArgs e) => _presenter.Start();
 
         /// <summary>
         /// Cách gọi nhanh, gọn cho nơi khác trong ứng dụng:

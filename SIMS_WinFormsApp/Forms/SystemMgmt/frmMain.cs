@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.MVP.Presenters;
@@ -23,6 +24,11 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public frmMain()
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
+
             AutoScaleMode = AutoScaleMode.None;
             Font = new Font("Segoe UI", 9f);
             StartPosition = FormStartPosition.CenterScreen;

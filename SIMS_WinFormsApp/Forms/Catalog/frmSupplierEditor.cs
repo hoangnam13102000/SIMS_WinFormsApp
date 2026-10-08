@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -7,27 +8,30 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Catalog
 {
-    public sealed class frmSupplierEditor : BaseFormDialogForm
+    public sealed partial class frmSupplierEditor : BaseFormDialogForm
     {
-        private readonly SupplierEditDto _model;
-        private readonly LabeledIconField _name;
-        private readonly LabeledIconField _phone;
-        private readonly LabeledIconField _email;
-        private readonly LabeledIconField _address;
-        private readonly LabeledIconField _items;
+        private SupplierEditDto _model;
+        private LabeledIconField _name;
+        private LabeledIconField _phone;
+        private LabeledIconField _email;
+        private LabeledIconField _address;
+        private LabeledIconField _items;
+
+        public frmSupplierEditor()
+        {
+            InitializeComponent();
+            HeaderTitle = "Nhà cung cấp";
+            SetHeaderIcon(IconChar.Building, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
 
         private frmSupplierEditor(IWin32Window owner, SupplierEditDto model, bool readOnly) : base(owner)
         {
+            InitializeComponent();
             _model = model ?? new SupplierEditDto();
             HeaderTitle = readOnly ? "Chi tiết nhà cung cấp" : (_model.SupplierId > 0 ? "Sửa nhà cung cấp" : "Thêm nhà cung cấp");
             SetHeaderIcon(IconChar.Building, AppColors.Accent);
-            Size = new Size(640, 640);
 
-            _name = Field("Tên nhà cung cấp", IconChar.Building, true);
-            _phone = Field("Số điện thoại", IconChar.PhoneVolume, false);
-            _email = Field("Email", IconChar.EnvelopeOpen, false);
-            _address = Field("Địa chỉ", IconChar.MapMarkerAlt, false);
-            _items = Field("Mặt hàng cung cấp", IconChar.Box, false);
             _name.Value = _model.Name;
             _phone.Value = _model.Phone;
             _email.Value = _model.Email;
@@ -42,21 +46,28 @@ namespace SIMS_WinFormsApp.Forms.Catalog
                 _items.Enabled = false;
             }
 
-            ContentHost.Controls.Add(_items);
-            ContentHost.Controls.Add(_address);
-            ContentHost.Controls.Add(_email);
-            ContentHost.Controls.Add(_phone);
-            ContentHost.Controls.Add(_name);
+            CloseRequested += CloseRequestedHandler;
 
-            CloseRequested += (s, e) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
-
-            AddFooterButton("Đóng", false, (s, e) => { DialogResult = DialogResult.Cancel; Close(); });
+            AddFooterButton("Đóng", false, CloseButton_Click);
             if (!readOnly)
-                AddFooterButton("Lưu", true, (s, e) => SaveAndClose());
+                AddFooterButton("Lưu", true, SaveButton_Click);
+        }
+
+        private void CloseRequestedHandler(object sender, System.EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void CloseButton_Click(object sender, System.EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void SaveButton_Click(object sender, System.EventArgs e)
+        {
+            SaveAndClose();
         }
 
         protected override void OnContentReady()
@@ -86,9 +97,5 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             Close();
         }
 
-        private static LabeledIconField Field(string label, IconChar icon, bool required)
-        {
-            return new LabeledIconField { LabelText = label, Icon = icon, IsRequired = required, Dock = DockStyle.Top };
-        }
     }
 }

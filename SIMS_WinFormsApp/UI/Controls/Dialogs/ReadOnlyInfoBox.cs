@@ -14,7 +14,6 @@ namespace SIMS_WinFormsApp.UI.Controls
     /// xếp ngang theo N cột, tự xuống hàng và tự co chiều cao. Thay cho các hàm dựng chip nằm
     /// riêng trong form (SRP: form chỉ khai báo dữ liệu, không tự vẽ/đo).
     /// </summary>
-    [ToolboxItem(false)]
     [DesignerCategory("Code")]
     public class ReadOnlyInfoBox : Panel
     {
@@ -24,25 +23,41 @@ namespace SIMS_WinFormsApp.UI.Controls
         private const int TrailingSpace = 18; // cùng nhịp SpacingAfterBlock của các Labeled*Field
         private const int MinItemWidth = 40;
 
-        private readonly List<InfoItem> _items = new List<InfoItem>();
-        private readonly int _columnCount;
+        private readonly List<ReadOnlyInfoItem> _items = new List<ReadOnlyInfoItem>();
+        private int _columnCount;
         private bool _isLayingOut;
 
-        public ReadOnlyInfoBox(int columnCount = 3)
+        [DefaultValue(3)]
+        public int ColumnCount
         {
-            if (columnCount < 1) throw new ArgumentOutOfRangeException(nameof(columnCount));
+            get { return _columnCount; }
+            set
+            {
+                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
+                _columnCount = value;
+                LayoutItems();
+            }
+        }
+
+        public ReadOnlyInfoBox() : this(3)
+        {
+        }
+
+        public ReadOnlyInfoBox(int columnCount)
+        {
             _columnCount = columnCount;
+            if (columnCount < 1) throw new ArgumentOutOfRangeException(nameof(columnCount));
 
             BackColor = Color.Transparent;
             Dock = DockStyle.Top;
             DoubleBuffered = true;
 
-            Resize += (s, e) => LayoutItems();
+            Resize += ReadOnlyInfoBox_Resize;
         }
 
         public void AddItem(IconChar icon, string caption, string value)
         {
-            var item = new InfoItem(icon, caption, value);
+            var item = new ReadOnlyInfoItem(icon, caption, value);
             _items.Add(item);
             Controls.Add(item);
             LayoutItems();
@@ -68,7 +83,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                     int rowHeight = 0;
                     for (int column = 0; column < _columnCount && i < _items.Count; column++, i++)
                     {
-                        InfoItem item = _items[i];
+                        ReadOnlyInfoItem item = _items[i];
                         item.SetBounds(BoxPadding + column * (itemWidth + ItemGap), y, itemWidth, item.PreferredHeight);
                         rowHeight = Math.Max(rowHeight, item.PreferredHeight);
                     }
@@ -85,6 +100,11 @@ namespace SIMS_WinFormsApp.UI.Controls
             }
         }
 
+        private void ReadOnlyInfoBox_Resize(object sender, EventArgs e)
+        {
+            LayoutItems();
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -96,76 +116,5 @@ namespace SIMS_WinFormsApp.UI.Controls
                 e.Graphics.FillPath(brush, path);
         }
 
-        /// <summary>1 ô thông tin: icon + nhãn nhỏ phía trên + giá trị đậm phía dưới.</summary>
-        private sealed class InfoItem : Panel
-        {
-            private const int IconSize = 14;
-            private const int IconColumnWidth = 22;
-
-            private readonly IconPictureBox _icon;
-            private readonly Label _caption;
-            private readonly Label _value;
-            private readonly int _captionHeight;
-            private readonly int _valueHeight;
-
-            public InfoItem(IconChar icon, string caption, string value)
-            {
-                BackColor = Color.Transparent;
-
-                _icon = new IconPictureBox
-                {
-                    IconChar = icon,
-                    IconColor = AppColors.TextMuted,
-                    IconSize = IconSize,
-                    Size = new Size(IconSize, IconSize),
-                    BackColor = Color.Transparent
-                };
-                _caption = new Label
-                {
-                    AutoSize = false,
-                    Text = caption ?? string.Empty,
-                    Font = AppFonts.Small,
-                    ForeColor = AppColors.TextMuted,
-                    BackColor = Color.Transparent,
-                    AutoEllipsis = true,
-                    UseMnemonic = false
-                };
-                _value = new Label
-                {
-                    AutoSize = false,
-                    Text = value ?? string.Empty,
-                    Font = AppFonts.BodyBold,
-                    ForeColor = AppColors.TextTitle,
-                    BackColor = Color.Transparent,
-                    AutoEllipsis = true,
-                    UseMnemonic = false
-                };
-
-                // Đo chiều cao 1 dòng theo Font/DPI thật (không đoán số cố định) để chữ không bị cắt chân.
-                _captionHeight = Math.Max(16, MeasureLineHeight("Ag", _caption.Font));
-                _valueHeight = Math.Max(20, MeasureLineHeight("Ag", _value.Font));
-                Height = PreferredHeight;
-
-                Controls.Add(_icon);
-                Controls.Add(_caption);
-                Controls.Add(_value);
-
-                Resize += (s, e) => LayoutParts();
-                LayoutParts();
-            }
-
-            public int PreferredHeight => _captionHeight + _valueHeight;
-
-            private static int MeasureLineHeight(string text, Font font) =>
-                TextRenderer.MeasureText(text, font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Height;
-
-            private void LayoutParts()
-            {
-                int textWidth = Math.Max(10, Width - IconColumnWidth);
-                _icon.Location = new Point(0, 4);
-                _caption.SetBounds(IconColumnWidth, 0, textWidth, _captionHeight);
-                _value.SetBounds(IconColumnWidth, _captionHeight, textWidth, _valueHeight);
-            }
-        }
     }
 }

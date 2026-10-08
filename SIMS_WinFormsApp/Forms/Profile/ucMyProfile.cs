@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -58,6 +59,10 @@ namespace SIMS_WinFormsApp.Forms.Profile
 
         public event EventHandler ProfileUpdated;
 
+        public ucMyProfile() : this(null, null, null)
+        {
+        }
+
         public ucMyProfile(
             IUserManagementService userManagementService = null,
             IAuthService authService = null,
@@ -72,6 +77,17 @@ namespace SIMS_WinFormsApp.Forms.Profile
             BackColor = AppColors.PageBg;
             Padding = new Padding(20, 16, 20, 20);
             Margin = new Padding(0);
+
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _userManagementService = null;
+                _authService = null;
+                _userRepository = null;
+                _profilePresenter = null;
+                _passwordPresenter = null;
+                BuildUI();
+                return;
+            }
 
             _userManagementService = userManagementService ?? AppComposition.CreateUserManagementService();
             _authService = authService ?? AppComposition.CreateAuthService();

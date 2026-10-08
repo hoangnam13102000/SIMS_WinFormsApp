@@ -13,7 +13,6 @@ namespace SIMS_WinFormsApp.UI.Controls
     /// Customer...) nên dùng lại được cho mọi loại popup chi tiết kế thừa từ
     /// <see cref="BaseDetailDialogForm"/>.
     /// </summary>
-    [ToolboxItem(false)]
     [DesignerCategory("Code")]
     public class DetailAvatarPanel : Panel
     {

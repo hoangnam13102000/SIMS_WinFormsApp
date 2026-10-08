@@ -5,8 +5,6 @@ using System.Windows.Forms;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
     public class ThreeColumnFieldsPanel : Panel
     {
         private const int DefaultAvatarColumnWidth = 168;
@@ -17,7 +15,19 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         public AvatarUploadPanel Avatar { get; }
 
-        public int AvatarColumnWidth { get; set; } = DefaultAvatarColumnWidth;
+        private int _avatarColumnWidth = DefaultAvatarColumnWidth;
+
+        [DefaultValue(DefaultAvatarColumnWidth)]
+        public int AvatarColumnWidth
+        {
+            get { return _avatarColumnWidth; }
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                _avatarColumnWidth = value;
+                Reflow();
+            }
+        }
 
         public ThreeColumnFieldsPanel()
         {

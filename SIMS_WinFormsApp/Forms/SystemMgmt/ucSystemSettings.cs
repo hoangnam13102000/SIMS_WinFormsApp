@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    public sealed class ucSystemSettings : UserControl, ISystemSettingsView
+    public sealed partial class ucSystemSettings : UserControl, ISystemSettingsView
     {
         private readonly IStoreConfigRepository _repository;
         private readonly SystemSettingsPresenter _presenter;
@@ -31,8 +32,15 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         private bool _dataLoadedOnce;
 
+        public ucSystemSettings() : this((IStoreConfigRepository)null)
+        {
+        }
+
         public ucSystemSettings(IStoreConfigRepository repository = null)
         {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            Controls.Clear();
             AutoScaleMode = AutoScaleMode.None;
             Font = new Font("Segoe UI", 9f);
             DoubleBuffered = true;

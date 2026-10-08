@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -10,7 +11,7 @@ using SIMS_WinFormsApp.UI.Theme;
 namespace SIMS_WinFormsApp.UI.Controls
 {
 
-    public class BaseFormDialogForm : Form
+    public partial class BaseFormDialogForm : Form
     {
         #region Constants & Layout
         private const int HeaderHeight = 64;
@@ -34,15 +35,18 @@ namespace SIMS_WinFormsApp.UI.Controls
         #region Fields
         private readonly RoundedDialogFrame _frame = new RoundedDialogFrame(CornerRadius, DialogTheme.BorderWidth);
 
-        private readonly Panel _headerPanel;
-        private readonly Panel _bodyScrollPanel;
-        private readonly Panel _footerPanel;
+        private Panel _headerPanel;
+        private Panel _headerIconHolder;
+        private Panel _bodyScrollPanel;
+        private Panel _footerPanel;
 
-        private readonly IconPictureBox _headerIconBox;
-        private readonly Label _titleLabel;
-        private readonly DialogCloseButton _closeButton;
+        private IconPictureBox _headerIconBox;
+        private Label _titleLabel;
+        private DialogCloseButton _closeButton;
 
         private readonly List<PrimaryButton> _footerButtons = new List<PrimaryButton>();
+        private Rectangle _ownerBounds;
+        private bool _centerOnOwner;
         #endregion
 
         #region Public API
@@ -150,82 +154,15 @@ namespace SIMS_WinFormsApp.UI.Controls
             BackColor = DialogTheme.SurfaceColor;
             Padding = new Padding((int)DialogTheme.BorderWidth);
 
-            // ===== Header (icon + tiêu đề + nút đóng) =====
-            _headerPanel = new Panel { Dock = DockStyle.Top, Height = HeaderHeight, BackColor = Color.Transparent };
-
-            var headerIconHolder = new Panel
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
-                Size = new Size(HeaderIconContainerSize, HeaderIconContainerSize),
-                Location = new Point(20, (HeaderHeight - HeaderIconContainerSize) / 2),
-                BackColor = Color.Transparent
-            };
-            headerIconHolder.Paint += (s, e) =>
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                var rect = new Rectangle(0, 0, headerIconHolder.Width - 1, headerIconHolder.Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-                using (var brush = new SolidBrush(AppColors.AccentBgSoft))
-                    e.Graphics.FillPath(brush, path);
-            };
+                return;
+            }
 
-            _headerIconBox = new IconPictureBox
-            {
-                Size = new Size(HeaderIconSize + 2, HeaderIconSize + 2),
-                Location = new Point((HeaderIconContainerSize - HeaderIconSize - 2) / 2, (HeaderIconContainerSize - HeaderIconSize - 2) / 2),
-                BackColor = Color.Transparent,
-                IconChar = IconChar.UserPen,
-                IconColor = AppColors.Accent,
-                IconSize = HeaderIconSize,
-                SizeMode = PictureBoxSizeMode.CenterImage
-            };
-            headerIconHolder.Controls.Add(_headerIconBox);
-
-            _titleLabel = new Label
-            {
-                AutoSize = true,
-                Location = new Point(headerIconHolder.Right + 12, (HeaderHeight - 20) / 2),
-                Font = AppFonts.Subtitle,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                UseMnemonic = false
-            };
-
-            _closeButton = new DialogCloseButton
-            {
-                Size = new Size(CloseButtonSize, CloseButtonSize)
-            };
-            _closeButton.Click += (s, e) => RaiseCloseRequested();
-
-            _headerPanel.Controls.Add(_titleLabel);
-            _headerPanel.Controls.Add(headerIconHolder);
-            _headerPanel.Controls.Add(_closeButton);
-
-            // ===== Body: 1 vùng cuộn dọc duy nhất (không sidebar/tab) =====
-            _bodyScrollPanel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                AutoScroll = true,
-                BackColor = DialogTheme.SurfaceColor,
-                Padding = new Padding(ContentPadding, 20, ContentPadding, 20)
-            };
-
-            // ===== Footer =====
-            _footerPanel = new Panel { Dock = DockStyle.Bottom, Height = FooterHeight, BackColor = Color.Transparent };
-            _footerPanel.Paint += FooterPanel_Paint;
-
-            // ===== Ráp control =====
-            Controls.Add(_bodyScrollPanel);
-            Controls.Add(_footerPanel);
-            Controls.Add(_headerPanel);
-
+            ApplyThemeColors();
             KeyDown += BaseFormDialogForm_KeyDown;
-            Resize += (s, e) =>
-            {
-                RepositionHeaderControls();
-                RepositionFooterButtons();
-                _frame.ApplyClip(this);
-                Invalidate(true);
-            };
+            Resize += BaseFormDialogForm_Resize;
             ThemeManager.Instance.ThemeChanged += ThemeManager_ThemeChanged;
 
             RepositionHeaderControls();
@@ -237,20 +174,46 @@ namespace SIMS_WinFormsApp.UI.Controls
         {
             if (owner is Control control)
             {
-                Rectangle ownerRect = owner is Form ownerForm
+                _ownerBounds = owner is Form ownerForm
                     ? ownerForm.Bounds
                     : new Rectangle(control.PointToScreen(Point.Empty), control.Size);
 
                 StartPosition = FormStartPosition.Manual;
-                Load += (s, e) =>
-                {
-                    int x = ownerRect.Left + (ownerRect.Width - Width) / 2;
-                    int y = ownerRect.Top + (ownerRect.Height - Height) / 2;
-                    Location = new Point(Math.Max(0, x), Math.Max(0, y));
-                };
+                _centerOnOwner = true;
+                Load += CenterOnOwner;
             }
         }
         #endregion
+
+        private void BaseFormDialogForm_Resize(object sender, EventArgs e)
+        {
+            RepositionHeaderControls();
+            RepositionFooterButtons();
+            _frame.ApplyClip(this);
+            Invalidate(true);
+        }
+
+        private void HeaderIconHolder_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            Rectangle rect = new Rectangle(0, 0, _headerIconHolder.Width - 1, _headerIconHolder.Height - 1);
+            using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
+            using (var brush = new SolidBrush(AppColors.AccentBgSoft))
+                e.Graphics.FillPath(brush, path);
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
+        }
+
+        private void CenterOnOwner(object sender, EventArgs e)
+        {
+            if (!_centerOnOwner) return;
+            int x = _ownerBounds.Left + (_ownerBounds.Width - Width) / 2;
+            int y = _ownerBounds.Top + (_ownerBounds.Height - Height) / 2;
+            Location = new Point(Math.Max(0, x), Math.Max(0, y));
+        }
 
         #region Footer buttons (extension point cho lớp con)
 
@@ -338,13 +301,20 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private void ThemeManager_ThemeChanged(object sender, EventArgs e)
         {
+            ApplyThemeColors();
+            _frame.ApplyClip(this);
+            Invalidate(true);
+        }
+
+        private void ApplyThemeColors()
+        {
             BackColor = DialogTheme.SurfaceColor;
             _headerPanel.BackColor = DialogTheme.SurfaceColor;
             _bodyScrollPanel.BackColor = DialogTheme.SurfaceColor;
             _footerPanel.BackColor = DialogTheme.SurfaceColor;
+            _titleLabel.Font = AppFonts.Subtitle;
             _titleLabel.ForeColor = AppColors.TextTitle;
-            _frame.ApplyClip(this);
-            Invalidate(true);
+            _headerIconBox.IconColor = AppColors.Accent;
         }
 
         protected override void Dispose(bool disposing)

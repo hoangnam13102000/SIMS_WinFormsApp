@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.UI.Controls;
@@ -40,194 +40,47 @@ namespace SIMS_WinFormsApp.Forms.Auth
             base.Dispose(disposing);
         }
 
-        // Chiều cao 1 dòng chữ đo theo Font/DPI THẬT (gồm cả dấu tiếng Việt và chân chữ g/p/q/y),
-        // không thấp hơn chiều cao thiết kế. Số px cố định sẽ làm chữ bị cắt khi Windows scale > 100%.
-        private static int FitTextHeight(Font font, int minHeight)
-        {
-            const string heightProbe = "Ầệgy";
-            return System.Math.Max(minHeight, TextRenderer.MeasureText(heightProbe, font).Height + 2);
-        }
-
         #region Windows Form Designer generated code
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-
-            this.brandPanel = new AuthBrandPanel();
-            this.pnlRight = new Guna2Panel();
-            this.pnlAuthSplit = new TableLayoutPanel();
-            this.pnlFormCard = new Guna2Panel();
-
-            this.lblTitle = new Label();
-            this.lblSubtitle = new Label();
-
-            this.lblUsername = new Label();
-            this.txtUsername = new RoundedTextBox();
-
-            this.lblPassword = new Label();
-            this.txtPassword = new RoundedPasswordTextBox();
-
-            this.pnlOptionsRow = new Panel();
-            this.chkRemember = new ModernCheckBox();
-            this.lnkForgotPassword = new ClickableLabel();
-
-            this.lblError = new Label();
-            this.btnLogin = new PrimaryButton();
-
+            this.pnlRight = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlFormCard = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnLogin = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
+            this.lblError = new System.Windows.Forms.Label();
+            this.pnlOptionsRow = new System.Windows.Forms.Panel();
+            this.chkRemember = new SIMS_WinFormsApp.UI.Controls.ModernCheckBox();
+            this.lnkForgotPassword = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
+            this.txtPassword = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.lblPassword = new System.Windows.Forms.Label();
+            this.txtUsername = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.lblUsername = new System.Windows.Forms.Label();
+            this.lblSubtitle = new System.Windows.Forms.Label();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.pnlAuthSplit = new System.Windows.Forms.TableLayoutPanel();
+            this.brandPanel = new SIMS_WinFormsApp.UI.Controls.AuthBrandPanel();
+            this.pnlRight.SuspendLayout();
+            this.pnlFormCard.SuspendLayout();
+            this.pnlOptionsRow.SuspendLayout();
+            this.pnlAuthSplit.SuspendLayout();
             this.SuspendLayout();
-
-            this.AutoScaleMode = AutoScaleMode.None;
-            this.ClientSize = new Size(1200, 760);
-            this.MinimumSize = new Size(1100, 760);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.MaximizeBox = true;
-            this.MinimizeBox = true;
-            this.FormBorderStyle = FormBorderStyle.Sizable;
-            this.Text = "Đăng nhập - SIMS";
-            this.Font = new Font("Segoe UI", 9F);
-
-            // ===== brandPanel =====
-            this.brandPanel.Dock = DockStyle.Fill;
-            this.brandPanel.Margin = Padding.Empty;
-            this.brandPanel.Padding = Padding.Empty;
-
-            // ===== pnlRight (phải, chứa card đăng nhập được canh giữa) =====
-            this.pnlRight.Dock = DockStyle.Fill;
-            this.pnlRight.BackColor = Color.White;
-            this.pnlRight.FillColor = AppColors.White;
-            this.pnlRight.Margin = Padding.Empty;
-            this.pnlRight.Padding = Padding.Empty;
-
-            // A percentage table layout keeps the split at exactly 40/60.
-            // Unlike manually changing a Dock.Left width, it remains stable
-            // during maximize/restore while both children are relaid out.
-            this.pnlAuthSplit.Dock = DockStyle.Fill;
-            this.pnlAuthSplit.Margin = Padding.Empty;
-            this.pnlAuthSplit.Padding = Padding.Empty;
-            this.pnlAuthSplit.ColumnCount = 2;
-            this.pnlAuthSplit.RowCount = 1;
-            this.pnlAuthSplit.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40f));
-            this.pnlAuthSplit.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60f));
-            this.pnlAuthSplit.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-            this.pnlAuthSplit.Controls.Add(this.brandPanel, 0, 0);
-            this.pnlAuthSplit.Controls.Add(this.pnlRight, 1, 0);
-
-            // ===== pnlFormCard =====
-            const int cardWidth = 440;
-
-            // Tăng chiều cao card để các nhãn/title/button không bị cắt ở chân khi render
-            // với font thực tế trên Windows (Segoe UI / ClearType có chiều cao lớn hơn tính toán sơ bộ).
-            const int cardHeight = 560;
-
-            this.pnlFormCard.Size = new Size(cardWidth, cardHeight);
-            this.pnlFormCard.BackColor = Color.Transparent;
-            this.pnlFormCard.FillColor = Color.Transparent;
-            this.pnlFormCard.Anchor = AnchorStyles.None;
-
-            int y = 0;
-
-            // Title
-            this.lblTitle.AutoSize = false;
-            this.lblTitle.Location = new Point(-5, y);
-            int titleHeight = FitTextHeight(AppFonts.Title, 78);
-            this.lblTitle.Size = new Size(cardWidth + 5, titleHeight);
-            this.lblTitle.Font = AppFonts.Title;
-            this.lblTitle.ForeColor = AppColors.TextTitle;
-            this.lblTitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += titleHeight + 12;
-
-            // Subtitle
-            this.lblSubtitle.AutoSize = false;
-            this.lblSubtitle.Location = new Point(0, y);
-            int subtitleHeight = FitTextHeight(AppFonts.Body, 34);
-            this.lblSubtitle.Size = new Size(cardWidth, subtitleHeight);
-            this.lblSubtitle.Font = AppFonts.Body;
-            this.lblSubtitle.ForeColor = AppColors.TextMuted;
-            this.lblSubtitle.TextAlign = ContentAlignment.MiddleLeft;
-            y += subtitleHeight + 36;
-
-            // Username label + field
-            int fieldLabelHeight = FitTextHeight(AppFonts.BodyBold, 32);
-
-            this.lblUsername.AutoSize = false;
-            this.lblUsername.Location = new Point(0, y);
-            this.lblUsername.Size = new Size(cardWidth, fieldLabelHeight);
-            this.lblUsername.Font = AppFonts.BodyBold;
-            this.lblUsername.ForeColor = AppColors.TextPrimary;
-            this.lblUsername.TextAlign = ContentAlignment.MiddleLeft;
-            y += fieldLabelHeight + 4;
-
-            this.txtUsername.Location = new Point(0, y);
-            this.txtUsername.Size = new Size(cardWidth, 52);
-            this.txtUsername.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            this.txtUsername.MaxLength = 50;
-            y += 52 + 20;
-
-            // Password label + field
-            this.lblPassword.AutoSize = false;
-            this.lblPassword.Location = new Point(0, y);
-            this.lblPassword.Size = new Size(cardWidth, fieldLabelHeight);
-            this.lblPassword.Font = AppFonts.BodyBold;
-            this.lblPassword.ForeColor = AppColors.TextPrimary;
-            this.lblPassword.TextAlign = ContentAlignment.MiddleLeft;
-            y += fieldLabelHeight + 4;
-
-            this.txtPassword.Location = new Point(0, y);
-            this.txtPassword.Size = new Size(cardWidth, 52);
-            this.txtPassword.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            this.txtPassword.MaxLength = 100;
-            y += 52 + 10;
-
-            // Remember me + Forgot password row
-            this.lnkForgotPassword.AutoSize = false;
-            this.lnkForgotPassword.Font = new Font("Segoe UI", 12.5f, FontStyle.Bold, GraphicsUnit.Point);
-            int linkHeight = FitTextHeight(this.lnkForgotPassword.Font, 30);
-            int optionsRowHeight = System.Math.Max(40, linkHeight + 10);
-
-            this.pnlOptionsRow.Location = new Point(0, y);
-            this.pnlOptionsRow.Size = new Size(cardWidth, optionsRowHeight);
-            this.pnlOptionsRow.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-
-            // Kích thước thật của ô "Ghi nhớ đăng nhập" do chính ModernCheckBox tự nới theo chữ/font.
-            this.chkRemember.AutoSize = false;
-            this.chkRemember.Size = new Size(220, 30);
-            this.chkRemember.Location = new Point(0, 5);
-            this.chkRemember.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-
-            this.lnkForgotPassword.Size = new Size(200, linkHeight);
-            this.lnkForgotPassword.TextAlign = ContentAlignment.MiddleRight;
-            this.lnkForgotPassword.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.lnkForgotPassword.Location = new Point(cardWidth - 200, 4);
-
-            this.pnlOptionsRow.Controls.Add(this.chkRemember);
-            this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
-            this.pnlOptionsRow.Resize += (s, e) => AlignOptionsRow();
-            this.chkRemember.SizeChanged += (s, e) => AlignOptionsRow();
-            this.lnkForgotPassword.SizeChanged += (s, e) => AlignOptionsRow();
-            this.lnkForgotPassword.TextChanged += (s, e) => FitForgotPasswordLink();
-            y += optionsRowHeight - 4;
-
-            // Error label
-            this.lblError.AutoSize = false;
-            this.lblError.Location = new Point(0, y);
-            int errorHeight = FitTextHeight(AppFonts.Small, 26);
-            this.lblError.Size = new Size(cardWidth, errorHeight);
-            this.lblError.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            this.lblError.ForeColor = AppColors.Error;
-            this.lblError.Font = AppFonts.Small;
-            this.lblError.Text = "";
-            y += errorHeight + 4;
-
-            this.btnLogin.Location = new Point(0, y);
-            this.btnLogin.Size = new Size(cardWidth, 58);
-            this.btnLogin.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            this.btnLogin.IsPrimary = true;
-            y += 58 + 20;
-
-            // Nếu nội dung (đo theo DPI thật) cao hơn chiều cao thiết kế thì nới card ra để không bị cắt chân.
-            this.pnlFormCard.Height = System.Math.Max(cardHeight, y);
-
+            // 
+            // pnlRight
+            // 
+            this.pnlRight.BackColor = System.Drawing.Color.White;
+            this.pnlRight.Controls.Add(this.pnlFormCard);
+            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlRight.FillColor = System.Drawing.Color.White;
+            this.pnlRight.Location = new System.Drawing.Point(480, 0);
+            this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(720, 760);
+            this.pnlRight.TabIndex = 1;
+            // 
+            // pnlFormCard
+            // 
+            this.pnlFormCard.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pnlFormCard.BackColor = System.Drawing.Color.Transparent;
             this.pnlFormCard.Controls.Add(this.btnLogin);
             this.pnlFormCard.Controls.Add(this.lblError);
             this.pnlFormCard.Controls.Add(this.pnlOptionsRow);
@@ -237,81 +90,201 @@ namespace SIMS_WinFormsApp.Forms.Auth
             this.pnlFormCard.Controls.Add(this.lblUsername);
             this.pnlFormCard.Controls.Add(this.lblSubtitle);
             this.pnlFormCard.Controls.Add(this.lblTitle);
-
-            this.pnlRight.Controls.Add(this.pnlFormCard);
-
+            this.pnlFormCard.FillColor = System.Drawing.Color.Transparent;
+            this.pnlFormCard.Location = new System.Drawing.Point(140, 100);
+            this.pnlFormCard.Name = "pnlFormCard";
+            this.pnlFormCard.Size = new System.Drawing.Size(462, 560);
+            this.pnlFormCard.TabIndex = 0;
+            // 
+            // btnLogin
+            // 
+            this.btnLogin.BackColor = System.Drawing.Color.Transparent;
+            this.btnLogin.CornerRadius = 10;
+            this.btnLogin.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLogin.CustomAccentColor = null;
+            this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.btnLogin.ForeColor = System.Drawing.Color.White;
+            this.btnLogin.Icon = null;
+            this.btnLogin.IconSize = 16;
+            this.btnLogin.IsPrimary = true;
+            this.btnLogin.Location = new System.Drawing.Point(0, 432);
+            this.btnLogin.MinimumSize = new System.Drawing.Size(120, 42);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(440, 58);
+            this.btnLogin.TabIndex = 0;
+            this.btnLogin.Text = "Đăng nhập";
+            this.btnLogin.UseVisualStyleBackColor = false;
+            // 
+            // lblError
+            // 
+            this.lblError.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.lblError.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.lblError.Location = new System.Drawing.Point(0, 402);
+            this.lblError.Name = "lblError";
+            this.lblError.Size = new System.Drawing.Size(440, 26);
+            this.lblError.TabIndex = 1;
+            // 
+            // pnlOptionsRow
+            // 
+            this.pnlOptionsRow.Controls.Add(this.chkRemember);
+            this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
+            this.pnlOptionsRow.Location = new System.Drawing.Point(0, 366);
+            this.pnlOptionsRow.Name = "pnlOptionsRow";
+            this.pnlOptionsRow.Size = new System.Drawing.Size(440, 40);
+            this.pnlOptionsRow.TabIndex = 2;
+            // 
+            // chkRemember
+            // 
+            this.chkRemember.BackColor = System.Drawing.Color.White;
+            this.chkRemember.Checked = false;
+            this.chkRemember.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.chkRemember.DarkMode = false;
+            this.chkRemember.Font = new System.Drawing.Font("Segoe UI", 12.5F);
+            this.chkRemember.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.chkRemember.Location = new System.Drawing.Point(0, 5);
+            this.chkRemember.Name = "chkRemember";
+            this.chkRemember.Size = new System.Drawing.Size(255, 39);
+            this.chkRemember.TabIndex = 0;
+            this.chkRemember.TabStop = false;
+            this.chkRemember.Text = "Ghi nhớ đăng nhập";
+            // 
+            // lnkForgotPassword
+            // 
+            this.lnkForgotPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lnkForgotPassword.BackColor = System.Drawing.Color.Transparent;
+            this.lnkForgotPassword.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lnkForgotPassword.Font = new System.Drawing.Font("Segoe UI", 12.5F, System.Drawing.FontStyle.Bold);
+            this.lnkForgotPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this.lnkForgotPassword.Location = new System.Drawing.Point(249, 10);
+            this.lnkForgotPassword.Margin = new System.Windows.Forms.Padding(0);
+            this.lnkForgotPassword.Name = "lnkForgotPassword";
+            this.lnkForgotPassword.Size = new System.Drawing.Size(198, 30);
+            this.lnkForgotPassword.TabIndex = 1;
+            this.lnkForgotPassword.Text = "Quên mật khẩu?";
+            this.lnkForgotPassword.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lnkForgotPassword.Click += new System.EventHandler(this.lnkForgotPassword_Click_1);
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.BackColor = System.Drawing.Color.Transparent;
+            this.txtPassword.CornerRadius = 10;
+            this.txtPassword.DarkMode = false;
+            this.txtPassword.HideTooltip = "Ẩn mật khẩu";
+            this.txtPassword.Location = new System.Drawing.Point(0, 304);
+            this.txtPassword.MaxLength = 100;
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
+            this.txtPassword.PlaceholderText = "";
+            this.txtPassword.ShowTooltip = "Hiện mật khẩu";
+            this.txtPassword.Size = new System.Drawing.Size(440, 52);
+            this.txtPassword.TabIndex = 3;
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold);
+            this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.lblPassword.Location = new System.Drawing.Point(0, 268);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(440, 32);
+            this.lblPassword.TabIndex = 4;
+            this.lblPassword.Text = "Mật khẩu";
+            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtUsername
+            // 
+            this.txtUsername.BackColor = System.Drawing.Color.Transparent;
+            this.txtUsername.CornerRadius = 10;
+            this.txtUsername.DarkMode = false;
+            this.txtUsername.Location = new System.Drawing.Point(0, 196);
+            this.txtUsername.MaxLength = 50;
+            this.txtUsername.Name = "txtUsername";
+            this.txtUsername.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
+            this.txtUsername.PlaceholderText = "";
+            this.txtUsername.Size = new System.Drawing.Size(440, 52);
+            this.txtUsername.TabIndex = 5;
+            // 
+            // lblUsername
+            // 
+            this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold);
+            this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.lblUsername.Location = new System.Drawing.Point(0, 160);
+            this.lblUsername.Name = "lblUsername";
+            this.lblUsername.Size = new System.Drawing.Size(440, 32);
+            this.lblUsername.TabIndex = 6;
+            this.lblUsername.Text = "Tên đăng nhập";
+            this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblSubtitle
+            // 
+            this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 13F);
+            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.lblSubtitle.Location = new System.Drawing.Point(0, 90);
+            this.lblSubtitle.Name = "lblSubtitle";
+            this.lblSubtitle.Size = new System.Drawing.Size(440, 34);
+            this.lblSubtitle.TabIndex = 7;
+            this.lblSubtitle.Text = "Vui lòng đăng nhập để tiếp tục";
+            this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this.lblTitle.Location = new System.Drawing.Point(0, 0);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(440, 78);
+            this.lblTitle.TabIndex = 8;
+            this.lblTitle.Text = "Đăng nhập";
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlAuthSplit
+            // 
+            this.pnlAuthSplit.ColumnCount = 2;
+            this.pnlAuthSplit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.pnlAuthSplit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.pnlAuthSplit.Controls.Add(this.brandPanel, 0, 0);
+            this.pnlAuthSplit.Controls.Add(this.pnlRight, 1, 0);
+            this.pnlAuthSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlAuthSplit.Location = new System.Drawing.Point(0, 0);
+            this.pnlAuthSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlAuthSplit.Name = "pnlAuthSplit";
+            this.pnlAuthSplit.RowCount = 1;
+            this.pnlAuthSplit.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.pnlAuthSplit.Size = new System.Drawing.Size(1200, 760);
+            this.pnlAuthSplit.TabIndex = 0;
+            // 
+            // brandPanel
+            // 
+            this.brandPanel.BrandName = "SIMS";
+            this.brandPanel.ContentTop = -1;
+            this.brandPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.brandPanel.Features = new string[0];
+            this.brandPanel.FooterText = "";
+            this.brandPanel.Location = new System.Drawing.Point(0, 0);
+            this.brandPanel.Logo = null;
+            this.brandPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.brandPanel.Name = "brandPanel";
+            this.brandPanel.Size = new System.Drawing.Size(480, 760);
+            this.brandPanel.TabIndex = 0;
+            this.brandPanel.Tagline = "";
+            this.brandPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.brandPanel_Paint);
+            // 
+            // frmLogin
+            // 
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.ClientSize = new System.Drawing.Size(1200, 760);
             this.Controls.Add(this.pnlAuthSplit);
-
-
-            this.pnlRight.Resize += (s, e) => LayoutLoginPanels();
-            this.pnlFormCard.Resize += (s, e) => ResizeFormCardControls();
-            this.ResizeFormCardControls();
-            LayoutLoginPanels();
-            CenterFormCard();
-
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MinimumSize = new System.Drawing.Size(1100, 760);
+            this.Name = "frmLogin";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Đăng nhập - SIMS";
+            this.pnlRight.ResumeLayout(false);
+            this.pnlFormCard.ResumeLayout(false);
+            this.pnlOptionsRow.ResumeLayout(false);
+            this.pnlAuthSplit.ResumeLayout(false);
             this.ResumeLayout(false);
-        }
 
-        // Link "Quên mật khẩu?" canh sát mép phải, ô "Ghi nhớ" canh sát mép trái; cả hai căn giữa theo chiều dọc của hàng.
-        private void AlignOptionsRow()
-        {
-            if (pnlOptionsRow == null || lnkForgotPassword == null || chkRemember == null) return;
-
-            int linkX = System.Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
-            int linkY = System.Math.Max(0, (pnlOptionsRow.Height - lnkForgotPassword.Height) / 2);
-            lnkForgotPassword.Location = new Point(linkX, linkY);
-
-            int checkY = System.Math.Max(0, (pnlOptionsRow.Height - chkRemember.Height) / 2);
-            chkRemember.Location = new Point(0, checkY);
-        }
-
-        // Link chỉ nới rộng khi chữ dài hơn bề rộng hiện tại (tránh bị cắt thành "Quên mật khẩ...").
-        private void FitForgotPasswordLink()
-        {
-            if (lnkForgotPassword == null) return;
-
-            int neededWidth = lnkForgotPassword.GetPreferredSize(Size.Empty).Width + 4;
-            if (neededWidth > lnkForgotPassword.Width)
-                lnkForgotPassword.Width = neededWidth;
-        }
-
-        private void CenterFormCard()
-        {
-            if (pnlFormCard == null || pnlRight == null) return;
-
-            int x = System.Math.Max(24, (pnlRight.Width - pnlFormCard.Width) / 2);
-            int yPos = System.Math.Max(24, (pnlRight.Height - pnlFormCard.Height) / 2);
-            pnlFormCard.Location = new Point(x, yPos);
-            brandPanel.ContentTop = yPos;
-        }
-
-        private void LayoutLoginPanels()
-        {
-            if (pnlRight == null || pnlFormCard == null || brandPanel == null) return;
-
-            pnlAuthSplit.PerformLayout();
-            int availableCardWidth = System.Math.Max(1, pnlRight.ClientSize.Width - 80);
-            int cardWidth = System.Math.Max(1, System.Math.Min(560, (int)(availableCardWidth * 0.78f)));
-            pnlFormCard.Width = cardWidth;
-            ResizeFormCardControls();
-            CenterFormCard();
-        }
-
-        private void ResizeFormCardControls()
-        {
-            if (pnlFormCard == null) return;
-
-            int width = System.Math.Max(1, pnlFormCard.ClientSize.Width);
-            lblTitle.Width = width + 5;
-            lblSubtitle.Width = width;
-            lblUsername.Width = width;
-            txtUsername.Width = width;
-            lblPassword.Width = width;
-            txtPassword.Width = width;
-            pnlOptionsRow.Width = width;
-            lblError.Width = width;
-            btnLogin.Width = width;
-            AlignOptionsRow();
         }
 
         #endregion

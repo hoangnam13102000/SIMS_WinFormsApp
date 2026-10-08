@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -14,7 +15,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Forms.SystemMgmt
 {
-    public sealed class frmImportData : BaseFormDialogForm, IImportDataView
+    public sealed partial class frmImportData : BaseFormDialogForm, IImportDataView
     {
         private readonly ImportDataPresenter _presenter;
         private bool _hasAnySuccess;
@@ -24,6 +25,14 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         private PrimaryButton _btnStart;
         private TextBox _txtResult;
 
+        public frmImportData()
+        {
+            InitializeComponent();
+            HeaderTitle = "Nhập dữ liệu";
+            SetHeaderIcon(IconChar.Upload, AppColors.Accent);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+        }
+
         public frmImportData(
             IWin32Window owner,
             string pageTitle,
@@ -32,6 +41,8 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             IReadOnlyList<ITableDataImporter> importers,
             ImportRowHandler rowHandler) : base(owner)
         {
+            InitializeComponent();
+            ContentHost.Controls.Clear();
             if (rowHandler == null) throw new ArgumentNullException(nameof(rowHandler));
 
             BuildContent(importColumns, instructions);

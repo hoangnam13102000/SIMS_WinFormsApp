@@ -56,7 +56,7 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private readonly DetailAvatarPanel _avatarPanel;
 
-        private readonly List<PillTabButton> _tabButtons = new List<PillTabButton>();
+        private readonly List<DialogPillTabButton> _tabButtons = new List<DialogPillTabButton>();
         private readonly Dictionary<string, Panel> _tabPanels = new Dictionary<string, Panel>();
         private readonly List<PrimaryButton> _footerButtons = new List<PrimaryButton>();
         private string _selectedTabKey;
@@ -251,7 +251,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Tab key is required.", nameof(key));
             if (_tabPanels.ContainsKey(key)) throw new InvalidOperationException($"Tab '{key}' đã tồn tại.");
 
-            var pill = new PillTabButton { Text = label, Height = TabButtonHeight, Tag = key };
+            var pill = new DialogPillTabButton { Text = label, Height = TabButtonHeight, Tag = key };
             pill.Click += (s, e) => SelectTab(key);
             _tabButtons.Add(pill);
             _tabStripPanel.Controls.Add(pill);
@@ -411,49 +411,5 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
         #endregion
 
-        #region PillTabButton (control nội bộ, không dùng lại ngoài lớp này)
-        private sealed class PillTabButton : Control
-        {
-            private bool _selected;
-
-            public bool Selected
-            {
-                get => _selected;
-                set { _selected = value; Invalidate(); }
-            }
-
-            public PillTabButton()
-            {
-                SetStyle(ControlStyles.AllPaintingInWmPaint |
-                         ControlStyles.UserPaint |
-                         ControlStyles.OptimizedDoubleBuffer |
-                         ControlStyles.ResizeRedraw |
-                         ControlStyles.SupportsTransparentBackColor, true);
-
-                Cursor = Cursors.Hand;
-                Font = AppFonts.SmallBold;
-                BackColor = Color.Transparent;
-            }
-
-            protected override void OnPaintBackground(PaintEventArgs pevent) { }
-
-            protected override void OnPaint(PaintEventArgs e)
-            {
-                var g = e.Graphics;
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                Color bg = _selected ? AppColors.AccentBgSoft : AppColors.BgLighter;
-                Color fg = _selected ? AppColors.Accent : AppColors.TextSecondary;
-
-                var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, Height / 2))
-                using (var brush = new SolidBrush(bg))
-                    g.FillPath(brush, path);
-
-                TextRenderer.DrawText(g, Text, Font, ClientRectangle, fg,
-                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
-            }
-        }
-        #endregion
     }
 }

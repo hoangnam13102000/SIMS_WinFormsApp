@@ -15,6 +15,10 @@ namespace SIMS_WinFormsApp.Forms.Warehouse
         public frmStockReconciliation()
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
         }
     }
 }

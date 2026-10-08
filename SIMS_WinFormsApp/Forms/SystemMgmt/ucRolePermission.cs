@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -26,7 +27,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
     /// trong <see cref="RolePermissionPresenter"/> giữ NGUYÊN VẸN không đổi - đúng tinh thần
     /// MVP: Presenter không biết và không phụ thuộc vào việc View trình bày dữ liệu ra sao.
     /// </summary>
-    public sealed class ucRolePermission : UserControl, IRolePermissionView
+    public sealed partial class ucRolePermission : UserControl, IRolePermissionView
     {
         public event EventHandler ViewReady;
         public event EventHandler<int> RoleSelected;
@@ -61,6 +62,9 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         public ucRolePermission()
         {
+            InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            Controls.Clear();
             Dock = DockStyle.Fill;
             BackColor = AppColors.PageBg;
             // Margin ngoài đồng đều 4 phía để tổng thể trang không bị lệch/khít 1 bên so với
@@ -248,7 +252,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
             // Khoảng cách với cột quyền bên phải dùng PagePad (20) thay vì SectionGap (12) -
             // đây là ranh giới giữa 2 khối lớn của trang nên cần rộng hơn khoảng cách giữa các
             // phần tử nhỏ bên trong 1 khối.
-            var card = new RoundedCardPanel { Dock = DockStyle.Fill, Margin = new Padding(0, 0, PagePad, 0) };
+            var card = new PermissionRoundedCardPanel { Dock = DockStyle.Fill, Margin = new Padding(0, 0, PagePad, 0) };
 
             var headerRowLabel = new Label
             {
@@ -453,7 +457,7 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
             if (isAdminRole)
             {
-                _permissionsStack.Controls.Add(new InfoBannerPanel(
+                _permissionsStack.Controls.Add(new PermissionInfoBannerPanel(
                     "Quản trị viên luôn có toàn quyền hệ thống nên các công tắc bên dưới bị khoá ở " +
                     "trạng thái bật (\"Luôn bật\") và không thể chỉnh sửa riêng lẻ."));
             }
@@ -485,99 +489,5 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
 
         public void ShowInfo(string title, string message) => DialogHelper.ShowInfo(FindForm(), title, message);
 
-        // ==================== Banner thông báo (vd: giải thích Admin bị khoá quyền) ====================
-
-        private sealed class InfoBannerPanel : Panel
-        {
-            public InfoBannerPanel(string message)
-            {
-                Height = 52;
-                BackColor = AppColors.InfoBg;
-                Margin = new Padding(0, 0, 0, 12);
-                Padding = new Padding(44, 0, 16, 0);
-                SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
-                         ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw |
-                         ControlStyles.SupportsTransparentBackColor, true);
-
-                var icon = new IconPictureBox
-                {
-                    IconChar = IconChar.CircleInfo,
-                    IconColor = AppColors.Info,
-                    IconSize = 16,
-                    Size = new Size(18, 18),
-                    BackColor = Color.Transparent,
-                    Location = new Point(16, (Height - 18) / 2)
-                };
-                var label = new Label
-                {
-                    AutoSize = false,
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.Transparent,
-                    Font = AppFonts.Small,
-                    ForeColor = AppColors.TextPrimary,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    Text = message
-                };
-                Controls.Add(label);
-                Controls.Add(icon);
-                icon.BringToFront();
-            }
-
-            protected override void OnPaint(PaintEventArgs e)
-            {
-                var g = e.Graphics;
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Medium))
-                using (var brush = new SolidBrush(AppColors.InfoBg))
-                {
-                    g.FillPath(brush, path);
-                }
-                using (var pen = new Pen(AppColors.Info, 1f))
-                {
-                    g.DrawPath(pen, AppRadius.GetRoundedPath(rect, AppRadius.Medium));
-                }
-                base.OnPaint(e);
-            }
-
-            protected override void OnPaintBackground(PaintEventArgs pevent)
-            {
-                pevent.Graphics.Clear(PermissionUiHelpers.GetEffectiveBackColor(this));
-            }
-        }
-
-        // ==================== Card bo góc dùng riêng cho panel danh sách vai trò ====================
-
-        private sealed class RoundedCardPanel : Panel
-        {
-            public RoundedCardPanel()
-            {
-                BorderStyle = BorderStyle.None;
-                SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
-                         ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
-                BackColor = AppColors.White;
-            }
-
-            protected override void OnPaintBackground(PaintEventArgs pevent)
-            {
-                pevent.Graphics.Clear(AppColors.White);
-            }
-
-            protected override void OnPaint(PaintEventArgs e)
-            {
-                var g = e.Graphics;
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
-                using (var brush = new SolidBrush(AppColors.White))
-                using (var pen = new Pen(AppColors.Border, 1f))
-                {
-                    g.FillPath(brush, path);
-
-                    g.DrawPath(pen, path);
-                }
-                base.OnPaint(e);
-            }
-        }
     }
 }

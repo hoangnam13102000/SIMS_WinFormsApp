@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -13,14 +14,18 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Forms.Catalog
 {
-    public sealed class frmProductEditor : BaseFormDialogForm
+    public sealed partial class frmProductEditor : BaseFormDialogForm
     {
-        private readonly ProductEditDto _model;
+        private ProductEditDto _model;
         private readonly bool _readOnly;
         private readonly List<LookupItem> _categories;
         private readonly List<LookupItem> _suppliers;
 
-        private readonly PictureBox _preview = new PictureBox { SizeMode = PictureBoxSizeMode.Zoom, BackColor = AppColors.BgLighter };
+        private PictureBox _preview;
+        private TableLayoutPanel _designEditLayout;
+        private Panel _imageRow;
+        private PrimaryButton _uploadImageButton;
+        private PrimaryButton _clearImageButton;
 
         // Giữ lại tham chiếu lưới đang dùng (nhập liệu hoặc xem chi tiết) để có thể gọi lại
         // Reflow() từ OnContentReady() - xem giải thích trong OnContentReady() bên dưới.
@@ -40,9 +45,23 @@ namespace SIMS_WinFormsApp.Forms.Catalog
         private LabeledIconField _description;
         private LabeledComboField _status;
 
+        public frmProductEditor()
+        {
+            InitializeComponent();
+            HeaderTitle = "Sản phẩm";
+            SetHeaderIcon(IconChar.Box, AppColors.Accent);
+            ContentHost.Controls.Add(_designEditLayout);
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
+        }
+
         private frmProductEditor(IWin32Window owner, ProductEditDto model, IReadOnlyList<LookupItem> categories, IReadOnlyList<LookupItem> suppliers, bool readOnly)
             : base(owner)
         {
+            InitializeComponent();
+            ContentHost.Controls.Clear();
             _model = model ?? new ProductEditDto();
             _readOnly = readOnly;
             _categories = (categories ?? Array.Empty<LookupItem>()).ToList();
@@ -51,25 +70,41 @@ namespace SIMS_WinFormsApp.Forms.Catalog
 
             HeaderTitle = readOnly ? "Chi tiết sản phẩm" : (_model.ProductId > 0 ? "Sửa sản phẩm" : "Thêm sản phẩm");
             SetHeaderIcon(IconChar.Box, AppColors.Accent);
-            CloseRequested += (s, e) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
+            CloseRequested += CloseRequestedHandler;
 
             if (readOnly)
             {
                 Size = new Size(DialogSizing.FitWidthToScreen(owner, 960), 700);
                 BuildDetailView();
-                AddFooterButton("Đóng", false, (s, e) => RaiseCloseRequested());
+                _designEditLayout.Dispose();
+                _designEditLayout = null;
+                AddFooterButton("Đóng", false, CloseButton_Click);
             }
             else
             {
                 Size = new Size(DialogSizing.FitWidthToScreen(owner, 1280), 780);
                 BuildEditForm();
-                AddFooterButton("Đóng", false, (s, e) => RaiseCloseRequested());
-                AddFooterButton("Lưu thay đổi", true, (s, e) => SaveAndClose());
+                _designEditLayout.Dispose();
+                _designEditLayout = null;
+                AddFooterButton("Đóng", false, CloseButton_Click);
+                AddFooterButton("Lưu thay đổi", true, SaveButton_Click);
             }
+        }
+
+        private void CloseRequestedHandler(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveAndClose();
         }
 
         /// <summary>
@@ -105,22 +140,10 @@ namespace SIMS_WinFormsApp.Forms.Catalog
 
         private void BuildEditForm()
         {
-            _name = Field("Tên sản phẩm", IconChar.Barcode, true);
-            _category = Combo("Danh mục", true);
-            _supplier = Combo("Nhà cung cấp", false);
-            _brand = Field("Thương hiệu", IconChar.Copyright, false);
-            _unit = Field("Đơn vị tính", IconChar.ScaleBalanced, false);
-            _weight = Field("Khối lượng / dung tích", IconChar.WeightScale, false);
-            _importPrice = Field("Giá nhập", IconChar.MoneyBill, true);
-            _sellPrice = Field("Giá bán", IconChar.Tags, true);
-            _stock = Field("Tồn kho ban đầu", IconChar.BoxesStacked, false);
-            _minStock = Field("Tồn kho tối thiểu", IconChar.TriangleExclamation, false);
             _importPrice.UseThousandsSeparator = true;
             _sellPrice.UseThousandsSeparator = true;
             _stock.UseThousandsSeparator = true;
             _minStock.UseThousandsSeparator = true;
-            _description = Field("Mô tả sản phẩm", IconChar.AlignLeft, false);
-            _status = Combo("Trạng thái", true);
 
             _category.SetItems(_categories);
             _supplier.SetItems(_suppliers);
@@ -145,7 +168,7 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             grid.AddField(_minStock);
             grid.AddField(_status, 2);
 
-            var imageRow = BuildImageEditorRow();
+            var imageRow = _imageRow;
             var codeBar = BuildCodeBar();
 
             // ContentHost xếp theo kiểu Dock=Top: control thêm SAU sẽ hiển thị TRÊN control thêm
@@ -154,6 +177,7 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             ContentHost.Controls.Add(imageRow);
             ContentHost.Controls.Add(codeBar);
             _grid = grid;
+            _preview.BackColor = AppColors.BgLighter;
         }
 
         private void LoadModel()
@@ -233,59 +257,15 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             return host;
         }
 
-        private Control BuildImageEditorRow()
+        private void UploadImage_Click(object sender, EventArgs e)
         {
-            var host = new Panel { Dock = DockStyle.Top, Height = 120, BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 12) };
+            ChooseImage();
+        }
 
-            var caption = new Label
-            {
-                AutoSize = true,
-                Text = "Hình ảnh",
-                Font = AppFonts.SmallBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                Location = new Point(0, 2),
-                Padding = new Padding(0, 2, 0, 2)
-            };
-
-            _preview.Size = new Size(72, 72);
-            _preview.Location = new Point(0, 28);
-
-            int uploadWidth = TextRenderer.MeasureText("Tải ảnh lên", AppFonts.Button).Width + 36;
-            int clearWidth = TextRenderer.MeasureText("Xóa ảnh", AppFonts.Button).Width + 36;
-            var upload = new PrimaryButton
-            {
-                Text = "Tải ảnh lên",
-                IsPrimary = false,
-                Size = new Size(uploadWidth, 40),
-                Location = new Point(_preview.Right + 16, 30)
-            };
-            var clear = new PrimaryButton
-            {
-                Text = "Xóa ảnh",
-                IsPrimary = false,
-                Size = new Size(clearWidth, 40),
-                Location = new Point(upload.Right + 12, 30)
-            };
-            var hint = new Label
-            {
-                AutoSize = true,
-                Text = "Tùy chọn · JPG, PNG, BMP, GIF · tối đa 5MB",
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent,
-                Location = new Point(_preview.Right + 16, upload.Bottom + 8)
-            };
-
-            upload.Click += (s, e) => ChooseImage();
-            clear.Click += (s, e) => { _model.ImagePath = null; ShowPreview(null); };
-
-            host.Controls.Add(hint);
-            host.Controls.Add(clear);
-            host.Controls.Add(upload);
-            host.Controls.Add(_preview);
-            host.Controls.Add(caption);
-            return host;
+        private void ClearImage_Click(object sender, EventArgs e)
+        {
+            _model.ImagePath = null;
+            ShowPreview(null);
         }
 
         private void ChooseImage()
@@ -310,16 +290,6 @@ namespace SIMS_WinFormsApp.Forms.Catalog
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 _preview.Image = Image.FromStream(stream);
-        }
-
-        private static LabeledIconField Field(string label, IconChar icon, bool required)
-        {
-            return new LabeledIconField { LabelText = label, Icon = icon, IsRequired = required, Dock = DockStyle.Top };
-        }
-
-        private static LabeledComboField Combo(string label, bool required)
-        {
-            return new LabeledComboField { LabelText = label, IsRequired = required, Dock = DockStyle.Top };
         }
 
         private static void Select(LabeledComboField combo, IList<LookupItem> items, int id)

@@ -18,8 +18,6 @@ namespace SIMS_WinFormsApp.UI.Controls
     /// backend hỗ trợ lưu ảnh đại diện (hiện DTO/Service quản lý người dùng chưa có trường này,
     /// nên control tự chạy độc lập, không đụng tới presenter/service hiện có).
     /// </summary>
-    [ToolboxItem(false)]
-    [DesignerCategory("Code")]
     public class AvatarUploadPanel : Panel
     {
         /// <summary>Giới hạn kích thước ảnh - khớp với dòng gợi ý hiển thị trên UI ("tối đa 5MB").</summary>

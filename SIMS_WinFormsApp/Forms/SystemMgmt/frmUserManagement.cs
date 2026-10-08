@@ -15,6 +15,10 @@ namespace SIMS_WinFormsApp.Forms.SystemMgmt
         public frmUserManagement()
         {
             InitializeComponent();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
         }
     }
 }
