@@ -6,7 +6,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
-namespace SIMS_WinFormsApp.UI.Layouts
+namespace SIMS_WinFormsApp.Views.Shell
 {
     public partial class MainLayoutControl : UserControl
     {
@@ -40,10 +40,21 @@ namespace SIMS_WinFormsApp.UI.Layouts
         public MainLayoutControl(string headerSubtitle)
         {
             InitializeComponent();
-            _subtitleLabel.Text = headerSubtitle;
+            SetSubtitle(headerSubtitle);
             _navigationTree.AfterSelect += NavigationTree_AfterSelect;
-            _profileButton.Click += (sender, args) => ProfileRequested?.Invoke(this, EventArgs.Empty);
-            _logoutButton.Click += (sender, args) => LogoutRequested?.Invoke(this, EventArgs.Empty);
+            _notificationsButton.Click += (sender, args) =>
+                _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
+            _avatarControl.Click += (sender, args) => ShowAccountMenu(_avatarControl);
+            _userNameLabel.Click += (sender, args) => ShowAccountMenu(_userNameLabel);
+            _userEmailLabel.Click += (sender, args) => ShowAccountMenu(_userEmailLabel);
+            _profileButton.Click += (sender, args) => ShowAccountMenu(_profileButton);
+            _accountContextMenu.ItemClicked += (sender, args) =>
+            {
+                if (ReferenceEquals(args.ClickedItem, _profileMenuItem))
+                    ProfileRequested?.Invoke(this, EventArgs.Empty);
+                else if (ReferenceEquals(args.ClickedItem, _logoutMenuItem))
+                    LogoutRequested?.Invoke(this, EventArgs.Empty);
+            };
             _chatbotButton.Click += (sender, args) => AiChatRequested?.Invoke(this, EventArgs.Empty);
             _settingsButton.Click += (sender, args) =>
             {
@@ -58,6 +69,7 @@ namespace SIMS_WinFormsApp.UI.Layouts
             };
             ThemeManager.Instance.ThemeChanged += OnAppearanceChanged;
             LanguageManager.Instance.LanguageChanged += OnAppearanceChanged;
+            UpdateHeaderMenuLabels();
             ApplyAppearance();
         }
 
@@ -168,9 +180,32 @@ namespace SIMS_WinFormsApp.UI.Layouts
         {
             _userNameLabel.Text = string.IsNullOrWhiteSpace(displayName) ? "Người dùng" : displayName;
             _userEmailLabel.Text = email ?? string.Empty;
-            _profileButton.Text = string.IsNullOrWhiteSpace(avatarInitial)
-                ? "Hồ sơ"
+            string initial = string.IsNullOrWhiteSpace(avatarInitial)
+                ? _userNameLabel.Text.Substring(0, 1).ToUpperInvariant()
                 : avatarInitial.Trim().Substring(0, 1).ToUpperInvariant();
+            SetAvatar(avatarPath, initial);
+        }
+
+        private void SetAvatar(string avatarPath, string initial)
+        {
+            _avatarControl.Initial = initial;
+            _avatarControl.TryLoadImage(avatarPath);
+        }
+
+        private void ShowAccountMenu(Control trigger)
+        {
+            _accountContextMenu.Show(trigger, new Point(0, trigger.Height));
+        }
+
+        private void UpdateHeaderMenuLabels()
+        {
+            _profileMenuItem.Text = Lang.Get("header.dropdown.profile");
+            _logoutMenuItem.Text = Lang.Get("header.dropdown.logout");
+            _notificationsTitleMenuItem.Text = Lang.Get("header.notifications.title");
+            _notificationsEmptyMenuItem.Text = Lang.Get("header.notifications.empty");
+            _notificationsTitleMenuItem.Text = _unreadCount > 0
+                ? _notificationsTitleMenuItem.Text + " (" + _unreadCount + ")"
+                : _notificationsTitleMenuItem.Text;
         }
 
         public void SetBadge(string key, int count)
@@ -185,7 +220,8 @@ namespace SIMS_WinFormsApp.UI.Layouts
         public void SetUnreadCount(int count)
         {
             _unreadCount = Math.Max(0, count);
-            _notificationsButton.Text = _unreadCount == 0 ? "Thông báo" : "Thông báo (" + _unreadCount + ")";
+            _notificationsButton.Count = _unreadCount;
+            UpdateHeaderMenuLabels();
         }
 
         public void SetSidebarCollapsed(bool collapsed)
@@ -265,7 +301,10 @@ namespace SIMS_WinFormsApp.UI.Layouts
         private void OnAppearanceChanged(object sender, EventArgs e)
         {
             if (!IsDisposed)
+            {
+                UpdateHeaderMenuLabels();
                 ApplyAppearance();
+            }
         }
 
         private void ApplyAppearance()
@@ -344,5 +383,9 @@ namespace SIMS_WinFormsApp.UI.Layouts
             }
         }
 
+        private void _subtitleLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

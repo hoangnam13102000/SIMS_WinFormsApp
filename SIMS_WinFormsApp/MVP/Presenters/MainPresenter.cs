@@ -17,12 +17,12 @@ using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
-using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Controls.Catalog;
 using SIMS_WinFormsApp.UI.Controls.Pos;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Permission;
+using SIMS_WinFormsApp.Views.Shell;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
 {
@@ -104,7 +104,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 var email = _getEmail() ?? string.Empty;
                 var role = _getRole() ?? string.Empty;
                 _view.SetUserInfo(name, email);
-                _layout.SetUser(name, email, null, role);
+                _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
                 _layout.SetBadge("orders", 3);
                 _layout.SetUnreadCount(2);
                 _layout.ShowPage("dashboard");

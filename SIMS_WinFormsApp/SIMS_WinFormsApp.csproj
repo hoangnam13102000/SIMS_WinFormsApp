@@ -568,7 +568,6 @@
     </Compile>
     <Compile Include="Views\Dashboard\ucDashboard.Designer.cs">
       <DependentUpon>ucDashboard.cs</DependentUpon>
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Auth\frmForgotPassword.cs">
       <SubType>Form</SubType>
@@ -790,6 +789,21 @@
     <EmbeddedResource Include="Views\Catalog\frmSupplierEditor.resx">
       <DependentUpon>frmSupplierEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Chat\ucChat.resx">
+      <DependentUpon>ucChat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Dashboard\ucDashboard.resx">
+      <DependentUpon>ucDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Profile\ucMyProfile.resx">
+      <DependentUpon>ucMyProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
+      <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SystemManagement\ucAuditLog.resx">
+      <DependentUpon>ucAuditLog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\UserManager\frmCustomerManagement.resx">
       <DependentUpon>frmCustomerManagement.cs</DependentUpon>
     </EmbeddedResource>
@@ -837,8 +851,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Reports\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,18 +7,6 @@ using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Views.Dashboard
 {
-    internal class BufferedPanel : Panel
-    {
-        public BufferedPanel()
-        {
-            SetStyle(ControlStyles.AllPaintingInWmPaint |
-                     ControlStyles.UserPaint |
-                     ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw, true);
-            UpdateStyles();
-        }
-    }
-
     public partial class ucDashboard : UserControl, IDashboardView
     {
         private readonly DashboardPresenter _presenter;
@@ -45,6 +33,16 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             _welcomeLabel.Text = "Chào mừng bạn quay trở lại, " +
                 (string.IsNullOrWhiteSpace(displayName) ? "bạn" : displayName);
+        }
+
+        private void _titleLabel_Click(object sender, System.EventArgs e)
+        {
+
+        }
+
+        private void _activityTitle_Click(object sender, System.EventArgs e)
+        {
+
         }
     }
 }

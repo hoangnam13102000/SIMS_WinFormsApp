@@ -57,7 +57,24 @@ namespace SIMS_WinFormsApp.Views.UserManager
             InitializeComponent();
             HeaderTitle = "Chi tiết tài khoản";
             SetHeaderIcon(IconChar.UsersCog, AppColors.Accent);
-            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                _user = new UserDetailDto
+                {
+                    Username = "nguyenvana",
+                    FullName = "Nguyễn Văn A",
+                    Email = "nguyenvana@example.com",
+                    Phone = "0901 234 567",
+                    RoleCode = "STAFF",
+                    RoleName = "Nhân viên",
+                    Status = UserStatus.Active,
+                    CreatedAt = new DateTime(2025, 1, 15),
+                    FailedLoginCount = 0
+                };
+                BuildContent();
+                Render(new UserAccountDetailViewModelBuilder().Build(_user));
+                return;
+            }
         }
 
         public frmUserAccountDetail(UserDetailDto user)
