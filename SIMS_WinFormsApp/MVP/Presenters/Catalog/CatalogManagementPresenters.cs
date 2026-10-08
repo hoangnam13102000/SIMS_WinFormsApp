@@ -19,11 +19,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         }
 
         public IReadOnlyList<ProductRowDto> CurrentRows => _currentRows;
+        public int TotalCount { get; private set; }
 
         public TablePageResult Load(int pageIndex, int pageSize, string keyword, string status)
         {
             var page = _service.GetProducts(pageIndex, pageSize, keyword, NormalizeStatus(status));
             _currentRows = page.Rows;
+            TotalCount = page.TotalCount;
             return new TablePageResult
             {
                 TotalCount = page.TotalCount,
@@ -118,12 +120,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         }
 
         public IReadOnlyList<SupplierRowDto> CurrentRows => _currentRows;
+        public int TotalCount { get; private set; }
 
         public TablePageResult Load(int pageIndex, int pageSize, string keyword, string debtFilter)
         {
             bool debtOnly = string.Equals(debtFilter, "DEBT", StringComparison.OrdinalIgnoreCase);
             var page = _service.GetSuppliers(pageIndex, pageSize, keyword, debtOnly);
             _currentRows = page.Rows;
+            TotalCount = page.TotalCount;
             return new TablePageResult
             {
                 TotalCount = page.TotalCount,

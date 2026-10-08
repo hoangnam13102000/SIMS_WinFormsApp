@@ -1,5 +1,5 @@
 using SIMS_WinFormsApp.DAL;
-using SIMS_WinFormsApp.Forms.Auth;
+using SIMS_WinFormsApp.Views.Auth;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Repositories.Implementations;
 using SIMS_WinFormsApp.Repositories.Interfaces;
