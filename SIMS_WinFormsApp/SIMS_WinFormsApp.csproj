@@ -780,6 +780,9 @@
     <EmbeddedResource Include="Views\Auth\frmLogin.resx">
       <DependentUpon>frmLogin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Barcode\frmBarcodeScannerDialog.resx">
+      <DependentUpon>frmBarcodeScannerDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Catalog\frmCategoryEditor.resx">
       <DependentUpon>frmCategoryEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -795,11 +798,17 @@
     <EmbeddedResource Include="Views\Dashboard\ucDashboard.resx">
       <DependentUpon>ucDashboard.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Pos\PosPageControl.resx">
+      <DependentUpon>PosPageControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Profile\ucMyProfile.resx">
       <DependentUpon>ucMyProfile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SystemManagement\frmMailConfig.resx">
+      <DependentUpon>frmMailConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\SystemManagement\ucAuditLog.resx">
       <DependentUpon>ucAuditLog.cs</DependentUpon>

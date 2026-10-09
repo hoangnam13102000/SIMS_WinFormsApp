@@ -190,5 +190,15 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             lblMessage.Text = message;
             lblMessage.ForeColor = color;
         }
+
+        private void lblAppPassword_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblSenderEmail_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -198,16 +198,16 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this._subtitleLabel.Location = new System.Drawing.Point(89, 53);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(257, 25);
+            this._subtitleLabel.Size = new System.Drawing.Size(219, 25);
             this._subtitleLabel.TabIndex = 7;
-            this._subtitleLabel.Text = "Cửa hàng điện thoại trực tuyến";
+            this._subtitleLabel.Text = "Cửa hàng thực phẩm sạch";
             // 
             // _brandLabel
             // 
             this._brandLabel.AutoSize = true;
             this._brandLabel.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
             this._brandLabel.ForeColor = System.Drawing.Color.White;
-            this._brandLabel.Location = new System.Drawing.Point(86, 10);
+            this._brandLabel.Location = new System.Drawing.Point(85, 8);
             this._brandLabel.Name = "_brandLabel";
             this._brandLabel.Size = new System.Drawing.Size(118, 54);
             this._brandLabel.TabIndex = 8;
@@ -244,6 +244,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             | System.Windows.Forms.AnchorStyles.Right)));
             this._navigationTree.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(35)))), ((int)(((byte)(52)))));
             this._navigationTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._navigationTree.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this._navigationTree.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._navigationTree.ForeColor = System.Drawing.Color.White;
             this._navigationTree.FullRowSelect = true;
@@ -255,7 +256,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._navigationTree.ShowLines = false;
             this._navigationTree.ShowPlusMinus = false;
             this._navigationTree.ShowRootLines = false;
-            this._navigationTree.Size = new System.Drawing.Size(280, 1110);
+            this._navigationTree.Size = new System.Drawing.Size(240, 606);
             this._navigationTree.TabIndex = 0;
             // 
             // _sidebarToggleButton
@@ -268,7 +269,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._sidebarToggleButton.IconColor = System.Drawing.Color.White;
             this._sidebarToggleButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
             this._sidebarToggleButton.IconSize = 18;
-            this._sidebarToggleButton.Location = new System.Drawing.Point(230, 6);
+            this._sidebarToggleButton.Location = new System.Drawing.Point(190, 6);
             this._sidebarToggleButton.Name = "_sidebarToggleButton";
             this._sidebarToggleButton.Size = new System.Drawing.Size(42, 36);
             this._sidebarToggleButton.TabIndex = 1;

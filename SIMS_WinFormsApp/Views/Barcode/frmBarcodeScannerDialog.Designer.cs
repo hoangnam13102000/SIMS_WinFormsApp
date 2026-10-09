@@ -7,50 +7,73 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
     {
         private void InitializeComponent()
         {
-            _instructionLabel = new Label();
-            _videoHolder = new Panel();
-            _videoBox = new PictureBox();
-            _errorLabel = new Label();
-            _statusLabel = new Label();
-            SuspendLayout();
-            ContentHost.SuspendLayout();
-            _videoHolder.SuspendLayout();
+            this._instructionLabel = new System.Windows.Forms.Label();
+            this._videoHolder = new System.Windows.Forms.Panel();
+            this._errorLabel = new System.Windows.Forms.Label();
+            this._videoBox = new System.Windows.Forms.PictureBox();
+            this._statusLabel = new System.Windows.Forms.Label();
+            this._videoHolder.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._videoBox)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // _instructionLabel
+            // 
+            this._instructionLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this._instructionLabel.Location = new System.Drawing.Point(28, 20);
+            this._instructionLabel.Name = "_instructionLabel";
+            this._instructionLabel.Size = new System.Drawing.Size(500, 38);
+            this._instructionLabel.TabIndex = 3;
+            this._instructionLabel.Text = "Đưa mã vạch vào giữa khung hình";
+            // 
+            // _videoHolder
+            // 
+            this._videoHolder.Controls.Add(this._errorLabel);
+            this._videoHolder.Controls.Add(this._videoBox);
+            this._videoHolder.Dock = System.Windows.Forms.DockStyle.Top;
+            this._videoHolder.Location = new System.Drawing.Point(28, 58);
+            this._videoHolder.Name = "_videoHolder";
+            this._videoHolder.Size = new System.Drawing.Size(500, 330);
+            this._videoHolder.TabIndex = 2;
+            // 
+            // _errorLabel
+            // 
+            this._errorLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._errorLabel.Location = new System.Drawing.Point(0, 0);
+            this._errorLabel.Name = "_errorLabel";
+            this._errorLabel.Size = new System.Drawing.Size(500, 330);
+            this._errorLabel.TabIndex = 0;
+            this._errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._errorLabel.Visible = false;
+            // 
+            // _videoBox
+            // 
+            this._videoBox.BackColor = System.Drawing.Color.Black;
+            this._videoBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._videoBox.Location = new System.Drawing.Point(0, 0);
+            this._videoBox.Name = "_videoBox";
+            this._videoBox.Size = new System.Drawing.Size(500, 330);
+            this._videoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this._videoBox.TabIndex = 1;
+            this._videoBox.TabStop = false;
+            // 
+            // _statusLabel
+            // 
+            this._statusLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this._statusLabel.Location = new System.Drawing.Point(28, 388);
+            this._statusLabel.Name = "_statusLabel";
+            this._statusLabel.Size = new System.Drawing.Size(500, 22);
+            this._statusLabel.TabIndex = 1;
+            // 
+            // frmBarcodeScannerDialog
+            // 
+            this.ClientSize = new System.Drawing.Size(560, 560);
+            this.MinimumSize = new System.Drawing.Size(560, 560);
+            this.Name = "frmBarcodeScannerDialog";
+            this.Text = "Quét mã vạch";
+            this._videoHolder.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._videoBox)).EndInit();
+            this.ResumeLayout(false);
 
-            _instructionLabel.AutoSize = false;
-            _instructionLabel.Dock = DockStyle.Top;
-            _instructionLabel.Height = 30;
-            _instructionLabel.Name = "instructionLabel";
-            _instructionLabel.Text = "Đưa mã vạch vào giữa khung hình";
-
-            _videoHolder.Dock = DockStyle.Top;
-            _videoHolder.Height = 330;
-            _videoHolder.Name = "videoHolder";
-            _videoBox.BackColor = Color.Black;
-            _videoBox.Dock = DockStyle.Fill;
-            _videoBox.Name = "videoPreview";
-            _videoBox.SizeMode = PictureBoxSizeMode.Zoom;
-            _errorLabel.Dock = DockStyle.Fill;
-            _errorLabel.Name = "cameraError";
-            _errorLabel.TextAlign = ContentAlignment.MiddleCenter;
-            _errorLabel.Visible = false;
-            _videoHolder.Controls.Add(_errorLabel);
-            _videoHolder.Controls.Add(_videoBox);
-
-            _statusLabel.AutoSize = false;
-            _statusLabel.Dock = DockStyle.Top;
-            _statusLabel.Height = 22;
-            _statusLabel.Name = "cameraStatus";
-
-            ContentHost.Controls.Add(_statusLabel);
-            ContentHost.Controls.Add(_videoHolder);
-            ContentHost.Controls.Add(_instructionLabel);
-            ContentHost.ResumeLayout(false);
-            _videoHolder.ResumeLayout(false);
-            ClientSize = new Size(560, 560);
-            MinimumSize = new Size(560, 560);
-            Name = "frmBarcodeScannerDialog";
-            Text = "Quét mã vạch";
-            ResumeLayout(false);
         }
     }
 }

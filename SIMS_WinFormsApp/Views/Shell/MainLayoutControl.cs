@@ -17,6 +17,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         private readonly Dictionary<string, string> _pageLabels =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly List<TreeNode> _sectionNodes = new List<TreeNode>();
+        private readonly ToolTip _sidebarToolTip;
         private TreeNode _currentSection;
         private string _currentPageKey;
         private int _unreadCount;
@@ -33,15 +34,19 @@ namespace SIMS_WinFormsApp.Views.Shell
         public event EventHandler<string> PageChanged;
         public event EventHandler AiChatRequested;
 
-        public MainLayoutControl() : this("Cửa hàng điện thoại trực tuyến")
+        public MainLayoutControl() : this("Cửa hàng thực phẩm sạch")
         {
         }
 
         public MainLayoutControl(string headerSubtitle)
         {
             InitializeComponent();
+            _sidebarToolTip = new ToolTip(components);
+            _sidebarToolTip.SetToolTip(_sidebarToggleButton, Lang.Get("sidebar.toggle.tooltip"));
             SetSubtitle(headerSubtitle);
             _navigationTree.AfterSelect += NavigationTree_AfterSelect;
+            _navigationTree.DrawNode += NavigationTree_DrawNode;
+            _navigationTree.NodeMouseClick += NavigationTree_NodeMouseClick;
             _notificationsButton.Click += (sender, args) =>
                 _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
             _avatarControl.Click += (sender, args) => ShowAccountMenu(_avatarControl);
@@ -239,7 +244,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _sidebarPanel.Width = collapsed ? 56 : _expandedSidebarWidth;
             _navigationTree.Visible = !collapsed;
             _menuLabel.Visible = !collapsed;
-            _sidebarToggleButton.IconChar = collapsed ? IconChar.AngleRight : IconChar.Bars;
+            _sidebarToggleButton.IconChar = IconChar.Bars;
             _sidebarToggleButton.Left = collapsed ? 8 : _sidebarPanel.Width - _sidebarToggleButton.Width - 8;
             _root.PerformLayout();
         }
@@ -252,6 +257,8 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             if (!string.IsNullOrEmpty(menuLabel))
                 _menuLabel.Text = menuLabel;
+            if (!string.IsNullOrEmpty(toggleTooltip))
+                _sidebarToolTip.SetToolTip(_sidebarToggleButton, toggleTooltip);
             if (itemLabels != null)
             {
                 foreach (KeyValuePair<string, TreeNode> item in _pageNodes)
@@ -267,6 +274,8 @@ namespace SIMS_WinFormsApp.Views.Shell
                 for (int i = 0; i < _sectionNodes.Count && i < sectionLabels.Length; i++)
                     _sectionNodes[i].Text = (sectionLabels[i] ?? string.Empty).ToUpperInvariant();
             }
+
+            _navigationTree.Invalidate();
         }
 
         public bool TryGetPage<T>(string key, out T page) where T : Control
@@ -295,6 +304,83 @@ namespace SIMS_WinFormsApp.Views.Shell
             {
                 ShowPage(key);
                 PageChanged?.Invoke(this, key);
+            }
+        }
+
+        private void NavigationTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Level != 0 || e.Node.Nodes.Count == 0)
+                return;
+
+            if (e.Node.IsExpanded)
+                e.Node.Collapse();
+            else
+                e.Node.Expand();
+        }
+
+        private void NavigationTree_DrawNode(object sender, DrawTreeNodeEventArgs e)
+        {
+            bool isSection = e.Node.Level == 0;
+            bool isSelected = (e.State & TreeNodeStates.Selected) != 0 && !isSection;
+            Rectangle rowBounds = new Rectangle(
+                0,
+                e.Bounds.Top,
+                _navigationTree.ClientSize.Width,
+                _navigationTree.ItemHeight);
+            Color background = isSelected
+                ? Color.FromArgb(45, 63, 88)
+                : _navigationTree.BackColor;
+            using (var brush = new SolidBrush(background))
+                e.Graphics.FillRectangle(brush, rowBounds);
+
+            int textLeft = isSection ? 16 : 30;
+            int textRight = isSection ? rowBounds.Right - 34 : rowBounds.Right - 12;
+            Rectangle textBounds = Rectangle.FromLTRB(textLeft, rowBounds.Top, textRight, rowBounds.Bottom);
+            Color textColor = isSection
+                ? Color.FromArgb(148, 163, 184)
+                : isSelected ? Color.White : Color.FromArgb(226, 232, 240);
+            if (isSection)
+            {
+                using (var sectionFont = new Font(_navigationTree.Font, FontStyle.Bold))
+                    TextRenderer.DrawText(
+                        e.Graphics,
+                        e.Node.Text,
+                        sectionFont,
+                        textBounds,
+                        textColor,
+                        TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+            }
+            else
+            {
+                TextRenderer.DrawText(
+                    e.Graphics,
+                    e.Node.Text,
+                    _navigationTree.Font,
+                    textBounds,
+                    textColor,
+                    TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+            }
+            if (isSection && e.Node.Nodes.Count > 0)
+            {
+                string arrow = e.Node.IsExpanded ? "⌃" : "⌄";
+                Rectangle arrowBounds = new Rectangle(rowBounds.Right - 28, rowBounds.Top, 20, rowBounds.Height);
+                using (var arrowFont = new Font("Segoe UI Symbol", 11F, FontStyle.Regular))
+                    TextRenderer.DrawText(
+                        e.Graphics,
+                        arrow,
+                        arrowFont,
+                        arrowBounds,
+                        Color.FromArgb(148, 163, 184),
+                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+            }
+
+            int separatorY = rowBounds.Bottom - 1;
+            using (var pen = new Pen(Color.FromArgb(48, 65, 88)))
+            {
+                if (isSection)
+                    e.Graphics.DrawLine(pen, 12, separatorY, rowBounds.Right - 12, separatorY);
+                else
+                    e.Graphics.DrawLine(pen, 24, separatorY, rowBounds.Right - 12, separatorY);
             }
         }
 
