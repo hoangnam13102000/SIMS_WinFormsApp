@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.UI.Controls.Pos
 {

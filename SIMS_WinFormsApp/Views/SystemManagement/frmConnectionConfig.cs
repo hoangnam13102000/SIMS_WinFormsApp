@@ -7,6 +7,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Services; 
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.SystemManagement
 {
@@ -93,22 +94,20 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         {
             if (string.IsNullOrWhiteSpace(txtServer.Text))
             {
-                MessageBox.Show("Vui lòng nhập Server.", "Thiếu thông tin",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Thiếu thông tin", "Vui lòng nhập Server.");
                 txtServer.Focus();
                 return null;
             }
             if (string.IsNullOrWhiteSpace(txtDatabase.Text))
             {
-                MessageBox.Show("Vui lòng nhập Database.", "Thiếu thông tin",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Thiếu thông tin", "Vui lòng nhập Database.");
                 txtDatabase.Focus();
                 return null;
             }
             if (rbSqlAuth.Checked && string.IsNullOrWhiteSpace(txtUserId.Text))
             {
-                MessageBox.Show("Vui lòng nhập User ID khi dùng SQL Server Authentication.",
-                    "Thiếu thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Thiếu thông tin",
+                    "Vui lòng nhập User ID khi dùng SQL Server Authentication.");
                 txtUserId.Focus();
                 return null;
             }
@@ -161,14 +160,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 if (_configurationService.TestConnection(connStr, out string error))
                 {
                     SetStatus("Kết nối thành công!", true);
-                    MessageBox.Show("Kết nối SQL Server thành công!", "Test Connection",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogHelper.ShowSuccess(this, "Test Connection", "Kết nối SQL Server thành công!");
                 }
                 else
                 {
                     SetStatus("Kết nối thất bại.", false);
-                    MessageBox.Show("Không thể kết nối:\n\n" + error, "Test Connection",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogHelper.ShowError(this, "Test Connection", "Không thể kết nối:\n\n" + error);
                 }
             }
             finally
@@ -202,20 +199,16 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             {
                 _configurationService.SaveConnectionString(connStr);
                 SetStatus("Đã lưu và mã hóa thành công.", true);
-                MessageBox.Show(
+                DialogHelper.ShowInfo(this, "Lưu thành công",
                     "Đã lưu ConnectionString vào App.config và mã hóa thành công!\n\n" +
-                    "Lưu ý: Nên khởi động lại ứng dụng để áp dụng hoàn toàn.",
-                    "Lưu thành công",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    "Lưu ý: Nên khởi động lại ứng dụng để áp dụng hoàn toàn.");
                 DialogResult = DialogResult.OK;
                 Close();
             }
             catch (Exception ex)
             {
                 SetStatus("Lỗi khi lưu.", false);
-                MessageBox.Show("Không thể lưu cấu hình:\n\n" + ex.Message,
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogHelper.ShowError(this, "Lỗi", "Không thể lưu cấu hình:\n\n" + ex.Message);
             }
         }
 

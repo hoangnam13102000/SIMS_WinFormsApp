@@ -9,6 +9,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Chat;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Chat
 {
@@ -153,7 +154,7 @@ namespace SIMS_WinFormsApp.Views.Chat
 
         public void ShowError(string message)
         {
-            MessageBox.Show(this, message, Lang.Get("common.error"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DialogHelper.ShowWarning(this, Lang.Get("common.error"), message);
         }
 
         public void SetInputEnabled(bool enabled)

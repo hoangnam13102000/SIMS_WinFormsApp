@@ -10,8 +10,8 @@ using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Validation;
 using SIMS_WinFormsApp.UI.I18n;
-using SIMS_WinFormsApp.UI.Layouts;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Auth
 {
@@ -24,11 +24,8 @@ namespace SIMS_WinFormsApp.Views.Auth
         private const int ContentWidth = 520;
 
         private readonly ForgotPasswordPresenter _presenter;
-
-        // Mỗi bước có 1 bộ xếp dọc riêng: tự đo chiều cao chữ theo Font/DPI thật để không bị cắt.
-        private VerticalStackLayout _stackStep1;
-        private VerticalStackLayout _stackStep2;
-        private VerticalStackLayout _stackStep3;
+        private PasswordVisibilityToggle _newPasswordVisibilityToggle;
+        private PasswordVisibilityToggle _confirmPasswordVisibilityToggle;
 
         private Step _currentStep = Step.Identify;
         private string _challengeId;
@@ -46,6 +43,9 @@ namespace SIMS_WinFormsApp.Views.Auth
         public frmForgotPassword(string initialUsername, IPasswordResetService resetService = null)
         {
             InitializeComponent();
+            NativeTextBoxBehavior.ApplyInputFont(this);
+            _newPasswordVisibilityToggle = new PasswordVisibilityToggle(txtNewPassword3);
+            _confirmPasswordVisibilityToggle = new PasswordVisibilityToggle(txtConfirmPassword3);
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
@@ -72,10 +72,10 @@ namespace SIMS_WinFormsApp.Views.Auth
             lnkBack2.Click += (s, e) => ReturnToIdentify();
             lnkResend2.Click += async (s, e) => await ResendOtpAsync();
 
-            txtOtp2.TextChanged2 += (s, e) => FilterOtpInput();
+            txtOtp2.TextChanged += (s, e) => FilterOtpInput();
 
-            txtNewPassword3.TextChanged2 += (s, e) => UpdatePasswordMatch();
-            txtConfirmPassword3.TextChanged2 += (s, e) => UpdatePasswordMatch();
+            txtNewPassword3.TextChanged += (s, e) => UpdatePasswordMatch();
+            txtConfirmPassword3.TextChanged += (s, e) => UpdatePasswordMatch();
 
             btnReset3.Click += async (s, e) => await ResetPasswordAsync();
             lnkCancel3.Click += (s, e) => RequestClose();
@@ -89,16 +89,16 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblTitle1.Text = Lang.Get("forgot.identify.title");
             lblSubtitle1.Text = Lang.Get("forgot.identify.subtitle");
             lblUsernameLabel1.Text = Lang.Get("forgot.identify.username");
-            txtUsername1.PlaceholderText = Lang.Get("forgot.identify.username.placeholder");
+            NativeTextBoxBehavior.SetCueBanner(txtUsername1, Lang.Get("forgot.identify.username.placeholder"));
             lblEmailLabel1.Text = Lang.Get("forgot.identify.email");
-            txtEmail1.PlaceholderText = Lang.Get("forgot.identify.email.placeholder");
+            NativeTextBoxBehavior.SetCueBanner(txtEmail1, Lang.Get("forgot.identify.email.placeholder"));
             btnSubmit1.Text = Lang.Get("forgot.identify.submit");
             lnkBack1.Text = Lang.Get("forgot.backToLogin");
 
             lblStep2.Text = Lang.Get("forgot.step.counter", 2, 3);
             lblTitle2.Text = Lang.Get("forgot.otp.title");
             lblOtpLabel2.Text = Lang.Get("forgot.otp.code");
-            txtOtp2.PlaceholderText = Lang.Get("forgot.otp.code.placeholder");
+            NativeTextBoxBehavior.SetCueBanner(txtOtp2, Lang.Get("forgot.otp.code.placeholder"));
             btnVerify2.Text = Lang.Get("forgot.otp.verify");
             lnkBack2.Text = Lang.Get("forgot.otp.back");
             lnkResend2.Text = Lang.Get("forgot.otp.resend");
@@ -106,13 +106,15 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblStep3.Text = Lang.Get("forgot.step.counter", 3, 3);
             lblTitle3.Text = Lang.Get("forgot.password.title");
             lblNewPasswordLabel3.Text = Lang.Get("forgot.password.new");
-            txtNewPassword3.PlaceholderText = Lang.Get("forgot.password.new.placeholder");
-            txtNewPassword3.ShowTooltip = Lang.Get("forgot.password.show");
-            txtNewPassword3.HideTooltip = Lang.Get("forgot.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtNewPassword3, Lang.Get("forgot.password.new.placeholder"));
+            _newPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("forgot.password.show"),
+                Lang.Get("forgot.password.hide"));
             lblConfirmPasswordLabel3.Text = Lang.Get("forgot.password.confirm");
-            txtConfirmPassword3.PlaceholderText = Lang.Get("forgot.password.confirm.placeholder");
-            txtConfirmPassword3.ShowTooltip = Lang.Get("forgot.password.show");
-            txtConfirmPassword3.HideTooltip = Lang.Get("forgot.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtConfirmPassword3, Lang.Get("forgot.password.confirm.placeholder"));
+            _confirmPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("forgot.password.show"),
+                Lang.Get("forgot.password.hide"));
             lblRequirements3.Text = Lang.Get("forgot.password.requirements");
             btnReset3.Text = Lang.Get("forgot.password.submit");
             lnkCancel3.Text = Lang.Get("forgot.backToLogin");
@@ -124,46 +126,8 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void BuildStepLayouts()
         {
-            // Các khoảng cách (gapAfter) giữ đúng như bố cục thiết kế ban đầu trong Designer.
-            // Chiều cao thiết kế của từng control là mức tối thiểu; Label sẽ tự cao thêm khi chữ
-            // (hoặc chữ tự xuống dòng) cần nhiều chỗ hơn -> không bị cắt chân / mất dòng.
-            _stackStep1 = new VerticalStackLayout(pnlStep1, ContentWidth)
-                .Add(lblStep1, 6)
-                .Add(lblTitle1, 4)
-                .Add(lblSubtitle1, 8)
-                .Add(lblUsernameLabel1, 4)
-                .Add(txtUsername1, 16)
-                .Add(lblEmailLabel1, 4)
-                .Add(txtEmail1, 10)
-                .Add(lblMessage1, 4)
-                .Add(btnSubmit1, 14)
-                .AddCenteredLink(lnkBack1, 0);
-
             // Link "Gửi lại mã" canh trái sát tâm, đối xứng với link "Quay lại" canh phải sát tâm.
             lnkResend2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
-            _stackStep2 = new VerticalStackLayout(pnlStep2, ContentWidth)
-                .Add(lblStep2, 6)
-                .Add(lblTitle2, 4)
-                .Add(lblSentTo2, 12)
-                .Add(lblOtpLabel2, 4)
-                .Add(txtOtp2, 10)
-                .Add(lblMessage2, 4)
-                .Add(btnVerify2, 14)
-                .AddLinkPair(lnkBack2, lnkResend2, 24, 0);
-
-            _stackStep3 = new VerticalStackLayout(pnlStep3, ContentWidth)
-                .Add(lblStep3, 6)
-                .Add(lblTitle3, 4)
-                .Add(lblNewPasswordLabel3, 4)
-                .Add(txtNewPassword3, 16)
-                .Add(lblConfirmPasswordLabel3, 4)
-                .Add(txtConfirmPassword3, 8)
-                .Add(lblRequirements3, 2)
-                .Add(lblMatch3, 2)
-                .Add(lblMessage3, 4)
-                .Add(btnReset3, 14)
-                .AddCenteredLink(lnkCancel3, 0);
 
             // Các nhãn đổi nội dung trong lúc chạy: chữ dài hơn/ngắn hơn -> xếp lại bước tương ứng.
             lblMessage1.TextChanged += (s, e) => RelayoutStep(Step.Identify);
@@ -183,26 +147,25 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void RelayoutStep(Step step)
         {
-            VerticalStackLayout stack;
             Panel panel;
+            int contentHeight;
 
             switch (step)
             {
                 case Step.VerifyOtp:
-                    stack = _stackStep2;
                     panel = pnlStep2;
+                    contentHeight = LayoutVerifyOtpStep();
                     break;
                 case Step.ResetPassword:
-                    stack = _stackStep3;
                     panel = pnlStep3;
+                    contentHeight = LayoutResetPasswordStep();
                     break;
                 default:
-                    stack = _stackStep1;
                     panel = pnlStep1;
+                    contentHeight = LayoutIdentifyStep();
                     break;
             }
 
-            int contentHeight = stack.Apply();
             if (contentHeight > panel.Height)
                 panel.Height = contentHeight;
 
@@ -210,6 +173,83 @@ namespace SIMS_WinFormsApp.Views.Auth
             int requiredClientHeight = panel.Top + panel.Height + FormBottomMargin;
             if (requiredClientHeight > ClientSize.Height)
                 ClientSize = new System.Drawing.Size(ClientSize.Width, requiredClientHeight);
+        }
+
+        private int LayoutIdentifyStep()
+        {
+            int y = 0;
+            y = PlaceBlock(lblStep1, y, 6);
+            y = PlaceBlock(lblTitle1, y, 4);
+            y = PlaceBlock(lblSubtitle1, y, 8);
+            y = PlaceBlock(lblUsernameLabel1, y, 4);
+            y = PlaceBlock(txtUsername1, y, 16);
+            y = PlaceBlock(lblEmailLabel1, y, 4);
+            y = PlaceBlock(txtEmail1, y, 10);
+            y = PlaceBlock(lblMessage1, y, 4);
+            y = PlaceBlock(btnSubmit1, y, 14);
+            return PlaceCenteredLink(lnkBack1, y, 0);
+        }
+
+        private int LayoutVerifyOtpStep()
+        {
+            int y = 0;
+            y = PlaceBlock(lblStep2, y, 6);
+            y = PlaceBlock(lblTitle2, y, 4);
+            y = PlaceBlock(lblSentTo2, y, 12);
+            y = PlaceBlock(lblOtpLabel2, y, 4);
+            y = PlaceBlock(txtOtp2, y, 10);
+            y = PlaceBlock(lblMessage2, y, 4);
+            y = PlaceBlock(btnVerify2, y, 14);
+            return PlaceLinkPair(lnkBack2, lnkResend2, y, 24);
+        }
+
+        private int LayoutResetPasswordStep()
+        {
+            int y = 0;
+            y = PlaceBlock(lblStep3, y, 6);
+            y = PlaceBlock(lblTitle3, y, 4);
+            y = PlaceBlock(lblNewPasswordLabel3, y, 4);
+            y = PlaceBlock(txtNewPassword3, y, 16);
+            y = PlaceBlock(lblConfirmPasswordLabel3, y, 4);
+            y = PlaceBlock(txtConfirmPassword3, y, 8);
+            y = PlaceBlock(lblRequirements3, y, 2);
+            y = PlaceBlock(lblMatch3, y, 2);
+            y = PlaceBlock(lblMessage3, y, 4);
+            y = PlaceBlock(btnReset3, y, 14);
+            return PlaceCenteredLink(lnkCancel3, y, 0);
+        }
+
+        private static int PlaceBlock(Control control, int y, int gapAfter)
+        {
+            int height = control.Height;
+            if (control is Label label)
+                height = Math.Max(height, label.GetPreferredSize(new System.Drawing.Size(ContentWidth, 0)).Height + 2);
+
+            control.SetBounds(0, y, ContentWidth, height);
+            return y + height + gapAfter;
+        }
+
+        private static int PlaceCenteredLink(Label link, int y, int gapAfter)
+        {
+            System.Drawing.Size preferred = link.GetPreferredSize(System.Drawing.Size.Empty);
+            int width = Math.Min(ContentWidth, preferred.Width + 4);
+            int height = Math.Max(link.Height, preferred.Height + 2);
+            link.SetBounds((ContentWidth - width) / 2, y, width, height);
+            return y + height + gapAfter;
+        }
+
+        private static int PlaceLinkPair(Label left, Label right, int y, int gapBetween)
+        {
+            System.Drawing.Size leftSize = left.GetPreferredSize(System.Drawing.Size.Empty);
+            System.Drawing.Size rightSize = right.GetPreferredSize(System.Drawing.Size.Empty);
+            int center = ContentWidth / 2;
+            int halfGap = gapBetween / 2;
+            int leftWidth = Math.Min(center - halfGap, leftSize.Width + 4);
+            int rightWidth = Math.Min(ContentWidth - center - halfGap, rightSize.Width + 4);
+            int height = Math.Max(Math.Max(left.Height, right.Height), Math.Max(leftSize.Height, rightSize.Height) + 2);
+            left.SetBounds(center - halfGap - leftWidth, y, leftWidth, height);
+            right.SetBounds(center + halfGap, y, rightWidth, height);
+            return y + height;
         }
 
         // ===================== STEP 1: Identify =====================
@@ -306,7 +346,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             {
                 _suppressOtpTextChanged = true;
                 txtOtp2.Text = digitsOnly;
-                txtOtp2.FocusInput();
+                txtOtp2.Focus();
                 _suppressOtpTextChanged = false;
             }
         }
@@ -342,7 +382,7 @@ namespace SIMS_WinFormsApp.Views.Auth
 
                 case PasswordResetService.VerifyStatus.InvalidCode:
                     ShowMessage2(Lang.Get("forgot.verify.invalid", result.RemainingAttempts), AppColors.Error);
-                    txtOtp2.FocusInput();
+                    txtOtp2.Focus();
                     break;
 
                 case PasswordResetService.VerifyStatus.TooManyAttempts:
@@ -376,7 +416,7 @@ namespace SIMS_WinFormsApp.Views.Auth
                     txtOtp2.Text = "";
                     ShowMessage2(Lang.Get("forgot.otp.resent"), AppColors.Success);
                     StartCountdown(result.RetryAfterSeconds);
-                    txtOtp2.FocusInput();
+                    txtOtp2.Focus();
                     break;
 
                 case PasswordResetService.ResendStatus.Cooldown:
@@ -520,7 +560,7 @@ namespace SIMS_WinFormsApp.Views.Auth
                     _completed = true;
                     string username = _pendingUsername;
                     ClearSensitiveFields();
-                    MessageBox.Show(this,
+                    DialogHelper.Show(this,
                         Lang.Get("forgot.reset.success.message"),
                         Lang.Get("forgot.reset.success.title"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -627,15 +667,15 @@ namespace SIMS_WinFormsApp.Views.Auth
             {
                 case Step.Identify:
                     AcceptButton = btnSubmit1;
-                    txtUsername1.FocusInput();
+                    txtUsername1.Focus();
                     break;
                 case Step.VerifyOtp:
                     AcceptButton = btnVerify2;
-                    txtOtp2.FocusInput();
+                    txtOtp2.Focus();
                     break;
                 case Step.ResetPassword:
                     AcceptButton = btnReset3;
-                    txtNewPassword3.FocusInput();
+                    txtNewPassword3.Focus();
                     break;
             }
         }
@@ -646,7 +686,7 @@ namespace SIMS_WinFormsApp.Views.Auth
 
             if (_currentStep != Step.Identify && _challengeId != null)
             {
-                var confirm = MessageBox.Show(this,
+                var confirm = DialogHelper.Show(this,
                     Lang.Get("forgot.close.confirm.message"),
                     Lang.Get("forgot.close.confirm.title"),
                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning);

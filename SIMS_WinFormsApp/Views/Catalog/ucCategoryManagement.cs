@@ -12,9 +12,9 @@ using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
-using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Catalog
 {
@@ -119,8 +119,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(this, "Không thể tải danh mục: " + ex.Message,
-                        "Lỗi tải dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogHelper.ShowError(this, "Lỗi tải dữ liệu", "Không thể tải danh mục: " + ex.Message);
                 }
                 finally
                 {
@@ -195,8 +194,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     return;
                 }
 
-                MessageBox.Show(this, result == null ? "Không lưu được danh mục." : result.Message,
-                    "Không thể lưu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Không thể lưu",
+                    result == null ? "Không lưu được danh mục." : result.Message);
                 draft = edited;
                 if (!frmCategoryEditor.TryEdit(FindForm(), draft, false, out edited))
                     return;

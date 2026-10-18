@@ -1,5 +1,6 @@
 using SIMS_WinFormsApp.DAL;
 using SIMS_WinFormsApp.Views.Auth;
+using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Repositories.Implementations;
 using SIMS_WinFormsApp.Repositories.Interfaces;
@@ -17,7 +18,7 @@ using SIMS_WinFormsApp.Services.Mail;
 using SIMS_WinFormsApp.Services.Security;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
 using System;
 using System.Configuration;
 using System.IO;

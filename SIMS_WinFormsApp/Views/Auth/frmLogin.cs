@@ -23,10 +23,13 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private readonly IAuthService _authService;
         private readonly LoginPresenter _presenter;
+        private AuthBrandPanelRenderer _brandPanelRenderer;
+        private PasswordVisibilityToggle _passwordVisibilityToggle;
 
         public frmLogin()
         {
             InitializeComponent();
+            InitializeNativeControls();
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
@@ -41,6 +44,7 @@ namespace SIMS_WinFormsApp.Views.Auth
         public frmLogin(IAuthService authService)
         {
             InitializeComponent();
+            InitializeNativeControls();
             LayoutLoginPanels();
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _presenter = new LoginPresenter(this, _authService);
@@ -49,9 +53,6 @@ namespace SIMS_WinFormsApp.Views.Auth
 
             bool dark = ThemeManager.Instance.IsDark;
             btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
-            txtUsername.DarkMode = dark;
-            txtPassword.DarkMode = dark;
-            chkRemember.DarkMode = dark;
             lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
 
             WireEvents();
@@ -68,6 +69,23 @@ namespace SIMS_WinFormsApp.Views.Auth
             // trắng cứng khai báo trong Designer trong khi các label/nút bên trong đã
             // dùng màu chữ của theme Dark -> tương phản kém, giao diện login bị "vỡ".
             OnThemeChanged(this, EventArgs.Empty);
+        }
+
+        private void InitializeNativeControls()
+        {
+            NativeTextBoxBehavior.ApplyInputFont(this);
+            _brandPanelRenderer = new AuthBrandPanelRenderer(brandPanel)
+            {
+                Logo = Properties.Resources.logo_icon,
+                Tagline = "Quản lý cửa hàng thông minh",
+                Features = new[]
+                {
+                    "Quản lý bán hàng",
+                    "Theo dõi tồn kho",
+                    "Báo cáo kinh doanh"
+                }
+            };
+            _passwordVisibilityToggle = new PasswordVisibilityToggle(txtPassword);
         }
 
         private void WireEvents()
@@ -153,7 +171,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             int x = Math.Max(24, (pnlRight.Width - pnlFormCard.Width) / 2);
             int yPos = Math.Max(24, (pnlRight.Height - pnlFormCard.Height) / 2);
             pnlFormCard.Location = new Point(x, yPos);
-            brandPanel.ContentTop = yPos;
+            _brandPanelRenderer.ContentTop = yPos;
         }
 
         private void LayoutLoginPanels()
@@ -199,9 +217,12 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
             lblError.ForeColor = AppColors.Error;
             btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
-            txtUsername.DarkMode = dark;
-            txtPassword.DarkMode = dark;
-            chkRemember.DarkMode = dark;
+            txtUsername.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
+            txtUsername.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            txtPassword.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
+            txtPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            chkRemember.BackColor = dark ? Color.FromArgb(18, 20, 26) : AppColors.White;
+            chkRemember.ForeColor = dark ? Color.White : AppColors.TextMuted;
             lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
 
             Refresh();
@@ -214,28 +235,29 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblSubtitle.Text = Lang.Get("login.subtitle");
 
             lblUsername.Text = Lang.Get("login.username");
-            txtUsername.PlaceholderText = Lang.Get("login.username.placeholder");
+            NativeTextBoxBehavior.SetCueBanner(txtUsername, Lang.Get("login.username.placeholder"));
 
             lblPassword.Text = Lang.Get("login.password");
-            txtPassword.PlaceholderText = Lang.Get("login.password.placeholder");
-            txtPassword.ShowTooltip = Lang.Get("login.password.show");
-            txtPassword.HideTooltip = Lang.Get("login.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtPassword, Lang.Get("login.password.placeholder"));
+            _passwordVisibilityToggle.SetTooltips(
+                Lang.Get("login.password.show"),
+                Lang.Get("login.password.hide"));
 
             chkRemember.Text = Lang.Get("login.rememberMe");
             lnkForgotPassword.Text = Lang.Get("login.forgotPassword");
 
             btnLogin.Text = Lang.Get("login.submit");
 
-            brandPanel.BrandName = Lang.Get("login.leftpanel.brand");
-            brandPanel.Logo = Properties.Resources.logo_icon;
-            brandPanel.Tagline = Lang.Get("login.leftpanel.tagline");
-            brandPanel.Features = new[]
+            _brandPanelRenderer.BrandName = Lang.Get("login.leftpanel.brand");
+            _brandPanelRenderer.Logo = Properties.Resources.logo_icon;
+            _brandPanelRenderer.Tagline = Lang.Get("login.leftpanel.tagline");
+            _brandPanelRenderer.Features = new[]
             {
                 Lang.Get("login.leftpanel.feature1"),
                 Lang.Get("login.leftpanel.feature2"),
                 Lang.Get("login.leftpanel.feature3")
             };
-            brandPanel.FooterText = Lang.Get("app.copyright", DateTime.Now.Year);
+            _brandPanelRenderer.FooterText = Lang.Get("app.copyright", DateTime.Now.Year);
         }
 
         private void LoadRememberedUsername()
@@ -246,11 +268,11 @@ namespace SIMS_WinFormsApp.Views.Auth
             if (remembered)
             {
                 txtUsername.Text = AppSettingsStore.Get(PrefKeyRememberedUsername, "");
-                txtPassword.FocusInput();
+                txtPassword.Focus();
             }
             else
             {
-                txtUsername.FocusInput();
+                txtUsername.Focus();
             }
         }
 

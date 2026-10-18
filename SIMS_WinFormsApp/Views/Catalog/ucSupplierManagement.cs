@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Views.UserManager;
 using SIMS_WinFormsApp.Views.SystemManagement;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
@@ -10,9 +11,9 @@ using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
-using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Catalog
 {
@@ -115,8 +116,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, "Không thể tải nhà cung cấp: " + ex.Message,
-                    "Lỗi tải dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogHelper.ShowError(this, "Lỗi tải dữ liệu", "Không thể tải nhà cung cấp: " + ex.Message);
             }
         }
 

@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.UI.Controls;
 
@@ -13,36 +13,36 @@ namespace SIMS_WinFormsApp.Views.Auth
         private Label lblTitle1;
         private Label lblSubtitle1;
         private Label lblUsernameLabel1;
-        private RoundedTextBox txtUsername1;
+        private TextBox txtUsername1;
         private Label lblEmailLabel1;
-        private RoundedTextBox txtEmail1;
+        private TextBox txtEmail1;
         private Label lblMessage1;
         private PrimaryButton btnSubmit1;
-        private ClickableLabel lnkBack1;
+        private LinkLabel lnkBack1;
 
         private Panel pnlStep2;
         private Label lblStep2;
         private Label lblTitle2;
         private Label lblSentTo2;
         private Label lblOtpLabel2;
-        private RoundedTextBox txtOtp2;
+        private TextBox txtOtp2;
         private Label lblMessage2;
         private PrimaryButton btnVerify2;
-        private ClickableLabel lnkBack2;
-        private ClickableLabel lnkResend2;
+        private LinkLabel lnkBack2;
+        private LinkLabel lnkResend2;
 
         private Panel pnlStep3;
         private Label lblStep3;
         private Label lblTitle3;
         private Label lblNewPasswordLabel3;
-        private RoundedPasswordTextBox txtNewPassword3;
+        private TextBox txtNewPassword3;
         private Label lblConfirmPasswordLabel3;
-        private RoundedPasswordTextBox txtConfirmPassword3;
+        private TextBox txtConfirmPassword3;
         private Label lblRequirements3;
         private Label lblMatch3;
         private Label lblMessage3;
         private PrimaryButton btnReset3;
-        private ClickableLabel lnkCancel3;
+        private LinkLabel lnkCancel3;
 
         protected override void Dispose(bool disposing)
         {
@@ -59,34 +59,34 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.lblTitle1 = new System.Windows.Forms.Label();
             this.lblSubtitle1 = new System.Windows.Forms.Label();
             this.lblUsernameLabel1 = new System.Windows.Forms.Label();
-            this.txtUsername1 = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.txtUsername1 = new System.Windows.Forms.TextBox();
             this.lblEmailLabel1 = new System.Windows.Forms.Label();
-            this.txtEmail1 = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.txtEmail1 = new System.Windows.Forms.TextBox();
             this.lblMessage1 = new System.Windows.Forms.Label();
             this.btnSubmit1 = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
-            this.lnkBack1 = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
+            this.lnkBack1 = new System.Windows.Forms.LinkLabel();
             this.pnlStep2 = new System.Windows.Forms.Panel();
             this.lblStep2 = new System.Windows.Forms.Label();
             this.lblTitle2 = new System.Windows.Forms.Label();
             this.lblSentTo2 = new System.Windows.Forms.Label();
             this.lblOtpLabel2 = new System.Windows.Forms.Label();
-            this.txtOtp2 = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.txtOtp2 = new System.Windows.Forms.TextBox();
             this.lblMessage2 = new System.Windows.Forms.Label();
             this.btnVerify2 = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
-            this.lnkBack2 = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
-            this.lnkResend2 = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
+            this.lnkBack2 = new System.Windows.Forms.LinkLabel();
+            this.lnkResend2 = new System.Windows.Forms.LinkLabel();
             this.pnlStep3 = new System.Windows.Forms.Panel();
             this.lblStep3 = new System.Windows.Forms.Label();
             this.lblTitle3 = new System.Windows.Forms.Label();
             this.lblNewPasswordLabel3 = new System.Windows.Forms.Label();
-            this.txtNewPassword3 = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtNewPassword3 = new System.Windows.Forms.TextBox();
             this.lblConfirmPasswordLabel3 = new System.Windows.Forms.Label();
-            this.txtConfirmPassword3 = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtConfirmPassword3 = new System.Windows.Forms.TextBox();
             this.lblRequirements3 = new System.Windows.Forms.Label();
             this.lblMatch3 = new System.Windows.Forms.Label();
             this.lblMessage3 = new System.Windows.Forms.Label();
             this.btnReset3 = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
-            this.lnkCancel3 = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
+            this.lnkCancel3 = new System.Windows.Forms.LinkLabel();
             this.pnlStep1.SuspendLayout();
             this.pnlStep2.SuspendLayout();
             this.pnlStep3.SuspendLayout();
@@ -153,14 +153,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtUsername1
             // 
-            this.txtUsername1.BackColor = System.Drawing.Color.Transparent;
-            this.txtUsername1.CornerRadius = 10;
-            this.txtUsername1.DarkMode = false;
+            this.txtUsername1.BackColor = System.Drawing.Color.White;
             this.txtUsername1.Location = new System.Drawing.Point(0, 202);
             this.txtUsername1.MaxLength = 50;
+            this.txtUsername1.AutoSize = false;
+            this.txtUsername1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtUsername1.Name = "txtUsername1";
             this.txtUsername1.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtUsername1.PlaceholderText = "";
             this.txtUsername1.Size = new System.Drawing.Size(520, 52);
             this.txtUsername1.TabIndex = 4;
             // 
@@ -177,14 +176,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtEmail1
             // 
-            this.txtEmail1.BackColor = System.Drawing.Color.Transparent;
-            this.txtEmail1.CornerRadius = 10;
-            this.txtEmail1.DarkMode = false;
+            this.txtEmail1.BackColor = System.Drawing.Color.White;
             this.txtEmail1.Location = new System.Drawing.Point(0, 306);
             this.txtEmail1.MaxLength = 100;
+            this.txtEmail1.AutoSize = false;
+            this.txtEmail1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtEmail1.Name = "txtEmail1";
             this.txtEmail1.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtEmail1.PlaceholderText = "";
             this.txtEmail1.Size = new System.Drawing.Size(520, 52);
             this.txtEmail1.TabIndex = 6;
             // 
@@ -291,14 +289,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtOtp2
             // 
-            this.txtOtp2.BackColor = System.Drawing.Color.Transparent;
-            this.txtOtp2.CornerRadius = 10;
-            this.txtOtp2.DarkMode = false;
+            this.txtOtp2.BackColor = System.Drawing.Color.White;
             this.txtOtp2.Location = new System.Drawing.Point(0, 194);
             this.txtOtp2.MaxLength = 6;
+            this.txtOtp2.AutoSize = false;
+            this.txtOtp2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtOtp2.Name = "txtOtp2";
             this.txtOtp2.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtOtp2.PlaceholderText = "";
             this.txtOtp2.Size = new System.Drawing.Size(520, 52);
             this.txtOtp2.TabIndex = 4;
             // 
@@ -412,16 +409,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtNewPassword3
             // 
-            this.txtNewPassword3.BackColor = System.Drawing.Color.Transparent;
-            this.txtNewPassword3.CornerRadius = 10;
-            this.txtNewPassword3.DarkMode = false;
-            this.txtNewPassword3.HideTooltip = "Ẩn mật khẩu";
+            this.txtNewPassword3.BackColor = System.Drawing.Color.White;
             this.txtNewPassword3.Location = new System.Drawing.Point(0, 142);
             this.txtNewPassword3.MaxLength = 72;
+            this.txtNewPassword3.AutoSize = false;
+            this.txtNewPassword3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtNewPassword3.Name = "txtNewPassword3";
             this.txtNewPassword3.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtNewPassword3.PlaceholderText = "";
-            this.txtNewPassword3.ShowTooltip = "Hiện mật khẩu";
             this.txtNewPassword3.Size = new System.Drawing.Size(520, 52);
             this.txtNewPassword3.TabIndex = 3;
             // 
@@ -438,16 +432,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtConfirmPassword3
             // 
-            this.txtConfirmPassword3.BackColor = System.Drawing.Color.Transparent;
-            this.txtConfirmPassword3.CornerRadius = 10;
-            this.txtConfirmPassword3.DarkMode = false;
-            this.txtConfirmPassword3.HideTooltip = "Ẩn mật khẩu";
+            this.txtConfirmPassword3.BackColor = System.Drawing.Color.White;
             this.txtConfirmPassword3.Location = new System.Drawing.Point(0, 246);
             this.txtConfirmPassword3.MaxLength = 72;
+            this.txtConfirmPassword3.AutoSize = false;
+            this.txtConfirmPassword3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtConfirmPassword3.Name = "txtConfirmPassword3";
             this.txtConfirmPassword3.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtConfirmPassword3.PlaceholderText = "";
-            this.txtConfirmPassword3.ShowTooltip = "Hiện mật khẩu";
             this.txtConfirmPassword3.Size = new System.Drawing.Size(520, 52);
             this.txtConfirmPassword3.TabIndex = 5;
             // 

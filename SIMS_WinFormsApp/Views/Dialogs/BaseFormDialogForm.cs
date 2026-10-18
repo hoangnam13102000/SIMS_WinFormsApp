@@ -6,9 +6,10 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
-namespace SIMS_WinFormsApp.UI.Controls
+namespace SIMS_WinFormsApp.Views.Dialogs
 {
 
     public partial class BaseFormDialogForm : Form
@@ -43,6 +44,14 @@ namespace SIMS_WinFormsApp.UI.Controls
         private IconPictureBox _headerIconBox;
         private Label _titleLabel;
         private DialogCloseButton _closeButton;
+        private Panel _designerPreviewContent;
+        private Panel _designerPreviewFooter;
+        private Label _designerPreviewHeading;
+        private Label _designerPreviewDescription;
+        private Label _designerPreviewFieldLabel;
+        private TextBox _designerPreviewTextBox;
+        private Button _designerPreviewCancelButton;
+        private Button _designerPreviewSaveButton;
 
         private readonly List<PrimaryButton> _footerButtons = new List<PrimaryButton>();
         private Rectangle _ownerBounds;
@@ -170,6 +179,7 @@ namespace SIMS_WinFormsApp.UI.Controls
                 return;
             }
 
+            RemoveDesignerPreviewControls();
             ApplyThemeColors();
             KeyDown += BaseFormDialogForm_KeyDown;
             Resize += BaseFormDialogForm_Resize;
@@ -178,6 +188,23 @@ namespace SIMS_WinFormsApp.UI.Controls
             RepositionHeaderControls();
             RepositionFooterButtons();
             _frame.ApplyClip(this);
+        }
+
+        private void RemoveDesignerPreviewControls()
+        {
+            Control contentPreview = _bodyScrollPanel.Controls["designerPreviewContent"];
+            if (contentPreview != null)
+            {
+                _bodyScrollPanel.Controls.Remove(contentPreview);
+                contentPreview.Dispose();
+            }
+
+            Control footerPreview = _footerPanel.Controls["designerPreviewFooter"];
+            if (footerPreview != null)
+            {
+                _footerPanel.Controls.Remove(footerPreview);
+                footerPreview.Dispose();
+            }
         }
 
         public BaseFormDialogForm(IWin32Window owner) : this()

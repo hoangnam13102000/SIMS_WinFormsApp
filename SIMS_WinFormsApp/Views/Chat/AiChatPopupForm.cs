@@ -2,22 +2,23 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Chat
 {
-    public sealed partial class AiChatPopupForm : PopupFormBase
+    public sealed partial class AiChatPopupForm : Form
     {
         public AiChatPopupForm()
         {
             InitializeComponent();
+            ConfigurePopup();
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
         }
 
         public AiChatPopupForm(ucAiChat chatView)
         {
             InitializeComponent();
+            ConfigurePopup();
             Controls.Clear();
             if (chatView == null)
                 throw new System.ArgumentNullException(nameof(chatView));
@@ -46,6 +47,26 @@ namespace SIMS_WinFormsApp.Views.Chat
         private void OnCloseRequested()
         {
             if (!IsDisposed) Close();
+        }
+
+        private void ConfigurePopup()
+        {
+            AutoScaleMode = AutoScaleMode.None;
+            FormBorderStyle = FormBorderStyle.None;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
+            TopMost = true;
+            DoubleBuffered = true;
+            KeyPreview = true;
+            Deactivate += (sender, args) =>
+            {
+                if (!IsDisposed && Visible) Close();
+            };
+            KeyDown += (sender, args) =>
+            {
+                if (args.KeyCode == Keys.Escape && !IsDisposed && Visible)
+                    Close();
+            };
         }
 
         private void ApplyRoundedRegion()

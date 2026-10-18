@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Repositories.Interfaces;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Views.SystemManagement

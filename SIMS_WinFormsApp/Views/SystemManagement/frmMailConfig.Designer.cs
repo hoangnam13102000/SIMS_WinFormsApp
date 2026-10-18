@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.UI.Controls;
 
@@ -14,13 +14,13 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private Label lblSubtitle;
 
         private Label lblSenderEmail;
-        private RoundedTextBox txtSenderEmail;
+        private TextBox txtSenderEmail;
 
         private Label lblAppPassword;
-        private RoundedPasswordTextBox txtAppPassword;
+        private TextBox txtAppPassword;
 
         private Label lblHint;
-        private ClickableLabel lnkHowTo;
+        private LinkLabel lnkHowTo;
 
         private Label lblMessage;
 
@@ -46,11 +46,11 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.btnTest = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.btnSave = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.lblMessage = new System.Windows.Forms.Label();
-            this.lnkHowTo = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
+            this.lnkHowTo = new System.Windows.Forms.LinkLabel();
             this.lblHint = new System.Windows.Forms.Label();
-            this.txtAppPassword = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtAppPassword = new System.Windows.Forms.TextBox();
             this.lblAppPassword = new System.Windows.Forms.Label();
-            this.txtSenderEmail = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.txtSenderEmail = new System.Windows.Forms.TextBox();
             this.lblSenderEmail = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
@@ -161,16 +161,13 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             // 
             // txtAppPassword
             // 
-            this.txtAppPassword.BackColor = System.Drawing.Color.Transparent;
-            this.txtAppPassword.CornerRadius = 10;
-            this.txtAppPassword.DarkMode = false;
-            this.txtAppPassword.HideTooltip = "Ẩn App Password";
+            this.txtAppPassword.BackColor = System.Drawing.Color.White;
             this.txtAppPassword.Location = new System.Drawing.Point(3, 245);
             this.txtAppPassword.MaxLength = 32;
+            this.txtAppPassword.AutoSize = false;
+            this.txtAppPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtAppPassword.Name = "txtAppPassword";
             this.txtAppPassword.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtAppPassword.PlaceholderText = "Nhập App Password 16 ký tự";
-            this.txtAppPassword.ShowTooltip = "Hiện App Password";
             this.txtAppPassword.Size = new System.Drawing.Size(514, 52);
             this.txtAppPassword.TabIndex = 4;
             // 
@@ -187,14 +184,13 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             // 
             // txtSenderEmail
             // 
-            this.txtSenderEmail.BackColor = System.Drawing.Color.Transparent;
-            this.txtSenderEmail.CornerRadius = 10;
-            this.txtSenderEmail.DarkMode = false;
+            this.txtSenderEmail.BackColor = System.Drawing.Color.White;
             this.txtSenderEmail.Location = new System.Drawing.Point(0, 140);
             this.txtSenderEmail.MaxLength = 100;
+            this.txtSenderEmail.AutoSize = false;
+            this.txtSenderEmail.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSenderEmail.Name = "txtSenderEmail";
             this.txtSenderEmail.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtSenderEmail.PlaceholderText = "vidu@gmail.com";
             this.txtSenderEmail.Size = new System.Drawing.Size(520, 52);
             this.txtSenderEmail.TabIndex = 6;
             // 

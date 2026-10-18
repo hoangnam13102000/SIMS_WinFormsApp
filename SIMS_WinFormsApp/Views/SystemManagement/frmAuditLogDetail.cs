@@ -8,6 +8,7 @@ using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.SystemManagement
 {

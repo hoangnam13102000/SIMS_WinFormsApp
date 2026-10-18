@@ -6,6 +6,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Services.Barcode;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.UI.Controls.Barcode
 {

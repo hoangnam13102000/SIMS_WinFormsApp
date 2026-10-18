@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters.Pos

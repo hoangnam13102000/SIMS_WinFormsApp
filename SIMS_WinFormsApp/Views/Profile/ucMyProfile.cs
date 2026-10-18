@@ -9,8 +9,9 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Profile
 {
@@ -131,7 +132,7 @@ namespace SIMS_WinFormsApp.Views.Profile
                 if (extension != ".jpg" && extension != ".jpeg" &&
                     extension != ".png" && extension != ".bmp")
                 {
-                    MessageBox.Show(FindForm(),
+                    DialogHelper.Show(FindForm(),
                         "Chỉ chấp nhận các định dạng ảnh: JPG, PNG, BMP.",
                         "Ảnh không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -139,7 +140,7 @@ namespace SIMS_WinFormsApp.Views.Profile
 
                 if (new FileInfo(dialog.FileName).Length > MaxAvatarFileSizeBytes)
                 {
-                    MessageBox.Show(FindForm(),
+                    DialogHelper.Show(FindForm(),
                         "Kích thước ảnh vượt quá giới hạn cho phép (tối đa 5MB).",
                         "Ảnh quá lớn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -151,7 +152,7 @@ namespace SIMS_WinFormsApp.Views.Profile
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show(FindForm(),
+                    DialogHelper.Show(FindForm(),
                         "Không thể đọc ảnh đã chọn, vui lòng thử lại với ảnh khác.",
                         "Lỗi đọc ảnh", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

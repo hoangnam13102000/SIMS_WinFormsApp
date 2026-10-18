@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -207,7 +208,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             {
                 layout.AddLazyPage("settings", Lang.Get("sidebar.page.settings"), () => new ucSystemSettings(), IconChar.Gear);
             }
-            layout.AddLazyPage("backup", Lang.Get("sidebar.page.backup"), SIMS_WinFormsApp.UI.Controls.Backup.BackupPage.Create, IconChar.ShieldHalved);
+            layout.AddLazyPage("backup", Lang.Get("sidebar.page.backup"), SIMS_WinFormsApp.Views.Backup.BackupPage.Create, IconChar.ShieldHalved);
             layout.AddLazyPage("audit-log", "Nhật ký hệ thống", () => new ucAuditLog(), IconChar.ClockRotateLeft);
             layout.AddLazyPage("role-permissions", "Phân quyền vai trò", () => new ucRolePermission(), IconChar.UserShield);
             return layout;
@@ -301,7 +302,30 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             var popup = new AiChatPopupForm(chatView);
             popup.FormClosed += (_, __) => _aiChatPopup = null;
             _aiChatPopup = popup;
-            popup.ShowAbove(_layout.ChatbotButton, 12);
+            ShowPopupAbove(popup, _layout.ChatbotButton, 12);
+        }
+
+        private static void ShowPopupAbove(Form popup, Control anchor, int offsetY)
+        {
+            if (popup == null || anchor == null || anchor.IsDisposed) return;
+
+            Rectangle working = Screen.FromControl(anchor).WorkingArea;
+            Point anchorTopLeft = anchor.PointToScreen(Point.Empty);
+            int x = anchorTopLeft.X + anchor.Width - popup.Width;
+            x = Math.Max(working.Left, Math.Min(x, working.Right - popup.Width));
+
+            int y = anchorTopLeft.Y - popup.Height - offsetY;
+            if (y < working.Top)
+            {
+                int below = anchorTopLeft.Y + anchor.Height + offsetY;
+                y = below + popup.Height <= working.Bottom
+                    ? below
+                    : Math.Max(working.Top, working.Bottom - popup.Height);
+            }
+
+            popup.Location = new Point(x, y);
+            popup.Show(anchor.FindForm());
+            popup.Activate();
         }
 
         public void Dispose()

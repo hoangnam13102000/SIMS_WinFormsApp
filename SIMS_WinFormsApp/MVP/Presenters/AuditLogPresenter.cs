@@ -1,7 +1,6 @@
 using System;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Repositories.Interfaces;
-using SIMS_WinFormsApp.UI.Controls.Loading;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.Views.Interfaces;
 

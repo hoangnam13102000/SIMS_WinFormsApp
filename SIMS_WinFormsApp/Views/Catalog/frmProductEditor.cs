@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
+using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Catalog
 {
@@ -201,15 +202,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 !TryParseMoney(_sellPriceTextBox.Text, out decimal sellPrice) ||
                 importPrice < 0 || sellPrice < 0)
             {
-                MessageBox.Show(this, "Giá nhập và giá bán phải là số không âm.",
-                    "Dữ liệu không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ",
+                    "Giá nhập và giá bán phải là số không âm.");
                 return;
             }
             if (!int.TryParse(_stockTextBox.Text, out int stock) || stock < 0 ||
                 !int.TryParse(_minStockTextBox.Text, out int minStock) || minStock < 0)
             {
-                MessageBox.Show(this, "Tồn kho và tồn kho tối thiểu phải là số nguyên không âm.",
-                    "Dữ liệu không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ",
+                    "Tồn kho và tồn kho tối thiểu phải là số nguyên không âm.");
                 return;
             }
 
@@ -217,8 +218,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             var supplier = _supplierComboBox.SelectedItem as LookupItem;
             if (category == null)
             {
-                MessageBox.Show(this, "Vui lòng chọn danh mục sản phẩm.",
-                    "Dữ liệu không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ", "Vui lòng chọn danh mục sản phẩm.");
                 return;
             }
 

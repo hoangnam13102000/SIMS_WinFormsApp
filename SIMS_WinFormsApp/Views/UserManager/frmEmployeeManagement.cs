@@ -11,9 +11,9 @@ using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
-using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Views.SystemManagement;
 
 namespace SIMS_WinFormsApp.Views.UserManager

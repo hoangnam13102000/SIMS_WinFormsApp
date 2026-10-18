@@ -162,9 +162,10 @@
     <Compile Include="Models\DTOs\Pos\PromotionResultDto.cs" />
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\StoreSettingsDto.cs" />
+    <Compile Include="Models\DTOs\TablePageResult.cs" />
+    <Compile Include="Models\Enums\DateRangePreset.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
     <!-- MỚI: DTO cho cơ chế Export/Import -->
-    <Compile Include="Models\DTOs\OverflowMenuAction.cs" />
     <Compile Include="Models\DTOs\ImportRowResult.cs" />
     <Compile Include="Models\DTOs\ImportSummaryDto.cs" />
     <Compile Include="Models\Enums\Gender.cs" />
@@ -294,8 +295,8 @@
     </Compile>
     <Compile Include="UI\Controls\Catalog\CatalogPages.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
-    <Compile Include="UI\Controls\Backup\BackupPage.cs" />
-    <Compile Include="UI\Controls\Backup\BackupRecoveryPageControl.cs">
+    <Compile Include="Views\Backup\BackupPage.cs" />
+    <Compile Include="Views\Backup\BackupRecoveryPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
@@ -308,41 +309,15 @@
     </Compile>
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerView.cs" />
-    <Compile Include="UI\Controls\BaseDetailDialogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="UI\Controls\Catalog\CardPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\Catalog\Pill.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\DetailAvatarPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UI\Controls\DialogPillTabButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\DialogCloseButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\DialogSizing.cs" />
-    <Compile Include="UI\Controls\Dialogs\FieldGridPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoItem.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
-    <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoBox.cs" />
-    <Compile Include="UI\Controls\Dialogs\RoundedDialogFrame.cs" />
-    <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\AvatarSectionFormPanel.cs" />
     <Compile Include="UI\Controls\Forms\GenderOption.cs" />
     <!-- MỚI: Header -->
     <Compile Include="UI\Controls\Header\AvatarControl.cs">
@@ -354,11 +329,7 @@
     <Compile Include="UI\Controls\Header\NotificationBellButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Loading\ILoadingIndicator.cs" />
-    <Compile Include="UI\Controls\Loading\LoadingOverlayHost.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ManagementTablePage.cs" />
+    <Compile Include="Views\Interfaces\ILoadingIndicator.cs" />
     <Compile Include="Views\Pos\frmListPickerDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -375,12 +346,16 @@
     <Compile Include="UI\Controls\Pos\ProductTileControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Toast\AppToast.cs" />
-    <Compile Include="UI\Controls\Toast\IToastNotifier.cs" />
-    <Compile Include="UI\Controls\Toast\ToastNotification.cs">
+    <Compile Include="Views\Toast\AppToast.cs" />
+    <Compile Include="Views\Toast\DialogType.cs" />
+    <Compile Include="Views\Toast\IToastNotifier.cs" />
+    <Compile Include="Views\Toast\ToastNotification.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Toast\ToastService.cs" />
+    <Compile Include="Views\Toast\ToastNotification.Designer.cs">
+      <DependentUpon>ToastNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Toast\ToastService.cs" />
     <Compile Include="UI\Theme\DropdownPalette.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
     <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
@@ -391,16 +366,23 @@
     <Compile Include="Views\Dialogs\BaseFormDialogForm.Designer.cs">
       <DependentUpon>BaseFormDialogForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\Dialogs\DetailInfoItemControl.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
-    <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
-    <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Views\Dialogs\DetailInfoItemControl.cs" />
+    <Compile Include="Views\Dialogs\DialogCloseButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogSizing.cs" />
+    <Compile Include="Views\Dialogs\DialogTheme.cs" />
+    <Compile Include="Views\Dialogs\InfoBannerPanel.cs" />
+    <Compile Include="Views\Dialogs\RoundedDialogFrame.cs" />
+    <Compile Include="Views\Dialogs\DialogHelper.cs" />
+    <Compile Include="Views\Dialogs\DialogService.cs" />
+    <Compile Include="Views\Dialogs\frmMessageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Dialogs\frmMessageDialog.Designer.cs">
+      <DependentUpon>frmMessageDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\NumberInputFormatter.cs" />
-    <Compile Include="UI\Controls\Forms\LabeledIconField.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="UI\Controls\LabeledComboField.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -437,24 +419,9 @@
     <Compile Include="Services\AI\Implementations\Tools\GetStockStatusTool.cs" />
     <Compile Include="Services\AI\Implementations\Tools\ListCategoriesTool.cs" />
     <Compile Include="Services\AI\Implementations\Tools\SearchProductsTool.cs" />
-    <Compile Include="UI\Controls\Tables\BaseTable.cs" />
-    <Compile Include="UI\Controls\Filter\FilterComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Filter\FilterOption.cs" />
-    <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
-    <Compile Include="UI\Controls\Filter\IFilterView.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangePreset.cs" />
-    <Compile Include="UI\Controls\Filter\IDateRangeFilterView.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangeFilterPresenter.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangeFilterControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <!-- MỚI: nút trigger menu "Tùy chọn" cạnh nút "+ Thêm..." -->
-    <Compile Include="UI\Controls\Popups\OverflowMenuButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="MVP\Presenters\DateRangeFilterPresenter.cs" />
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
+    <Compile Include="Views\Interfaces\IDateRangeFilterView.cs" />
     <Compile Include="Views\Interfaces\IPosView.cs" />
     <Compile Include="Views\Interfaces\IRoleManagementView.cs" />
     <Compile Include="Views\Interfaces\IRolePermissionView.cs" />
@@ -691,61 +658,23 @@
     <Compile Include="Services\Mail\MailSender.cs" />
     <Compile Include="Services\Session\IUserSession.cs" />
     <Compile Include="Services\Session\UserSession.cs" />
-    <Compile Include="UI\Controls\Auth\AuthBrandPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\BaseDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Auth\ClickableLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\DialogType.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogButtons.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogHelper.cs" />
-    <Compile Include="UI\Controls\Tables\HeaderSection.cs" />
-    <Compile Include="UI\Controls\Popups\NotificationDropdownControl.cs" />
-    <Compile Include="UI\Controls\Pagination\IPaginationView.cs" />
-    <Compile Include="UI\Controls\Pagination\PaginationControl.cs">
+    <Compile Include="Views\Pagination\IPaginationView.cs" />
+    <Compile Include="Views\Pagination\PaginationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Pagination\PaginationPresenter.cs" />
-    <Compile Include="UI\Controls\Popups\PopupFormBase.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Search\ISearchView.cs" />
-    <Compile Include="UI\Controls\Search\SearchBarControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Search\SearchPresenter.cs" />
-    <Compile Include="UI\Controls\Dashboard\StatCard.cs" />
-    <Compile Include="UI\Controls\Auth\ModernCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Popups\ModernDropdownMenu.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Views\Pagination\PaginationPresenter.cs" />
     <Compile Include="UI\Controls\BaseButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\PrimaryButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Auth\RoundedPasswordTextBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Auth\PasswordEyeToggle.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UI\Controls\Header\NotificationBadgeControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Auth\RoundedTextBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Settings\ToggleSwitchControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="UI\Theme\AuthBrandPanelRenderer.cs" />
+    <Compile Include="UI\Theme\IconBitmapCache.cs" />
+    <Compile Include="UI\Theme\NativeTextBoxBehavior.cs" />
     <Compile Include="UI\I18n\Lang.cs" />
     <Compile Include="UI\I18n\LanguageManager.cs" />
     <Compile Include="Views\Shell\MainLayoutControl.cs">
@@ -754,7 +683,6 @@
     <Compile Include="Views\Shell\MainLayoutControl.Designer.cs">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Layouts\VerticalStackLayout.cs" />
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />

@@ -17,10 +17,13 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private const string DefaultSenderEmail = "hoangnam131020@gmail.com";
 
         private bool _busy;
+        private PasswordVisibilityToggle _appPasswordVisibilityToggle;
 
         public frmMailConfig()
         {
             InitializeComponent();
+            NativeTextBoxBehavior.ApplyInputFont(this);
+            _appPasswordVisibilityToggle = new PasswordVisibilityToggle(txtAppPassword);
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
@@ -44,12 +47,13 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             lblSubtitle.Text = Lang.Get("mailconfig.subtitle");
 
             lblSenderEmail.Text = Lang.Get("mailconfig.senderEmail");
-            txtSenderEmail.PlaceholderText = Lang.Get("mailconfig.senderEmail.placeholder");
+            NativeTextBoxBehavior.SetCueBanner(txtSenderEmail, Lang.Get("mailconfig.senderEmail.placeholder"));
 
             lblAppPassword.Text = Lang.Get("mailconfig.appPassword");
-            txtAppPassword.PlaceholderText = Lang.Get("mailconfig.appPassword.placeholder");
-            txtAppPassword.ShowTooltip = Lang.Get("mailconfig.appPassword.show");
-            txtAppPassword.HideTooltip = Lang.Get("mailconfig.appPassword.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtAppPassword, Lang.Get("mailconfig.appPassword.placeholder"));
+            _appPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("mailconfig.appPassword.show"),
+                Lang.Get("mailconfig.appPassword.hide"));
 
             lblHint.Text = Lang.Get("mailconfig.hint");
             lnkHowTo.Text = Lang.Get("mailconfig.howTo");

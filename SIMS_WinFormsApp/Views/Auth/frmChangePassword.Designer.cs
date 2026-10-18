@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.UI.Controls;
 
@@ -8,20 +8,20 @@ namespace SIMS_WinFormsApp.Views.Auth
     {
         private System.ComponentModel.IContainer components = null;
 
-        private AuthBrandPanel brandPanel;
+        private Panel brandPanel;
         private Panel pnlRight;
 
         private Label lblTitle;
         private Label lblSubtitle;
 
         private Label lblCurrent;
-        private RoundedPasswordTextBox txtCurrent;
+        private TextBox txtCurrent;
 
         private Label lblNew;
-        private RoundedPasswordTextBox txtNew;
+        private TextBox txtNew;
 
         private Label lblConfirm;
-        private RoundedPasswordTextBox txtConfirm;
+        private TextBox txtConfirm;
 
         private Label lblError;
 
@@ -42,17 +42,17 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void InitializeComponent()
         {
-            this.brandPanel = new SIMS_WinFormsApp.UI.Controls.AuthBrandPanel();
+            this.brandPanel = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.pnlButtonRow = new System.Windows.Forms.Panel();
             this.btnCancel = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.btnSubmit = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.lblError = new System.Windows.Forms.Label();
-            this.txtConfirm = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtConfirm = new System.Windows.Forms.TextBox();
             this.lblConfirm = new System.Windows.Forms.Label();
-            this.txtNew = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtNew = new System.Windows.Forms.TextBox();
             this.lblNew = new System.Windows.Forms.Label();
-            this.txtCurrent = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.txtCurrent = new System.Windows.Forms.TextBox();
             this.lblCurrent = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
@@ -62,17 +62,11 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // brandPanel
             // 
-            this.brandPanel.BrandName = "SIMS";
-            this.brandPanel.ContentTop = -1;
             this.brandPanel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.brandPanel.Features = new string[0];
-            this.brandPanel.FooterText = "";
             this.brandPanel.Location = new System.Drawing.Point(0, 0);
-            this.brandPanel.Logo = null;
             this.brandPanel.Name = "brandPanel";
             this.brandPanel.Size = new System.Drawing.Size(440, 650);
             this.brandPanel.TabIndex = 1;
-            this.brandPanel.Tagline = "Quản lý cửa hàng thông minh";
             this.brandPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.brandPanel_Paint);
             // 
             // pnlRight
@@ -156,16 +150,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtConfirm
             // 
-            this.txtConfirm.BackColor = System.Drawing.Color.Transparent;
-            this.txtConfirm.CornerRadius = 10;
-            this.txtConfirm.DarkMode = false;
-            this.txtConfirm.HideTooltip = "Ẩn mật khẩu";
+            this.txtConfirm.BackColor = System.Drawing.Color.White;
             this.txtConfirm.Location = new System.Drawing.Point(70, 494);
             this.txtConfirm.MaxLength = 100;
+            this.txtConfirm.AutoSize = false;
+            this.txtConfirm.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtConfirm.Name = "txtConfirm";
             this.txtConfirm.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtConfirm.PlaceholderText = "Nhập lại mật khẩu mới";
-            this.txtConfirm.ShowTooltip = "Hiện mật khẩu";
             this.txtConfirm.Size = new System.Drawing.Size(440, 52);
             this.txtConfirm.TabIndex = 2;
             // 
@@ -182,16 +173,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtNew
             // 
-            this.txtNew.BackColor = System.Drawing.Color.Transparent;
-            this.txtNew.CornerRadius = 10;
-            this.txtNew.DarkMode = false;
-            this.txtNew.HideTooltip = "Ẩn mật khẩu";
+            this.txtNew.BackColor = System.Drawing.Color.White;
             this.txtNew.Location = new System.Drawing.Point(70, 390);
             this.txtNew.MaxLength = 100;
+            this.txtNew.AutoSize = false;
+            this.txtNew.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtNew.Name = "txtNew";
             this.txtNew.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtNew.PlaceholderText = "Nhập mật khẩu mới";
-            this.txtNew.ShowTooltip = "Hiện mật khẩu";
             this.txtNew.Size = new System.Drawing.Size(440, 52);
             this.txtNew.TabIndex = 4;
             // 
@@ -208,16 +196,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtCurrent
             // 
-            this.txtCurrent.BackColor = System.Drawing.Color.Transparent;
-            this.txtCurrent.CornerRadius = 10;
-            this.txtCurrent.DarkMode = false;
-            this.txtCurrent.HideTooltip = "Ẩn mật khẩu";
+            this.txtCurrent.BackColor = System.Drawing.Color.White;
             this.txtCurrent.Location = new System.Drawing.Point(70, 286);
             this.txtCurrent.MaxLength = 100;
+            this.txtCurrent.AutoSize = false;
+            this.txtCurrent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtCurrent.Name = "txtCurrent";
             this.txtCurrent.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtCurrent.PlaceholderText = "Nhập mật khẩu hiện tại";
-            this.txtCurrent.ShowTooltip = "Hiện mật khẩu";
             this.txtCurrent.Size = new System.Drawing.Size(440, 52);
             this.txtCurrent.TabIndex = 6;
             // 

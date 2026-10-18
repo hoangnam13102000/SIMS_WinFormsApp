@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Models.DTOs.Permission;
 using SIMS_WinFormsApp.Models.Permission;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.Views.UserManager

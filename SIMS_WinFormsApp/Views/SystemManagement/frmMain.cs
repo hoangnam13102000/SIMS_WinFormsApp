@@ -6,7 +6,8 @@ using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
-using SIMS_WinFormsApp.UI.Controls.Toast;
+using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Views.Shell;
 
 namespace SIMS_WinFormsApp.Views.SystemManagement
@@ -128,19 +129,8 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         public bool ConfirmLogout(string message, string caption, string confirmText, string cancelText)
         {
-            using (var dialog = new BaseDialog()
-            {
-                Title = caption,
-                Message = message,
-                IconType = DialogType.Danger,
-                Buttons = DialogButtons.YesNo,
-                DefaultButton = DialogResult.No,
-                StartPosition = FormStartPosition.CenterScreen
-            })
-            {
-
-                return dialog.ShowDialog(this) == DialogResult.Yes;
-            }
+            return DialogHelper.ConfirmCustom(this, caption, message,
+                confirmText, cancelText, SIMS_WinFormsApp.UI.Theme.AppColors.Warning);
         }
 
         public void CloseView()

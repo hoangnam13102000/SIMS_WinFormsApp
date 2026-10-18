@@ -6,6 +6,7 @@ using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Dialogs;
 using System;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -18,6 +19,10 @@ namespace SIMS_WinFormsApp.Views.Auth
     {
         private readonly IAuthService _authService;
         private readonly ChangePasswordPresenter _presenter;
+        private AuthBrandPanelRenderer _brandPanelRenderer;
+        private PasswordVisibilityToggle _currentPasswordVisibilityToggle;
+        private PasswordVisibilityToggle _newPasswordVisibilityToggle;
+        private PasswordVisibilityToggle _confirmPasswordVisibilityToggle;
 
         public frmChangePassword() : this(null)
         {
@@ -26,13 +31,7 @@ namespace SIMS_WinFormsApp.Views.Auth
         public frmChangePassword(IAuthService authService = null)
         {
             InitializeComponent();
-            brandPanel.Logo = Properties.Resources.logo_icon;
-            brandPanel.Features = new[]
-            {
-                "Quản lý bán hàng",
-                "Theo dõi tồn kho",
-                "Báo cáo kinh doanh"
-            };
+            InitializeNativeControls();
 
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
@@ -53,6 +52,26 @@ namespace SIMS_WinFormsApp.Views.Auth
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
             FormClosed += FrmChangePassword_FormClosed;
+        }
+
+        private void InitializeNativeControls()
+        {
+            NativeTextBoxBehavior.ApplyInputFont(this);
+            _brandPanelRenderer = new AuthBrandPanelRenderer(brandPanel)
+            {
+                Logo = Properties.Resources.logo_icon,
+                BrandName = "SIMS",
+                Tagline = "Quản lý cửa hàng thông minh",
+                Features = new[]
+                {
+                    "Quản lý bán hàng",
+                    "Theo dõi tồn kho",
+                    "Báo cáo kinh doanh"
+                }
+            };
+            _currentPasswordVisibilityToggle = new PasswordVisibilityToggle(txtCurrent);
+            _newPasswordVisibilityToggle = new PasswordVisibilityToggle(txtNew);
+            _confirmPasswordVisibilityToggle = new PasswordVisibilityToggle(txtConfirm);
         }
 
         private void WireEvents()
@@ -80,7 +99,7 @@ namespace SIMS_WinFormsApp.Views.Auth
                 Close();
                 return;
             }
-            txtCurrent.FocusInput();
+            txtCurrent.Focus();
         }
 
         private void FrmChangePassword_FormClosed(object sender, FormClosedEventArgs e)
@@ -105,33 +124,36 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblSubtitle.Text = Lang.Get("changepassword.subtitle");
 
             lblCurrent.Text = Lang.Get("changepassword.current");
-            txtCurrent.PlaceholderText = Lang.Get("changepassword.current.placeholder");
-            txtCurrent.ShowTooltip = Lang.Get("login.password.show");
-            txtCurrent.HideTooltip = Lang.Get("login.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtCurrent, Lang.Get("changepassword.current.placeholder"));
+            _currentPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("login.password.show"),
+                Lang.Get("login.password.hide"));
 
             lblNew.Text = Lang.Get("changepassword.new");
-            txtNew.PlaceholderText = Lang.Get("changepassword.new.placeholder");
-            txtNew.ShowTooltip = Lang.Get("login.password.show");
-            txtNew.HideTooltip = Lang.Get("login.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtNew, Lang.Get("changepassword.new.placeholder"));
+            _newPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("login.password.show"),
+                Lang.Get("login.password.hide"));
 
             lblConfirm.Text = Lang.Get("changepassword.confirm");
-            txtConfirm.PlaceholderText = Lang.Get("changepassword.confirm.placeholder");
-            txtConfirm.ShowTooltip = Lang.Get("login.password.show");
-            txtConfirm.HideTooltip = Lang.Get("login.password.hide");
+            NativeTextBoxBehavior.SetCueBanner(txtConfirm, Lang.Get("changepassword.confirm.placeholder"));
+            _confirmPasswordVisibilityToggle.SetTooltips(
+                Lang.Get("login.password.show"),
+                Lang.Get("login.password.hide"));
 
             btnCancel.Text = Lang.Get("changepassword.cancel");
             btnSubmit.Text = Lang.Get("changepassword.submit");
 
-            brandPanel.BrandName = Lang.Get("login.leftpanel.brand");
-            brandPanel.Logo = Properties.Resources.logo_icon;
-            brandPanel.Tagline = Lang.Get("login.leftpanel.tagline");
-            brandPanel.Features = new[]
+            _brandPanelRenderer.BrandName = Lang.Get("login.leftpanel.brand");
+            _brandPanelRenderer.Logo = Properties.Resources.logo_icon;
+            _brandPanelRenderer.Tagline = Lang.Get("login.leftpanel.tagline");
+            _brandPanelRenderer.Features = new[]
             {
                 Lang.Get("login.leftpanel.feature1"),
                 Lang.Get("login.leftpanel.feature2"),
                 Lang.Get("login.leftpanel.feature3")
             };
-            brandPanel.FooterText = Lang.Get("app.copyright", DateTime.Now.Year);
+            _brandPanelRenderer.FooterText = Lang.Get("app.copyright", DateTime.Now.Year);
         }
 
         private async Task DoChangePasswordAsync()
@@ -156,8 +178,8 @@ namespace SIMS_WinFormsApp.Views.Auth
             btnSubmit.Text = busy ? Lang.Get("common.loading") : Lang.Get("changepassword.submit");
             Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
         }
-        public void ShowSuccess(string message) => MessageBox.Show(this, message,
-            Lang.Get("common.success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+        public void ShowSuccess(string message) => DialogHelper.ShowSuccess(this,
+            Lang.Get("common.success"), message);
         public void CloseOnSuccess()
         {
             DialogResult = DialogResult.OK;

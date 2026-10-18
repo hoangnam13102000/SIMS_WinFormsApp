@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
 using SIMS_WinFormsApp.UI.Controls;
@@ -10,7 +10,7 @@ namespace SIMS_WinFormsApp.Views.Auth
     {
         private System.ComponentModel.IContainer components = null;
 
-        private AuthBrandPanel brandPanel;
+        private Panel brandPanel;
         private Guna2Panel pnlRight;
         private TableLayoutPanel pnlAuthSplit;
         private Guna2Panel pnlFormCard;
@@ -19,14 +19,14 @@ namespace SIMS_WinFormsApp.Views.Auth
         private Label lblSubtitle;
 
         private Label lblUsername;
-        private RoundedTextBox txtUsername;
+        private TextBox txtUsername;
 
         private Label lblPassword;
-        private RoundedPasswordTextBox txtPassword;
+        private TextBox txtPassword;
 
         private Panel pnlOptionsRow;
-        private ModernCheckBox chkRemember;
-        private ClickableLabel lnkForgotPassword;
+        private CheckBox chkRemember;
+        private LinkLabel lnkForgotPassword;
 
         private Label lblError;
         private PrimaryButton btnLogin;
@@ -49,16 +49,16 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnLogin = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.lblError = new System.Windows.Forms.Label();
             this.pnlOptionsRow = new System.Windows.Forms.Panel();
-            this.chkRemember = new SIMS_WinFormsApp.UI.Controls.ModernCheckBox();
-            this.lnkForgotPassword = new SIMS_WinFormsApp.UI.Controls.ClickableLabel();
-            this.txtPassword = new SIMS_WinFormsApp.UI.Controls.RoundedPasswordTextBox();
+            this.chkRemember = new System.Windows.Forms.CheckBox();
+            this.lnkForgotPassword = new System.Windows.Forms.LinkLabel();
+            this.txtPassword = new System.Windows.Forms.TextBox();
             this.lblPassword = new System.Windows.Forms.Label();
-            this.txtUsername = new SIMS_WinFormsApp.UI.Controls.RoundedTextBox();
+            this.txtUsername = new System.Windows.Forms.TextBox();
             this.lblUsername = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlAuthSplit = new System.Windows.Forms.TableLayoutPanel();
-            this.brandPanel = new SIMS_WinFormsApp.UI.Controls.AuthBrandPanel();
+            this.brandPanel = new System.Windows.Forms.Panel();
             this.pnlRight.SuspendLayout();
             this.pnlFormCard.SuspendLayout();
             this.pnlOptionsRow.SuspendLayout();
@@ -139,7 +139,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.chkRemember.BackColor = System.Drawing.Color.White;
             this.chkRemember.Checked = false;
             this.chkRemember.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.chkRemember.DarkMode = false;
             this.chkRemember.Font = new System.Drawing.Font("Segoe UI", 12.5F);
             this.chkRemember.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.chkRemember.Location = new System.Drawing.Point(0, 5);
@@ -167,16 +166,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtPassword
             // 
-            this.txtPassword.BackColor = System.Drawing.Color.Transparent;
-            this.txtPassword.CornerRadius = 10;
-            this.txtPassword.DarkMode = false;
-            this.txtPassword.HideTooltip = "Ẩn mật khẩu";
+            this.txtPassword.BackColor = System.Drawing.Color.White;
             this.txtPassword.Location = new System.Drawing.Point(0, 304);
             this.txtPassword.MaxLength = 100;
+            this.txtPassword.AutoSize = false;
+            this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtPassword.PlaceholderText = "";
-            this.txtPassword.ShowTooltip = "Hiện mật khẩu";
             this.txtPassword.Size = new System.Drawing.Size(440, 52);
             this.txtPassword.TabIndex = 3;
             // 
@@ -193,14 +189,13 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // txtUsername
             // 
-            this.txtUsername.BackColor = System.Drawing.Color.Transparent;
-            this.txtUsername.CornerRadius = 10;
-            this.txtUsername.DarkMode = false;
+            this.txtUsername.BackColor = System.Drawing.Color.White;
             this.txtUsername.Location = new System.Drawing.Point(0, 196);
             this.txtUsername.MaxLength = 50;
+            this.txtUsername.AutoSize = false;
+            this.txtUsername.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtUsername.PlaceholderText = "";
             this.txtUsername.Size = new System.Drawing.Size(440, 52);
             this.txtUsername.TabIndex = 5;
             // 
@@ -255,18 +250,12 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // brandPanel
             // 
-            this.brandPanel.BrandName = "SIMS";
-            this.brandPanel.ContentTop = -1;
             this.brandPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.brandPanel.Features = new string[0];
-            this.brandPanel.FooterText = "";
             this.brandPanel.Location = new System.Drawing.Point(0, 0);
-            this.brandPanel.Logo = null;
             this.brandPanel.Margin = new System.Windows.Forms.Padding(0);
             this.brandPanel.Name = "brandPanel";
             this.brandPanel.Size = new System.Drawing.Size(480, 760);
             this.brandPanel.TabIndex = 0;
-            this.brandPanel.Tagline = "";
             this.brandPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.brandPanel_Paint);
             // 
             // frmLogin
