@@ -14,7 +14,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             _titleLabel = new Label();
             _closeButton = new DialogCloseButton();
             _bodyScrollPanel = new Panel();
-            _designPreviewLabel = new Label();
             _footerPanel = new Panel();
             SuspendLayout();
             _headerPanel.SuspendLayout();
@@ -66,13 +65,6 @@ namespace SIMS_WinFormsApp.UI.Controls
             _bodyScrollPanel.Dock = DockStyle.Fill;
             _bodyScrollPanel.Name = "bodyScrollPanel";
             _bodyScrollPanel.Padding = new Padding(28, 20, 28, 20);
-            _designPreviewLabel.Dock = DockStyle.Fill;
-            _designPreviewLabel.ForeColor = Color.FromArgb(148, 163, 184);
-            _designPreviewLabel.Text = "Vùng nội dung của hộp thoại";
-            _designPreviewLabel.TextAlign = ContentAlignment.MiddleCenter;
-            _designPreviewLabel.Name = "designPreviewLabel";
-            _bodyScrollPanel.Controls.Add(_designPreviewLabel);
-
             _footerPanel.BackColor = Color.FromArgb(248, 250, 252);
             _footerPanel.Dock = DockStyle.Bottom;
             _footerPanel.Height = 76;

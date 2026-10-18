@@ -29,98 +29,194 @@ namespace SIMS_WinFormsApp.Views.Sales
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            _root = new TableLayoutPanel();
-            _header = new Panel();
-            _title = new Label();
-            _subtitle = new Label();
-            _filters = new FlowLayoutPanel();
-            _search = new TextBox();
-            _status = new ComboBox();
-            _date = new DateTimePicker();
-            _grid = new DataGridView();
-            _code = new DataGridViewTextBoxColumn();
-            _customer = new DataGridViewTextBoxColumn();
-            _created = new DataGridViewTextBoxColumn();
-            _total = new DataGridViewTextBoxColumn();
-            _state = new DataGridViewTextBoxColumn();
-            _root.SuspendLayout();
-            _header.SuspendLayout();
-            _filters.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)_grid).BeginInit();
-            SuspendLayout();
-            _root.ColumnCount = 1;
-            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            _root.Dock = DockStyle.Fill;
-            _root.Padding = new Padding(24);
-            _root.RowCount = 3;
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 76F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _root.Controls.Add(_header, 0, 0);
-            _root.Controls.Add(_filters, 0, 1);
-            _root.Controls.Add(_grid, 0, 2);
-            _header.Controls.Add(_subtitle);
-            _header.Controls.Add(_title);
-            _header.Dock = DockStyle.Fill;
-            _title.AutoSize = true;
-            _title.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
-            _title.ForeColor = Color.FromArgb(15, 23, 42);
-            _title.Location = new Point(0, 0);
-            _title.Text = "Quản lý đơn hàng";
-            _subtitle.AutoSize = true;
-            _subtitle.ForeColor = Color.FromArgb(100, 116, 139);
-            _subtitle.Location = new Point(2, 44);
-            _subtitle.Text = "Tra cứu và theo dõi đơn hàng bán";
-            _filters.Controls.Add(_search);
-            _filters.Controls.Add(_date);
-            _filters.Controls.Add(_status);
-            _filters.Dock = DockStyle.Fill;
-            _search.Margin = new Padding(0, 4, 8, 0);
-            _search.Name = "_search";
-            _search.Size = new Size(280, 28);
-            _date.Format = DateTimePickerFormat.Short;
-            _date.Margin = new Padding(4);
-            _date.Name = "_date";
-            _date.Size = new Size(130, 28);
-            _status.DropDownStyle = ComboBoxStyle.DropDownList;
-            _status.Items.AddRange(new object[] { "Tất cả trạng thái", "Mới", "Đang xử lý", "Hoàn thành", "Đã hủy" });
-            _status.Margin = new Padding(4);
-            _status.Name = "_status";
-            _status.SelectedIndex = 0;
-            _status.Size = new Size(180, 28);
-            _grid.AllowUserToAddRows = false;
-            _grid.AllowUserToDeleteRows = false;
-            _grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            _grid.BackgroundColor = Color.White;
-            _grid.BorderStyle = BorderStyle.None;
-            _grid.ColumnHeadersHeight = 40;
-            _grid.Columns.AddRange(new DataGridViewColumn[] { _code, _customer, _created, _total, _state });
-            _grid.Dock = DockStyle.Fill;
-            _grid.ReadOnly = true;
-            _grid.RowHeadersVisible = false;
-            _code.HeaderText = "Mã đơn";
-            _code.Name = "Code";
-            _customer.HeaderText = "Khách hàng";
-            _customer.Name = "Customer";
-            _created.HeaderText = "Ngày tạo";
-            _created.Name = "Created";
-            _total.HeaderText = "Tổng tiền";
-            _total.Name = "Total";
-            _state.HeaderText = "Trạng thái";
-            _state.Name = "State";
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(244, 247, 250);
-            Controls.Add(_root);
-            Name = "ucOrderManagement";
-            Size = new Size(1000, 700);
-            _root.ResumeLayout(false);
-            _header.ResumeLayout(false);
-            _header.PerformLayout();
-            _filters.ResumeLayout(false);
-            _filters.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)_grid).EndInit();
-            ResumeLayout(false);
+            this._root = new System.Windows.Forms.TableLayoutPanel();
+            this._header = new System.Windows.Forms.Panel();
+            this._subtitle = new System.Windows.Forms.Label();
+            this._title = new System.Windows.Forms.Label();
+            this._filters = new System.Windows.Forms.FlowLayoutPanel();
+            this._search = new System.Windows.Forms.TextBox();
+            this._date = new System.Windows.Forms.DateTimePicker();
+            this._status = new System.Windows.Forms.ComboBox();
+            this._grid = new System.Windows.Forms.DataGridView();
+            this._code = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._customer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._created = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._state = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._root.SuspendLayout();
+            this._header.SuspendLayout();
+            this._filters.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // _root
+            // 
+            this._root.ColumnCount = 1;
+            this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.Controls.Add(this._header, 0, 0);
+            this._root.Controls.Add(this._filters, 0, 1);
+            this._root.Controls.Add(this._grid, 0, 2);
+            this._root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Name = "_root";
+            this._root.Padding = new System.Windows.Forms.Padding(24);
+            this._root.RowCount = 3;
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 76F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.Size = new System.Drawing.Size(1000, 700);
+            this._root.TabIndex = 0;
+            // 
+            // _header
+            // 
+            this._header.Controls.Add(this._subtitle);
+            this._header.Controls.Add(this._title);
+            this._header.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._header.Location = new System.Drawing.Point(27, 27);
+            this._header.Name = "_header";
+            this._header.Size = new System.Drawing.Size(946, 70);
+            this._header.TabIndex = 0;
+            // 
+            // _subtitle
+            // 
+            this._subtitle.AutoSize = true;
+            this._subtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._subtitle.Location = new System.Drawing.Point(2, 44);
+            this._subtitle.Name = "_subtitle";
+            this._subtitle.Size = new System.Drawing.Size(245, 20);
+            this._subtitle.TabIndex = 0;
+            this._subtitle.Text = "Tra cứu và theo dõi đơn hàng bán";
+            // 
+            // _title
+            // 
+            this._title.AutoSize = true;
+            this._title.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
+            this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this._title.Location = new System.Drawing.Point(-4, -16);
+            this._title.Name = "_title";
+            this._title.Size = new System.Drawing.Size(396, 60);
+            this._title.TabIndex = 1;
+            this._title.Text = "Quản lý đơn hàng";
+            // 
+            // _filters
+            // 
+            this._filters.Controls.Add(this._search);
+            this._filters.Controls.Add(this._date);
+            this._filters.Controls.Add(this._status);
+            this._filters.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._filters.Location = new System.Drawing.Point(27, 103);
+            this._filters.Name = "_filters";
+            this._filters.Size = new System.Drawing.Size(946, 42);
+            this._filters.TabIndex = 1;
+            // 
+            // _search
+            // 
+            this._search.Location = new System.Drawing.Point(0, 4);
+            this._search.Margin = new System.Windows.Forms.Padding(0, 4, 8, 0);
+            this._search.Name = "_search";
+            this._search.Size = new System.Drawing.Size(280, 26);
+            this._search.TabIndex = 0;
+            // 
+            // _date
+            // 
+            this._date.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this._date.Location = new System.Drawing.Point(292, 4);
+            this._date.Margin = new System.Windows.Forms.Padding(4);
+            this._date.Name = "_date";
+            this._date.Size = new System.Drawing.Size(130, 26);
+            this._date.TabIndex = 1;
+            // 
+            // _status
+            // 
+            this._status.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._status.Items.AddRange(new object[] {
+            "Tất cả trạng thái",
+            "Mới",
+            "Đang xử lý",
+            "Hoàn thành",
+            "Đã hủy"});
+            this._status.Location = new System.Drawing.Point(430, 4);
+            this._status.Margin = new System.Windows.Forms.Padding(4);
+            this._status.Name = "_status";
+            this._status.Size = new System.Drawing.Size(180, 28);
+            this._status.TabIndex = 2;
+            // 
+            // _grid
+            // 
+            this._grid.AllowUserToAddRows = false;
+            this._grid.AllowUserToDeleteRows = false;
+            this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._grid.BackgroundColor = System.Drawing.Color.White;
+            this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._grid.ColumnHeadersHeight = 40;
+            this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this._code,
+            this._customer,
+            this._created,
+            this._total,
+            this._state});
+            this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._grid.Location = new System.Drawing.Point(27, 151);
+            this._grid.Name = "_grid";
+            this._grid.ReadOnly = true;
+            this._grid.RowHeadersVisible = false;
+            this._grid.RowHeadersWidth = 62;
+            this._grid.Size = new System.Drawing.Size(946, 522);
+            this._grid.TabIndex = 2;
+            this._grid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._grid_CellContentClick);
+            // 
+            // Code
+            // 
+            this._code.HeaderText = "Mã đơn";
+            this._code.MinimumWidth = 8;
+            this._code.Name = "Code";
+            this._code.ReadOnly = true;
+            // 
+            // Customer
+            // 
+            this._customer.HeaderText = "Khách hàng";
+            this._customer.MinimumWidth = 8;
+            this._customer.Name = "Customer";
+            this._customer.ReadOnly = true;
+            // 
+            // Created
+            // 
+            this._created.HeaderText = "Ngày tạo";
+            this._created.MinimumWidth = 8;
+            this._created.Name = "Created";
+            this._created.ReadOnly = true;
+            // 
+            // Total
+            // 
+            this._total.HeaderText = "Tổng tiền";
+            this._total.MinimumWidth = 8;
+            this._total.Name = "Total";
+            this._total.ReadOnly = true;
+            // 
+            // State
+            // 
+            this._state.HeaderText = "Trạng thái";
+            this._state.MinimumWidth = 8;
+            this._state.Name = "State";
+            this._state.ReadOnly = true;
+            // 
+            // ucOrderManagement
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.Controls.Add(this._root);
+            this.Name = "ucOrderManagement";
+            this.Size = new System.Drawing.Size(1000, 700);
+            this._root.ResumeLayout(false);
+            this._header.ResumeLayout(false);
+            this._header.PerformLayout();
+            this._filters.ResumeLayout(false);
+            this._filters.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
+            this.ResumeLayout(false);
+
         }
+
     }
 }

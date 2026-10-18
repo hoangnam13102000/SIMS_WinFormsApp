@@ -60,7 +60,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.CartLineRemoved += OnCartLineRemoved;
 
             _view.CustomerSearchRequested += OnCustomerSearchRequested;
-            _view.CustomerPickRequested += OnCustomerPickRequested;
             _view.CustomerCleared += OnCustomerCleared;
 
             _view.PromoApplyRequested += OnPromoApplyRequested;
@@ -187,13 +186,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 return;
             }
             SelectCustomer(found);
-        }
-
-        private void OnCustomerPickRequested(object sender, EventArgs e)
-        {
-            var candidates = _customerService.Search(string.Empty);
-            var picked = _view.PromptPickCustomer(candidates);
-            if (picked != null) SelectCustomer(picked);
         }
 
         private void SelectCustomer(CustomerLookupDto customer)
@@ -324,7 +316,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.CartLineRemoved -= OnCartLineRemoved;
 
             _view.CustomerSearchRequested -= OnCustomerSearchRequested;
-            _view.CustomerPickRequested -= OnCustomerPickRequested;
             _view.CustomerCleared -= OnCustomerCleared;
 
             _view.PromoApplyRequested -= OnPromoApplyRequested;

@@ -37,9 +37,8 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private Panel _headerPanel;
         private Panel _headerIconHolder;
-        private Panel _bodyScrollPanel;
-        private Panel _footerPanel;
-        private Label _designPreviewLabel;
+        protected Panel _bodyScrollPanel;
+        protected Panel _footerPanel;
 
         private IconPictureBox _headerIconBox;
         private Label _titleLabel;
@@ -61,6 +60,18 @@ namespace SIMS_WinFormsApp.UI.Controls
         }
 
         protected Panel ContentHost => _bodyScrollPanel;
+        protected Panel FooterHost => _footerPanel;
+
+        protected void SetDesignPreviewContent(Control content)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
+            _bodyScrollPanel.Controls.Clear();
+            content.Dock = DockStyle.Fill;
+            _bodyScrollPanel.Controls.Add(content);
+            content.BringToFront();
+            _bodyScrollPanel.PerformLayout();
+        }
 
         protected void SetHeaderIcon(IconChar icon, Color accentColor)
         {
@@ -95,13 +106,11 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         protected override void OnLoad(EventArgs e)
         {
-            // Gọi OnContentReady() TRƯỚC base.OnLoad(e): base.OnLoad(e) chính là nơi sự kiện
-            // Load được phát ra, và constructor BaseFormDialogForm(IWin32Window) đăng ký 1 handler
-            // Load để canh giữa popup dựa trên Width/Height HIỆN TẠI của Form. Nếu OnContentReady()
-            // (nơi FitHeightToContent() có thể đổi Height) chạy SAU khi Load đã phát ra, handler
-            // canh giữa sẽ dùng Height CŨ (trước khi co giãn) - khiến popup lệch tâm theo trục dọc.
+            // Tính xong kích thước nội dung trước khi canh giữa để vị trí dựa trên kích thước cuối.
             OnContentReady();
             base.OnLoad(e);
+            if (_centerOnOwner)
+                CenterOnOwner(this, EventArgs.Empty);
         }
         #endregion
 
@@ -156,9 +165,7 @@ namespace SIMS_WinFormsApp.UI.Controls
             Padding = new Padding((int)DialogTheme.BorderWidth);
 
             InitializeComponent();
-            bool isDesignTime = DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-            _designPreviewLabel.Visible = isDesignTime;
-            if (isDesignTime)
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
             }
@@ -183,7 +190,6 @@ namespace SIMS_WinFormsApp.UI.Controls
 
                 StartPosition = FormStartPosition.Manual;
                 _centerOnOwner = true;
-                Load += CenterOnOwner;
             }
         }
         #endregion
@@ -213,9 +219,13 @@ namespace SIMS_WinFormsApp.UI.Controls
         private void CenterOnOwner(object sender, EventArgs e)
         {
             if (!_centerOnOwner) return;
+
+            Rectangle workingArea = Screen.FromRectangle(_ownerBounds).WorkingArea;
             int x = _ownerBounds.Left + (_ownerBounds.Width - Width) / 2;
             int y = _ownerBounds.Top + (_ownerBounds.Height - Height) / 2;
-            Location = new Point(Math.Max(0, x), Math.Max(0, y));
+            x = Math.Max(workingArea.Left, Math.Min(x, workingArea.Right - Math.Min(Width, workingArea.Width)));
+            y = Math.Max(workingArea.Top, Math.Min(y, workingArea.Bottom - Math.Min(Height, workingArea.Height)));
+            Location = new Point(x, y);
         }
 
         #region Footer buttons (extension point cho lớp con)

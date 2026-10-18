@@ -40,31 +40,30 @@ namespace SIMS_WinFormsApp.Views.Reports
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this._root = new TableLayoutPanel();
-            this._header = new Panel();
-            this._title = new Label();
-            this._subtitle = new Label();
-            this._filters = new FlowLayoutPanel();
-            this._fromLabel = new Label();
-            this._toLabel = new Label();
-            this._fromDate = new DateTimePicker();
-            this._toDate = new DateTimePicker();
-            this._periodFilter = new ComboBox();
-            this._applyFilter = new Button();
-            this._summary = new TableLayoutPanel();
-            this._revenueCard = new Label();
-            this._orderCard = new Label();
-            this._averageCard = new Label();
-            this._charts = new SplitContainer();
-            this._revenueChartPlaceholder = new Panel();
-            this._salesChartPlaceholder = new Panel();
-            this._revenueChartTitle = new Label();
-            this._salesChartTitle = new Label();
-            this._topProductsGrid = new DataGridView();
-            this._productNameColumn = new DataGridViewTextBoxColumn();
-            this._quantityColumn = new DataGridViewTextBoxColumn();
-            this._amountColumn = new DataGridViewTextBoxColumn();
+            this._root = new System.Windows.Forms.TableLayoutPanel();
+            this._header = new System.Windows.Forms.Panel();
+            this._subtitle = new System.Windows.Forms.Label();
+            this._title = new System.Windows.Forms.Label();
+            this._filters = new System.Windows.Forms.FlowLayoutPanel();
+            this._fromLabel = new System.Windows.Forms.Label();
+            this._fromDate = new System.Windows.Forms.DateTimePicker();
+            this._toLabel = new System.Windows.Forms.Label();
+            this._toDate = new System.Windows.Forms.DateTimePicker();
+            this._periodFilter = new System.Windows.Forms.ComboBox();
+            this._applyFilter = new System.Windows.Forms.Button();
+            this._summary = new System.Windows.Forms.TableLayoutPanel();
+            this._revenueCard = new System.Windows.Forms.Label();
+            this._orderCard = new System.Windows.Forms.Label();
+            this._averageCard = new System.Windows.Forms.Label();
+            this._charts = new System.Windows.Forms.SplitContainer();
+            this._revenueChartPlaceholder = new System.Windows.Forms.Panel();
+            this._revenueChartTitle = new System.Windows.Forms.Label();
+            this._salesChartPlaceholder = new System.Windows.Forms.Panel();
+            this._salesChartTitle = new System.Windows.Forms.Label();
+            this._topProductsGrid = new System.Windows.Forms.DataGridView();
+            this._productNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._quantityColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._amountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._filters.SuspendLayout();
@@ -77,149 +76,291 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._salesChartPlaceholder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._topProductsGrid)).BeginInit();
             this.SuspendLayout();
-            //
-            // root
-            //
+            // 
+            // _root
+            // 
             this._root.ColumnCount = 1;
-            this._root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            this._root.Dock = DockStyle.Fill;
-            this._root.Padding = new Padding(24);
-            this._root.RowCount = 5;
-            this._root.RowStyles.Add(new RowStyle(SizeType.Absolute, 76F));
-            this._root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            this._root.RowStyles.Add(new RowStyle(SizeType.Absolute, 96F));
-            this._root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            this._root.RowStyles.Add(new RowStyle(SizeType.Absolute, 170F));
+            this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Controls.Add(this._header, 0, 0);
             this._root.Controls.Add(this._filters, 0, 1);
             this._root.Controls.Add(this._summary, 0, 2);
             this._root.Controls.Add(this._charts, 0, 3);
             this._root.Controls.Add(this._topProductsGrid, 0, 4);
-            //
-            // header
-            //
+            this._root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Name = "_root";
+            this._root.Padding = new System.Windows.Forms.Padding(24);
+            this._root.RowCount = 5;
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 76F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 96F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 170F));
+            this._root.Size = new System.Drawing.Size(1180, 800);
+            this._root.TabIndex = 0;
+            // 
+            // _header
+            // 
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
-            this._header.Dock = DockStyle.Fill;
+            this._header.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._header.Location = new System.Drawing.Point(27, 27);
             this._header.Name = "_header";
-            this._title.AutoSize = true;
-            this._title.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
-            this._title.ForeColor = Color.FromArgb(15, 23, 42);
-            this._title.Location = new Point(0, 0);
-            this._title.Text = "Báo cáo doanh thu";
+            this._header.Size = new System.Drawing.Size(1126, 70);
+            this._header.TabIndex = 0;
+            // 
+            // _subtitle
+            // 
             this._subtitle.AutoSize = true;
-            this._subtitle.Font = new Font("Segoe UI", 9F);
-            this._subtitle.ForeColor = Color.FromArgb(100, 116, 139);
-            this._subtitle.Location = new Point(2, 43);
+            this._subtitle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._subtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._subtitle.Location = new System.Drawing.Point(2, 43);
+            this._subtitle.Name = "_subtitle";
+            this._subtitle.Size = new System.Drawing.Size(453, 25);
+            this._subtitle.TabIndex = 0;
             this._subtitle.Text = "Tổng quan doanh thu, đơn hàng và sản phẩm bán chạy";
-            //
-            // filters
-            //
+            // 
+            // _title
+            // 
+            this._title.AutoSize = true;
+            this._title.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
+            this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this._title.Location = new System.Drawing.Point(-6, -17);
+            this._title.Name = "_title";
+            this._title.Size = new System.Drawing.Size(413, 60);
+            this._title.TabIndex = 1;
+            this._title.Text = "Báo cáo doanh thu";
+            this._title.Click += new System.EventHandler(this._title_Click);
+            // 
+            // _filters
+            // 
             this._filters.Controls.Add(this._fromLabel);
             this._filters.Controls.Add(this._fromDate);
             this._filters.Controls.Add(this._toLabel);
             this._filters.Controls.Add(this._toDate);
             this._filters.Controls.Add(this._periodFilter);
             this._filters.Controls.Add(this._applyFilter);
-            this._filters.Dock = DockStyle.Fill;
-            this._fromDate.Format = DateTimePickerFormat.Short;
-            this._fromDate.Name = "_fromDate";
-            this._fromDate.Size = new Size(120, 27);
+            this._filters.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._filters.Location = new System.Drawing.Point(27, 103);
+            this._filters.Name = "_filters";
+            this._filters.Size = new System.Drawing.Size(1126, 42);
+            this._filters.TabIndex = 1;
+            // 
+            // _fromLabel
+            // 
             this._fromLabel.AutoSize = true;
-            this._fromLabel.Margin = new Padding(0, 9, 6, 0);
+            this._fromLabel.Location = new System.Drawing.Point(0, 9);
+            this._fromLabel.Margin = new System.Windows.Forms.Padding(0, 9, 6, 0);
             this._fromLabel.Name = "_fromLabel";
+            this._fromLabel.Size = new System.Drawing.Size(65, 20);
+            this._fromLabel.TabIndex = 0;
             this._fromLabel.Text = "Từ ngày";
-            this._toDate.Format = DateTimePickerFormat.Short;
-            this._toDate.Name = "_toDate";
-            this._toDate.Size = new Size(120, 27);
+            // 
+            // _fromDate
+            // 
+            this._fromDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this._fromDate.Location = new System.Drawing.Point(74, 3);
+            this._fromDate.Name = "_fromDate";
+            this._fromDate.Size = new System.Drawing.Size(120, 26);
+            this._fromDate.TabIndex = 1;
+            // 
+            // _toLabel
+            // 
             this._toLabel.AutoSize = true;
-            this._toLabel.Margin = new Padding(16, 9, 6, 0);
+            this._toLabel.Location = new System.Drawing.Point(213, 9);
+            this._toLabel.Margin = new System.Windows.Forms.Padding(16, 9, 6, 0);
             this._toLabel.Name = "_toLabel";
+            this._toLabel.Size = new System.Drawing.Size(77, 20);
+            this._toLabel.TabIndex = 2;
             this._toLabel.Text = "Đến ngày";
-            this._periodFilter.DropDownStyle = ComboBoxStyle.DropDownList;
-            this._periodFilter.Items.AddRange(new object[] { "Theo ngày", "Theo tháng", "Theo năm" });
+            // 
+            // _toDate
+            // 
+            this._toDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this._toDate.Location = new System.Drawing.Point(299, 3);
+            this._toDate.Name = "_toDate";
+            this._toDate.Size = new System.Drawing.Size(120, 26);
+            this._toDate.TabIndex = 3;
+            // 
+            // _periodFilter
+            // 
+            this._periodFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._periodFilter.Items.AddRange(new object[] {
+            "Theo ngày",
+            "Theo tháng",
+            "Theo năm"});
+            this._periodFilter.Location = new System.Drawing.Point(425, 3);
             this._periodFilter.Name = "_periodFilter";
-            this._periodFilter.Size = new Size(130, 28);
+            this._periodFilter.Size = new System.Drawing.Size(130, 28);
+            this._periodFilter.TabIndex = 4;
+            // 
+            // _applyFilter
+            // 
+            this._applyFilter.Location = new System.Drawing.Point(561, 3);
             this._applyFilter.Name = "_applyFilter";
-            this._applyFilter.Size = new Size(94, 30);
+            this._applyFilter.Size = new System.Drawing.Size(94, 30);
+            this._applyFilter.TabIndex = 5;
             this._applyFilter.Text = "Áp dụng";
             this._applyFilter.UseVisualStyleBackColor = true;
-            //
-            // summary
-            //
+            // 
+            // _summary
+            // 
             this._summary.ColumnCount = 3;
-            this._summary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.333F));
-            this._summary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.333F));
-            this._summary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.334F));
-            this._summary.Dock = DockStyle.Fill;
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.333F));
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.333F));
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.334F));
             this._summary.Controls.Add(this._revenueCard, 0, 0);
             this._summary.Controls.Add(this._orderCard, 1, 0);
             this._summary.Controls.Add(this._averageCard, 2, 0);
-            this._revenueCard.BackColor = Color.White;
-            this._revenueCard.Dock = DockStyle.Fill;
-            this._revenueCard.Margin = new Padding(0, 0, 10, 0);
-            this._revenueCard.Padding = new Padding(16);
+            this._summary.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._summary.Location = new System.Drawing.Point(27, 151);
+            this._summary.Name = "_summary";
+            this._summary.Size = new System.Drawing.Size(1126, 90);
+            this._summary.TabIndex = 2;
+            // 
+            // _revenueCard
+            // 
+            this._revenueCard.BackColor = System.Drawing.Color.White;
+            this._revenueCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueCard.Location = new System.Drawing.Point(0, 0);
+            this._revenueCard.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._revenueCard.Name = "_revenueCard";
+            this._revenueCard.Padding = new System.Windows.Forms.Padding(16);
+            this._revenueCard.Size = new System.Drawing.Size(365, 90);
+            this._revenueCard.TabIndex = 0;
             this._revenueCard.Text = "TỔNG DOANH THU\r\n—";
-            this._orderCard.BackColor = Color.White;
-            this._orderCard.Dock = DockStyle.Fill;
-            this._orderCard.Margin = new Padding(5, 0, 5, 0);
-            this._orderCard.Padding = new Padding(16);
+            // 
+            // _orderCard
+            // 
+            this._orderCard.BackColor = System.Drawing.Color.White;
+            this._orderCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._orderCard.Location = new System.Drawing.Point(380, 0);
+            this._orderCard.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this._orderCard.Name = "_orderCard";
+            this._orderCard.Padding = new System.Windows.Forms.Padding(16);
+            this._orderCard.Size = new System.Drawing.Size(365, 90);
+            this._orderCard.TabIndex = 1;
             this._orderCard.Text = "SỐ ĐƠN HÀNG\r\n—";
-            this._averageCard.BackColor = Color.White;
-            this._averageCard.Dock = DockStyle.Fill;
-            this._averageCard.Margin = new Padding(10, 0, 0, 0);
-            this._averageCard.Padding = new Padding(16);
+            // 
+            // _averageCard
+            // 
+            this._averageCard.BackColor = System.Drawing.Color.White;
+            this._averageCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._averageCard.Location = new System.Drawing.Point(760, 0);
+            this._averageCard.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
+            this._averageCard.Name = "_averageCard";
+            this._averageCard.Padding = new System.Windows.Forms.Padding(16);
+            this._averageCard.Size = new System.Drawing.Size(366, 90);
+            this._averageCard.TabIndex = 2;
             this._averageCard.Text = "GIÁ TRỊ TRUNG BÌNH\r\n—";
-            //
-            // charts
-            //
-            this._charts.Dock = DockStyle.Fill;
+            // 
+            // _charts
+            // 
+            this._charts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._charts.Location = new System.Drawing.Point(27, 247);
             this._charts.Name = "_charts";
-            this._charts.Orientation = Orientation.Vertical;
+            // 
+            // _charts.Panel1
+            // 
             this._charts.Panel1.Controls.Add(this._revenueChartPlaceholder);
+            // 
+            // _charts.Panel2
+            // 
             this._charts.Panel2.Controls.Add(this._salesChartPlaceholder);
-            this._revenueChartPlaceholder.BackColor = Color.White;
+            this._charts.Size = new System.Drawing.Size(1126, 356);
+            this._charts.SplitterDistance = 375;
+            this._charts.TabIndex = 3;
+            // 
+            // _revenueChartPlaceholder
+            // 
+            this._revenueChartPlaceholder.BackColor = System.Drawing.Color.White;
             this._revenueChartPlaceholder.Controls.Add(this._revenueChartTitle);
-            this._revenueChartPlaceholder.Dock = DockStyle.Fill;
-            this._revenueChartPlaceholder.Margin = new Padding(0, 0, 8, 0);
+            this._revenueChartPlaceholder.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueChartPlaceholder.Location = new System.Drawing.Point(0, 0);
+            this._revenueChartPlaceholder.Margin = new System.Windows.Forms.Padding(0, 0, 8, 0);
+            this._revenueChartPlaceholder.Name = "_revenueChartPlaceholder";
+            this._revenueChartPlaceholder.Size = new System.Drawing.Size(375, 356);
+            this._revenueChartPlaceholder.TabIndex = 0;
+            // 
+            // _revenueChartTitle
+            // 
             this._revenueChartTitle.AutoSize = true;
-            this._revenueChartTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            this._revenueChartTitle.Location = new Point(16, 14);
+            this._revenueChartTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this._revenueChartTitle.Location = new System.Drawing.Point(16, 14);
+            this._revenueChartTitle.Name = "_revenueChartTitle";
+            this._revenueChartTitle.Size = new System.Drawing.Size(273, 30);
+            this._revenueChartTitle.TabIndex = 0;
             this._revenueChartTitle.Text = "Doanh thu theo thời gian";
-            this._salesChartPlaceholder.BackColor = Color.White;
+            // 
+            // _salesChartPlaceholder
+            // 
+            this._salesChartPlaceholder.BackColor = System.Drawing.Color.White;
             this._salesChartPlaceholder.Controls.Add(this._salesChartTitle);
-            this._salesChartPlaceholder.Dock = DockStyle.Fill;
+            this._salesChartPlaceholder.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._salesChartPlaceholder.Location = new System.Drawing.Point(0, 0);
+            this._salesChartPlaceholder.Name = "_salesChartPlaceholder";
+            this._salesChartPlaceholder.Size = new System.Drawing.Size(747, 356);
+            this._salesChartPlaceholder.TabIndex = 0;
+            // 
+            // _salesChartTitle
+            // 
             this._salesChartTitle.AutoSize = true;
-            this._salesChartTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            this._salesChartTitle.Location = new Point(16, 14);
+            this._salesChartTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this._salesChartTitle.Location = new System.Drawing.Point(16, 14);
+            this._salesChartTitle.Name = "_salesChartTitle";
+            this._salesChartTitle.Size = new System.Drawing.Size(186, 30);
+            this._salesChartTitle.TabIndex = 0;
             this._salesChartTitle.Text = "Cơ cấu bán hàng";
-            //
-            // top products
-            //
+            // 
+            // _topProductsGrid
+            // 
             this._topProductsGrid.AllowUserToAddRows = false;
             this._topProductsGrid.AllowUserToDeleteRows = false;
-            this._topProductsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this._topProductsGrid.BackgroundColor = Color.White;
+            this._topProductsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._topProductsGrid.BackgroundColor = System.Drawing.Color.White;
             this._topProductsGrid.ColumnHeadersHeight = 32;
-            this._topProductsGrid.Columns.AddRange(new DataGridViewColumn[] {
-                this._productNameColumn, this._quantityColumn, this._amountColumn});
-            this._topProductsGrid.Dock = DockStyle.Fill;
+            this._topProductsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this._productNameColumn,
+            this._quantityColumn,
+            this._amountColumn});
+            this._topProductsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._topProductsGrid.Location = new System.Drawing.Point(27, 609);
+            this._topProductsGrid.Name = "_topProductsGrid";
             this._topProductsGrid.ReadOnly = true;
             this._topProductsGrid.RowHeadersVisible = false;
+            this._topProductsGrid.RowHeadersWidth = 62;
+            this._topProductsGrid.Size = new System.Drawing.Size(1126, 164);
+            this._topProductsGrid.TabIndex = 4;
+            // 
+            // ProductName
+            // 
             this._productNameColumn.HeaderText = "Sản phẩm bán chạy";
+            this._productNameColumn.MinimumWidth = 8;
             this._productNameColumn.Name = "ProductName";
+            this._productNameColumn.ReadOnly = true;
+            // 
+            // Quantity
+            // 
             this._quantityColumn.HeaderText = "Số lượng";
+            this._quantityColumn.MinimumWidth = 8;
             this._quantityColumn.Name = "Quantity";
+            this._quantityColumn.ReadOnly = true;
+            // 
+            // Amount
+            // 
             this._amountColumn.HeaderText = "Doanh thu";
+            this._amountColumn.MinimumWidth = 8;
             this._amountColumn.Name = "Amount";
-            //
-            // form
-            //
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.BackColor = Color.FromArgb(244, 247, 250);
-            this.ClientSize = new Size(1180, 800);
+            this._amountColumn.ReadOnly = true;
+            // 
+            // frmChartDashboard
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.ClientSize = new System.Drawing.Size(1180, 800);
             this.Controls.Add(this._root);
-            this.MinimumSize = new Size(900, 650);
+            this.MinimumSize = new System.Drawing.Size(900, 650);
             this.Name = "frmChartDashboard";
             this.Text = "Báo cáo doanh thu";
             this._root.ResumeLayout(false);
@@ -238,6 +379,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._salesChartPlaceholder.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._topProductsGrid)).EndInit();
             this.ResumeLayout(false);
+
         }
+
     }
 }

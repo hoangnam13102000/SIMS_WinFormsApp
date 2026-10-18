@@ -197,7 +197,6 @@
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <!-- MỚI: Header -->
-    <Compile Include="MVP\ViewModels\HeaderUserViewModel.cs" />
     <Compile Include="MVP\ViewModels\AuditLogGridRow.cs" />
     <Compile Include="Repositories\Implementations\AuditLogRepository.cs" />
     <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
@@ -355,9 +354,6 @@
     <Compile Include="UI\Controls\Header\NotificationBellButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Header\HeaderAccountButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UI\Controls\Loading\ILoadingIndicator.cs" />
     <Compile Include="UI\Controls\Loading\LoadingOverlayHost.cs">
       <SubType>Component</SubType>
@@ -389,8 +385,6 @@
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
     <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
-    <!-- MỚI: Header -->
-    <Compile Include="Views\Interfaces\IHeaderView.cs" />
     <Compile Include="Views\Dialogs\BaseFormDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -754,9 +748,6 @@
     </Compile>
     <Compile Include="UI\I18n\Lang.cs" />
     <Compile Include="UI\I18n\LanguageManager.cs" />
-    <Compile Include="UI\Layouts\HeaderControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Views\Shell\MainLayoutControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -804,6 +795,12 @@
     <EmbeddedResource Include="Views\Profile\ucMyProfile.resx">
       <DependentUpon>ucMyProfile.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
+      <DependentUpon>frmChartDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\ucOrderManagement.resx">
+      <DependentUpon>ucOrderManagement.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -813,8 +810,17 @@
     <EmbeddedResource Include="Views\SystemManagement\ucAuditLog.resx">
       <DependentUpon>ucAuditLog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmAddEmployee.resx">
+      <DependentUpon>frmAddEmployee.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\UserManager\frmCustomerManagement.resx">
       <DependentUpon>frmCustomerManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmEditUserAccount.resx">
+      <DependentUpon>frmEditUserAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmUserAccountDetail.resx">
+      <DependentUpon>frmUserAccountDetail.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\UserManager\frmUserManagement.resx">
       <DependentUpon>frmUserManagement.cs</DependentUpon>

@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 
 namespace SIMS_WinFormsApp.UI.Controls.Pos
 {
@@ -28,14 +29,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private Label _customerLabel;
         private TableLayoutPanel _customerLayout;
         private TextBox _customerTextBox;
-        private Button _customerSearchButton;
-        private Button _pickCustomerButton;
-        private Button _clearCustomerButton;
+        private IconButton _customerSearchButton;
+        private IconButton _clearCustomerButton;
         private CheckBox _usePointsCheckBox;
         private Label _cartLabel;
         private DataGridView _cartGrid;
         private DataGridViewTextBoxColumn _cartQuantity;
-        private DataGridViewButtonColumn _cartRemove;
+        private DataGridViewImageColumn _cartRemove;
         private TableLayoutPanel _promoLayout;
         private Label _promoLabel;
         private TextBox _promoTextBox;
@@ -86,9 +86,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerLayout = new System.Windows.Forms.TableLayoutPanel();
             this._customerLabel = new System.Windows.Forms.Label();
             this._customerTextBox = new System.Windows.Forms.TextBox();
-            this._customerSearchButton = new System.Windows.Forms.Button();
-            this._pickCustomerButton = new System.Windows.Forms.Button();
-            this._clearCustomerButton = new System.Windows.Forms.Button();
+            this._customerSearchButton = new FontAwesome.Sharp.IconButton();
+            this._clearCustomerButton = new FontAwesome.Sharp.IconButton();
             this._usePointsCheckBox = new System.Windows.Forms.CheckBox();
             this._cartCheckoutSplit = new System.Windows.Forms.SplitContainer();
             this._cartAreaLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -98,7 +97,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this.CartUnitPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CartQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CartLineTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CartRemove = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.CartRemove = new System.Windows.Forms.DataGridViewImageColumn();
             this._cartQuantity = this.CartQuantity;
             this._cartRemove = this.CartRemove;
             this._checkoutScrollPanel = new System.Windows.Forms.Panel();
@@ -358,16 +357,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // _customerLayout
             // 
-            this._customerLayout.ColumnCount = 4;
+            this._customerLayout.ColumnCount = 3;
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.Controls.Add(this._customerLabel, 0, 0);
             this._customerLayout.Controls.Add(this._customerTextBox, 0, 1);
             this._customerLayout.Controls.Add(this._customerSearchButton, 1, 1);
-            this._customerLayout.Controls.Add(this._pickCustomerButton, 2, 1);
-            this._customerLayout.Controls.Add(this._clearCustomerButton, 3, 1);
+            this._customerLayout.Controls.Add(this._clearCustomerButton, 2, 1);
             this._customerLayout.Controls.Add(this._usePointsCheckBox, 0, 2);
             this._customerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._customerLayout.Location = new System.Drawing.Point(3, 3);
@@ -401,42 +398,42 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // _customerSearchButton
             // 
+            this._customerSearchButton.AccessibleName = "Tìm khách hàng";
             this._customerSearchButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._customerSearchButton.FlatAppearance.BorderSize = 0;
             this._customerSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._customerSearchButton.Location = new System.Drawing.Point(254, 24);
+            this._customerSearchButton.Location = new System.Drawing.Point(296, 24);
             this._customerSearchButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 2);
             this._customerSearchButton.Name = "_customerSearchButton";
             this._customerSearchButton.Size = new System.Drawing.Size(38, 26);
             this._customerSearchButton.TabIndex = 2;
-            this._customerSearchButton.Text = "Tìm";
-            // 
-            // _pickCustomerButton
-            // 
-            this._pickCustomerButton.AccessibleName = "Chọn khách hàng";
-            this._pickCustomerButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._pickCustomerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._pickCustomerButton.Location = new System.Drawing.Point(296, 24);
-            this._pickCustomerButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 2);
-            this._pickCustomerButton.Name = "_pickCustomerButton";
-            this._pickCustomerButton.Size = new System.Drawing.Size(38, 26);
-            this._pickCustomerButton.TabIndex = 3;
-            this._pickCustomerButton.Text = "...";
+            this._customerSearchButton.IconChar = FontAwesome.Sharp.IconChar.MagnifyingGlass;
+            this._customerSearchButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._customerSearchButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
+            this._customerSearchButton.IconSize = 16;
+            this._customerSearchButton.UseVisualStyleBackColor = false;
             // 
             // _clearCustomerButton
             // 
+            this._clearCustomerButton.AccessibleName = "Xóa khách hàng đang chọn";
             this._clearCustomerButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._clearCustomerButton.FlatAppearance.BorderSize = 0;
             this._clearCustomerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._clearCustomerButton.Location = new System.Drawing.Point(338, 24);
             this._clearCustomerButton.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this._clearCustomerButton.Name = "_clearCustomerButton";
             this._clearCustomerButton.Size = new System.Drawing.Size(42, 26);
             this._clearCustomerButton.TabIndex = 4;
-            this._clearCustomerButton.Text = "Xóa";
+            this._clearCustomerButton.IconChar = FontAwesome.Sharp.IconChar.Xmark;
+            this._clearCustomerButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this._clearCustomerButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
+            this._clearCustomerButton.IconSize = 16;
+            this._clearCustomerButton.UseVisualStyleBackColor = false;
             // 
             // _usePointsCheckBox
             // 
             this._usePointsCheckBox.AutoSize = true;
-            this._customerLayout.SetColumnSpan(this._usePointsCheckBox, 4);
+            this._customerLayout.SetColumnSpan(this._usePointsCheckBox, 3);
             this._usePointsCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._usePointsCheckBox.Location = new System.Drawing.Point(3, 55);
             this._usePointsCheckBox.Name = "_usePointsCheckBox";
@@ -553,12 +550,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // CartRemove
             // 
-            this.CartRemove.FillWeight = 16F;
+            this.CartRemove.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.CartRemove.FillWeight = 10F;
             this.CartRemove.HeaderText = "";
-            this.CartRemove.MinimumWidth = 8;
+            this.CartRemove.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.CartRemove.MinimumWidth = 32;
             this.CartRemove.Name = "CartRemove";
-            this.CartRemove.Text = "Xóa";
-            this.CartRemove.UseColumnTextForButtonValue = true;
             // 
             // _checkoutScrollPanel
             // 
@@ -906,6 +903,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private DataGridViewTextBoxColumn CartUnitPrice;
         private DataGridViewTextBoxColumn CartQuantity;
         private DataGridViewTextBoxColumn CartLineTotal;
-        private DataGridViewButtonColumn CartRemove;
+        private DataGridViewImageColumn CartRemove;
     }
 }

@@ -20,5 +20,10 @@ namespace SIMS_WinFormsApp.Views.Reports
                 return;
             }
         }
+
+        private void _title_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

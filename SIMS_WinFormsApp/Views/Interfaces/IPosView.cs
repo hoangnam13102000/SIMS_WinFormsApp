@@ -17,7 +17,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         event EventHandler<int> CartLineRemoved;
 
         event EventHandler<string> CustomerSearchRequested;
-        event EventHandler CustomerPickRequested;
         event EventHandler CustomerCleared;
 
         event EventHandler<string> PromoApplyRequested;
@@ -38,9 +37,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         void SetPaymentMethods(IReadOnlyList<string> methods);
         void SetCheckoutEnabled(bool enabled);
         void SetBusy(bool isBusy);
-
-        /// <summary>Mở popup chọn khách hàng từ danh sách gợi ý, trả về lựa chọn hoặc null nếu hủy.</summary>
-        CustomerLookupDto PromptPickCustomer(IReadOnlyList<CustomerLookupDto> candidates);
 
         /// <summary>Mở popup chọn 1 giỏ hàng đã tạm giữ, trả về lựa chọn hoặc null nếu hủy.</summary>
         HeldCartDto PromptPickHeldCart(IReadOnlyList<HeldCartDto> heldCarts);

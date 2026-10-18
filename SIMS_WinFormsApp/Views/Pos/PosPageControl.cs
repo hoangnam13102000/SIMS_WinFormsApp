@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
+using SIMS_WinFormsApp.UI.Controls.Filter;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
@@ -27,7 +30,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public event EventHandler<(int ProductId, int Quantity)> CartQuantityChanged;
         public event EventHandler<int> CartLineRemoved;
         public event EventHandler<string> CustomerSearchRequested;
-        public event EventHandler CustomerPickRequested;
         public event EventHandler CustomerCleared;
         public event EventHandler<string> PromoApplyRequested;
         public event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
@@ -54,15 +56,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 ScanBarcodeRequested?.Invoke(this, EventArgs.Empty);
             _customerSearchButton.Click += (sender, args) => RequestCustomerSearch();
             _customerTextBox.KeyDown += OnCustomerTextBoxKeyDown;
-            _pickCustomerButton.Click += (sender, args) =>
-                CustomerPickRequested?.Invoke(this, EventArgs.Empty);
             _clearCustomerButton.Click += (sender, args) =>
                 CustomerCleared?.Invoke(this, EventArgs.Empty);
             _usePointsCheckBox.CheckedChanged += (sender, args) =>
                 PointsRedemptionChanged?.Invoke(this, (_usePointsCheckBox.Checked, _customerPoints));
             _cartGrid.CellValidating += OnCartCellValidating;
             _cartGrid.CellEndEdit += OnCartCellEndEdit;
-            _cartGrid.CellContentClick += OnCartCellContentClick;
+            _cartGrid.CellClick += OnCartCellClick;
             _applyPromoButton.Click += (sender, args) =>
             {
                 if (!string.IsNullOrWhiteSpace(_promoTextBox.Text))
@@ -140,16 +140,26 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 _cartGrid.Rows.Clear();
                 if (lines == null) return;
 
-                foreach (var line in lines)
-                {
-                    int rowIndex = _cartGrid.Rows.Add(
-                        line.ProductName ?? string.Empty,
-                        PosFormat.Vnd(line.UnitPrice),
-                        line.Quantity,
-                        PosFormat.Vnd(line.LineTotal),
-                        "Xóa");
-                    _cartGrid.Rows[rowIndex].Tag = line;
-                }
+                DataGridViewRow[] cartRows = lines
+                    .Where(line => line != null)
+                    .Select(line =>
+                    {
+                        var row = new DataGridViewRow();
+                        row.CreateCells(
+                            _cartGrid,
+                            line.ProductName ?? string.Empty,
+                            PosFormat.Vnd(line.UnitPrice),
+                            line.Quantity,
+                            PosFormat.Vnd(line.LineTotal),
+                            IconBitmapCache.Get(
+                                IconChar.TrashCan,
+                                AppColors.Error,
+                                new Size(18, 18)));
+                        row.Tag = line;
+                        return row;
+                    })
+                    .ToArray();
+                _cartGrid.Rows.AddRange(cartRows);
             }
             finally
             {
@@ -212,16 +222,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _checkoutButton.Text = isBusy ? "Đang xử lý..." : "Thanh toán";
             _holdButton.Enabled = !isBusy;
             _heldCartsButton.Enabled = !isBusy;
-        }
-
-        public CustomerLookupDto PromptPickCustomer(IReadOnlyList<CustomerLookupDto> candidates)
-        {
-            var list = candidates ?? Array.Empty<CustomerLookupDto>();
-            return frmListPickerDialog.Pick(
-                FindForm(),
-                "Chọn khách hàng",
-                list,
-                item => ((CustomerLookupDto)item).DisplayText) as CustomerLookupDto;
         }
 
         public HeldCartDto PromptPickHeldCart(IReadOnlyList<HeldCartDto> heldCarts)
@@ -291,7 +291,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             }
         }
 
-        private void OnCartCellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void OnCartCellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex != _cartRemove.Index)
                 return;
