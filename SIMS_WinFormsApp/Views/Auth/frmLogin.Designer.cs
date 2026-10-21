@@ -14,6 +14,8 @@ namespace SIMS_WinFormsApp.Views.Auth
         private Guna2Panel pnlRight;
         private TableLayoutPanel pnlAuthSplit;
         private Guna2Panel pnlFormCard;
+        private Guna2Panel pnlUsernameInput;
+        private Guna2Panel pnlPasswordInput;
 
         private Label lblTitle;
         private Label lblSubtitle;
@@ -51,8 +53,10 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlOptionsRow = new System.Windows.Forms.Panel();
             this.chkRemember = new System.Windows.Forms.CheckBox();
             this.lnkForgotPassword = new System.Windows.Forms.LinkLabel();
+            this.pnlPasswordInput = new Guna.UI2.WinForms.Guna2Panel();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.lblPassword = new System.Windows.Forms.Label();
+            this.pnlUsernameInput = new Guna.UI2.WinForms.Guna2Panel();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.lblUsername = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
@@ -62,6 +66,8 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlRight.SuspendLayout();
             this.pnlFormCard.SuspendLayout();
             this.pnlOptionsRow.SuspendLayout();
+            this.pnlPasswordInput.SuspendLayout();
+            this.pnlUsernameInput.SuspendLayout();
             this.pnlAuthSplit.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,9 +90,9 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlFormCard.Controls.Add(this.btnLogin);
             this.pnlFormCard.Controls.Add(this.lblError);
             this.pnlFormCard.Controls.Add(this.pnlOptionsRow);
-            this.pnlFormCard.Controls.Add(this.txtPassword);
+            this.pnlFormCard.Controls.Add(this.pnlPasswordInput);
             this.pnlFormCard.Controls.Add(this.lblPassword);
-            this.pnlFormCard.Controls.Add(this.txtUsername);
+            this.pnlFormCard.Controls.Add(this.pnlUsernameInput);
             this.pnlFormCard.Controls.Add(this.lblUsername);
             this.pnlFormCard.Controls.Add(this.lblSubtitle);
             this.pnlFormCard.Controls.Add(this.lblTitle);
@@ -137,7 +143,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             // chkRemember
             // 
             this.chkRemember.BackColor = System.Drawing.Color.White;
-            this.chkRemember.Checked = false;
             this.chkRemember.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkRemember.Font = new System.Drawing.Font("Segoe UI", 12.5F);
             this.chkRemember.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
@@ -147,6 +152,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.chkRemember.TabIndex = 0;
             this.chkRemember.TabStop = false;
             this.chkRemember.Text = "Ghi nhớ đăng nhập";
+            this.chkRemember.UseVisualStyleBackColor = false;
             // 
             // lnkForgotPassword
             // 
@@ -155,25 +161,41 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.lnkForgotPassword.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lnkForgotPassword.Font = new System.Drawing.Font("Segoe UI", 12.5F, System.Drawing.FontStyle.Bold);
             this.lnkForgotPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
-            this.lnkForgotPassword.Location = new System.Drawing.Point(249, 10);
+            this.lnkForgotPassword.Location = new System.Drawing.Point(249, 0);
             this.lnkForgotPassword.Margin = new System.Windows.Forms.Padding(0);
             this.lnkForgotPassword.Name = "lnkForgotPassword";
-            this.lnkForgotPassword.Size = new System.Drawing.Size(198, 30);
+            this.lnkForgotPassword.Size = new System.Drawing.Size(198, 44);
             this.lnkForgotPassword.TabIndex = 1;
+            this.lnkForgotPassword.TabStop = true;
             this.lnkForgotPassword.Text = "Quên mật khẩu?";
             this.lnkForgotPassword.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lnkForgotPassword.Click += new System.EventHandler(this.lnkForgotPassword_Click_1);
             // 
+            // pnlPasswordInput
+            // 
+            this.pnlPasswordInput.BackColor = System.Drawing.Color.Transparent;
+            this.pnlPasswordInput.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.pnlPasswordInput.BorderRadius = 10;
+            this.pnlPasswordInput.BorderThickness = 1;
+            this.pnlPasswordInput.Controls.Add(this.txtPassword);
+            this.pnlPasswordInput.FillColor = System.Drawing.Color.White;
+            this.pnlPasswordInput.Location = new System.Drawing.Point(0, 304);
+            this.pnlPasswordInput.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlPasswordInput.Name = "pnlPasswordInput";
+            this.pnlPasswordInput.Padding = new System.Windows.Forms.Padding(8);
+            this.pnlPasswordInput.Size = new System.Drawing.Size(440, 52);
+            this.pnlPasswordInput.TabIndex = 3;
+            // 
             // txtPassword
             // 
             this.txtPassword.BackColor = System.Drawing.Color.White;
-            this.txtPassword.Location = new System.Drawing.Point(0, 304);
+            this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPassword.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtPassword.Location = new System.Drawing.Point(8, 8);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(0);
             this.txtPassword.MaxLength = 100;
-            this.txtPassword.AutoSize = false;
-            this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtPassword.Size = new System.Drawing.Size(440, 52);
+            this.txtPassword.Size = new System.Drawing.Size(424, 24);
             this.txtPassword.TabIndex = 3;
             // 
             // lblPassword
@@ -187,16 +209,31 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.lblPassword.Text = "Mật khẩu";
             this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // pnlUsernameInput
+            // 
+            this.pnlUsernameInput.BackColor = System.Drawing.Color.Transparent;
+            this.pnlUsernameInput.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.pnlUsernameInput.BorderRadius = 10;
+            this.pnlUsernameInput.BorderThickness = 1;
+            this.pnlUsernameInput.Controls.Add(this.txtUsername);
+            this.pnlUsernameInput.FillColor = System.Drawing.Color.White;
+            this.pnlUsernameInput.Location = new System.Drawing.Point(0, 196);
+            this.pnlUsernameInput.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlUsernameInput.Name = "pnlUsernameInput";
+            this.pnlUsernameInput.Padding = new System.Windows.Forms.Padding(8);
+            this.pnlUsernameInput.Size = new System.Drawing.Size(440, 52);
+            this.pnlUsernameInput.TabIndex = 5;
+            // 
             // txtUsername
             // 
             this.txtUsername.BackColor = System.Drawing.Color.White;
-            this.txtUsername.Location = new System.Drawing.Point(0, 196);
+            this.txtUsername.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtUsername.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtUsername.Location = new System.Drawing.Point(8, 8);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(0);
             this.txtUsername.MaxLength = 50;
-            this.txtUsername.AutoSize = false;
-            this.txtUsername.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
-            this.txtUsername.Size = new System.Drawing.Size(440, 52);
+            this.txtUsername.Size = new System.Drawing.Size(424, 24);
             this.txtUsername.TabIndex = 5;
             // 
             // lblUsername
@@ -250,6 +287,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             // brandPanel
             // 
+            this.brandPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(120)))), ((int)(((byte)(180)))));
             this.brandPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.brandPanel.Location = new System.Drawing.Point(0, 0);
             this.brandPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -271,6 +309,10 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlRight.ResumeLayout(false);
             this.pnlFormCard.ResumeLayout(false);
             this.pnlOptionsRow.ResumeLayout(false);
+            this.pnlPasswordInput.ResumeLayout(false);
+            this.pnlPasswordInput.PerformLayout();
+            this.pnlUsernameInput.ResumeLayout(false);
+            this.pnlUsernameInput.PerformLayout();
             this.pnlAuthSplit.ResumeLayout(false);
             this.ResumeLayout(false);
 

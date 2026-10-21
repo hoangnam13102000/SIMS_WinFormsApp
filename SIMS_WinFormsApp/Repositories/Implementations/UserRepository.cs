@@ -296,6 +296,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 int total = query.Count();
                 var rows = query
                     .OrderBy(x => x.u.FullName)
+                    .ThenBy(x => x.u.UserID)
                     .Skip(Math.Max(0, pageIndex) * pageSize)
                     .Take(pageSize)
                     .ToList()

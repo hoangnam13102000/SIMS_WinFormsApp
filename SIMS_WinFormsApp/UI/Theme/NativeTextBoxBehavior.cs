@@ -8,15 +8,37 @@ namespace SIMS_WinFormsApp.UI.Theme
     internal static class NativeTextBoxBehavior
     {
         private const int EmSetCueBanner = 0x1501;
+        private const int EmSetMargins = 0x00D3;
+        private const int EcLeftMargin = 0x0001;
+        private const int EcRightMargin = 0x0002;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SendMessage(IntPtr handle, int message, IntPtr wParam, string lParam);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr handle, int message, IntPtr wParam, IntPtr lParam);
 
         public static void SetCueBanner(TextBox textBox, string text)
         {
             if (textBox == null) throw new ArgumentNullException(nameof(textBox));
             textBox.CreateControl();
             SendMessage(textBox.Handle, EmSetCueBanner, new IntPtr(1), text ?? string.Empty);
+        }
+
+        public static void SetTextMargins(TextBox textBox, int left, int right)
+        {
+            if (textBox == null) throw new ArgumentNullException(nameof(textBox));
+            if (left < 0 || left > ushort.MaxValue) throw new ArgumentOutOfRangeException(nameof(left));
+            if (right < 0 || right > ushort.MaxValue) throw new ArgumentOutOfRangeException(nameof(right));
+
+            int marginValues = (right << 16) | left;
+            EventHandler applyMargins = (sender, e) =>
+                SendMessage(textBox.Handle, EmSetMargins,
+                    new IntPtr(EcLeftMargin | EcRightMargin), new IntPtr(marginValues));
+            textBox.HandleCreated += applyMargins;
+
+            if (textBox.IsHandleCreated)
+                applyMargins(textBox, EventArgs.Empty);
         }
 
         public static void ApplyInputFont(Control root)

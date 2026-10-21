@@ -60,12 +60,16 @@ namespace SIMS_WinFormsApp.UI.Theme
 
         private void Panel_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            Render(e.Graphics, _panel.ClientSize);
+        }
+
+        private void Render(Graphics g, Size clientSize)
+        {
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-            int width = _panel.ClientSize.Width;
-            int height = _panel.ClientSize.Height;
+            int width = clientSize.Width;
+            int height = clientSize.Height;
             var bounds = new Rectangle(0, 0, width, height);
             using (var brush = new LinearGradientBrush(bounds, AppColors.DarkTop, AppColors.DarkBottom, 55f))
                 g.FillRectangle(brush, bounds);

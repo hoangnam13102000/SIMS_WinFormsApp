@@ -25,91 +25,152 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            _root = new TableLayoutPanel();
-            _titleLabel = new Label();
-            _nameLabel = new Label();
-            _nameTextBox = new TextBox();
-            _statusLabel = new Label();
-            _statusComboBox = new ComboBox();
-            _buttons = new FlowLayoutPanel();
-            _saveButton = new Button();
-            _cancelButton = new Button();
-            _root.SuspendLayout();
-            _buttons.SuspendLayout();
-            SuspendLayout();
+            this._root = new System.Windows.Forms.TableLayoutPanel();
+            this._titleLabel = new System.Windows.Forms.Label();
+            this._nameLabel = new System.Windows.Forms.Label();
+            this._nameTextBox = new System.Windows.Forms.TextBox();
+            this._statusLabel = new System.Windows.Forms.Label();
+            this._statusComboBox = new System.Windows.Forms.ComboBox();
+            this._buttons = new System.Windows.Forms.FlowLayoutPanel();
+            this._cancelButton = new System.Windows.Forms.Button();
+            this._saveButton = new System.Windows.Forms.Button();
+            this._root.SuspendLayout();
+            this._buttons.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // _root
+            // 
+            this._root.ColumnCount = 2;
+            this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
+            this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.Controls.Add(this._titleLabel, 0, 0);
+            this._root.Controls.Add(this._nameLabel, 0, 1);
+            this._root.Controls.Add(this._nameTextBox, 1, 1);
+            this._root.Controls.Add(this._statusLabel, 0, 2);
+            this._root.Controls.Add(this._statusComboBox, 1, 2);
+            this._root.Controls.Add(this._buttons, 0, 3);
+            this._root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Name = "_root";
+            this._root.Padding = new System.Windows.Forms.Padding(24);
+            this._root.RowCount = 4;
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.Size = new System.Drawing.Size(580, 280);
+            this._root.TabIndex = 0;
+            // 
+            // _titleLabel
+            // 
+            this._root.SetColumnSpan(this._titleLabel, 2);
+            this._titleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this._titleLabel.Location = new System.Drawing.Point(27, 24);
+            this._titleLabel.Name = "_titleLabel";
+            this._titleLabel.Size = new System.Drawing.Size(526, 54);
+            this._titleLabel.TabIndex = 0;
+            this._titleLabel.Text = "Danh mục";
+            this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _nameLabel
+            // 
+            this._nameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._nameLabel.Location = new System.Drawing.Point(27, 78);
+            this._nameLabel.Name = "_nameLabel";
+            this._nameLabel.Size = new System.Drawing.Size(124, 48);
+            this._nameLabel.TabIndex = 1;
+            this._nameLabel.Text = "Tên danh mục";
+            this._nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _nameTextBox
+            // 
+            this._nameTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._nameTextBox.Location = new System.Drawing.Point(154, 86);
+            this._nameTextBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 8);
+            this._nameTextBox.MaxLength = 150;
+            this._nameTextBox.Name = "_nameTextBox";
+            this._nameTextBox.Size = new System.Drawing.Size(402, 26);
+            this._nameTextBox.TabIndex = 2;
+            // 
+            // _statusLabel
+            // 
+            this._statusLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._statusLabel.Location = new System.Drawing.Point(27, 126);
+            this._statusLabel.Name = "_statusLabel";
+            this._statusLabel.Size = new System.Drawing.Size(124, 48);
+            this._statusLabel.TabIndex = 3;
+            this._statusLabel.Text = "Trạng thái";
+            this._statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _statusComboBox
+            // 
+            this._statusComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._statusComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._statusComboBox.Items.AddRange(new object[] {
+            "Đang hoạt động",
+            "Vô hiệu hóa"});
+            this._statusComboBox.Location = new System.Drawing.Point(154, 134);
+            this._statusComboBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 8);
+            this._statusComboBox.Name = "_statusComboBox";
+            this._statusComboBox.Size = new System.Drawing.Size(402, 28);
+            this._statusComboBox.TabIndex = 4;
+            // 
+            // _buttons
+            // 
+            this._root.SetColumnSpan(this._buttons, 2);
+            this._buttons.Controls.Add(this._cancelButton);
+            this._buttons.Controls.Add(this._saveButton);
+            this._buttons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._buttons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this._buttons.Location = new System.Drawing.Point(27, 177);
+            this._buttons.Name = "_buttons";
+            this._buttons.Padding = new System.Windows.Forms.Padding(0, 16, 0, 0);
+            this._buttons.Size = new System.Drawing.Size(526, 76);
+            this._buttons.TabIndex = 5;
+            // 
+            // _cancelButton
+            // 
+            this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this._cancelButton.Location = new System.Drawing.Point(431, 19);
+            this._cancelButton.Name = "_cancelButton";
+            this._cancelButton.Size = new System.Drawing.Size(92, 34);
+            this._cancelButton.TabIndex = 0;
+            this._cancelButton.Text = "Hủy";
+            // 
+            // _saveButton
+            // 
+            this._saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._saveButton.FlatAppearance.BorderSize = 0;
+            this._saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._saveButton.ForeColor = System.Drawing.Color.White;
+            this._saveButton.Location = new System.Drawing.Point(313, 19);
+            this._saveButton.Name = "_saveButton";
+            this._saveButton.Size = new System.Drawing.Size(112, 34);
+            this._saveButton.TabIndex = 1;
+            this._saveButton.Text = "Lưu";
+            this._saveButton.UseVisualStyleBackColor = false;
+            // 
+            // frmCategoryEditor
+            // 
+            this.AcceptButton = this._saveButton;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this._cancelButton;
+            this.ClientSize = new System.Drawing.Size(580, 280);
+            this.Controls.Add(this._root);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "frmCategoryEditor";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Danh mục";
+            this._root.ResumeLayout(false);
+            this._root.PerformLayout();
+            this._buttons.ResumeLayout(false);
+            this.ResumeLayout(false);
 
-            _root.ColumnCount = 2;
-            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130F));
-            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            _root.Dock = DockStyle.Fill;
-            _root.Padding = new Padding(24);
-            _root.RowCount = 4;
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 54F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _root.Controls.Add(_titleLabel, 0, 0);
-            _root.SetColumnSpan(_titleLabel, 2);
-            _root.Controls.Add(_nameLabel, 0, 1);
-            _root.Controls.Add(_nameTextBox, 1, 1);
-            _root.Controls.Add(_statusLabel, 0, 2);
-            _root.Controls.Add(_statusComboBox, 1, 2);
-            _root.Controls.Add(_buttons, 0, 3);
-            _root.SetColumnSpan(_buttons, 2);
-            _root.SetRowSpan(_buttons, 1);
-
-            _titleLabel.Dock = DockStyle.Fill;
-            _titleLabel.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
-            _titleLabel.Text = "Danh mục";
-            _titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _nameLabel.Dock = DockStyle.Fill;
-            _nameLabel.Text = "Tên danh mục";
-            _nameLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _nameTextBox.Dock = DockStyle.Fill;
-            _nameTextBox.Margin = new Padding(0, 8, 0, 8);
-            _nameTextBox.MaxLength = 150;
-            _nameTextBox.Name = "_nameTextBox";
-            _statusLabel.Dock = DockStyle.Fill;
-            _statusLabel.Text = "Trạng thái";
-            _statusLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _statusComboBox.Dock = DockStyle.Fill;
-            _statusComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _statusComboBox.Items.AddRange(new object[] { "Đang hoạt động", "Vô hiệu hóa" });
-            _statusComboBox.Margin = new Padding(0, 8, 0, 8);
-            _statusComboBox.Name = "_statusComboBox";
-            _statusComboBox.SelectedIndex = 0;
-            _buttons.Controls.Add(_cancelButton);
-            _buttons.Controls.Add(_saveButton);
-            _buttons.Dock = DockStyle.Fill;
-            _buttons.FlowDirection = FlowDirection.RightToLeft;
-            _buttons.Padding = new Padding(0, 16, 0, 0);
-            _cancelButton.DialogResult = DialogResult.Cancel;
-            _cancelButton.Size = new Size(92, 34);
-            _cancelButton.Text = "Hủy";
-            _saveButton.BackColor = Color.FromArgb(37, 99, 235);
-            _saveButton.FlatAppearance.BorderSize = 0;
-            _saveButton.FlatStyle = FlatStyle.Flat;
-            _saveButton.ForeColor = Color.White;
-            _saveButton.Size = new Size(112, 34);
-            _saveButton.Text = "Lưu";
-            AcceptButton = _saveButton;
-            CancelButton = _cancelButton;
-
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(580, 280);
-            Controls.Add(_root);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
-            Name = "frmCategoryEditor";
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Danh mục";
-            _root.ResumeLayout(false);
-            _root.PerformLayout();
-            _buttons.ResumeLayout(false);
-            ResumeLayout(false);
         }
     }
 }

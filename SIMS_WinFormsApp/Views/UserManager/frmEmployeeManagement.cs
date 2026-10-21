@@ -20,22 +20,27 @@ namespace SIMS_WinFormsApp.Views.UserManager
 {
     public partial class frmEmployeeManagement : Form
     {
-        private const int PageSize = 1000;
         private readonly List<UserManagementRowDto> _currentRows = new List<UserManagementRowDto>();
         private readonly ContextMenuStrip _rowMenu;
         private readonly ContextMenuStrip _optionsMenu;
+        private readonly UserManagementPager _pager;
         private IUserManagementService _service;
         private int _loadGeneration;
 
         public frmEmployeeManagement()
         {
             InitializeComponent();
+            _pager = new UserManagementPager();
+            _contentLayout.RowCount = 4;
+            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+            _contentLayout.Controls.Add(_pager, 0, 3);
+            _pager.PageChanged += (sender, args) => ReloadUsers();
             _rowMenu = new ContextMenuStrip(components);
             _optionsMenu = new ContextMenuStrip(components);
             _statusFilter.SelectedIndex = 0;
             AddUserRow("staff01", "Nhân viên mẫu", "staff@example.com", "Nhân viên", "Đang hoạt động", false);
-            _searchBox.TextChanged += (sender, args) => ReloadUsers();
-            _statusFilter.SelectedIndexChanged += (sender, args) => ReloadUsers();
+            _searchBox.TextChanged += (sender, args) => ReloadUsers(true);
+            _statusFilter.SelectedIndexChanged += (sender, args) => ReloadUsers(true);
             VisibleChanged += (sender, args) =>
             {
                 if (Visible)
@@ -65,11 +70,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _service = service;
         }
 
-        private async void ReloadUsers()
+        private async void ReloadUsers(bool resetPage = false)
         {
             if (_service == null || IsDisposed) return;
+            if (resetPage) _pager.ResetPage();
             int generation = ++_loadGeneration;
             IUserManagementService service = _service;
+            int pageIndex = _pager.PageIndex;
             string searchTerm = _searchBox.Text;
             string status = _statusFilter.SelectedIndex == 1 ? "ACTIVE" :
                 _statusFilter.SelectedIndex == 2 ? "INACTIVE" : null;
@@ -77,8 +84,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
             try
             {
                 UserManagementPageDto page = await Task.Run(() =>
-                    service.GetPage(0, PageSize, searchTerm, UserManagementFilters.NonCustomer, status));
+                    service.GetPage(pageIndex, _pager.PageSize, searchTerm, UserManagementFilters.NonCustomer, status));
                 if (IsDisposed || generation != _loadGeneration) return;
+                if (_pager.SetTotalCount(page.TotalCount))
+                {
+                    ReloadUsers();
+                    return;
+                }
 
                 _currentRows.Clear();
                 _currentRows.AddRange(page.Rows);

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
+using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
 using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
@@ -15,10 +17,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly IPosView _view;
         private readonly IProductCatalogService _catalogService;
         private readonly ICustomerLookupService _customerService;
+        private readonly IInvoiceService _invoiceService;
         private readonly IPromotionService _promotionService;
         private readonly IBarcodeScannerLauncher _scannerLauncher;
         private readonly HeldCartStore _heldCartStore;
         private readonly Func<IWin32Window> _ownerWindowProvider;
+        private readonly IUserSession _userSession;
 
         private readonly PosCart _cart = new PosCart();
         private readonly CartCalculator _calculator = new CartCalculator();
@@ -36,18 +40,22 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             IPosView view,
             IProductCatalogService catalogService,
             ICustomerLookupService customerService,
+            IInvoiceService invoiceService,
             IPromotionService promotionService,
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
-            Func<IWin32Window> ownerWindowProvider)
+            Func<IWin32Window> ownerWindowProvider,
+            IUserSession userSession)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
+            _invoiceService = invoiceService ?? throw new ArgumentNullException(nameof(invoiceService));
             _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _scannerLauncher = scannerLauncher ?? throw new ArgumentNullException(nameof(scannerLauncher));
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
             _ownerWindowProvider = ownerWindowProvider ?? throw new ArgumentNullException(nameof(ownerWindowProvider));
+            _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
 
             _view.ViewReady += OnViewReady;
             _view.ProductSearchChanged += OnProductSearchChanged;
@@ -277,16 +285,47 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 return;
             }
 
-            // CHỖ TÍCH HỢP: khi có module Hóa đơn/Kho thật, đây là nơi gọi IInvoiceService để
-            // tạo hóa đơn + trừ tồn kho + cộng điểm khách hàng (giống InvoiceDAO bên bản Java).
-            // Hiện tại demo chỉ tính tổng và báo thành công, không có nơi lưu trữ hóa đơn thật.
+            if (!_userSession.IsLoggedIn)
+            {
+                AppToast.Error(owner as Control, "Không thể thanh toán", "Phiên đăng nhập đã hết hạn.");
+                return;
+            }
+
+            string invoiceCode;
             _view.SetBusy(true);
-            var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
+            try
+            {
+                var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
+                invoiceCode = _invoiceService.CreateInvoice(
+                    _userSession.CurrentUser.UserId,
+                    _selectedCustomer == null ? (int?)null : _selectedCustomer.CustomerId,
+                    _view.SelectedPaymentMethod,
+                    totals,
+                    _cart.Lines);
+            }
+            catch (SqlException exception)
+            {
+                _view.SetBusy(false);
+                AppToast.Error(owner as Control, "Không thể lưu hóa đơn", exception.Message);
+                return;
+            }
+            catch (InvalidOperationException exception)
+            {
+                _view.SetBusy(false);
+                AppToast.Warning(owner as Control, "Chưa thể thanh toán", exception.Message);
+                return;
+            }
+            catch (ArgumentException exception)
+            {
+                _view.SetBusy(false);
+                AppToast.Warning(owner as Control, "Thông tin thanh toán không hợp lệ", exception.Message);
+                return;
+            }
+
             ResetForNewSale();
             _view.SetBusy(false);
-
             AppToast.Success(owner as Control, "Thanh toán thành công",
-                "Tổng cộng " + PosFormat.Vnd(totals.GrandTotal) + " - đã tạo đơn mới.");
+                "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
         }
 
         private void ResetForNewSale()

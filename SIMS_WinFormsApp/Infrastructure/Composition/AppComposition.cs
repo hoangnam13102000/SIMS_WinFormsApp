@@ -9,6 +9,7 @@ using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
+using SIMS_WinFormsApp.Services.Implementations.Reports;
 using SIMS_WinFormsApp.Services.AI.Implementations;
 using SIMS_WinFormsApp.Services.AI.Implementations.Tools;
 using SIMS_WinFormsApp.Services.AI.Interfaces;
@@ -125,6 +126,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new SqlProductCatalogService(CreateConnectionFactory(), new LocalProductImageStore());
         }
 
+        public static RevenueReportService CreateRevenueReportService()
+        {
+            return new RevenueReportService(CreateConnectionFactory());
+        }
+
         public static IAiChatService CreateAiChatService()
         {
             IProductCatalogService catalogService = CreateProductCatalogService();
@@ -158,7 +164,12 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
 
         public static ICustomerLookupService CreateCustomerLookupService()
         {
-            return new DemoCustomerLookupService();
+            return new SqlCustomerLookupService(CreateConnectionFactory());
+        }
+
+        public static IInvoiceService CreateInvoiceService()
+        {
+            return new SqlInvoiceService(CreateConnectionFactory());
         }
 
         public static IPromotionService CreatePromotionService()

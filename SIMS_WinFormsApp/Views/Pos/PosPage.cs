@@ -14,10 +14,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 view,
                 AppComposition.CreateProductCatalogService(),
                 AppComposition.CreateCustomerLookupService(),
+                AppComposition.CreateInvoiceService(),
                 AppComposition.CreatePromotionService(),
                 AppComposition.CreateBarcodeScannerLauncher(),
                 new HeldCartStore(),
-                () => view.FindForm() ?? (IWin32Window)view);
+                () => view.FindForm() ?? (IWin32Window)view,
+                SIMS_WinFormsApp.Services.Session.UserSession.Instance);
 
             view.Disposed += (s, e) => presenter.Dispose();
 

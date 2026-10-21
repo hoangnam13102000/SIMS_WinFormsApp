@@ -35,6 +35,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         void SetTotals(CartTotalsDto totals);
         void SetPromoCode(string code);
         void SetPaymentMethods(IReadOnlyList<string> methods);
+        string SelectedPaymentMethod { get; }
         void SetCheckoutEnabled(bool enabled);
         void SetBusy(bool isBusy);
 

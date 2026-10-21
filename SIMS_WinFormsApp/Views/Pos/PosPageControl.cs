@@ -36,6 +36,19 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public event EventHandler ViewHeldCartsRequested;
         public event EventHandler CheckoutRequested;
 
+        public string SelectedPaymentMethod
+        {
+            get
+            {
+                string selected = _paymentMethod.SelectedItem as string;
+                if (selected == "Tiền mặt") return "CASH";
+                if (selected == "Chuyển khoản") return "BANK_TRANSFER";
+                if (selected == "Thẻ ngân hàng") return "CARD";
+                if (selected == "Ví điện tử") return "PAYPAL";
+                return null;
+            }
+        }
+
         public PosPageControl() : this(string.Empty)
         {
         }

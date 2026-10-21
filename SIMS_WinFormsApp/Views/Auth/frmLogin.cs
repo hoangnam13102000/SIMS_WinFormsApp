@@ -6,6 +6,7 @@ using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using Guna.UI2.WinForms;
 using System;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -74,18 +75,34 @@ namespace SIMS_WinFormsApp.Views.Auth
         private void InitializeNativeControls()
         {
             NativeTextBoxBehavior.ApplyInputFont(this);
+            NativeTextBoxBehavior.SetTextMargins(txtUsername, 6, 6);
+            NativeTextBoxBehavior.SetTextMargins(txtPassword, 6, 42);
+            ConfigureInputPanel(pnlUsernameInput, txtUsername);
+            ConfigureInputPanel(pnlPasswordInput, txtPassword);
             _brandPanelRenderer = new AuthBrandPanelRenderer(brandPanel)
             {
                 Logo = Properties.Resources.logo_icon,
+                BrandName = "SIMS",
                 Tagline = "Quản lý cửa hàng thông minh",
                 Features = new[]
                 {
                     "Quản lý bán hàng",
                     "Theo dõi tồn kho",
                     "Báo cáo kinh doanh"
-                }
+                },
+                FooterText = "© " + DateTime.Now.Year + " SIMS"
             };
+            brandPanel.BackgroundImage = Properties.Resources.auth_brand_preview;
+            brandPanel.BackgroundImageLayout = ImageLayout.Stretch;
             _passwordVisibilityToggle = new PasswordVisibilityToggle(txtPassword);
+        }
+
+        private static void ConfigureInputPanel(Guna2Panel panel, TextBox textBox)
+        {
+            panel.BorderColor = AppColors.FieldBorder;
+            panel.FillColor = AppColors.White;
+            textBox.Enter += (sender, e) => panel.BorderColor = AppColors.Accent;
+            textBox.Leave += (sender, e) => panel.BorderColor = AppColors.FieldBorder;
         }
 
         private void WireEvents()
@@ -194,9 +211,9 @@ namespace SIMS_WinFormsApp.Views.Auth
             lblTitle.Width = width + 5;
             lblSubtitle.Width = width;
             lblUsername.Width = width;
-            txtUsername.Width = width;
+            pnlUsernameInput.Width = width;
             lblPassword.Width = width;
-            txtPassword.Width = width;
+            pnlPasswordInput.Width = width;
             pnlOptionsRow.Width = width;
             lblError.Width = width;
             btnLogin.Width = width;
@@ -219,8 +236,12 @@ namespace SIMS_WinFormsApp.Views.Auth
             btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
             txtUsername.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
             txtUsername.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            pnlUsernameInput.FillColor = txtUsername.BackColor;
+            pnlUsernameInput.BorderColor = txtUsername.Focused ? AppColors.Accent : AppColors.FieldBorder;
             txtPassword.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
             txtPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            pnlPasswordInput.FillColor = txtPassword.BackColor;
+            pnlPasswordInput.BorderColor = txtPassword.Focused ? AppColors.Accent : AppColors.FieldBorder;
             chkRemember.BackColor = dark ? Color.FromArgb(18, 20, 26) : AppColors.White;
             chkRemember.ForeColor = dark ? Color.White : AppColors.TextMuted;
             lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
