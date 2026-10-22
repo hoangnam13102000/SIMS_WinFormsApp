@@ -6,6 +6,7 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
     {
         public string AvatarInitial { get; }
         public Color AvatarColor { get; }
+        public string AvatarUrl { get; }
         public string FullName { get; }
         public string HandleText { get; }
 
@@ -28,6 +29,7 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
         public UserAccountDetailViewModel(
             string avatarInitial,
             Color avatarColor,
+            string avatarUrl,
             string fullName,
             string handleText,
             string accountCode,
@@ -44,6 +46,7 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
         {
             AvatarInitial = avatarInitial;
             AvatarColor = avatarColor;
+            AvatarUrl = avatarUrl;
             FullName = fullName;
             HandleText = handleText;
             AccountCode = accountCode;

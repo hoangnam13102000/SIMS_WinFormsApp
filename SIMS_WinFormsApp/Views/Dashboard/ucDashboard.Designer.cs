@@ -188,7 +188,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._revenueValue.Name = "_revenueValue";
             this._revenueValue.Size = new System.Drawing.Size(241, 48);
             this._revenueValue.TabIndex = 1;
-            this._revenueValue.Text = "12.450.000 ₫";
+            this._revenueValue.Text = "—";
             // 
             // _ordersCard
             // 
@@ -211,7 +211,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._ordersCaption.Name = "_ordersCaption";
             this._ordersCaption.Size = new System.Drawing.Size(127, 25);
             this._ordersCaption.TabIndex = 0;
-            this._ordersCaption.Text = "Đơn hàng mới";
+            this._ordersCaption.Text = "Đơn hàng hôm nay";
             // 
             // _ordersValue
             // 
@@ -222,7 +222,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._ordersValue.Name = "_ordersValue";
             this._ordersValue.Size = new System.Drawing.Size(62, 48);
             this._ordersValue.TabIndex = 1;
-            this._ordersValue.Text = "48";
+            this._ordersValue.Text = "—";
             // 
             // _stockCard
             // 
@@ -245,7 +245,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockCaption.Name = "_stockCaption";
             this._stockCaption.Size = new System.Drawing.Size(124, 25);
             this._stockCaption.TabIndex = 0;
-            this._stockCaption.Text = "Sản phẩm tồn";
+            this._stockCaption.Text = "Tổng tồn kho";
             // 
             // _stockValue
             // 
@@ -256,7 +256,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockValue.Name = "_stockValue";
             this._stockValue.Size = new System.Drawing.Size(114, 48);
             this._stockValue.TabIndex = 1;
-            this._stockValue.Text = "1.284";
+            this._stockValue.Text = "—";
             // 
             // _customersCard
             // 
@@ -290,7 +290,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._customersValue.Name = "_customersValue";
             this._customersValue.Size = new System.Drawing.Size(83, 48);
             this._customersValue.TabIndex = 1;
-            this._customersValue.Text = "326";
+            this._customersValue.Text = "—";
             // 
             // _activityCard
             // 

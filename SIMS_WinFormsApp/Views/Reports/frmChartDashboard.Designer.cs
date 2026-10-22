@@ -30,9 +30,6 @@ namespace SIMS_WinFormsApp.Views.Reports
         private Chart _revenueTrendChart;
         private Chart _categoryChart;
         private DataGridView _topProductsGrid;
-        private DataGridViewTextBoxColumn _productNameColumn;
-        private DataGridViewTextBoxColumn _quantityColumn;
-        private DataGridViewTextBoxColumn _amountColumn;
 
         protected override void Dispose(bool disposing)
         {
@@ -68,9 +65,9 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._categoryChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this._salesChartTitle = new System.Windows.Forms.Label();
             this._topProductsGrid = new System.Windows.Forms.DataGridView();
-            this.ProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._productNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._quantityColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._amountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._filters.SuspendLayout();
@@ -369,9 +366,9 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._topProductsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this._topProductsGrid.ColumnHeadersHeight = 32;
             this._topProductsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ProductName,
-            this.Quantity,
-            this.Amount});
+            this._productNameColumn,
+            this._quantityColumn,
+            this._amountColumn});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
@@ -393,24 +390,24 @@ namespace SIMS_WinFormsApp.Views.Reports
             // 
             // ProductName
             // 
-            this.ProductName.HeaderText = "Sản phẩm bán chạy";
-            this.ProductName.MinimumWidth = 8;
-            this.ProductName.Name = "ProductName";
-            this.ProductName.ReadOnly = true;
+            this._productNameColumn.HeaderText = "Sản phẩm bán chạy";
+            this._productNameColumn.MinimumWidth = 8;
+            this._productNameColumn.Name = "ProductName";
+            this._productNameColumn.ReadOnly = true;
             // 
             // Quantity
             // 
-            this.Quantity.HeaderText = "Số lượng";
-            this.Quantity.MinimumWidth = 8;
-            this.Quantity.Name = "Quantity";
-            this.Quantity.ReadOnly = true;
+            this._quantityColumn.HeaderText = "Số lượng";
+            this._quantityColumn.MinimumWidth = 8;
+            this._quantityColumn.Name = "Quantity";
+            this._quantityColumn.ReadOnly = true;
             // 
             // Amount
             // 
-            this.Amount.HeaderText = "Doanh thu";
-            this.Amount.MinimumWidth = 8;
-            this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
+            this._amountColumn.HeaderText = "Doanh thu";
+            this._amountColumn.MinimumWidth = 8;
+            this._amountColumn.Name = "Amount";
+            this._amountColumn.ReadOnly = true;
             // 
             // frmChartDashboard
             // 
@@ -440,8 +437,8 @@ namespace SIMS_WinFormsApp.Views.Reports
 
         }
 
-        private DataGridViewTextBoxColumn ProductName;
-        private DataGridViewTextBoxColumn Quantity;
-        private DataGridViewTextBoxColumn Amount;
+        private DataGridViewTextBoxColumn _productNameColumn;
+        private DataGridViewTextBoxColumn _quantityColumn;
+        private DataGridViewTextBoxColumn _amountColumn;
     }
 }

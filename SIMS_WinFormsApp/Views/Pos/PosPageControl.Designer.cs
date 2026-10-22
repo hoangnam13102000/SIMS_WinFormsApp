@@ -34,8 +34,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private CheckBox _usePointsCheckBox;
         private Label _cartLabel;
         private DataGridView _cartGrid;
-        private DataGridViewTextBoxColumn _cartQuantity;
-        private DataGridViewImageColumn _cartRemove;
         private TableLayoutPanel _promoLayout;
         private Label _promoLabel;
         private TextBox _promoTextBox;

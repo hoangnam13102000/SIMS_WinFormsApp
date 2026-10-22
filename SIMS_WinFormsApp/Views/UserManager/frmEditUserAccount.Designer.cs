@@ -449,7 +449,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // _designerCancelButton
             // 
             this._designerCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._designerCancelButton.Location = new System.Drawing.Point(1538, 16);
+            this._designerCancelButton.Location = new System.Drawing.Point(898, 16);
             this._designerCancelButton.Name = "_designerCancelButton";
             this._designerCancelButton.Size = new System.Drawing.Size(112, 40);
             this._designerCancelButton.TabIndex = 0;
@@ -460,7 +460,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._designerSaveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._designerSaveButton.ForeColor = System.Drawing.Color.White;
-            this._designerSaveButton.Location = new System.Drawing.Point(1662, 16);
+            this._designerSaveButton.Location = new System.Drawing.Point(1022, 16);
             this._designerSaveButton.Name = "_designerSaveButton";
             this._designerSaveButton.Size = new System.Drawing.Size(132, 40);
             this._designerSaveButton.TabIndex = 1;

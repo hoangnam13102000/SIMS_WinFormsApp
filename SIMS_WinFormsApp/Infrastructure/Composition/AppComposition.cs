@@ -131,6 +131,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new RevenueReportService(CreateConnectionFactory());
         }
 
+        public static IDashboardDataService CreateDashboardDataService()
+        {
+            return new DashboardDataService(CreateConnectionFactory());
+        }
+
         public static IAiChatService CreateAiChatService()
         {
             IProductCatalogService catalogService = CreateProductCatalogService();

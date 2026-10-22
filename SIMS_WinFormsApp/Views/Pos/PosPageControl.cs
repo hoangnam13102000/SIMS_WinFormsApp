@@ -278,7 +278,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private void OnCartCellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != _cartQuantity.Index)
+            if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
             if (int.TryParse(Convert.ToString(e.FormattedValue), out int quantity) && quantity > 0)
             {
@@ -292,11 +292,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private void OnCartCellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != _cartQuantity.Index)
+            if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
             _cartGrid.Rows[e.RowIndex].ErrorText = string.Empty;
             if (_cartGrid.Rows[e.RowIndex].Tag is CartLineDto line &&
-                int.TryParse(Convert.ToString(_cartGrid.Rows[e.RowIndex].Cells[_cartQuantity.Index].Value), out int quantity) &&
+                int.TryParse(Convert.ToString(_cartGrid.Rows[e.RowIndex].Cells[CartQuantity.Index].Value), out int quantity) &&
                 quantity > 0 && quantity != line.Quantity)
             {
                 CartQuantityChanged?.Invoke(this, (line.ProductId, quantity));
@@ -305,7 +305,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private void OnCartCellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex != _cartRemove.Index)
+            if (e.RowIndex < 0 || e.ColumnIndex != CartRemove.Index)
                 return;
             if (_cartGrid.Rows[e.RowIndex].Tag is CartLineDto line)
                 CartLineRemoved?.Invoke(this, line.ProductId);

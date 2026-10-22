@@ -15,6 +15,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private Panel _designerBody;
         private Panel _designerSidebar;
         private Panel _designerAvatarCircle;
+        private PictureBox _designerAvatarImage;
         private Label _lblAvatarInitial;
         private Label _lblAvatarName;
         private Label _lblAvatarSubtitle;
@@ -59,6 +60,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._tabSecurity = new System.Windows.Forms.Button();
             this._designerSidebar = new System.Windows.Forms.Panel();
             this._designerAvatarCircle = new System.Windows.Forms.Panel();
+            this._designerAvatarImage = new System.Windows.Forms.PictureBox();
             this._lblAvatarInitial = new System.Windows.Forms.Label();
             this._lblAvatarName = new System.Windows.Forms.Label();
             this._lblAvatarSubtitle = new System.Windows.Forms.Label();
@@ -71,6 +73,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSecurityGrid.SuspendLayout();
             this._designerSidebar.SuspendLayout();
             this._designerAvatarCircle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._designerAvatarImage)).BeginInit();
             this._designerFooter.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -386,11 +389,24 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // _designerAvatarCircle
             // 
             this._designerAvatarCircle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this._designerAvatarCircle.Controls.Add(this._designerAvatarImage);
             this._designerAvatarCircle.Controls.Add(this._lblAvatarInitial);
             this._designerAvatarCircle.Location = new System.Drawing.Point(56, 32);
             this._designerAvatarCircle.Name = "_designerAvatarCircle";
             this._designerAvatarCircle.Size = new System.Drawing.Size(96, 96);
             this._designerAvatarCircle.TabIndex = 0;
+            // 
+            // _designerAvatarImage
+            // 
+            this._designerAvatarImage.BackColor = System.Drawing.Color.Transparent;
+            this._designerAvatarImage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._designerAvatarImage.Location = new System.Drawing.Point(0, 0);
+            this._designerAvatarImage.Name = "_designerAvatarImage";
+            this._designerAvatarImage.Size = new System.Drawing.Size(96, 96);
+            this._designerAvatarImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this._designerAvatarImage.TabIndex = 1;
+            this._designerAvatarImage.TabStop = false;
+            this._designerAvatarImage.Visible = false;
             // 
             // _lblAvatarInitial
             // 
@@ -472,6 +488,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSecurityGrid.ResumeLayout(false);
             this._designerSidebar.ResumeLayout(false);
             this._designerAvatarCircle.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._designerAvatarImage)).EndInit();
             this._designerFooter.ResumeLayout(false);
             this.ResumeLayout(false);
 

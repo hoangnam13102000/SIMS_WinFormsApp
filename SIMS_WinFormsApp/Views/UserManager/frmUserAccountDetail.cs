@@ -1,5 +1,7 @@
 using System;
 using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Enums;
@@ -11,6 +13,7 @@ using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.UserManager
 {
@@ -174,6 +177,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _lblAvatarName.Text = viewModel.FullName;
             _lblAvatarSubtitle.Text = viewModel.HandleText;
             _lblDialogTitle.Text = "Chi tiết tài khoản " + GetAccountTypeLabel(viewModel.RoleCode);
+            LoadAvatar(viewModel.AvatarUrl);
 
             _itemAccountCode.ValueText = viewModel.AccountCode;
             _itemRole.ValueText = viewModel.RoleName;
@@ -193,6 +197,57 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _itemSalary.ValueText = viewModel.SalaryText;
         }
 
+        private void LoadAvatar(string avatarPath)
+        {
+            Image previousImage = _designerAvatarImage.Image;
+            _designerAvatarImage.Image = null;
+            if (previousImage != null)
+                previousImage.Dispose();
+
+            _designerAvatarImage.Visible = false;
+            _lblAvatarInitial.Visible = true;
+            if (string.IsNullOrWhiteSpace(avatarPath))
+                return;
+
+            if (!File.Exists(avatarPath))
+            {
+                AppToast.Warning(this, "Không tìm thấy ảnh đại diện", avatarPath);
+                return;
+            }
+
+            try
+            {
+                using (var stream = new MemoryStream(File.ReadAllBytes(avatarPath)))
+                using (Image source = Image.FromStream(stream))
+                    _designerAvatarImage.Image = new Bitmap(source);
+
+                _designerAvatarImage.Visible = true;
+                _designerAvatarImage.BringToFront();
+            }
+            catch (IOException ex)
+            {
+                AppToast.Warning(this, "Không đọc được ảnh đại diện", ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                AppToast.Warning(this, "Không đọc được ảnh đại diện", ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                AppToast.Warning(this, "Ảnh đại diện không hợp lệ", ex.Message);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                AppToast.Warning(this, "Ảnh đại diện không hợp lệ", ex.Message);
+            }
+            catch (ExternalException ex)
+            {
+                AppToast.Warning(this, "Không thể hiển thị ảnh đại diện", ex.Message);
+            }
+
+            _lblAvatarInitial.Visible = _designerAvatarImage.Image == null;
+        }
+
         private static string GetAccountTypeLabel(string roleCode)
         {
             return string.Equals(roleCode, RoleCodes.Customer, StringComparison.OrdinalIgnoreCase)
@@ -205,7 +260,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 _presenter?.Dispose();
+                _designerAvatarImage.Image?.Dispose();
+                _designerAvatarImage.Image = null;
+            }
             base.Dispose(disposing);
         }
 

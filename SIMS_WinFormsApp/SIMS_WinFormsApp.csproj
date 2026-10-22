@@ -142,6 +142,7 @@
     <Compile Include="Models\AI\AiLlmResponse.cs" />
     <Compile Include="Models\AI\AiToolDefinition.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
+    <Compile Include="Models\DTOs\Dashboard\DashboardDataDto.cs" />
     <Compile Include="Models\DTOs\DateRange.cs" />
     <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
     <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
@@ -554,6 +555,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Services\Implementations\Reports\RevenueReportService.cs" />
+    <Compile Include="Services\Implementations\Reports\DashboardDataService.cs" />
     <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </Compile>
@@ -658,6 +660,7 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IDashboardDataService.cs" />
     <Compile Include="Services\Interfaces\IPasswordResetService.cs" />
     <Compile Include="Services\Interfaces\IUserManagementService.cs" />
     <Compile Include="Services\Implementations\UserManagementService.cs" />
@@ -788,6 +791,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Pos\frmListPickerDialog.resx">
       <DependentUpon>frmListPickerDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
+      <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

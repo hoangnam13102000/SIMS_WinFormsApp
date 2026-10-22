@@ -100,7 +100,7 @@ trong `bin` hoặc `%LOCALAPPDATA%\SIMS_WinFormsApp\ProductImages` sẽ được
 này khi được đọc. Ứng dụng cần quyền ghi vào thư mục dự án; khi cài ở vị trí không ghi được
 (ví dụ `Program Files`), cần cấp quyền phù hợp hoặc đổi vị trí lưu trước khi triển khai.
 
-Dashboard hiện là màn hình trình bày mẫu: các thẻ thống kê và khu vực hoạt động chưa có module
-nghiệp vụ tương ứng nên chưa tạo repository/service giả. User/session display đã được điều phối
-qua `DashboardPresenter`; khi dữ liệu dashboard thật được triển khai, service/repository có thể
-được bổ sung mà không đưa truy vấn vào View.
+Dashboard lấy doanh thu và số hóa đơn trong ngày từ `Invoices`, tổng số lượng tồn từ `Products`,
+số khách hàng từ `Customers` và 10 hoạt động mới nhất từ `AuditLogs`. Truy vấn được thực hiện qua
+`DashboardDataService`; biểu đồ tóm tắt doanh thu hiển thị 7 ngày gần nhất. `DashboardPresenter`
+điều phối dữ liệu, không đưa SQL vào View.
