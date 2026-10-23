@@ -109,10 +109,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
             _subtitleLabel.Location = new Point(2, 45);
             _subtitleLabel.Text = "Chọn vai trò, điều chỉnh quyền và lưu thay đổi";
-            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _headerActions.AutoSize = true;
+            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            _headerActions.AutoSize = false;
             _headerActions.FlowDirection = FlowDirection.LeftToRight;
-            _headerActions.Location = new Point(600, 18);
+            _headerActions.Size = new Size(338, 40);
             _headerActions.WrapContents = false;
             _headerActions.Controls.AddRange(new Control[] { _resetButton, _saveButton });
             _resetButton.BackColor = Color.White;

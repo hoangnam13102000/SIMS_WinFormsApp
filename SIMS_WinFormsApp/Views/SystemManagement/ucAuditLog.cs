@@ -45,7 +45,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             _repository = repository ?? AppComposition.CreateAuditLogRepository();
             _presenter = new AuditLogPresenter(this, _repository, this);
-            _searchTimer = new Timer(components) { Interval = 350 };
+            _searchTimer = new Timer { Interval = 350 };
             _searchTimer.Tick += (sender, args) =>
             {
                 _searchTimer.Stop();
@@ -226,12 +226,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _failedStatTitle.Text = Lang.Get("audit.stats.failedLogin");
             _usersStatTitle.Text = Lang.Get("audit.stats.activeUsers");
             _incidentCheckBox.Text = Lang.Get("audit.tab.incident");
-            _timeColumn.HeaderText = Lang.Get("audit.column.time");
-            _userColumn.HeaderText = Lang.Get("audit.column.user");
-            _actionColumn.HeaderText = Lang.Get("audit.column.action");
-            _tableColumn.HeaderText = Lang.Get("audit.column.table");
-            _descriptionColumn.HeaderText = Lang.Get("audit.column.detail");
-            _detailColumn.HeaderText = string.Empty;
+            Time.HeaderText = Lang.Get("audit.column.time");
+            User.HeaderText = Lang.Get("audit.column.user");
+            Action.HeaderText = Lang.Get("audit.column.action");
+            Table.HeaderText = Lang.Get("audit.column.table");
+            Description.HeaderText = Lang.Get("audit.column.detail");
+            ViewDetail.HeaderText = string.Empty;
             _exportCsvButton.Text = Lang.Get("audit.export.csv");
             _exportExcelButton.Text = Lang.Get("audit.export.excel");
             _emptyLabel.Text = Lang.Get("audit.empty");
@@ -293,7 +293,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         private void OnGridCellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == _detailColumn.Index)
+            if (e.ColumnIndex == ViewDetail.Index)
                 RequestDetail(e.RowIndex);
         }
 
