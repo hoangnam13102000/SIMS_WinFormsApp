@@ -97,7 +97,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         {
             try
             {
-                _layout = BuildLayout();
+                var permissions = await Task.Run(GetCurrentUserPermissions);
+                _layout = BuildLayout(permissions);
                 _layout.AiChatRequested += OnAiChatRequested;
                 _view.AttachLayout(_layout);
                 _view.SetWindowTitle(Lang.Get("main.window.title"));
@@ -108,17 +109,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
                 _layout.SetBadge("orders", 3);
                 _layout.SetUnreadCount(2);
-                _layout.ShowPage("dashboard");
-
-                if (!IsAdmin())
-                {
-                    bool canAccessSettings = await Task.Run(CanAccessSettingsPage);
-                    if (canAccessSettings && _layout != null && !_layout.IsDisposed)
-                    {
-                        _layout.AddLazyPage("settings", Lang.Get("sidebar.page.settings"),
-                            () => new ucSystemSettings(), IconChar.Gear);
-                    }
-                }
+                _layout.ShowPage(permissions.Contains(AppPermission.DASHBOARD_VIEW) ? "dashboard" : "profile");
 
                 StartDailyBackupScheduler();
             }
@@ -165,73 +156,169 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         }
 
-        private MainLayoutControl BuildLayout()
+        private MainLayoutControl BuildLayout(HashSet<AppPermission> permissions)
         {
             var layout = new MainLayoutControl(Lang.Get("main.header.subtitle"));
-            layout.AddSection(Lang.Get("sidebar.section.overview"));
-            layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
-                new ucDashboard(_getDisplayName()), IconChar.House);
-            layout.AddSection(Lang.Get("sidebar.section.users"));
             layout.AddLazyPage("profile", Lang.Get("header.dropdown.profile"),
                 () => new SIMS_WinFormsApp.Views.Profile.ucMyProfile(), IconChar.UserCircle, showInSidebar: false);
-            layout.AddLazyPage("accounts", Lang.Get("sidebar.page.accounts"),
-                () => new frmUserManagement(_userManagementService), IconChar.UsersCog);
-            layout.AddLazyPage("employees", Lang.Get("sidebar.page.employees"),
-                () => new frmEmployeeManagement(_userManagementService), IconChar.User);
-            layout.AddLazyPage("customers", Lang.Get("sidebar.page.customers"),
-                () => new frmCustomerManagement(_userManagementService), IconChar.AddressBook);
-            layout.AddSection(Lang.Get("sidebar.section.sales"));
-            layout.AddLazyPage("pos", Lang.Get("sidebar.page.pos"), () => PosPage.Create(_getDisplayName()), IconChar.CartShopping);
-            layout.AddLazyPage("orders", Lang.Get("sidebar.page.orders"), () => new ucOrderManagement(), IconChar.ListUl);
-            layout.AddLazyPage("invoices", Lang.Get("sidebar.page.invoices"),
-                () => PrepareEmbeddedForm(new frmInvoiceReport()), IconChar.Receipt);
-            layout.AddLazyPage("returns", Lang.Get("sidebar.page.returns"), () => new ucReturnManagement(), IconChar.RotateLeft);
-            layout.AddSection(Lang.Get("sidebar.section.warehouse"));
-            layout.AddLazyPage("products", Lang.Get("sidebar.page.products"), CatalogPages.Products, IconChar.Box);
-            layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"), CatalogPages.Categories, IconChar.Tags);
-            layout.AddLazyPage("suppliers", Lang.Get("sidebar.page.suppliers"), CatalogPages.Suppliers, IconChar.Building);
-            layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
-                () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
-            layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
-                () => PrepareEmbeddedForm(new frmPurchaseReceipt()), IconChar.Truck);
-            layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"), () => new ucStockAlert(), IconChar.TriangleExclamation);
-            layout.AddSection(Lang.Get("sidebar.section.reports"));
-            layout.AddLazyPage("report-revenue", Lang.Get("sidebar.page.reportRevenue"),
-                () => PrepareEmbeddedForm(new frmChartDashboard()), IconChar.ChartColumn);
-            layout.AddLazyPage("report-inventory", Lang.Get("sidebar.page.reportInventory"),
-                () => new ucInventoryReport(), IconChar.ChartLine);
-            layout.AddSection(Lang.Get("sidebar.section.support"));
-            layout.AddLazyPage("chat", Lang.Get("sidebar.page.chat"), () => new ucChat(), IconChar.Comments);
-            layout.AddLazyPage("shifts", Lang.Get("sidebar.page.shifts"), () => new ucShiftManagement(), IconChar.Stopwatch);
-            layout.AddSection(Lang.Get("sidebar.section.system"));
-            if (IsAdmin())
+            if (HasAnyPermission(permissions, AppPermission.DASHBOARD_VIEW))
             {
-                layout.AddLazyPage("settings", Lang.Get("sidebar.page.settings"), () => new ucSystemSettings(), IconChar.Gear);
+                layout.AddSection(Lang.Get("sidebar.section.overview"));
+                layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
+                    new ucDashboard(_getDisplayName()), IconChar.House);
             }
-            layout.AddLazyPage("backup", Lang.Get("sidebar.page.backup"), SIMS_WinFormsApp.Views.Backup.BackupPage.Create, IconChar.ShieldHalved);
-            layout.AddLazyPage("audit-log", "Nhật ký hệ thống", () => new ucAuditLog(), IconChar.ClockRotateLeft);
-            layout.AddLazyPage("role-permissions", "Phân quyền vai trò", () => new ucRolePermission(), IconChar.UserShield);
+
+            if (HasAnyPermission(permissions,
+                    AppPermission.USER_MANAGE, AppPermission.USER_EDIT, AppPermission.USER_VIEW,
+                    AppPermission.CUSTOMER_MANAGE, AppPermission.CUSTOMER_EDIT, AppPermission.CUSTOMER_VIEW))
+            {
+                layout.AddSection(Lang.Get("sidebar.section.users"));
+                if (HasAnyPermission(permissions, AppPermission.USER_MANAGE, AppPermission.USER_EDIT, AppPermission.USER_VIEW))
+                {
+                    layout.AddLazyPage("accounts", Lang.Get("sidebar.page.accounts"),
+                        () => new frmUserManagement(_userManagementService), IconChar.UsersCog);
+                    layout.AddLazyPage("employees", Lang.Get("sidebar.page.employees"),
+                        () => new frmEmployeeManagement(_userManagementService), IconChar.User);
+                }
+                if (HasAnyPermission(permissions,
+                        AppPermission.CUSTOMER_MANAGE, AppPermission.CUSTOMER_EDIT, AppPermission.CUSTOMER_VIEW))
+                {
+                    layout.AddLazyPage("customers", Lang.Get("sidebar.page.customers"),
+                        () => new frmCustomerManagement(_userManagementService), IconChar.AddressBook);
+                }
+            }
+
+            if (HasAnyPermission(permissions,
+                    AppPermission.INVOICE_CREATE, AppPermission.ORDER_VIEW, AppPermission.ORDER_MANAGE,
+                    AppPermission.ORDER_VIEW_ASSIGNED, AppPermission.ORDER_PROCESS_ASSIGNED,
+                    AppPermission.ORDER_ASSIGN, AppPermission.INVOICE_VIEW_OWN,
+                    AppPermission.INVOICE_VIEW_ALL, AppPermission.INVOICE_CANCEL,
+                    AppPermission.INVOICE_CANCEL_REQUEST, AppPermission.RETURN_EXCHANGE_CREATE,
+                    AppPermission.RETURN_EXCHANGE_APPROVE))
+            {
+                layout.AddSection(Lang.Get("sidebar.section.sales"));
+                if (HasAnyPermission(permissions, AppPermission.INVOICE_CREATE))
+                {
+                    layout.AddLazyPage("pos", Lang.Get("sidebar.page.pos"),
+                        () => PosPage.Create(_getDisplayName()), IconChar.CartShopping);
+                }
+                if (HasAnyPermission(permissions,
+                        AppPermission.ORDER_VIEW, AppPermission.ORDER_MANAGE, AppPermission.ORDER_VIEW_ASSIGNED,
+                        AppPermission.ORDER_PROCESS_ASSIGNED, AppPermission.ORDER_ASSIGN))
+                {
+                    layout.AddLazyPage("orders", Lang.Get("sidebar.page.orders"),
+                        () => new ucOrderManagement(), IconChar.ListUl);
+                }
+                if (HasAnyPermission(permissions,
+                        AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
+                        AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST))
+                {
+                    layout.AddLazyPage("invoices", Lang.Get("sidebar.page.invoices"),
+                        () => PrepareEmbeddedForm(new frmInvoiceReport()), IconChar.Receipt);
+                }
+                if (HasAnyPermission(permissions,
+                        AppPermission.RETURN_EXCHANGE_CREATE, AppPermission.RETURN_EXCHANGE_APPROVE))
+                {
+                    layout.AddLazyPage("returns", Lang.Get("sidebar.page.returns"),
+                        () => new ucReturnManagement(), IconChar.RotateLeft);
+                }
+            }
+
+            if (HasAnyPermission(permissions,
+                    AppPermission.PRODUCT_VIEW, AppPermission.PRODUCT_EDIT, AppPermission.PRODUCT_MANAGE,
+                    AppPermission.CATEGORY_VIEW, AppPermission.CATEGORY_EDIT, AppPermission.CATEGORY_MANAGE,
+                    AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE,
+                    AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
+                    AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW,
+                    AppPermission.STOCK_ALERT_REPORT, AppPermission.STOCK_ALERT_VIEW,
+                    AppPermission.SUPPLIER_RETURN_CREATE, AppPermission.SUPPLIER_RETURN_VIEW))
+            {
+                layout.AddSection(Lang.Get("sidebar.section.warehouse"));
+                if (HasAnyPermission(permissions,
+                        AppPermission.PRODUCT_VIEW, AppPermission.PRODUCT_EDIT, AppPermission.PRODUCT_MANAGE))
+                    layout.AddLazyPage("products", Lang.Get("sidebar.page.products"),
+                        CatalogPages.Products, IconChar.Box);
+                if (HasAnyPermission(permissions,
+                        AppPermission.CATEGORY_VIEW, AppPermission.CATEGORY_EDIT, AppPermission.CATEGORY_MANAGE))
+                    layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"),
+                        CatalogPages.Categories, IconChar.Tags);
+                if (HasAnyPermission(permissions,
+                        AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE,
+                        AppPermission.SUPPLIER_RETURN_CREATE, AppPermission.SUPPLIER_RETURN_VIEW))
+                    layout.AddLazyPage("suppliers", Lang.Get("sidebar.page.suppliers"),
+                        CatalogPages.Suppliers, IconChar.Building);
+                if (HasAnyPermission(permissions,
+                        AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
+                        AppPermission.STOCK_DISPOSE))
+                    layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
+                        () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
+                if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
+                    layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
+                        () => PrepareEmbeddedForm(new frmPurchaseReceipt()), IconChar.Truck);
+                if (HasAnyPermission(permissions, AppPermission.STOCK_ALERT_REPORT, AppPermission.STOCK_ALERT_VIEW))
+                    layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"),
+                        () => new ucStockAlert(), IconChar.TriangleExclamation);
+            }
+
+            if (HasAnyPermission(permissions,
+                    AppPermission.REVENUE_REPORT_VIEW, AppPermission.PROFIT_REPORT_VIEW,
+                    AppPermission.STOCK_REPORT_VIEW, AppPermission.STOCK_DISPOSE_VIEW))
+            {
+                layout.AddSection(Lang.Get("sidebar.section.reports"));
+                if (HasAnyPermission(permissions, AppPermission.REVENUE_REPORT_VIEW, AppPermission.PROFIT_REPORT_VIEW))
+                    layout.AddLazyPage("report-revenue", Lang.Get("sidebar.page.reportRevenue"),
+                        () => PrepareEmbeddedForm(new frmChartDashboard()), IconChar.ChartColumn);
+                if (HasAnyPermission(permissions, AppPermission.STOCK_REPORT_VIEW, AppPermission.STOCK_DISPOSE_VIEW))
+                    layout.AddLazyPage("report-inventory", Lang.Get("sidebar.page.reportInventory"),
+                        () => new ucInventoryReport(), IconChar.ChartLine);
+            }
+
+            layout.AddSection(Lang.Get("sidebar.section.support"));
+            layout.AddLazyPage("chat", Lang.Get("sidebar.page.chat"),
+                () => new ucChat(), IconChar.Comments);
+            if (HasAnyPermission(permissions,
+                    AppPermission.SHIFT_OPERATE, AppPermission.SHIFT_VIEW_ALL, AppPermission.SHIFT_APPROVE))
+            {
+                layout.AddLazyPage("shifts", Lang.Get("sidebar.page.shifts"),
+                    () => new ucShiftManagement(), IconChar.Stopwatch);
+            }
+
+            if (HasAnyPermission(permissions,
+                    AppPermission.SETTINGS_MANAGE, AppPermission.BACKUP_MANAGE,
+                    AppPermission.AUDIT_LOG_VIEW, AppPermission.RBAC_MANAGE))
+            {
+                layout.AddSection(Lang.Get("sidebar.section.system"));
+                if (HasAnyPermission(permissions, AppPermission.SETTINGS_MANAGE))
+                    layout.AddLazyPage("settings", Lang.Get("sidebar.page.settings"),
+                        () => new ucSystemSettings(), IconChar.Gear);
+                if (HasAnyPermission(permissions, AppPermission.BACKUP_MANAGE))
+                    layout.AddLazyPage("backup", Lang.Get("sidebar.page.backup"),
+                        SIMS_WinFormsApp.Views.Backup.BackupPage.Create, IconChar.ShieldHalved);
+                if (HasAnyPermission(permissions, AppPermission.AUDIT_LOG_VIEW))
+                    layout.AddLazyPage("audit-log", "Nhật ký hệ thống",
+                        () => new ucAuditLog(), IconChar.ClockRotateLeft);
+                if (HasAnyPermission(permissions, AppPermission.RBAC_MANAGE))
+                    layout.AddLazyPage("role-permissions", "Phân quyền vai trò",
+                        () => new ucRolePermission(), IconChar.UserShield);
+            }
+
             return layout;
         }
 
-        private bool CanAccessSettingsPage()
+        private static HashSet<AppPermission> GetCurrentUserPermissions()
         {
             var user = UserSession.Instance.CurrentUser;
-            if (user == null) return false;
+            if (user == null) return new HashSet<AppPermission>();
             if (IsAdmin())
-                return true;
+                return new HashSet<AppPermission>(Enum.GetValues(typeof(AppPermission)).Cast<AppPermission>());
 
-            try
-            {
-                var repository = AppComposition.CreateRolePermissionRepository();
-                return repository.GetPermissionsForRole(user.RoleId)
-                    .Contains(AppPermission.SETTINGS_MANAGE);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("[MainPresenter] Settings permission check failed: " + ex);
-                return false;
-            }
+            var repository = AppComposition.CreateRolePermissionRepository();
+            return repository.GetPermissionsForRole(user.RoleId);
+        }
+
+        private static bool HasAnyPermission(HashSet<AppPermission> permissions, params AppPermission[] required)
+        {
+            return permissions != null && required.Any(permissions.Contains);
         }
 
         private static bool IsAdmin()
