@@ -193,7 +193,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
                 () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
             layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
-                () => PrepareEmbeddedForm(new frmPurchaseReceipt()), IconChar.Truck);
+                () => PrepareEmbeddedForm(new frmPurchaseReceipt(AppComposition.CreateInventoryService(), UserSession.Instance)), IconChar.Truck);
             layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"), () => new ucStockAlert(), IconChar.TriangleExclamation);
             layout.AddSection(Lang.Get("sidebar.section.reports"));
             layout.AddLazyPage("report-revenue", Lang.Get("sidebar.page.reportRevenue"),

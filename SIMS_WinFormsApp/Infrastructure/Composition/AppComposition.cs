@@ -8,6 +8,7 @@ using SIMS_WinFormsApp.Services;
 using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Implementations.Catalog;
+using SIMS_WinFormsApp.Services.Implementations.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
 using SIMS_WinFormsApp.Services.Implementations.Reports;
 using SIMS_WinFormsApp.Services.AI.Implementations;
@@ -165,6 +166,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new CatalogAdminService(
                 new CatalogRepository(CreateConnectionFactory()),
                 new LocalProductImageStore());
+        }
+
+        public static IInventoryService CreateInventoryService()
+        {
+            return new InventoryService(new InventoryRepository(CreateConnectionFactory()));
         }
 
         public static ICustomerLookupService CreateCustomerLookupService()

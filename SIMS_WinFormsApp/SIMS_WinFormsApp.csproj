@@ -255,13 +255,20 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <Compile Include="Models\DTOs\Catalog\CatalogDtos.cs" />
+    <Compile Include="Models\DTOs\Inventory\InventoryDtos.cs" />
     <Compile Include="Repositories\Interfaces\ICatalogRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IInventoryRepository.cs" />
     <Compile Include="Repositories\Implementations\CatalogRepository.cs" />
+    <Compile Include="Repositories\Implementations\InventoryRepository.cs" />
     <Compile Include="Services\Interfaces\ICatalogAdminService.cs" />
+    <Compile Include="Services\Interfaces\IInventoryService.cs" />
     <Compile Include="Services\Implementations\Catalog\CatalogAdminService.cs" />
+    <Compile Include="Services\Implementations\Inventory\InventoryService.cs" />
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
+    <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptPresenter.cs" />
+    <Compile Include="Views\Interfaces\IPurchaseReceiptView.cs" />
     <Compile Include="Views\Catalog\frmProductEditor.cs">
       <SubType>Form</SubType>
     </Compile>
