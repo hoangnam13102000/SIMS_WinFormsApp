@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
@@ -83,6 +84,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _exportCsvButton.Click += (sender, args) => ExportAudit(new CsvTableExporter());
             _exportExcelButton.Click += (sender, args) => ExportAudit(new ExcelTableExporter());
             _auditGrid.CellContentClick += OnGridCellContentClick;
+            _auditGrid.CellPainting += OnAuditGridCellPainting;
             _auditGrid.CellDoubleClick += (sender, args) =>
             {
                 if (args.RowIndex >= 0) RequestDetail(args.RowIndex);
@@ -295,6 +297,23 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         {
             if (e.ColumnIndex == ViewDetail.Index)
                 RequestDetail(e.RowIndex);
+        }
+
+        private void OnAuditGridCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != ViewDetail.Index) return;
+
+            e.PaintBackground(e.CellBounds, true);
+            const int iconSize = 20;
+            var iconLocation = new Point(
+                e.CellBounds.Left + (e.CellBounds.Width - iconSize) / 2,
+                e.CellBounds.Top + (e.CellBounds.Height - iconSize) / 2);
+            Bitmap icon = IconBitmapCache.Get(
+                IconChar.Eye,
+                AppColors.TableViewAction,
+                new Size(iconSize, iconSize));
+            e.Graphics.DrawImageUnscaled(icon, iconLocation);
+            e.Handled = true;
         }
 
         private void RequestDetail(int rowIndex)

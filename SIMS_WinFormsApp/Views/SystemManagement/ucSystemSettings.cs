@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.MVP.Presenters;
@@ -24,10 +25,20 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             InitializeComponent();
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
 
+            _header.SizeChanged += (sender, args) => PositionSaveButton();
+            PositionSaveButton();
+
             _repository = repository ?? AppComposition.CreateStoreConfigRepository();
             _presenter = new SystemSettingsPresenter(this, _repository);
             _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
             VisibleChanged += OnVisibleChanged;
+        }
+
+        private void PositionSaveButton()
+        {
+            _saveButton.Location = new Point(
+                Math.Max(0, _header.ClientSize.Width - _saveButton.Width),
+                16);
         }
 
         public string StoreName

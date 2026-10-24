@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.I18n;
@@ -24,6 +25,8 @@ namespace SIMS_WinFormsApp.Views.Shell
         private int _orderBadgeCount;
         private bool _sidebarCollapsed;
         private int _expandedSidebarWidth = 240;
+        private ToolStripMenuItem _accountNameMenuItem;
+        private ToolStripMenuItem _accountEmailMenuItem;
 
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
@@ -49,10 +52,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             _navigationTree.NodeMouseClick += NavigationTree_NodeMouseClick;
             _notificationsButton.Click += (sender, args) =>
                 _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
-            _avatarControl.Click += (sender, args) => ShowAccountMenu(_avatarControl);
-            _userNameLabel.Click += (sender, args) => ShowAccountMenu(_userNameLabel);
-            _userEmailLabel.Click += (sender, args) => ShowAccountMenu(_userEmailLabel);
-            _profileButton.Click += (sender, args) => ShowAccountMenu(_profileButton);
+            _avatarControl.Click += (sender, args) => ShowAccountMenu();
+            _userNameLabel.Click += (sender, args) => ShowAccountMenu();
+            _userEmailLabel.Click += (sender, args) => ShowAccountMenu();
+            _profileButton.Click += (sender, args) => ShowAccountMenu();
+            ConfigureAccountMenu();
             _accountContextMenu.ItemClicked += (sender, args) =>
             {
                 if (ReferenceEquals(args.ClickedItem, _profileMenuItem))
@@ -89,7 +93,6 @@ namespace SIMS_WinFormsApp.Views.Shell
             _currentSection = new TreeNode(text) { Tag = null };
             _sectionNodes.Add(_currentSection);
             _navigationTree.Nodes.Add(_currentSection);
-            _currentSection.Expand();
         }
 
         public void AddPage(
@@ -136,7 +139,6 @@ namespace SIMS_WinFormsApp.Views.Shell
 
             var node = new TreeNode(_pageLabels[key]) { Tag = key };
             parent.Nodes.Add(node);
-            parent.Expand();
             _pageNodes[key] = node;
         }
 
@@ -167,7 +169,6 @@ namespace SIMS_WinFormsApp.Views.Shell
                 _navigationTree.AfterSelect -= NavigationTree_AfterSelect;
                 _navigationTree.SelectedNode = node;
                 _navigationTree.AfterSelect += NavigationTree_AfterSelect;
-                node.EnsureVisible();
             }
 
             _contentHost.PerformLayout();
@@ -185,6 +186,8 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             _userNameLabel.Text = string.IsNullOrWhiteSpace(displayName) ? "Người dùng" : displayName;
             _userEmailLabel.Text = email ?? string.Empty;
+            if (_accountNameMenuItem != null) _accountNameMenuItem.Text = _userNameLabel.Text;
+            if (_accountEmailMenuItem != null) _accountEmailMenuItem.Text = _userEmailLabel.Text;
             string initial = string.IsNullOrWhiteSpace(avatarInitial)
                 ? _userNameLabel.Text.Substring(0, 1).ToUpperInvariant()
                 : avatarInitial.Trim().Substring(0, 1).ToUpperInvariant();
@@ -197,9 +200,73 @@ namespace SIMS_WinFormsApp.Views.Shell
             _avatarControl.TryLoadImage(avatarPath);
         }
 
-        private void ShowAccountMenu(Control trigger)
+        private void ConfigureAccountMenu()
         {
-            _accountContextMenu.Show(trigger, new Point(0, trigger.Height));
+            _accountNameMenuItem = new ToolStripMenuItem
+            {
+                Enabled = false,
+                AutoSize = false,
+                Size = new Size(250, 32),
+                Padding = new Padding(12, 8, 12, 2),
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Text = _userNameLabel.Text
+            };
+            _accountEmailMenuItem = new ToolStripMenuItem
+            {
+                Enabled = false,
+                AutoSize = false,
+                Size = new Size(250, 28),
+                Padding = new Padding(12, 0, 12, 8),
+                Font = new Font("Segoe UI", 8F),
+                Text = _userEmailLabel.Text
+            };
+
+            _accountContextMenu.Items.Clear();
+            _accountContextMenu.Items.AddRange(new ToolStripItem[]
+            {
+                _accountNameMenuItem,
+                _accountEmailMenuItem,
+                new ToolStripSeparator(),
+                _profileMenuItem,
+                new ToolStripSeparator(),
+                _logoutMenuItem
+            });
+            _accountContextMenu.AutoSize = true;
+            _accountContextMenu.MinimumSize = new Size(266, 0);
+            _accountContextMenu.Padding = new Padding(5);
+            _accountContextMenu.ShowImageMargin = true;
+            _accountContextMenu.ImageScalingSize = new Size(18, 18);
+            _accountContextMenu.Renderer = new AccountMenuRenderer(_logoutMenuItem);
+            _profileMenuItem.AutoSize = false;
+            _profileMenuItem.Size = new Size(254, 42);
+            _profileMenuItem.Padding = new Padding(10, 4, 10, 4);
+            _profileMenuItem.Font = new Font("Segoe UI", 9F);
+            _profileMenuItem.Image = IconBitmapCache.Get(IconChar.User, AppColors.Accent, new Size(18, 18));
+            _logoutMenuItem.AutoSize = false;
+            _logoutMenuItem.Size = new Size(254, 42);
+            _logoutMenuItem.Padding = new Padding(10, 4, 10, 4);
+            _logoutMenuItem.Font = new Font("Segoe UI", 9F);
+            _logoutMenuItem.Image = IconBitmapCache.Get(IconChar.SignOutAlt, AppColors.Error, new Size(18, 18));
+            UpdateAccountMenuAppearance();
+        }
+
+        private void ShowAccountMenu()
+        {
+            _accountContextMenu.Show(
+                _avatarControl,
+                new Point(_avatarControl.Width - _accountContextMenu.Width, _avatarControl.Height));
+        }
+
+        private void UpdateAccountMenuAppearance()
+        {
+            _accountContextMenu.BackColor = AppColors.White;
+            _accountContextMenu.ForeColor = AppColors.TextPrimary;
+            _accountNameMenuItem.ForeColor = AppColors.TextTitle;
+            _accountEmailMenuItem.ForeColor = AppColors.TextMuted;
+            _profileMenuItem.ForeColor = AppColors.TextPrimary;
+            _logoutMenuItem.ForeColor = AppColors.Error;
+            _profileMenuItem.Image = IconBitmapCache.Get(IconChar.User, AppColors.Accent, new Size(18, 18));
+            _logoutMenuItem.Image = IconBitmapCache.Get(IconChar.SignOutAlt, AppColors.Error, new Size(18, 18));
         }
 
         private void UpdateHeaderMenuLabels()
@@ -389,7 +456,65 @@ namespace SIMS_WinFormsApp.Views.Shell
             if (!IsDisposed)
             {
                 UpdateHeaderMenuLabels();
+                UpdateAccountMenuAppearance();
                 ApplyAppearance();
+            }
+        }
+
+        private sealed class AccountMenuRenderer : ToolStripProfessionalRenderer
+        {
+            private readonly ToolStripItem _logoutItem;
+
+            public AccountMenuRenderer(ToolStripItem logoutItem)
+            {
+                _logoutItem = logoutItem;
+            }
+
+            protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+            {
+                using (var brush = new SolidBrush(AppColors.White))
+                    e.Graphics.FillRectangle(brush, new Rectangle(Point.Empty, e.ToolStrip.Size));
+            }
+
+            protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+            {
+                if (!e.Item.Selected || !e.Item.Enabled) return;
+
+                var itemBounds = new Rectangle(Point.Empty, e.Item.Size);
+                itemBounds.Inflate(-3, -2);
+                Color fill = ReferenceEquals(e.Item, _logoutItem)
+                    ? AppColors.ErrorBg
+                    : AppColors.AccentBgSoft;
+                using (var path = CreateRoundedRectangle(itemBounds, 6))
+                using (var brush = new SolidBrush(fill))
+                    e.Graphics.FillPath(brush, path);
+            }
+
+            protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
+            {
+                int y = e.Item.Height / 2;
+                using (var pen = new Pen(AppColors.Border))
+                    e.Graphics.DrawLine(pen, 12, y, e.Item.Width - 12, y);
+            }
+
+            protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+            {
+                var borderBounds = new Rectangle(0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
+                using (var path = CreateRoundedRectangle(borderBounds, 8))
+                using (var pen = new Pen(AppColors.Border))
+                    e.Graphics.DrawPath(pen, path);
+            }
+
+            private static GraphicsPath CreateRoundedRectangle(Rectangle bounds, int radius)
+            {
+                int diameter = radius * 2;
+                var path = new GraphicsPath();
+                path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180, 90);
+                path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270, 90);
+                path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0, 90);
+                path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90, 90);
+                path.CloseFigure();
+                return path;
             }
         }
 

@@ -161,6 +161,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _lblFileName = new Label
             {
                 AutoSize = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 Text = "Chưa chọn file nào",
                 Font = AppFonts.Body,
                 ForeColor = AppColors.TextMuted,
