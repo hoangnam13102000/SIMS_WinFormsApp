@@ -75,12 +75,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
                 new MailSender());
         }
 
-        public static IDashboardService CreateDashboardService()
-        {
-            return new DashboardService(
-                new DashboardRepository(CreateConnectionFactory()));
-        }
-
         public static IConnectionConfigurationService CreateConnectionConfigurationService()
         {
             return new ConnectionConfigurationService();
