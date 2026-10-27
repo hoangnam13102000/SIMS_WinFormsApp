@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Repositories.Interfaces;
-using SIMS_WinFormsApp.UI.Controls.Loading;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters

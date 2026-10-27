@@ -62,14 +62,20 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 
 ## PHÂN CÔNG CÔNG VIỆC
 
-| Thành viên | Vai trò | Module chính phụ trách |
-|---|---|---|
-| Hoàng Trung Nam | Trưởng nhóm | Thiết kế CSDL, Auth/RBAC, Quản lý tài khoản & phân quyền, Cấu hình kết nối chung |
-|  | Thành viên |  |
-|  | Thành viên |  |
-|  | Thành viên |  |
+| Thành viên | MSSV | Vai trò | Module chính phụ trách |
+|---|---|---|---|
+| Hoàng Trung Nam | 44.01.104.145 | Admin | Quản lý tài khoản nhân viên và khách hàng; phân quyền vai trò; đăng nhập; cấu hình hệ thống và kết nối; sao lưu, phục hồi và nhật ký hoạt động. |
+| Lê Thị Vân Anh | 46.01.103.007 | Quản lý bán hàng | Theo dõi doanh thu và báo cáo bán hàng; quản lý đơn hàng; duyệt yêu cầu huỷ hóa đơn và đổi/trả; quản lý ca và đối soát bán hàng. |
+| Hồ Thị Mỹ Thuận | 50.01.104.157 | Quản lý kho | Quản lý nhập kho, kiểm kê/đối chiếu tồn; theo dõi và xử lý cảnh báo hàng sắp hết; quản lý hàng tiêu huỷ, trả hàng nhà cung cấp và báo cáo kho. |
+| Lê Thanh Tú | 50.01.104.172 | Nhân viên bán hàng | Bán hàng tại quầy (POS); quản lý khách hàng; xem hóa đơn cá nhân; vận hành ca; tiếp nhận đơn được giao và tạo yêu cầu đổi/trả hoặc huỷ hóa đơn. |
 
-**Công việc chung:** Chuẩn hóa giao diện, viết tài liệu báo cáo, kiểm thử tích hợp giữa các module.
+### Phạm vi phối hợp
+
+- Mỗi thành viên phụ trách phân tích yêu cầu, triển khai giao diện và nghiệp vụ, kiểm thử chức năng thuộc module được giao.
+- Admin phối hợp với các thành viên để thiết lập tài khoản và quyền cần thiết; các thao tác quản trị dữ liệu nhạy cảm chỉ thực hiện theo quyền được cấp.
+- Quản lý bán hàng phối hợp với nhân viên bán hàng để kiểm thử quy trình từ lập hóa đơn đến xử lý yêu cầu và đối soát ca.
+- Quản lý kho phối hợp với bán hàng để kiểm tra tính nhất quán giữa giao dịch bán hàng và số lượng tồn kho.
+- **Công việc chung:** thống nhất giao diện và quy ước dữ liệu; tích hợp, kiểm thử luồng nghiệp vụ giữa các module; hoàn thiện tài liệu và báo cáo dự án.
 
 ---
 
@@ -100,7 +106,7 @@ trong `bin` hoặc `%LOCALAPPDATA%\SIMS_WinFormsApp\ProductImages` sẽ được
 này khi được đọc. Ứng dụng cần quyền ghi vào thư mục dự án; khi cài ở vị trí không ghi được
 (ví dụ `Program Files`), cần cấp quyền phù hợp hoặc đổi vị trí lưu trước khi triển khai.
 
-Dashboard hiện là màn hình trình bày mẫu: các thẻ thống kê và khu vực hoạt động chưa có module
-nghiệp vụ tương ứng nên chưa tạo repository/service giả. User/session display đã được điều phối
-qua `DashboardPresenter`; khi dữ liệu dashboard thật được triển khai, service/repository có thể
-được bổ sung mà không đưa truy vấn vào View.
+Dashboard lấy doanh thu và số hóa đơn trong ngày từ `Invoices`, tổng số lượng tồn từ `Products`,
+số khách hàng từ `Customers` và 10 hoạt động mới nhất từ `AuditLogs`. Truy vấn được thực hiện qua
+`DashboardDataService`; biểu đồ tóm tắt doanh thu hiển thị 7 ngày gần nhất. `DashboardPresenter`
+điều phối dữ liệu, không đưa SQL vào View.

@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls
 {
+    [System.ComponentModel.ToolboxItem(true)]
     public class PrimaryButton : BaseButton
     {
         /// <summary>Độ sâu bóng đổ (px) chừa ở đáy nút.</summary>

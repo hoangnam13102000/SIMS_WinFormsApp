@@ -20,6 +20,7 @@
     <Content Include="Resources\Logo\app_logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Auth\auth_brand_preview.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,51 +46,103 @@
     <Compile Include="DAL\Linq\Entities\Identity\AuditLogEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\EmployeeEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\StoreConfigEntity.cs" />
-    <Compile Include="Forms\Chat\ucChat.cs">
+    <Compile Include="Views\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Chat\ucAiChat.cs">
+    <Compile Include="Views\Chat\ucChat.Designer.cs">
+      <DependentUpon>ucChat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Chat\ucAiChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Chat\AiChatPopupForm.cs">
+    <Compile Include="Views\Chat\ucAiChat.Designer.cs">
+      <DependentUpon>ucAiChat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Chat\AiChatPopupForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Profile\ucMyProfile.cs">
+    <Compile Include="Views\Chat\AiChatPopupForm.Designer.cs">
+      <DependentUpon>AiChatPopupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\ucMyProfile.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Profile\ucMyProfile.Designer.cs">
+    <Compile Include="Views\Profile\ucMyProfile.Designer.cs">
       <DependentUpon>ucMyProfile.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmAddEmployee.cs">
+    <Compile Include="Views\Sales\ucOrderManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\ucOrderManagement.Designer.cs">
+      <DependentUpon>ucOrderManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\ucReturnManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\ucReturnManagement.Designer.cs">
+      <DependentUpon>ucReturnManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\frmAddEmployee.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmAuditLogDetail.cs">
+    <Compile Include="Views\UserManager\frmAddEmployee.Designer.cs">
+      <DependentUpon>frmAddEmployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemManagement\frmAuditLogDetail.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmEditUserAccount.cs">
+    <Compile Include="Views\SystemManagement\frmAuditLogDetail.Designer.cs">
+      <DependentUpon>frmAuditLogDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\frmEditUserAccount.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmUserAccountDetail.cs">
+    <Compile Include="Views\UserManager\frmEditUserAccount.Designer.cs">
+      <DependentUpon>frmEditUserAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\frmUserAccountDetail.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\UserManager\frmUserAccountDetail.Designer.cs">
+      <DependentUpon>frmUserAccountDetail.cs</DependentUpon>
     </Compile>
     <!-- MỚI: popup "Nhập dữ liệu" dùng chung (Export/Import) -->
-    <Compile Include="Forms\SystemMgmt\frmImportData.cs">
+    <Compile Include="Views\SystemManagement\frmImportData.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\ucAuditLog.cs">
+    <Compile Include="Views\SystemManagement\frmImportData.Designer.cs">
+      <DependentUpon>frmImportData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemManagement\ucAuditLog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\ucRolePermission.cs">
+    <Compile Include="Views\SystemManagement\ucAuditLog.Designer.cs">
+      <DependentUpon>ucAuditLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\ucRolePermission.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\ucSystemSettings.cs">
+    <Compile Include="Views\UserManager\ucRolePermission.Designer.cs">
+      <DependentUpon>ucRolePermission.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemManagement\ucSystemSettings.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\SystemManagement\ucSystemSettings.Designer.cs">
+      <DependentUpon>ucSystemSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\ucShiftManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserManager\ucShiftManagement.Designer.cs">
+      <DependentUpon>ucShiftManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Chat\ChatMessageDto.cs" />
     <Compile Include="Models\AI\AiFunctionCall.cs" />
     <Compile Include="Models\AI\AiLlmResponse.cs" />
     <Compile Include="Models\AI\AiToolDefinition.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
+    <Compile Include="Models\DTOs\Dashboard\DashboardDataDto.cs" />
     <Compile Include="Models\DTOs\DateRange.cs" />
     <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
     <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
@@ -111,9 +164,10 @@
     <Compile Include="Models\DTOs\Pos\PromotionResultDto.cs" />
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\StoreSettingsDto.cs" />
+    <Compile Include="Models\DTOs\TablePageResult.cs" />
+    <Compile Include="Models\Enums\DateRangePreset.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
     <!-- MỚI: DTO cho cơ chế Export/Import -->
-    <Compile Include="Models\DTOs\OverflowMenuAction.cs" />
     <Compile Include="Models\DTOs\ImportRowResult.cs" />
     <Compile Include="Models\DTOs\ImportSummaryDto.cs" />
     <Compile Include="Models\Enums\Gender.cs" />
@@ -146,15 +200,12 @@
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <!-- MỚI: Header -->
-    <Compile Include="MVP\ViewModels\HeaderUserViewModel.cs" />
     <Compile Include="MVP\ViewModels\AuditLogGridRow.cs" />
     <Compile Include="Repositories\Implementations\AuditLogRepository.cs" />
-    <Compile Include="Repositories\Implementations\DashboardRepository.cs" />
     <Compile Include="Repositories\Implementations\RolePermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
     <Compile Include="Repositories\Implementations\StoreConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\IAuditLogRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IDashboardRepository.cs" />
     <Compile Include="Repositories\Interfaces\IAuditLogWriter.cs" />
     <Compile Include="Repositories\Interfaces\IPermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRolePermissionRepository.cs" />
@@ -179,13 +230,14 @@
     <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
     <Compile Include="Services\Barcode\IWebcamCaptureSession.cs" />
     <Compile Include="Services\Implementations\Pos\DemoCustomerLookupService.cs" />
-    <Compile Include="Services\Implementations\DashboardService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlProductCatalogService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlCustomerLookupService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlInvoiceService.cs" />
     <Compile Include="Services\Implementations\Pos\DemoPromotionService.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
-    <Compile Include="Services\Interfaces\IDashboardService.cs" />
     <Compile Include="Services\Interfaces\Pos\ICustomerLookupService.cs" />
+    <Compile Include="Services\Interfaces\Pos\IInvoiceService.cs" />
     <Compile Include="Services\Interfaces\Pos\IProductCatalogService.cs" />
     <Compile Include="Services\Interfaces\Pos\IPromotionService.cs" />
     <Compile Include="Services\Validation\InputValidators.cs" />
@@ -203,7 +255,6 @@
     <Compile Include="Services\Implementations\Import\DefaultSpreadsheetImporters.cs" />
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <Compile Include="Models\DTOs\Catalog\CatalogDtos.cs" />
-    <Compile Include="Models\DTOs\Dashboard\DashboardSummaryDto.cs" />
     <Compile Include="Repositories\Interfaces\ICatalogRepository.cs" />
     <Compile Include="Repositories\Implementations\CatalogRepository.cs" />
     <Compile Include="Services\Interfaces\ICatalogAdminService.cs" />
@@ -211,44 +262,67 @@
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
-    <Compile Include="Forms\Catalog\frmProductEditor.cs">
+    <Compile Include="Views\Catalog\frmProductEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Catalog\frmCategoryEditor.cs">
+    <Compile Include="Views\Catalog\frmProductEditor.Designer.cs">
+      <DependentUpon>frmProductEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catalog\frmCategoryEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Catalog\frmSupplierEditor.cs">
+    <Compile Include="Views\Catalog\frmCategoryEditor.Designer.cs">
+      <DependentUpon>frmCategoryEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catalog\frmSupplierEditor.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Catalog\frmSupplierEditor.Designer.cs">
+      <DependentUpon>frmSupplierEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catalog\ucCategoryManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Catalog\ucCategoryManagement.Designer.cs">
+      <DependentUpon>ucCategoryManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catalog\ucProductManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Catalog\ucProductManagement.Designer.cs">
+      <DependentUpon>ucProductManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Catalog\ucSupplierManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Catalog\ucSupplierManagement.Designer.cs">
+      <DependentUpon>ucSupplierManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Catalog\CatalogPages.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
-    <Compile Include="UI\Controls\Backup\BackupPage.cs" />
-    <Compile Include="UI\Controls\Backup\BackupRecoveryPageControl.cs">
+    <Compile Include="Views\Backup\BackupPage.cs" />
+    <Compile Include="Views\Backup\BackupRecoveryPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\BarcodeScannerPresenter.cs" />
-    <Compile Include="UI\Controls\Barcode\frmBarcodeScannerDialog.cs">
+    <Compile Include="Views\Barcode\frmBarcodeScannerDialog.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Barcode\frmBarcodeScannerDialog.Designer.cs">
+      <DependentUpon>frmBarcodeScannerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\IBarcodeScannerView.cs" />
-    <Compile Include="UI\Controls\BaseDetailDialogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Catalog\ProductDetailPrimitives.cs" />
-    <Compile Include="UI\Controls\DetailAvatarPanel.cs" />
-    <Compile Include="UI\Controls\Dialogs\AvatarUploadPanel.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogCloseButton.cs">
+    <Compile Include="UI\Controls\Catalog\CardPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Dialogs\DialogSizing.cs" />
-    <Compile Include="UI\Controls\Dialogs\FieldGridPanel.cs" />
-    <Compile Include="UI\Controls\Dialogs\FieldGroupHeader.cs" />
-    <Compile Include="UI\Controls\Dialogs\ReadOnlyInfoBox.cs" />
-    <Compile Include="UI\Controls\Dialogs\RoundedDialogFrame.cs" />
-    <Compile Include="UI\Controls\Dialogs\ThreeColumnFieldsPanel.cs" />
-    <Compile Include="UI\Controls\Dialogs\AvatarSectionFormPanel.cs" />
+    <Compile Include="UI\Controls\Catalog\Pill.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DialogPillTabButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Forms\GenderOption.cs" />
     <!-- MỚI: Header -->
     <Compile Include="UI\Controls\Header\AvatarControl.cs">
@@ -260,70 +334,69 @@
     <Compile Include="UI\Controls\Header\NotificationBellButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Header\HeaderAccountButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Loading\ILoadingIndicator.cs" />
-    <Compile Include="UI\Controls\Loading\LoadingOverlayHost.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ManagementTablePage.cs" />
-    <Compile Include="UI\Controls\Permission\PermissionGroupCardControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Permission\PermissionResourceDropdownControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Permission\PermissionToggleRowControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Permission\PermissionUiHelpers.cs" />
-    <Compile Include="UI\Controls\Permission\PillBadgeLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Permission\RoleListItemControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Permission\VerticalStackPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Pos\CartLineRowControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Pos\CustomerFieldControl.cs" />
-    <Compile Include="UI\Controls\Pos\frmListPickerDialog.cs">
+    <Compile Include="Views\Interfaces\ILoadingIndicator.cs" />
+    <Compile Include="Views\Pos\frmListPickerDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Pos\PosPage.cs" />
-    <Compile Include="UI\Controls\Pos\PosPageControl.cs">
+    <Compile Include="Views\Pos\frmListPickerDialog.Designer.cs">
+      <DependentUpon>frmListPickerDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pos\PosPage.cs" />
+    <Compile Include="Views\Pos\PosPageControl.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Pos\PosPageControl.Designer.cs">
+      <DependentUpon>PosPageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Pos\ProductTileControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Toast\AppToast.cs" />
-    <Compile Include="UI\Controls\Toast\IToastNotifier.cs" />
-    <Compile Include="UI\Controls\Toast\ToastNotification.cs">
+    <Compile Include="Views\Toast\AppToast.cs" />
+    <Compile Include="Views\Toast\DialogType.cs" />
+    <Compile Include="Views\Toast\IToastNotifier.cs" />
+    <Compile Include="Views\Toast\ToastNotification.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Toast\ToastService.cs" />
+    <Compile Include="Views\Toast\ToastNotification.Designer.cs">
+      <DependentUpon>ToastNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Toast\ToastService.cs" />
     <Compile Include="UI\Theme\DropdownPalette.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
     <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
-    <!-- MỚI: Header -->
-    <Compile Include="Views\Interfaces\IHeaderView.cs" />
-    <Compile Include="UI\Controls\Dialogs\BaseFormDialogForm.cs">
+    <Compile Include="Views\Dialogs\BaseFormDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Dialogs\DetailInfoItemControl.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogTheme.cs" />
-    <Compile Include="UI\Controls\Dialogs\InfoBannerPanel.cs" />
-    <Compile Include="UI\Controls\Forms\IconRoundedTextBox.cs" />
+    <Compile Include="Views\Dialogs\BaseFormDialogForm.Designer.cs">
+      <DependentUpon>BaseFormDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DetailInfoItemControl.cs" />
+    <Compile Include="Views\Dialogs\DialogCloseButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Dialogs\DialogSizing.cs" />
+    <Compile Include="Views\Dialogs\DialogTheme.cs" />
+    <Compile Include="Views\Dialogs\InfoBannerPanel.cs" />
+    <Compile Include="Views\Dialogs\RoundedDialogFrame.cs" />
+    <Compile Include="Views\Dialogs\DialogHelper.cs" />
+    <Compile Include="Views\Dialogs\DialogService.cs" />
+    <Compile Include="Views\Dialogs\frmMessageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Dialogs\frmMessageDialog.Designer.cs">
+      <DependentUpon>frmMessageDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\NumberInputFormatter.cs" />
-    <Compile Include="UI\Controls\Forms\LabeledIconField.cs" />
-    <Compile Include="UI\Controls\LabeledComboField.cs" />
-    <Compile Include="UI\Controls\LabeledDateField.cs" />
+    <Compile Include="UI\Controls\UserManagementPager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\LabeledComboField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\LabeledDateField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
     <Compile Include="Views\Interfaces\IChatView.cs" />
     <Compile Include="Views\Interfaces\IAiChatView.cs" />
@@ -354,34 +427,9 @@
     <Compile Include="Services\AI\Implementations\Tools\GetStockStatusTool.cs" />
     <Compile Include="Services\AI\Implementations\Tools\ListCategoriesTool.cs" />
     <Compile Include="Services\AI\Implementations\Tools\SearchProductsTool.cs" />
-    <Compile Include="UI\Controls\Tables\BaseTable.cs" />
-    <Compile Include="UI\Controls\Filter\FilterComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Filter\FilterOption.cs" />
-    <Compile Include="UI\Controls\Filter\FilterPresenter.cs" />
-    <Compile Include="UI\Controls\Filter\IFilterView.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangePreset.cs" />
-    <Compile Include="UI\Controls\Filter\IDateRangeFilterView.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangeFilterPresenter.cs" />
-    <Compile Include="UI\Controls\Filter\DateRangeFilterControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\AuditLog\SegmentedTabControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\AuditLog\AuditLogPageHeader.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\AuditLog\AuditLogFilterSurface.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\AuditLog\AuditLogGridPainter.cs" />
-    <!-- MỚI: nút trigger menu "Tùy chọn" cạnh nút "+ Thêm..." -->
-    <Compile Include="UI\Controls\Popups\OverflowMenuButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="MVP\Presenters\DateRangeFilterPresenter.cs" />
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
+    <Compile Include="Views\Interfaces\IDateRangeFilterView.cs" />
     <Compile Include="Views\Interfaces\IPosView.cs" />
     <Compile Include="Views\Interfaces\IRoleManagementView.cs" />
     <Compile Include="Views\Interfaces\IRolePermissionView.cs" />
@@ -455,6 +503,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="zxing, Version=0.16.11.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
@@ -478,83 +527,109 @@
     <Compile Include="DAL\Linq\SimsDataContext.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\UserRepository.cs" />
-    <Compile Include="Forms\Auth\frmChangePassword.cs">
+    <Compile Include="Views\Auth\frmChangePassword.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Auth\frmChangePassword.Designer.cs">
+    <Compile Include="Views\Auth\frmChangePassword.Designer.cs">
       <DependentUpon>frmChangePassword.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Dashboard\ucDashboard.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Views\Dashboard\ucDashboard.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Forms\Dashboard\ucDashboard.Designer.cs">
+    <Compile Include="Views\Dashboard\ucDashboard.Designer.cs">
       <DependentUpon>ucDashboard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Auth\frmForgotPassword.cs">
+    <Compile Include="Views\Auth\frmForgotPassword.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Auth\frmForgotPassword.Designer.cs">
+    <Compile Include="Views\Auth\frmForgotPassword.Designer.cs">
       <DependentUpon>frmForgotPassword.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Auth\frmLogin.cs">
+    <Compile Include="Views\Auth\frmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Auth\frmLogin.Designer.cs">
+    <Compile Include="Views\Auth\frmLogin.Designer.cs">
       <DependentUpon>frmLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Reports\frmChartDashboard.cs">
+    <Compile Include="Views\Reports\frmChartDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Reports\frmChartDashboard.Designer.cs">
+    <Compile Include="Services\Implementations\Reports\RevenueReportService.cs" />
+    <Compile Include="Services\Implementations\Reports\DashboardDataService.cs" />
+    <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Reports\frmInvoiceReport.cs">
+    <Compile Include="Views\Reports\frmInvoiceReport.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Reports\frmInvoiceReport.Designer.cs">
+    <Compile Include="Views\Reports\frmInvoiceReport.Designer.cs">
       <DependentUpon>frmInvoiceReport.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmConnectionConfig.cs">
+    <Compile Include="Views\Reports\ucInventoryReport.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\ucInventoryReport.Designer.cs">
+      <DependentUpon>ucInventoryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemManagement\frmConnectionConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmConnectionConfig.Designer.cs">
+    <Compile Include="Views\SystemManagement\frmConnectionConfig.Designer.cs">
       <DependentUpon>frmConnectionConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmMailConfig.cs">
+    <Compile Include="Views\SystemManagement\frmMailConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmMailConfig.Designer.cs">
+    <Compile Include="Views\SystemManagement\frmMailConfig.Designer.cs">
       <DependentUpon>frmMailConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmMain.cs">
+    <Compile Include="Views\SystemManagement\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmMain.Designer.cs">
+    <Compile Include="Views\SystemManagement\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmRoleManagement.cs">
+    <Compile Include="Views\UserManager\frmEmployeeManagement.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmRoleManagement.Designer.cs">
+    <Compile Include="Views\UserManager\frmEmployeeManagement.Designer.cs">
+      <DependentUpon>frmEmployeeManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\frmCustomerManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\UserManager\frmCustomerManagement.Designer.cs">
+      <DependentUpon>frmCustomerManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserManager\frmRoleManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\UserManager\frmRoleManagement.Designer.cs">
       <DependentUpon>frmRoleManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmUserManagement.cs">
+    <Compile Include="Views\UserManager\frmUserManagement.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SystemMgmt\frmUserManagement.Designer.cs">
+    <Compile Include="Views\UserManager\frmUserManagement.Designer.cs">
       <DependentUpon>frmUserManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Warehouse\frmPurchaseReceipt.cs">
+    <Compile Include="Views\Warehouse\frmPurchaseReceipt.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Warehouse\frmPurchaseReceipt.Designer.cs">
+    <Compile Include="Views\Warehouse\frmPurchaseReceipt.Designer.cs">
       <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Warehouse\frmStockReconciliation.cs">
+    <Compile Include="Views\Warehouse\frmStockReconciliation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Warehouse\frmStockReconciliation.Designer.cs">
+    <Compile Include="Views\Warehouse\frmStockReconciliation.Designer.cs">
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucStockAlert.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucStockAlert.Designer.cs">
+      <DependentUpon>ucStockAlert.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsStore.cs" />
     <Compile Include="Infrastructure\Configuration\ConnectionConfigurationService.cs" />
@@ -585,6 +660,7 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IDashboardDataService.cs" />
     <Compile Include="Services\Interfaces\IPasswordResetService.cs" />
     <Compile Include="Services\Interfaces\IUserManagementService.cs" />
     <Compile Include="Services\Implementations\UserManagementService.cs" />
@@ -594,93 +670,100 @@
     <Compile Include="Services\Mail\MailSender.cs" />
     <Compile Include="Services\Session\IUserSession.cs" />
     <Compile Include="Services\Session\UserSession.cs" />
-    <Compile Include="UI\Controls\Auth\AuthBrandPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\BaseDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Auth\ClickableLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dialogs\DialogType.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogButtons.cs" />
-    <Compile Include="UI\Controls\Dialogs\DialogHelper.cs" />
-    <Compile Include="UI\Controls\Tables\HeaderSection.cs" />
-    <Compile Include="UI\Controls\Popups\NotificationDropdownControl.cs" />
-    <Compile Include="UI\Controls\Pagination\IPaginationView.cs" />
-    <Compile Include="UI\Controls\Pagination\PaginationControl.cs">
+    <Compile Include="Views\Pagination\IPaginationView.cs" />
+    <Compile Include="Views\Pagination\PaginationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Pagination\PaginationPresenter.cs" />
-    <Compile Include="UI\Controls\Popups\PopupFormBase.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Search\ISearchView.cs" />
-    <Compile Include="UI\Controls\Search\SearchBarControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Search\SearchPresenter.cs" />
-    <Compile Include="UI\Controls\Settings\SettingsButtonControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Settings\ChatbotButtonControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Settings\SettingsPopupControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Dashboard\StatCard.cs" />
-    <Compile Include="UI\Controls\Dashboard\RevenueTrendChart.cs" />
-    <Compile Include="UI\Controls\Auth\ModernCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Popups\ModernDropdownMenu.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Views\Pagination\PaginationPresenter.cs" />
     <Compile Include="UI\Controls\BaseButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\PrimaryButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\Auth\RoundedPasswordTextBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Auth\RoundedTextBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\Settings\ToggleSwitchControl.cs">
+    <Compile Include="UI\Controls\Header\NotificationBadgeControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Theme\AuthBrandPanelRenderer.cs" />
+    <Compile Include="UI\Theme\IconBitmapCache.cs" />
+    <Compile Include="UI\Theme\NativeTextBoxBehavior.cs" />
     <Compile Include="UI\I18n\Lang.cs" />
     <Compile Include="UI\I18n\LanguageManager.cs" />
-    <Compile Include="UI\Layouts\FooterControl.cs">
+    <Compile Include="Views\Shell\MainLayoutControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Layouts\HeaderControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Views\Shell\MainLayoutControl.Designer.cs">
+      <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Layouts\MainLayoutControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Layouts\SidebarControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Layouts\SidebarItemControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Layouts\VerticalStackLayout.cs" />
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />
     <Compile Include="UI\Theme\AppRadius.cs" />
-    <Compile Include="UI\Theme\AppSpacing.cs" />
     <Compile Include="UI\Theme\LayoutColors.cs" />
     <Compile Include="UI\Theme\ThemeManager.cs" />
     <Compile Include="UI\Theme\ThemeMode.cs" />
-    <EmbeddedResource Include="Forms\Auth\frmChangePassword.resx">
+    <EmbeddedResource Include="Views\Auth\frmChangePassword.resx">
       <DependentUpon>frmChangePassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Auth\frmForgotPassword.resx">
+      <DependentUpon>frmForgotPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Auth\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Barcode\frmBarcodeScannerDialog.resx">
+      <DependentUpon>frmBarcodeScannerDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Catalog\frmCategoryEditor.resx">
+      <DependentUpon>frmCategoryEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Catalog\frmProductEditor.resx">
+      <DependentUpon>frmProductEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Catalog\frmSupplierEditor.resx">
+      <DependentUpon>frmSupplierEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Chat\ucChat.resx">
+      <DependentUpon>ucChat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Dashboard\ucDashboard.resx">
+      <DependentUpon>ucDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Pos\PosPageControl.resx">
+      <DependentUpon>PosPageControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Profile\ucMyProfile.resx">
+      <DependentUpon>ucMyProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
+      <DependentUpon>frmChartDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\ucOrderManagement.resx">
+      <DependentUpon>ucOrderManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
+      <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SystemManagement\frmMailConfig.resx">
+      <DependentUpon>frmMailConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SystemManagement\ucAuditLog.resx">
+      <DependentUpon>ucAuditLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmAddEmployee.resx">
+      <DependentUpon>frmAddEmployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmCustomerManagement.resx">
+      <DependentUpon>frmCustomerManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmEditUserAccount.resx">
+      <DependentUpon>frmEditUserAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmUserAccountDetail.resx">
+      <DependentUpon>frmUserAccountDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmUserManagement.resx">
+      <DependentUpon>frmUserManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -706,6 +789,12 @@
     <EmbeddedResource Include="Resources\Fonts\Inter-Bold.ttf">
       <LogicalName>SIMS_WinFormsApp.Fonts.Inter-Bold.ttf</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Pos\frmListPickerDialog.resx">
+      <DependentUpon>frmListPickerDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
+      <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -720,8 +809,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Reports\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

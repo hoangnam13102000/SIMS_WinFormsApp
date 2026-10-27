@@ -32,7 +32,7 @@ namespace SIMS_WinFormsApp.Models.Permission
 
         public bool HasAll(params AppPermission[] required)
         {
-            if (required == null) return true;
+            if (required == null) return false;
             return required.All(p => _permissions.Contains(p));
         }
 

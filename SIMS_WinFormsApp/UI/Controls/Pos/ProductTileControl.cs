@@ -20,8 +20,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
     internal sealed class ProductTileControl : UserControl
     {
         public const int TileWidth = 250;
-        public const int TileHeight = 310;
-        private const int ImageHeight = 156;
+        public const int TileHeight = 330;
+        private const int ImageHeight = 150;
         private const int ContentPadding = 12;
 
         private Image _productImage;
@@ -99,8 +99,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             var nameLabel = new Label
             {
-                Location = new Point(ContentPadding, ImageHeight + 12),
-                Size = new Size(TileWidth - (ContentPadding * 2), 56),
+                Location = new Point(ContentPadding, ImageHeight + 10),
+                Size = new Size(TileWidth - (ContentPadding * 2), 48),
                 Text = product.Name,
                 Font = new Font("Segoe UI", 13f, FontStyle.Bold, GraphicsUnit.Point),
                 ForeColor = AppColors.TextTitle,
@@ -113,9 +113,25 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             };
             Controls.Add(nameLabel);
 
+            var detailsLabel = new Label
+            {
+                Location = new Point(ContentPadding, nameLabel.Bottom + 1),
+                Size = new Size(TileWidth - (ContentPadding * 2), 20),
+                Text = (string.IsNullOrWhiteSpace(product.CategoryName) ? "Chưa phân loại" : product.CategoryName) +
+                    "  ·  Tồn: " + product.StockQuantity,
+                Font = new Font("Segoe UI", 9f, FontStyle.Regular, GraphicsUnit.Point),
+                ForeColor = product.IsOutOfStock ? AppColors.Error : AppColors.TextMuted,
+                AutoSize = false,
+                AutoEllipsis = true,
+                BackColor = Color.Transparent,
+                TextAlign = ContentAlignment.MiddleLeft,
+                UseMnemonic = false
+            };
+            Controls.Add(detailsLabel);
+
             var priceLabel = new Label
             {
-                Location = new Point(ContentPadding, nameLabel.Bottom + 4),
+                Location = new Point(ContentPadding, detailsLabel.Bottom + 2),
                 Size = new Size(TileWidth - (ContentPadding * 2), 30),
                 Text = PosFormat.Vnd(product.Price),
                 Font = new Font("Segoe UI", 18f, FontStyle.Bold, GraphicsUnit.Point),
@@ -130,8 +146,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             var actionButton = new PrimaryButton
             {
-                Location = new Point(ContentPadding, TileHeight - 46),
-                Size = new Size(TileWidth - (ContentPadding * 2), 40),
+                Location = new Point(ContentPadding, TileHeight - 48),
+                Size = new Size(TileWidth - (ContentPadding * 2), 38),
                 CornerRadius = AppRadius.Medium,
                 Font = new Font("Segoe UI", 15f, FontStyle.Bold, GraphicsUnit.Point),
                 TextAlign = ContentAlignment.MiddleCenter,

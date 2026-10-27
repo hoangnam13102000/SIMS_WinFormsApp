@@ -27,6 +27,7 @@ namespace SIMS_WinFormsApp.Services.Implementations
             return new UserAccountDetailViewModel(
                 avatarInitial: BuildInitial(fullName),
                 avatarColor: AppColors.Accent,
+                avatarUrl: user.AvatarUrl,
                 fullName: fullName,
                 handleText: string.IsNullOrWhiteSpace(user.Username) ? string.Empty : "@" + user.Username,
                 accountCode: string.IsNullOrWhiteSpace(user.Username) ? "—" : user.Username,

@@ -69,5 +69,15 @@ namespace SIMS_WinFormsApp.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap auth_brand_preview {
+            get {
+                object obj = ResourceManager.GetObject("auth_brand_preview", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

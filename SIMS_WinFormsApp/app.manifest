@@ -29,7 +29,7 @@
     cả vòng đời tiến trình: nó được Windows áp lại cho từng cửa sổ top-level mới dựa
     trên "DPI awareness context" hiện tại của thread tại thời điểm cửa sổ đó được tạo.
 
-    Nếu context này bị đổi giữa chừng (vd. do BaseDialog/PopupFormBase tự Font-based
+    Nếu context này bị đổi giữa chừng (ví dụ do một cửa sổ tự bật Font-based
     autoscale thay vì dùng AutoScaleMode.None như quy ước của app), các cửa sổ
     top-level tạo SAU thời điểm đó (vd. LoginForm mở lại sau Logout) có thể bị Windows
     áp virtualization khác với cửa sổ tạo TRƯỚC đó.
