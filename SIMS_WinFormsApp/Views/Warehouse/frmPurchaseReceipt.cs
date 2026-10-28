@@ -21,6 +21,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         public event EventHandler SaveRequested;
         public event EventHandler LinesChanged;
+        public event EventHandler ReceiptCreated;
 
         public frmPurchaseReceipt() : this(null, null)
         {
@@ -143,6 +144,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public void ShowReceiptCode(string code)
         {
             _receiptCode.Text = code ?? "Tự động";
+            ReceiptCreated?.Invoke(this, EventArgs.Empty);
         }
 
         public void ShowMessage(string message, bool isError)

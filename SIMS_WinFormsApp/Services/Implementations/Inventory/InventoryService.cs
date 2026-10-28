@@ -26,6 +26,26 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
         public IReadOnlyList<StockRowDto> GetStock(string keyword, int? categoryId) =>
             _repository.GetStock(keyword, categoryId);
 
+        public IReadOnlyList<PurchaseReceiptListItemDto> SearchPurchaseReceipts(
+            string keyword, DateTime? fromDate, DateTime? toDate) =>
+            _repository.SearchPurchaseReceipts(keyword, fromDate, toDate);
+
+        public IReadOnlyList<PurchaseReceiptDetailLineDto> GetPurchaseReceiptDetails(int receiptId) =>
+            _repository.GetPurchaseReceiptDetails(receiptId);
+
+        public IReadOnlyList<string> GetPurchaseReceiptSuggestions() =>
+            _repository.GetPurchaseReceiptSuggestions();
+
+        public IReadOnlyList<StockAlertListItemDto> SearchStockAlerts(
+            string keyword, int? categoryId, DateTime? from, DateTime? to) =>
+            _repository.SearchStockAlerts(keyword, categoryId, from, to);
+
+        public int MarkAlertPlanned(int alertId) => _repository.MarkAlertPlanned(alertId);
+
+        public int ResolveAlert(int alertId, int userId) => _repository.ResolveAlert(alertId, userId);
+
+        public int MarkAllAlertsSeen() => _repository.MarkAllAlertsSeen();
+
         public CatalogSaveResult CreatePurchaseReceipt(PurchaseReceiptDto receipt)
         {
             if (receipt == null)

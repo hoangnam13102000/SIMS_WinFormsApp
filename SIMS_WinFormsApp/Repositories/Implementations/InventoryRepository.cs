@@ -147,6 +147,157 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             }
         }
 
+        public IReadOnlyList<PurchaseReceiptListItemDto> SearchPurchaseReceipts(
+            string keyword, DateTime? fromDate, DateTime? toDate)
+        {
+            const string sql = @"
+                SELECT r.ReceiptID, r.ReceiptCode, s.SupplierName, u.FullName AS CreatedByName,
+                       r.CreatedAt, r.TotalAmount, r.Status,
+                       (SELECT COUNT(*)
+                        FROM PurchaseReceiptDetails d
+                        WHERE d.ReceiptID = r.ReceiptID) AS ItemCount
+                FROM PurchaseReceipts r
+                INNER JOIN Suppliers s ON s.SupplierID = r.SupplierID
+                INNER JOIN Users u ON u.UserID = r.CreatedBy
+                WHERE (@HasKeyword = 0
+                       OR r.ReceiptCode LIKE @Pattern
+                       OR s.SupplierName LIKE @Pattern
+                       OR u.FullName LIKE @Pattern
+                       OR EXISTS (
+                           SELECT 1
+                           FROM PurchaseReceiptDetails d
+                           INNER JOIN Products p ON p.ProductID = d.ProductID
+                           LEFT JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
+                           WHERE d.ReceiptID = r.ReceiptID
+                             AND (p.ProductCode LIKE @Pattern
+                                  OR p.ProductName LIKE @Pattern
+                                  OR d.LotNumber LIKE @Pattern
+                                  OR b.BatchCode LIKE @Pattern)))
+                  AND (@FromDate IS NULL OR r.CreatedAt >= @FromDate)
+                  AND (@ToExclusive IS NULL OR r.CreatedAt < @ToExclusive)
+                ORDER BY r.CreatedAt DESC, r.ReceiptID DESC";
+
+            string normalizedKeyword = (keyword ?? string.Empty).Trim();
+            string pattern = "%" + normalizedKeyword + "%";
+            DateTime? from = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
+            DateTime? toExclusive = toDate.HasValue
+                ? toDate.Value.Date.AddDays(1)
+                : (DateTime?)null;
+            var rows = new List<PurchaseReceiptListItemDto>();
+
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@HasKeyword", SqlDbType.Bit).Value = normalizedKeyword.Length > 0;
+                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 4000).Value = pattern;
+                command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = (object)from ?? DBNull.Value;
+                command.Parameters.Add("@ToExclusive", SqlDbType.DateTime).Value =
+                    (object)toExclusive ?? DBNull.Value;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rows.Add(new PurchaseReceiptListItemDto
+                        {
+                            ReceiptId = reader.GetInt32(0),
+                            ReceiptCode = ReadString(reader, 1),
+                            SupplierName = ReadString(reader, 2),
+                            CreatedByName = ReadString(reader, 3),
+                            CreatedAt = reader.GetDateTime(4),
+                            TotalAmount = Convert.ToDecimal(reader.GetValue(5), CultureInfo.InvariantCulture),
+                            Status = ReadString(reader, 6),
+                            ItemCount = ReadInt(reader, 7)
+                        });
+                    }
+                }
+            }
+            return rows;
+        }
+
+        public IReadOnlyList<PurchaseReceiptDetailLineDto> GetPurchaseReceiptDetails(int receiptId)
+        {
+            const string sql = @"
+                SELECT p.ProductCode, p.ProductName, b.BatchCode, d.LotNumber,
+                       d.ManufactureDate, d.ExpiryDate, d.Quantity, d.ImportPrice
+                FROM PurchaseReceiptDetails d
+                INNER JOIN Products p ON p.ProductID = d.ProductID
+                LEFT JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
+                WHERE d.ReceiptID = @id
+                ORDER BY d.ReceiptDetailID";
+            var rows = new List<PurchaseReceiptDetailLineDto>();
+
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@id", SqlDbType.Int).Value = receiptId;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rows.Add(new PurchaseReceiptDetailLineDto
+                        {
+                            ProductCode = ReadString(reader, 0),
+                            ProductName = ReadString(reader, 1),
+                            BatchCode = ReadString(reader, 2),
+                            LotNumber = ReadString(reader, 3),
+                            ManufactureDate = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
+                            ExpiryDate = reader.IsDBNull(5) ? (DateTime?)null : reader.GetDateTime(5),
+                            Quantity = ReadInt(reader, 6),
+                            ImportPrice = Convert.ToDecimal(reader.GetValue(7), CultureInfo.InvariantCulture)
+                        });
+                    }
+                }
+            }
+            return rows;
+        }
+
+        public IReadOnlyList<string> GetPurchaseReceiptSuggestions()
+        {
+            const string sql = @"
+                SELECT DISTINCT suggestions.Suggestion
+                FROM (
+                    SELECT CONVERT(NVARCHAR(200), r.ReceiptCode) AS Suggestion
+                    FROM PurchaseReceipts r
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), s.SupplierName)
+                    FROM PurchaseReceipts r
+                    INNER JOIN Suppliers s ON s.SupplierID = r.SupplierID
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), u.FullName)
+                    FROM PurchaseReceipts r
+                    INNER JOIN Users u ON u.UserID = r.CreatedBy
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), p.ProductCode)
+                    FROM PurchaseReceiptDetails d
+                    INNER JOIN Products p ON p.ProductID = d.ProductID
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), p.ProductName)
+                    FROM PurchaseReceiptDetails d
+                    INNER JOIN Products p ON p.ProductID = d.ProductID
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), d.LotNumber)
+                    FROM PurchaseReceiptDetails d
+                    UNION ALL
+                    SELECT CONVERT(NVARCHAR(200), b.BatchCode)
+                    FROM PurchaseReceiptDetails d
+                    INNER JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
+                ) suggestions
+                WHERE suggestions.Suggestion IS NOT NULL
+                  AND LTRIM(RTRIM(suggestions.Suggestion)) <> N''
+                ORDER BY suggestions.Suggestion";
+            var suggestions = new List<string>();
+
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                    suggestions.Add(reader.GetString(0));
+            }
+            return suggestions;
+        }
+
         public IReadOnlyList<StockRowDto> GetStock(string keyword, int? categoryId)
         {
             const string sql = @"
@@ -183,6 +334,109 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 }
             }
             return rows;
+        }
+
+        public IReadOnlyList<StockAlertListItemDto> SearchStockAlerts(
+            string keyword, int? categoryId, DateTime? from, DateTime? to)
+        {
+            const string sql = @"
+                SELECT sa.AlertID, sa.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
+                       sa.AlertType, sa.StockAtReport, ISNULL(ru.FullName, N'Hệ thống'),
+                       sa.CreatedAt, sa.Status, rv.FullName, sa.ResolvedAt, sa.Note
+                FROM StockAlerts sa
+                INNER JOIN Products p ON sa.ProductID = p.ProductID
+                LEFT JOIN Users ru ON sa.ReportedBy = ru.UserID
+                LEFT JOIN Users rv ON sa.ResolvedBy = rv.UserID
+                WHERE (@HasKeyword = 0
+                       OR p.ProductName LIKE @Pattern
+                       OR p.ProductCode LIKE @Pattern)
+                  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
+                  AND (@FromDate IS NULL OR sa.CreatedAt >= @FromDate)
+                  AND (@ToExclusive IS NULL OR sa.CreatedAt < @ToExclusive)
+                ORDER BY sa.CreatedAt DESC, sa.AlertID DESC";
+
+            string normalizedKeyword = (keyword ?? string.Empty).Trim();
+            DateTime? fromDate = from.HasValue ? from.Value.Date : (DateTime?)null;
+            DateTime? toExclusive = to.HasValue ? to.Value.Date.AddDays(1) : (DateTime?)null;
+            var alerts = new List<StockAlertListItemDto>();
+
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@HasKeyword", SqlDbType.Bit).Value = normalizedKeyword.Length > 0;
+                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 4000).Value =
+                    "%" + normalizedKeyword + "%";
+                command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
+                    (object)categoryId ?? DBNull.Value;
+                command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value =
+                    (object)fromDate ?? DBNull.Value;
+                command.Parameters.Add("@ToExclusive", SqlDbType.DateTime).Value =
+                    (object)toExclusive ?? DBNull.Value;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        alerts.Add(new StockAlertListItemDto
+                        {
+                            AlertId = reader.GetInt32(0),
+                            ProductId = reader.GetInt32(1),
+                            ProductCode = ReadString(reader, 2),
+                            ProductName = ReadString(reader, 3),
+                            CategoryId = reader.GetInt32(4),
+                            AlertType = ReadString(reader, 5),
+                            StockAtReport = ReadInt(reader, 6),
+                            ReportedByName = ReadString(reader, 7),
+                            CreatedAt = reader.GetDateTime(8),
+                            Status = ReadString(reader, 9),
+                            ResolvedByName = ReadString(reader, 10),
+                            ResolvedAt = reader.IsDBNull(11) ? (DateTime?)null : reader.GetDateTime(11),
+                            Note = ReadString(reader, 12)
+                        });
+                    }
+                }
+            }
+            return alerts;
+        }
+
+        public int MarkAlertPlanned(int alertId)
+        {
+            const string sql = @"
+                UPDATE StockAlerts
+                SET Status = 'PLANNED'
+                WHERE AlertID = @id AND Status = 'NEW'";
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
+                return command.ExecuteNonQuery();
+            }
+        }
+
+        public int ResolveAlert(int alertId, int userId)
+        {
+            const string sql = @"
+                UPDATE StockAlerts
+                SET Status = 'RESOLVED', ResolvedBy = @userId, ResolvedAt = GETDATE()
+                WHERE AlertID = @id AND Status <> 'RESOLVED'";
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
+                command.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
+                return command.ExecuteNonQuery();
+            }
+        }
+
+        public int MarkAllAlertsSeen()
+        {
+            const string sql = @"
+                UPDATE StockAlerts
+                SET SeenByInventoryManager = 1
+                WHERE SeenByInventoryManager = 0";
+            using (var connection = Open())
+            using (var command = new SqlCommand(sql, connection))
+                return command.ExecuteNonQuery();
         }
 
         public void SaveStockCounts(IEnumerable<StockCountDto> counts, int createdBy)

@@ -268,7 +268,13 @@
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptListPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockAlertPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockReconciliationPresenter.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptView.cs" />
+    <Compile Include="Views\Interfaces\IPurchaseReceiptListView.cs" />
+    <Compile Include="Views\Interfaces\IStockAlertView.cs" />
+    <Compile Include="Views\Interfaces\IStockReconciliationView.cs" />
     <Compile Include="Views\Catalog\frmProductEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -402,6 +408,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Controls\LabeledDateField.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\DateFilterBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\CalendarPopupPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
@@ -626,6 +638,24 @@
     <Compile Include="Views\Warehouse\frmPurchaseReceipt.Designer.cs">
       <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Warehouse\frmPurchaseReceiptDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmPurchaseReceiptDetail.Designer.cs">
+      <DependentUpon>frmPurchaseReceiptDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.Designer.cs">
+      <DependentUpon>frmPurchaseReceiptEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucPurchaseReceiptManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucPurchaseReceiptManagement.Designer.cs">
+      <DependentUpon>ucPurchaseReceiptManagement.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Warehouse\frmStockReconciliation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -801,6 +831,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
       <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceiptDetail.resx">
+      <DependentUpon>frmPurchaseReceiptDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmStockReconciliation.resx">
+      <DependentUpon>frmStockReconciliation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucStockAlert.resx">
+      <DependentUpon>ucStockAlert.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -191,10 +191,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"), CatalogPages.Categories, IconChar.Tags);
             layout.AddLazyPage("suppliers", Lang.Get("sidebar.page.suppliers"), CatalogPages.Suppliers, IconChar.Building);
             layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
-                () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
+                () => PrepareEmbeddedForm(new frmStockReconciliation(AppComposition.CreateInventoryService(), UserSession.Instance)), IconChar.Warehouse);
             layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
-                () => PrepareEmbeddedForm(new frmPurchaseReceipt(AppComposition.CreateInventoryService(), UserSession.Instance)), IconChar.Truck);
-            layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"), () => new ucStockAlert(), IconChar.TriangleExclamation);
+                () => new ucPurchaseReceiptManagement(), IconChar.Truck);
+            layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"),
+                () => new ucStockAlert(
+                    AppComposition.CreateInventoryService(),
+                    UserSession.Instance,
+                    () => _view.SetUnreadNotifications(0)),
+                IconChar.TriangleExclamation);
             layout.AddSection(Lang.Get("sidebar.section.reports"));
             layout.AddLazyPage("report-revenue", Lang.Get("sidebar.page.reportRevenue"),
                 () => PrepareEmbeddedForm(new frmChartDashboard()), IconChar.ChartColumn);
