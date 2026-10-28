@@ -97,9 +97,9 @@ GO
 -- (BCrypt cost 12, xem UPDATE Users o cuoi file - dat sau khi bang Users co du dong).
 INSERT INTO Users (Username, PasswordHash, FullName, Email, Phone, AvatarUrl, RoleID) VALUES
 ('admin',    '$2a$10$examplehash.admin.0000000000000000000000000000',    N'Hoàng Trung Nam',  'hoangnam131020@gmail.com',   '0969036498', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='ADMIN')),
-('salesmgr', '$2a$10$examplehash.salesmgr.000000000000000000000000000', N'Hà Minh Tuấn',     'tuan.sm@connectmart.vn', '0900000002', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_MANAGER')),
-('invmgr',   '$2a$10$examplehash.invmgr.0000000000000000000000000000',  N'Trần Tài Phương',        'phuongkho.im@connectmart.vn',  '0900000003', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='INVENTORY_MANAGER')),
-('staff01',  '$2a$10$examplehash.staff01.000000000000000000000000000', N'Lê Hoa Trường Vũ',     'vu.staff@connectmart.vn', '0900000004', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
+('salesmgr', '$2a$10$examplehash.salesmgr.000000000000000000000000000', N'Lê Thị Vân Anh', 'tuan.sm@connectmart.vn', '0900000002', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_MANAGER')),
+('invmgr',   '$2a$10$examplehash.invmgr.0000000000000000000000000000',  N'Hồ Thị Mỹ Thuận', 'phuongkho.im@connectmart.vn', '0900000003', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='INVENTORY_MANAGER')),
+('staff01',  '$2a$10$examplehash.staff01.000000000000000000000000000', N'Lê Thanh Tú', 'vu.staff@connectmart.vn', '0900000004', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
 ('staff02',  '$2a$10$examplehash.staff02.000000000000000000000000000', N'Hoàng Văn Sơn',     'son.staff@connectmart.vn', '0900000005', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
 -- Tai khoan khach hang (Role = CUSTOMER) - can co truoc vi Customers gio ke thua Users
 ('lan.nguyen',  '$2a$10$examplehash.customer1.00000000000000000000000', N'Nguyễn Thị Lan',  'lan.nguyen@gmail.com', '0912345678', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='CUSTOMER')),
@@ -961,7 +961,7 @@ INSERT INTO ChatMessages (ConversationID, SenderUserID, SenderName, FromStaff, B
  (SELECT UserID FROM Users WHERE Username='lan.nguyen'), N'Nguyễn Thị Lan', 0,
  N'Shop ơi, đơn hàng của mình khi nào giao vậy ạ?', DATEADD(HOUR, -3, GETDATE()), 1),
 ((SELECT TOP 1 ConversationID FROM ChatConversations WHERE ConversationType='CUSTOMER_SUPPORT' ORDER BY ConversationID DESC),
- (SELECT UserID FROM Users WHERE Username='staff01'), N'Lê Hoa Trường Vũ', 1,
+ (SELECT UserID FROM Users WHERE Username='staff01'), N'Lê Thanh Tú', 1,
  N'Chào chị Lan, đơn hàng đang được đóng gói và sẽ giao trong hôm nay ạ.', DATEADD(MINUTE, -20, GETDATE()), 0);
 GO
 

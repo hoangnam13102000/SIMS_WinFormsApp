@@ -577,11 +577,17 @@
     <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Reports\frmInvoiceReport.cs">
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Reports\frmInvoiceReport.Designer.cs">
-      <DependentUpon>frmInvoiceReport.cs</DependentUpon>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.Designer.cs">
+      <DependentUpon>InvoiceManagementPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.Designer.cs">
+      <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Reports\ucInventoryReport.cs">
       <SubType>UserControl</SubType>
@@ -755,6 +761,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\PromotionDetailsDialog.resx">
+      <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\PromotionEditorDialog.resx">
+      <DependentUpon>PromotionEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\PromotionManagementPage.resx">
       <DependentUpon>PromotionManagementPage.cs</DependentUpon>

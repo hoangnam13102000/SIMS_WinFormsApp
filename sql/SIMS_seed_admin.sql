@@ -64,7 +64,7 @@ BEGIN
     VALUES (
         'admin',
         '$2a$12$bu9a8NWQ5nLvEzmP9KmDbOmZxADF8e83Lrf/w60dhBTXaUyxRl4zi',
-        N'Quản trị viên hệ thống',
+        N'Hoàng Trung Nam',
         'admin@sims.local',
         NULL,
         (SELECT RoleID FROM Roles WHERE RoleCode = 'ADMIN'),
@@ -86,6 +86,7 @@ GO
 
 UPDATE Users
 SET 
+    FullName = N'Hoàng Trung Nam',
     PasswordHash = '$2a$12$bu9a8NWQ5nLvEzmP9KmDbOmZxADF8e83Lrf/w60dhBTXaUyxRl4zi',
     IsLocked = 0,
     FailedLoginCount = 0,

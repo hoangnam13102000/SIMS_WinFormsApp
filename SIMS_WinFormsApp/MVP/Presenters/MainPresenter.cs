@@ -8,6 +8,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Views.Chat;
 using SIMS_WinFormsApp.Views.Dashboard;
 using SIMS_WinFormsApp.Views.Reports;
+using SIMS_WinFormsApp.Views.Sales.InvoiceManagement;
 using SIMS_WinFormsApp.Views.Sales;
 using SIMS_WinFormsApp.Views.UserManager;
 using SIMS_WinFormsApp.Views.SystemManagement;
@@ -217,7 +218,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST))
                 {
                     layout.AddLazyPage("invoices", Lang.Get("sidebar.page.invoices"),
-                        () => PrepareEmbeddedForm(new frmInvoiceReport()), IconChar.Receipt);
+                        () => PrepareEmbeddedForm(new InvoiceManagementPage(
+                            AppComposition.CreateConnectionFactory(),
+                            UserSession.Instance.CurrentUser?.UserId ?? 0,
+                            permissions.Contains(AppPermission.INVOICE_VIEW_ALL) ||
+                            permissions.Contains(AppPermission.INVOICE_CANCEL))), IconChar.Receipt);
                 }
                 if (HasAnyPermission(permissions,
                         AppPermission.RETURN_EXCHANGE_CREATE, AppPermission.RETURN_EXCHANGE_APPROVE))
