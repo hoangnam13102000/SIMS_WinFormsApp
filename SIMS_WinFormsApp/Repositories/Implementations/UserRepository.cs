@@ -273,8 +273,10 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 var query =
                     from u in db.Users
                     join r in db.Roles on u.RoleID equals r.RoleID
+                    join employeeRow in db.Employees on u.UserID equals employeeRow.UserID into employeeRows
+                    from employee in employeeRows.DefaultIfEmpty()
                     where !u.IsDeleted
-                    select new { u, r };
+                    select new { u, r, employee };
 
                 if (string.Equals(roleFilter, UserManagementFilters.NonCustomer, StringComparison.OrdinalIgnoreCase))
                     query = query.Where(x => x.r.RoleCode != RoleCodes.Customer);
@@ -304,6 +306,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     {
                         UserId = x.u.UserID,
                         Username = x.u.Username,
+                        EmployeeId = x.employee == null ? null : x.employee.EmployeeID,
                         FullName = x.u.FullName,
                         Email = x.u.Email,
                         Phone = x.u.Phone,

@@ -194,7 +194,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     AppPermission.ORDER_ASSIGN, AppPermission.INVOICE_VIEW_OWN,
                     AppPermission.INVOICE_VIEW_ALL, AppPermission.INVOICE_CANCEL,
                     AppPermission.INVOICE_CANCEL_REQUEST, AppPermission.RETURN_EXCHANGE_CREATE,
-                    AppPermission.RETURN_EXCHANGE_APPROVE))
+                     AppPermission.RETURN_EXCHANGE_APPROVE, AppPermission.PROMOTION_MANAGE))
             {
                 layout.AddSection(Lang.Get("sidebar.section.sales"));
                 if (HasAnyPermission(permissions, AppPermission.INVOICE_CREATE))
@@ -202,6 +202,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     layout.AddLazyPage("pos", Lang.Get("sidebar.page.pos"),
                         () => PosPage.Create(_getDisplayName()), IconChar.CartShopping);
                 }
+                if (HasAnyPermission(permissions, AppPermission.PROMOTION_MANAGE))
+                    layout.AddLazyPage("promotions", "Mã giảm giá",
+                        () => new PromotionManagementPage(AppComposition.CreatePromotionManagementService()), IconChar.Tags);
                 if (HasAnyPermission(permissions,
                         AppPermission.ORDER_VIEW, AppPermission.ORDER_MANAGE, AppPermission.ORDER_VIEW_ASSIGNED,
                         AppPermission.ORDER_PROCESS_ASSIGNED, AppPermission.ORDER_ASSIGN))

@@ -6,6 +6,7 @@ namespace SIMS_WinFormsApp.Models.DTOs
     {
         public int UserId { get; set; }
         public string Username { get; set; }
+        public string EmployeeId { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }

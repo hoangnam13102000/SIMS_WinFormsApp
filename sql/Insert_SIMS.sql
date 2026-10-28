@@ -57,6 +57,7 @@ INSERT INTO Permissions (PermissionCode, Description) VALUES
 ('RETURN_EXCHANGE_APPROVE', N'Duyệt / từ chối yêu cầu đổi/trả hàng giá trị lớn'),
 ('EXCEPTION_REPORT_CREATE', N'Gửi báo cáo ngoại lệ cho Quản lý bán hàng'),
 ('SETTINGS_MANAGE',     N'Xem và sửa trang Cài đặt hệ thống (VAT, tên cửa hàng, chính sách đổi trả...)'),
+('PROMOTION_MANAGE',    N'Quản lý CRUD mã giảm giá: tạo, xem, sửa và xóa mềm'),
 ('SUPPLIER_RETURN_MANAGE',  N'Lập phiếu trả hàng lỗi/hỏng về nhà cung cấp');
 GO
 
@@ -81,7 +82,8 @@ INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'SALES_MANAGER'), PermissionID
 FROM Permissions
 WHERE PermissionCode IN ('REPORT_REVENUE','REPORT_PROFIT','EXCEPTION_REPORT_HANDLE',
-                          'RETURN_APPROVE','RETURN_EXCHANGE_APPROVE','AUDIT_VIEW');
+                           'RETURN_APPROVE','RETURN_EXCHANGE_APPROVE','AUDIT_VIEW',
+                           'PROMOTION_MANAGE');
 
 -- Khach hang (tu dang ky o client): chi duoc tim/xem san pham
 INSERT INTO RolePermissions (RoleID, PermissionID)

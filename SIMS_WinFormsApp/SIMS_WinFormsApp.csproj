@@ -79,6 +79,9 @@
     <Compile Include="Views\Sales\ucReturnManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Sales\PromotionManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\Sales\ucReturnManagement.Designer.cs">
       <DependentUpon>ucReturnManagement.cs</DependentUpon>
     </Compile>
@@ -800,6 +803,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Models\DTOs\PromotionDtos.cs" />
+    <Compile Include="Repositories\Interfaces\IPromotionRepository.cs" />
+    <Compile Include="Repositories\Implementations\PromotionRepository.cs" />
+    <Compile Include="Services\Interfaces\IPromotionManagementService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlPromotionService.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>

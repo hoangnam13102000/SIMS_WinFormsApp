@@ -1,11 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Pos
 {
     public sealed class DemoPromotionService : IPromotionService
     {
+        public IReadOnlyList<PromotionDto> GetAvailablePromotions()
+        {
+            DateTime today = DateTime.Today;
+            return new[]
+            {
+                new PromotionDto
+                {
+                    Code = "GIAM10",
+                    Name = "Giảm 10%",
+                    DiscountType = "PERCENT",
+                    DiscountValue = 10,
+                    StartDate = today,
+                    EndDate = today.AddYears(1),
+                    IsActive = true
+                },
+                new PromotionDto
+                {
+                    Code = "GIAM20K",
+                    Name = "Giảm 20.000đ",
+                    DiscountType = "AMOUNT",
+                    DiscountValue = 20000,
+                    StartDate = today,
+                    EndDate = today.AddYears(1),
+                    IsActive = true
+                }
+            };
+        }
+
         public PromotionResultDto Apply(string code, decimal subtotal)
         {
             if (string.IsNullOrWhiteSpace(code))
