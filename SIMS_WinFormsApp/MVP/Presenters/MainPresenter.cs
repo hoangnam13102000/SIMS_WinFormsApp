@@ -257,10 +257,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
                 if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
                     layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
-                        () => PrepareEmbeddedForm(new frmPurchaseReceipt()), IconChar.Truck);
+                        () => new ucPurchaseReceiptManagement(), IconChar.Truck);
                 if (HasAnyPermission(permissions, AppPermission.STOCK_ALERT_REPORT, AppPermission.STOCK_ALERT_VIEW))
                     layout.AddLazyPage("stock-alert", Lang.Get("sidebar.page.stockAlert"),
-                        () => new ucStockAlert(), IconChar.TriangleExclamation);
+                        () => new ucStockAlert(
+                            AppComposition.CreateInventoryService(),
+                            UserSession.Instance,
+                            () => _view.SetUnreadNotifications(0)),
+                        IconChar.TriangleExclamation);
             }
 
             if (HasAnyPermission(permissions,
