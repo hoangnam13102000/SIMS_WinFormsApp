@@ -36,9 +36,6 @@ namespace SIMS_WinFormsApp.Views.Backup
         private Panel _searchFrame;
         private Panel _dateRangePanel;
         private Button _todayButton;
-        private Button _weekButton;
-        private Button _monthButton;
-        private Button _thisMonthButton;
         private Button _clearRangeButton;
         private DateTimePicker _fromDatePicker;
         private DateTimePicker _toDatePicker;
@@ -323,9 +320,6 @@ namespace SIMS_WinFormsApp.Views.Backup
 
             _dateRangePanel = new Panel { BackColor = Color.Transparent };
             _todayButton = CreatePresetButton(Lang.Get("audit.date.today"), DateRangePreset.Today);
-            _weekButton = CreatePresetButton(Lang.Get("audit.date.last7"), DateRangePreset.Last7Days);
-            _monthButton = CreatePresetButton(Lang.Get("audit.date.last30"), DateRangePreset.Last30Days);
-            _thisMonthButton = CreatePresetButton(Lang.Get("audit.date.thisMonth"), DateRangePreset.ThisMonth);
             _clearRangeButton = new Button
             {
                 Text = Lang.Get("audit.date.clear"),
@@ -356,7 +350,7 @@ namespace SIMS_WinFormsApp.Views.Backup
             _toDateCheckBox.CheckedChanged += (s, e) => OnDatePickerCheckedChanged(false);
             _dateRangePanel.Controls.AddRange(new Control[]
             {
-                _todayButton, _weekButton, _monthButton, _thisMonthButton, _clearRangeButton,
+                _todayButton, _clearRangeButton,
                 _fromDateCheckBox, _fromDatePicker, _toDateCheckBox, _toDatePicker
             });
 
@@ -465,7 +459,7 @@ namespace SIMS_WinFormsApp.Views.Backup
         private int ArrangeDateRange(int width)
         {
             const int rowHeight = 30;
-            Button[] presets = { _todayButton, _weekButton, _monthButton, _thisMonthButton };
+            Button[] presets = { _todayButton };
             int x = 0;
             int y = 0;
             foreach (Button button in presets)
@@ -808,9 +802,6 @@ namespace SIMS_WinFormsApp.Views.Backup
                 if (range.From.HasValue) _fromDatePicker.Value = range.From.Value;
                 if (range.To.HasValue) _toDatePicker.Value = range.To.Value;
                 UpdatePresetButton(_todayButton, activePreset == DateRangePreset.Today);
-                UpdatePresetButton(_weekButton, activePreset == DateRangePreset.Last7Days);
-                UpdatePresetButton(_monthButton, activePreset == DateRangePreset.Last30Days);
-                UpdatePresetButton(_thisMonthButton, activePreset == DateRangePreset.ThisMonth);
                 _clearRangeButton.Enabled = !range.IsEmpty;
             }
             finally

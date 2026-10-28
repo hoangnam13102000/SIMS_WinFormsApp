@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
@@ -45,7 +46,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             _repository = repository ?? AppComposition.CreateAuditLogRepository();
             _presenter = new AuditLogPresenter(this, _repository, this);
-            _searchTimer = new Timer(components) { Interval = 350 };
+            _searchTimer = new Timer { Interval = 350 };
             _searchTimer.Tick += (sender, args) =>
             {
                 _searchTimer.Stop();
@@ -83,6 +84,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _exportCsvButton.Click += (sender, args) => ExportAudit(new CsvTableExporter());
             _exportExcelButton.Click += (sender, args) => ExportAudit(new ExcelTableExporter());
             _auditGrid.CellContentClick += OnGridCellContentClick;
+            _auditGrid.CellPainting += OnAuditGridCellPainting;
             _auditGrid.CellDoubleClick += (sender, args) =>
             {
                 if (args.RowIndex >= 0) RequestDetail(args.RowIndex);
@@ -226,12 +228,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _failedStatTitle.Text = Lang.Get("audit.stats.failedLogin");
             _usersStatTitle.Text = Lang.Get("audit.stats.activeUsers");
             _incidentCheckBox.Text = Lang.Get("audit.tab.incident");
-            _timeColumn.HeaderText = Lang.Get("audit.column.time");
-            _userColumn.HeaderText = Lang.Get("audit.column.user");
-            _actionColumn.HeaderText = Lang.Get("audit.column.action");
-            _tableColumn.HeaderText = Lang.Get("audit.column.table");
-            _descriptionColumn.HeaderText = Lang.Get("audit.column.detail");
-            _detailColumn.HeaderText = string.Empty;
+            Time.HeaderText = Lang.Get("audit.column.time");
+            User.HeaderText = Lang.Get("audit.column.user");
+            Action.HeaderText = Lang.Get("audit.column.action");
+            Table.HeaderText = Lang.Get("audit.column.table");
+            Description.HeaderText = Lang.Get("audit.column.detail");
+            ViewDetail.HeaderText = string.Empty;
             _exportCsvButton.Text = Lang.Get("audit.export.csv");
             _exportExcelButton.Text = Lang.Get("audit.export.excel");
             _emptyLabel.Text = Lang.Get("audit.empty");
@@ -293,8 +295,25 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         private void OnGridCellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == _detailColumn.Index)
+            if (e.ColumnIndex == ViewDetail.Index)
                 RequestDetail(e.RowIndex);
+        }
+
+        private void OnAuditGridCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != ViewDetail.Index) return;
+
+            e.PaintBackground(e.CellBounds, true);
+            const int iconSize = 20;
+            var iconLocation = new Point(
+                e.CellBounds.Left + (e.CellBounds.Width - iconSize) / 2,
+                e.CellBounds.Top + (e.CellBounds.Height - iconSize) / 2);
+            Bitmap icon = IconBitmapCache.Get(
+                IconChar.Eye,
+                AppColors.TableViewAction,
+                new Size(iconSize, iconSize));
+            e.Graphics.DrawImageUnscaled(icon, iconLocation);
+            e.Handled = true;
         }
 
         private void RequestDetail(int rowIndex)

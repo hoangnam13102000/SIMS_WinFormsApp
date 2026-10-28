@@ -171,7 +171,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             this._designerChooseAvatarButton.Location = new System.Drawing.Point(0, 108);
             this._designerChooseAvatarButton.Name = "_designerChooseAvatarButton";
-            this._designerChooseAvatarButton.Size = new System.Drawing.Size(136, 36);
+            this._designerChooseAvatarButton.Size = new System.Drawing.Size(136, 41);
             this._designerChooseAvatarButton.TabIndex = 1;
             this._designerChooseAvatarButton.Text = "Chọn ảnh";
             // 
@@ -210,6 +210,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerFullName.Name = "_designerFullName";
             this._designerFullName.Size = new System.Drawing.Size(290, 42);
             this._designerFullName.TabIndex = 5;
+            this._designerFullName.Text = "Nguyễn Văn An";
             // 
             // _designerFullNameHint
             // 
@@ -235,6 +236,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerEmail.Name = "_designerEmail";
             this._designerEmail.Size = new System.Drawing.Size(584, 42);
             this._designerEmail.TabIndex = 8;
+            this._designerEmail.Text = "an@example.com";
             // 
             // _designerEmailHint
             // 
@@ -260,6 +262,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerPhone.Name = "_designerPhone";
             this._designerPhone.Size = new System.Drawing.Size(290, 42);
             this._designerPhone.TabIndex = 11;
+            this._designerPhone.Text = "0901234567";
             // 
             // _designerPhoneHint
             // 
@@ -462,7 +465,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSaveButton.ForeColor = System.Drawing.Color.White;
             this._designerSaveButton.Location = new System.Drawing.Point(1022, 16);
             this._designerSaveButton.Name = "_designerSaveButton";
-            this._designerSaveButton.Size = new System.Drawing.Size(132, 40);
+            this._designerSaveButton.Size = new System.Drawing.Size(170, 40);
             this._designerSaveButton.TabIndex = 1;
             this._designerSaveButton.Text = "Lưu thay đổi";
             this._designerSaveButton.UseVisualStyleBackColor = false;

@@ -12,6 +12,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private Label _designerInstructions;
         private PrimaryButton _designerChooseFile;
         private Label _designerFileName;
+        private Panel _designerFilePanel;
         private TextBox _designerResult;
 
         private void InitializeComponent()
@@ -21,6 +22,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerInstructions = new Label();
             _designerChooseFile = new PrimaryButton();
             _designerFileName = new Label();
+            _designerFilePanel = new Panel();
             _designerResult = new TextBox();
             SuspendLayout();
             ContentHost.SuspendLayout();
@@ -46,14 +48,17 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerChooseFile.Size = new Size(140, 42);
             _designerChooseFile.Text = "Chọn file...";
             _designerFileName.AutoSize = false;
+            _designerFileName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             _designerFileName.Location = new Point(152, 0);
             _designerFileName.Name = "fileNameLabel";
             _designerFileName.Size = new Size(360, 42);
             _designerFileName.Text = "Chưa chọn file nào";
             _designerFileName.TextAlign = ContentAlignment.MiddleLeft;
-            var filePanel = new Panel { Dock = DockStyle.Top, Height = 46, Name = "fileSelectionPanel" };
-            filePanel.Controls.Add(_designerFileName);
-            filePanel.Controls.Add(_designerChooseFile);
+            _designerFilePanel.Dock = DockStyle.Top;
+            _designerFilePanel.Height = 46;
+            _designerFilePanel.Name = "fileSelectionPanel";
+            _designerFilePanel.Controls.Add(_designerFileName);
+            _designerFilePanel.Controls.Add(_designerChooseFile);
 
             _designerResult.Dock = DockStyle.Top;
             _designerResult.Height = 160;
@@ -64,12 +69,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerResult.Text = "Kết quả nhập dữ liệu sẽ hiển thị tại đây.";
 
             ContentHost.Controls.Add(_designerResult);
-            ContentHost.Controls.Add(filePanel);
+            ContentHost.Controls.Add(_designerFilePanel);
             ContentHost.Controls.Add(_designerInstructions);
             ContentHost.Controls.Add(_designerColumns);
             ContentHost.Controls.Add(_designerBanner);
             ContentHost.ResumeLayout(false);
-            ClientSize = new Size(640, 700);
+            ClientSize = new Size(800, 700);
             Name = "frmImportData";
             Text = "Nhập dữ liệu";
             ResumeLayout(false);

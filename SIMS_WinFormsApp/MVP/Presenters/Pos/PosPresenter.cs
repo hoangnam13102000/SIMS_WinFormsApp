@@ -31,6 +31,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private string _searchKeyword = string.Empty;
         private CustomerLookupDto _selectedCustomer;
         private decimal _promotionDiscount;
+        private int? _promotionId;
+        private string _promotionCode;
         private bool _usePoints;
         private int _pointsToUse;
         private string _lastScannedBarcode;
@@ -82,6 +84,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void OnViewReady(object sender, EventArgs e)
         {
             _view.BindCategories(_catalogService.GetCategories());
+            _view.BindPromotions(_promotionService.GetAvailablePromotions());
             _view.SetPaymentMethods(PaymentMethods);
             ReloadProducts();
             RefreshCart();
@@ -229,6 +232,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             else
             {
                 _promotionDiscount = result.DiscountAmount;
+                _promotionId = result.PromotionId;
+                _promotionCode = result.PromotionCode ?? code.Trim().ToUpperInvariant();
                 AppToast.Success(owner as Control, "Áp dụng thành công", result.Message);
             }
             RefreshTotals();
@@ -301,6 +306,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                     _selectedCustomer == null ? (int?)null : _selectedCustomer.CustomerId,
                     _view.SelectedPaymentMethod,
                     totals,
+                    _promotionId,
+                    _promotionCode,
                     _cart.Lines);
             }
             catch (SqlException exception)
@@ -332,6 +339,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         {
             _cart.Clear();
             _promotionDiscount = 0m;
+            _promotionId = null;
+            _promotionCode = null;
             _selectedCustomer = null;
             _usePoints = false;
             _pointsToUse = 0;

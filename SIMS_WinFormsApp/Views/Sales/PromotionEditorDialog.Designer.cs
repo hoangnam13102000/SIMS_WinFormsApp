@@ -1,0 +1,292 @@
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace SIMS_WinFormsApp.Views.Sales
+{
+    partial class PromotionEditorDialog
+    {
+        private IContainer components = null;
+        private TableLayoutPanel _layout;
+        private Panel _titlePanel;
+        private Label _title;
+        private Label _subtitle;
+        private Label _codeLabel;
+        private TextBox _codeInput;
+        private Label _nameLabel;
+        private TextBox _nameInput;
+        private Label _typeLabel;
+        private ComboBox _typeInput;
+        private Label _valueLabel;
+        private TextBox _valueInput;
+        private Label _maximumLabel;
+        private TextBox _maximumInput;
+        private Label _minimumLabel;
+        private TextBox _minimumInput;
+        private Label _startLabel;
+        private DateTimePicker _startInput;
+        private Label _endLabel;
+        private DateTimePicker _endInput;
+        private Label _limitLabel;
+        private TextBox _limitInput;
+        private CheckBox _activeInput;
+        private CheckBox _bannerInput;
+        private FlowLayoutPanel _buttons;
+        private Button _saveButton;
+        private Button _cancelButton;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+                components.Dispose();
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            components = new Container();
+            _layout = new TableLayoutPanel();
+            _titlePanel = new Panel();
+            _title = new Label();
+            _subtitle = new Label();
+            _codeLabel = new Label();
+            _codeInput = new TextBox();
+            _nameLabel = new Label();
+            _nameInput = new TextBox();
+            _typeLabel = new Label();
+            _typeInput = new ComboBox();
+            _valueLabel = new Label();
+            _valueInput = new TextBox();
+            _maximumLabel = new Label();
+            _maximumInput = new TextBox();
+            _minimumLabel = new Label();
+            _minimumInput = new TextBox();
+            _startLabel = new Label();
+            _startInput = new DateTimePicker();
+            _endLabel = new Label();
+            _endInput = new DateTimePicker();
+            _limitLabel = new Label();
+            _limitInput = new TextBox();
+            _activeInput = new CheckBox();
+            _bannerInput = new CheckBox();
+            _buttons = new FlowLayoutPanel();
+            _saveButton = new Button();
+            _cancelButton = new Button();
+
+            _layout.SuspendLayout();
+            _titlePanel.SuspendLayout();
+            _buttons.SuspendLayout();
+            SuspendLayout();
+
+            _layout.BackColor = Color.White;
+            _layout.ColumnCount = 4;
+            _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            _layout.Dock = DockStyle.Fill;
+            _layout.Padding = new Padding(20);
+            _layout.RowCount = 12;
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
+            _layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 52F));
+
+            _titlePanel.Dock = DockStyle.Fill;
+            _titlePanel.Margin = Padding.Empty;
+            _titlePanel.Controls.Add(_title);
+            _titlePanel.Controls.Add(_subtitle);
+            _title.AutoSize = true;
+            _title.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            _title.ForeColor = Color.FromArgb(15, 23, 42);
+            _title.Location = new Point(0, 0);
+            _title.Text = "Tạo mã giảm giá mới";
+            _subtitle.AutoSize = true;
+            _subtitle.Font = new Font("Segoe UI", 9F);
+            _subtitle.ForeColor = Color.FromArgb(100, 116, 139);
+            _subtitle.Location = new Point(2, 38);
+            _subtitle.Text = "Nhập thông tin chương trình khuyến mãi";
+            _layout.Controls.Add(_titlePanel, 0, 0);
+            _layout.SetColumnSpan(_titlePanel, 4);
+
+            _codeLabel.AutoSize = true;
+            _codeLabel.Font = new Font("Segoe UI", 8.5F);
+            _codeLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _codeLabel.Margin = new Padding(4, 2, 8, 2);
+            _codeLabel.Text = "Mã giảm giá";
+            _layout.Controls.Add(_codeLabel, 0, 1);
+            _nameLabel.AutoSize = true;
+            _nameLabel.Font = new Font("Segoe UI", 8.5F);
+            _nameLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _nameLabel.Margin = new Padding(4, 2, 8, 2);
+            _nameLabel.Text = "Tên chương trình";
+            _layout.Controls.Add(_nameLabel, 2, 1);
+            _codeInput.Dock = DockStyle.Fill;
+            _codeInput.Font = new Font("Segoe UI", 9F);
+            _codeInput.Margin = new Padding(4, 0, 8, 2);
+            _nameInput.Dock = DockStyle.Fill;
+            _nameInput.Font = new Font("Segoe UI", 9F);
+            _nameInput.Margin = new Padding(4, 0, 8, 2);
+            _layout.Controls.Add(_codeInput, 0, 2);
+            _layout.SetColumnSpan(_codeInput, 2);
+            _layout.Controls.Add(_nameInput, 2, 2);
+            _layout.SetColumnSpan(_nameInput, 2);
+
+            _typeLabel.AutoSize = true;
+            _typeLabel.Font = new Font("Segoe UI", 8.5F);
+            _typeLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _typeLabel.Margin = new Padding(4, 2, 8, 2);
+            _typeLabel.Text = "Loại giảm";
+            _layout.Controls.Add(_typeLabel, 0, 3);
+            _valueLabel.AutoSize = true;
+            _valueLabel.Font = new Font("Segoe UI", 8.5F);
+            _valueLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _valueLabel.Margin = new Padding(4, 2, 8, 2);
+            _valueLabel.Text = "Giá trị giảm";
+            _layout.Controls.Add(_valueLabel, 2, 3);
+            _typeInput.DropDownStyle = ComboBoxStyle.DropDownList;
+            _typeInput.Dock = DockStyle.Fill;
+            _typeInput.Items.AddRange(new object[] { "PERCENT", "AMOUNT" });
+            _typeInput.Margin = new Padding(4, 0, 8, 2);
+            _typeInput.SelectedIndex = 0;
+            _valueInput.Dock = DockStyle.Fill;
+            _valueInput.Font = new Font("Segoe UI", 9F);
+            _valueInput.Margin = new Padding(4, 0, 8, 2);
+            _layout.Controls.Add(_typeInput, 0, 4);
+            _layout.SetColumnSpan(_typeInput, 2);
+            _layout.Controls.Add(_valueInput, 2, 4);
+            _layout.SetColumnSpan(_valueInput, 2);
+
+            _maximumLabel.AutoSize = true;
+            _maximumLabel.Font = new Font("Segoe UI", 8.5F);
+            _maximumLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _maximumLabel.Margin = new Padding(4, 2, 8, 2);
+            _maximumLabel.Text = "Giảm tối đa (đ)";
+            _layout.Controls.Add(_maximumLabel, 0, 5);
+            _minimumLabel.AutoSize = true;
+            _minimumLabel.Font = new Font("Segoe UI", 8.5F);
+            _minimumLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _minimumLabel.Margin = new Padding(4, 2, 8, 2);
+            _minimumLabel.Text = "Đơn tối thiểu (đ)";
+            _layout.Controls.Add(_minimumLabel, 2, 5);
+            _maximumInput.Dock = DockStyle.Fill;
+            _maximumInput.Font = new Font("Segoe UI", 9F);
+            _maximumInput.Margin = new Padding(4, 0, 8, 2);
+            _minimumInput.Dock = DockStyle.Fill;
+            _minimumInput.Font = new Font("Segoe UI", 9F);
+            _minimumInput.Margin = new Padding(4, 0, 8, 2);
+            _layout.Controls.Add(_maximumInput, 0, 6);
+            _layout.SetColumnSpan(_maximumInput, 2);
+            _layout.Controls.Add(_minimumInput, 2, 6);
+            _layout.SetColumnSpan(_minimumInput, 2);
+
+            _startLabel.AutoSize = true;
+            _startLabel.Font = new Font("Segoe UI", 8.5F);
+            _startLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _startLabel.Margin = new Padding(4, 2, 8, 2);
+            _startLabel.Text = "Ngày bắt đầu";
+            _layout.Controls.Add(_startLabel, 0, 7);
+            _endLabel.AutoSize = true;
+            _endLabel.Font = new Font("Segoe UI", 8.5F);
+            _endLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _endLabel.Margin = new Padding(4, 2, 8, 2);
+            _endLabel.Text = "Ngày kết thúc";
+            _layout.Controls.Add(_endLabel, 2, 7);
+            _startInput.Dock = DockStyle.Fill;
+            _startInput.Font = new Font("Segoe UI", 9F);
+            _startInput.Format = DateTimePickerFormat.Short;
+            _startInput.Margin = new Padding(4, 0, 8, 2);
+            _startInput.Value = DateTime.Today;
+            _endInput.Dock = DockStyle.Fill;
+            _endInput.Font = new Font("Segoe UI", 9F);
+            _endInput.Format = DateTimePickerFormat.Short;
+            _endInput.Margin = new Padding(4, 0, 8, 2);
+            _endInput.Value = DateTime.Today.AddMonths(1);
+            _layout.Controls.Add(_startInput, 0, 8);
+            _layout.SetColumnSpan(_startInput, 2);
+            _layout.Controls.Add(_endInput, 2, 8);
+            _layout.SetColumnSpan(_endInput, 2);
+
+            _limitLabel.AutoSize = true;
+            _limitLabel.Font = new Font("Segoe UI", 8.5F);
+            _limitLabel.ForeColor = Color.FromArgb(100, 116, 139);
+            _limitLabel.Margin = new Padding(4, 2, 8, 2);
+            _limitLabel.Text = "Giới hạn lượt";
+            _layout.Controls.Add(_limitLabel, 0, 9);
+            _limitInput.Dock = DockStyle.Fill;
+            _limitInput.Font = new Font("Segoe UI", 9F);
+            _limitInput.Margin = new Padding(4, 0, 8, 2);
+            _layout.Controls.Add(_limitInput, 0, 10);
+            _layout.SetColumnSpan(_limitInput, 2);
+            _activeInput.AutoSize = true;
+            _activeInput.Checked = true;
+            _activeInput.Margin = new Padding(8, 8, 0, 0);
+            _activeInput.Text = "Đang áp dụng";
+            _layout.Controls.Add(_activeInput, 2, 9);
+            _bannerInput.AutoSize = true;
+            _bannerInput.Margin = new Padding(8, 8, 0, 0);
+            _bannerInput.Text = "Hiện trên banner";
+            _layout.Controls.Add(_bannerInput, 2, 10);
+
+            _buttons.Dock = DockStyle.Fill;
+            _buttons.FlowDirection = FlowDirection.RightToLeft;
+            _buttons.Margin = Padding.Empty;
+            _buttons.WrapContents = false;
+            _saveButton.BackColor = Color.FromArgb(37, 99, 235);
+            _saveButton.FlatStyle = FlatStyle.Flat;
+            _saveButton.FlatAppearance.BorderColor = Color.FromArgb(37, 99, 235);
+            _saveButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(29, 78, 216);
+            _saveButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            _saveButton.ForeColor = Color.White;
+            _saveButton.Margin = new Padding(4, 3, 4, 3);
+            _saveButton.Size = new Size(145, 36);
+            _saveButton.Text = "Tạo mã";
+            _saveButton.UseVisualStyleBackColor = false;
+            _cancelButton.BackColor = Color.FromArgb(241, 245, 249);
+            _cancelButton.DialogResult = DialogResult.Cancel;
+            _cancelButton.FlatStyle = FlatStyle.Flat;
+            _cancelButton.FlatAppearance.BorderColor = Color.FromArgb(226, 232, 240);
+            _cancelButton.Font = new Font("Segoe UI", 9F);
+            _cancelButton.ForeColor = Color.FromArgb(30, 41, 59);
+            _cancelButton.Margin = new Padding(4, 3, 4, 3);
+            _cancelButton.Size = new Size(100, 36);
+            _cancelButton.Text = "Hủy";
+            _cancelButton.UseVisualStyleBackColor = false;
+            _buttons.Controls.Add(_saveButton);
+            _buttons.Controls.Add(_cancelButton);
+            _layout.Controls.Add(_buttons, 0, 11);
+            _layout.SetColumnSpan(_buttons, 4);
+
+            AcceptButton = _saveButton;
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(244, 247, 250);
+            CancelButton = _cancelButton;
+            ClientSize = new Size(1050, 700);
+            Controls.Add(_layout);
+            Font = new Font("Segoe UI", 9F);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "PromotionEditorDialog";
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Tạo mã giảm giá";
+
+            _layout.ResumeLayout(false);
+            _titlePanel.ResumeLayout(false);
+            _titlePanel.PerformLayout();
+            _buttons.ResumeLayout(false);
+            ResumeLayout(false);
+        }
+
+    }
+}

@@ -19,6 +19,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private DataGridView _usersGrid;
         private DataGridViewTextBoxColumn _usernameColumn;
         private DataGridViewTextBoxColumn _fullNameColumn;
+        private DataGridViewTextBoxColumn _employeeIdColumn;
         private DataGridViewTextBoxColumn _emailColumn;
         private DataGridViewTextBoxColumn _roleColumn;
         private DataGridViewTextBoxColumn _statusColumn;
@@ -48,6 +49,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid = new DataGridView();
             this._usernameColumn = new DataGridViewTextBoxColumn();
             this._fullNameColumn = new DataGridViewTextBoxColumn();
+            this._employeeIdColumn = new DataGridViewTextBoxColumn();
             this._emailColumn = new DataGridViewTextBoxColumn();
             this._roleColumn = new DataGridViewTextBoxColumn();
             this._statusColumn = new DataGridViewTextBoxColumn();
@@ -169,7 +171,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid.BorderStyle = BorderStyle.None;
             this._usersGrid.ColumnHeadersHeight = 40;
             this._usersGrid.Columns.AddRange(new DataGridViewColumn[] {
-                this._usernameColumn, this._fullNameColumn, this._emailColumn,
+                this._usernameColumn, this._fullNameColumn, this._employeeIdColumn, this._emailColumn,
                 this._roleColumn, this._statusColumn, this._lockColumn,
                 this._actionsColumn});
             this._usersGrid.Name = "_usersGrid";
@@ -183,9 +185,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usernameColumn.HeaderText = "Tên đăng nhập";
             this._usernameColumn.Name = "Username";
             this._usernameColumn.FillWeight = 95F;
+            this._usernameColumn.Visible = false;
             this._fullNameColumn.HeaderText = "Họ và tên";
             this._fullNameColumn.Name = "FullName";
             this._fullNameColumn.FillWeight = 105F;
+            this._employeeIdColumn.HeaderText = "Mã nhân viên";
+            this._employeeIdColumn.Name = "EmployeeId";
+            this._employeeIdColumn.FillWeight = 95F;
             this._emailColumn.HeaderText = "Email";
             this._emailColumn.Name = "Email";
             this._emailColumn.FillWeight = 135F;

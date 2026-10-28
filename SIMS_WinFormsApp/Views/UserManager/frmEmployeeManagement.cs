@@ -38,7 +38,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _rowMenu = new ContextMenuStrip(components);
             _optionsMenu = new ContextMenuStrip(components);
             _statusFilter.SelectedIndex = 0;
-            AddUserRow("staff01", "Nhân viên mẫu", "staff@example.com", "Nhân viên", "Đang hoạt động", false);
             _searchBox.TextChanged += (sender, args) => ReloadUsers(true);
             _statusFilter.SelectedIndexChanged += (sender, args) => ReloadUsers(true);
             VisibleChanged += (sender, args) =>
@@ -97,7 +96,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 _usersGrid.Rows.Clear();
                 foreach (UserManagementRowDto user in _currentRows)
                 {
-                    AddUserRow(user.Username, user.FullName, user.Email, user.RoleName,
+                    AddUserRow(user.Username, user.FullName, user.EmployeeId, user.Email, user.RoleName,
                         string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase) ? "Đang hoạt động" : "Vô hiệu hóa",
                         user.IsLocked);
                 }
@@ -114,14 +113,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
             if (e.Button != MouseButtons.Right || e.RowIndex < 0) return;
             _usersGrid.ClearSelection();
             _usersGrid.Rows[e.RowIndex].Selected = true;
-            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells[0];
+            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells["FullName"];
         }
 
         private void UsersGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left || e.RowIndex < 0 || e.RowIndex >= _currentRows.Count ||
                 _usersGrid.Columns[e.ColumnIndex].Name != "Actions") return;
-            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells[0];
+            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells["FullName"];
             const int iconSize = 24;
             const int gap = 8;
             int stripWidth = iconSize * 3 + gap * 2;
@@ -136,11 +135,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 ToggleSelectedUserLock();
         }
 
-        private void AddUserRow(string username, string fullName, string email, string role, string status, bool isLocked)
+        private void AddUserRow(string username, string fullName, string employeeId, string email,
+            string role, string status, bool isLocked)
         {
             _usersGrid.Rows.Add(
                 username,
                 fullName,
+                string.IsNullOrWhiteSpace(employeeId) ? "—" : employeeId,
                 email,
                 role,
                 status,
@@ -196,13 +197,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             if (_service == null) return;
             TableExportRunner.Run(this, exporter, "Nhân viên",
-                () => new[] { "Tên đăng nhập", "Họ và tên", "Email", "Vai trò", "Trạng thái", "Khóa" },
+                () => new[] { "Tên đăng nhập", "Họ và tên", "Mã nhân viên", "Email", "Vai trò", "Trạng thái", "Khóa" },
                 () =>
                 {
                     UserManagementPageDto page = _service.GetPage(0, 100000, null, UserManagementFilters.NonCustomer, null);
                     var rows = new List<object[]>();
                     foreach (UserManagementRowDto user in page.Rows)
-                        rows.Add(new object[] { user.Username, user.FullName, user.Email, user.RoleName,
+                        rows.Add(new object[] { user.Username, user.FullName, user.EmployeeId, user.Email, user.RoleName,
                             string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase) ? "Đang hoạt động" : "Vô hiệu hóa",
                             user.IsLocked ? "Đang khóa" : "Bình thường" });
                     return rows;

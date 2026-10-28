@@ -24,6 +24,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             int? customerId,
             string paymentMethod,
             CartTotalsDto totals,
+            int? promotionId,
+            string promotionCode,
             IReadOnlyList<CartLineDto> lines)
         {
             ValidateRequest(createdBy, paymentMethod, totals, lines);
@@ -38,7 +40,9 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 {
                     ValidateStockAndPrices(connection, transaction, orderedLines);
                     int invoiceId = InsertInvoice(
-                        connection, transaction, invoiceCode, createdBy, customerId, paymentMethod, totals);
+                        connection, transaction, invoiceCode, createdBy, customerId, paymentMethod, totals,
+                        promotionId, promotionCode);
+                    ConsumePromotion(connection, transaction, promotionId);
                     InsertInvoiceDetails(connection, transaction, invoiceId, orderedLines);
                     DeductLoyaltyPoints(connection, transaction, customerId, totals);
                     transaction.Commit();
@@ -95,15 +99,17 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             int createdBy,
             int? customerId,
             string paymentMethod,
-            CartTotalsDto totals)
+            CartTotalsDto totals,
+            int? promotionId,
+            string promotionCode)
         {
             const string sql = @"
                 INSERT INTO Invoices
-                    (InvoiceCode, CreatedBy, CustomerID, SubTotal, DiscountAmount, VATRate,
+                    (InvoiceCode, CreatedBy, CustomerID, SubTotal, DiscountAmount, PromotionID, PromotionCode, VATRate,
                      TotalAmount, PaymentMethod, PointsUsed, PointsDiscountAmount)
                 OUTPUT INSERTED.InvoiceID
                 VALUES
-                    (@InvoiceCode, @CreatedBy, @CustomerID, @SubTotal, @DiscountAmount, @VATRate,
+                    (@InvoiceCode, @CreatedBy, @CustomerID, @SubTotal, @DiscountAmount, @PromotionID, @PromotionCode, @VATRate,
                      @TotalAmount, @PaymentMethod, @PointsUsed, @PointsDiscountAmount);";
 
             decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
@@ -120,6 +126,9 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     customerId.HasValue ? (object)customerId.Value : DBNull.Value;
                 AddMoneyParameter(command, "@SubTotal", totals.Subtotal);
                 AddMoneyParameter(command, "@DiscountAmount", totals.DiscountAmount);
+                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId.HasValue ? (object)promotionId.Value : DBNull.Value;
+                command.Parameters.Add("@PromotionCode", SqlDbType.VarChar, 30).Value =
+                    string.IsNullOrWhiteSpace(promotionCode) ? (object)DBNull.Value : promotionCode;
 
                 SqlParameter rateParameter = command.Parameters.Add("@VATRate", SqlDbType.Decimal);
                 rateParameter.Precision = 5;
@@ -131,6 +140,23 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 command.Parameters.Add("@PointsUsed", SqlDbType.Int).Value = pointsUsed;
                 AddMoneyParameter(command, "@PointsDiscountAmount", totals.PointsDiscountAmount);
                 return (int)command.ExecuteScalar();
+            }
+        }
+
+        private static void ConsumePromotion(SqlConnection connection, SqlTransaction transaction, int? promotionId)
+        {
+            if (!promotionId.HasValue) return;
+            const string sql = @"
+                UPDATE Promotions WITH (UPDLOCK, ROWLOCK)
+                SET UsedCount = UsedCount + 1
+                WHERE PromotionID = @PromotionID AND IsDeleted = 0 AND IsActive = 1
+                  AND CAST(GETDATE() AS DATE) BETWEEN StartDate AND EndDate
+                  AND (UsageLimit IS NULL OR UsedCount < UsageLimit);";
+            using (var command = new SqlCommand(sql, connection, transaction))
+            {
+                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId.Value;
+                if (command.ExecuteNonQuery() != 1)
+                    throw new InvalidOperationException("Mã giảm giá vừa hết lượt sử dụng hoặc không còn hiệu lực.");
             }
         }
 

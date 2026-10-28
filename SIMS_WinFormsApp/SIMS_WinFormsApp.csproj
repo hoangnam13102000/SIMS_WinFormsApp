@@ -79,6 +79,24 @@
     <Compile Include="Views\Sales\ucReturnManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Sales\PromotionManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\PromotionManagementPage.Designer.cs">
+      <DependentUpon>PromotionManagementPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\PromotionDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\PromotionDetailsDialog.Designer.cs">
+      <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\PromotionEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\PromotionEditorDialog.Designer.cs">
+      <DependentUpon>PromotionEditorDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Sales\ucReturnManagement.Designer.cs">
       <DependentUpon>ucReturnManagement.cs</DependentUpon>
     </Compile>
@@ -775,6 +793,9 @@
     <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\PromotionManagementPage.resx">
+      <DependentUpon>PromotionManagementPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\ucOrderManagement.resx">
       <DependentUpon>ucOrderManagement.cs</DependentUpon>
     </EmbeddedResource>
@@ -846,6 +867,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Models\DTOs\PromotionDtos.cs" />
+    <Compile Include="Repositories\Interfaces\IPromotionRepository.cs" />
+    <Compile Include="Repositories\Implementations\PromotionRepository.cs" />
+    <Compile Include="Services\Interfaces\IPromotionManagementService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlPromotionService.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>

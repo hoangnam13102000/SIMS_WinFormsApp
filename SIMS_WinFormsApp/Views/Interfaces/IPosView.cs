@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Models.DTOs.Promotions;
 
 namespace SIMS_WinFormsApp.Views.Interfaces
 {
@@ -32,6 +33,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         void SetCustomer(CustomerLookupDto customer);
         void ClearCustomer();
 
+        void BindPromotions(IReadOnlyList<PromotionDto> promotions);
         void SetTotals(CartTotalsDto totals);
         void SetPromoCode(string code);
         void SetPaymentMethods(IReadOnlyList<string> methods);

@@ -68,6 +68,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void InitializeView()
         {
+            SetDesignPreviewContent(_designerPreview);
             SetHeaderIcon(IconChar.UserPen, AppColors.Accent);
             foreach (GenderOption option in GenderOption.All)
                 _designerGender.Items.Add(option);

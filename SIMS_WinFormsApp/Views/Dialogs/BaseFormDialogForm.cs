@@ -44,14 +44,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         private IconPictureBox _headerIconBox;
         private Label _titleLabel;
         private DialogCloseButton _closeButton;
-        private Panel _designerPreviewContent;
-        private Panel _designerPreviewFooter;
-        private Label _designerPreviewHeading;
-        private Label _designerPreviewDescription;
-        private Label _designerPreviewFieldLabel;
-        private TextBox _designerPreviewTextBox;
-        private Button _designerPreviewCancelButton;
-        private Button _designerPreviewSaveButton;
 
         private readonly List<PrimaryButton> _footerButtons = new List<PrimaryButton>();
         private Rectangle _ownerBounds;
@@ -174,12 +166,12 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             Padding = new Padding((int)DialogTheme.BorderWidth);
 
             InitializeComponent();
+
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
             }
 
-            RemoveDesignerPreviewControls();
             ApplyThemeColors();
             KeyDown += BaseFormDialogForm_KeyDown;
             Resize += BaseFormDialogForm_Resize;
@@ -188,23 +180,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             RepositionHeaderControls();
             RepositionFooterButtons();
             _frame.ApplyClip(this);
-        }
-
-        private void RemoveDesignerPreviewControls()
-        {
-            Control contentPreview = _bodyScrollPanel.Controls["designerPreviewContent"];
-            if (contentPreview != null)
-            {
-                _bodyScrollPanel.Controls.Remove(contentPreview);
-                contentPreview.Dispose();
-            }
-
-            Control footerPreview = _footerPanel.Controls["designerPreviewFooter"];
-            if (footerPreview != null)
-            {
-                _footerPanel.Controls.Remove(footerPreview);
-                footerPreview.Dispose();
-            }
         }
 
         public BaseFormDialogForm(IWin32Window owner) : this()

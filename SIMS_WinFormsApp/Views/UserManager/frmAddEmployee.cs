@@ -91,6 +91,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void InitializeView()
         {
+            SetDesignPreviewContent(_designerPreview);
             SetHeaderIcon(IconChar.UserPlus, AppColors.Accent);
             _designerFullName.MaxLength = 100;
             _designerEmail.MaxLength = 150;

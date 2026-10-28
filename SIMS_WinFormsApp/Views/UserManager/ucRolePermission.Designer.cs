@@ -109,14 +109,26 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
             _subtitleLabel.Location = new Point(2, 45);
             _subtitleLabel.Text = "Chọn vai trò, điều chỉnh quyền và lưu thay đổi";
-            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _headerActions.AutoSize = true;
+            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            _headerActions.AutoSize = false;
             _headerActions.FlowDirection = FlowDirection.LeftToRight;
-            _headerActions.Location = new Point(600, 18);
+            _headerActions.Size = new Size(338, 40);
             _headerActions.WrapContents = false;
             _headerActions.Controls.AddRange(new Control[] { _resetButton, _saveButton });
-            ConfigureButton(_resetButton, "Khôi phục mặc định", false, 176);
-            ConfigureButton(_saveButton, "Lưu thay đổi", true, 132);
+            _resetButton.BackColor = Color.White;
+            _resetButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
+            _resetButton.FlatStyle = FlatStyle.Flat;
+            _resetButton.ForeColor = Color.FromArgb(51, 65, 85);
+            _resetButton.Margin = new Padding(0, 0, 10, 0);
+            _resetButton.Size = new Size(176, 40);
+            _resetButton.Text = "Khôi phục mặc định";
+            _saveButton.BackColor = Color.FromArgb(37, 99, 235);
+            _saveButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
+            _saveButton.FlatStyle = FlatStyle.Flat;
+            _saveButton.ForeColor = Color.White;
+            _saveButton.Margin = new Padding(0, 0, 10, 0);
+            _saveButton.Size = new Size(132, 40);
+            _saveButton.Text = "Lưu thay đổi";
 
             _content.ColumnCount = 2;
             _content.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 370F));
@@ -128,7 +140,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _content.Controls.Add(_rolesPanel, 0, 0);
             _content.Controls.Add(_permissionsPanel, 1, 0);
 
-            ConfigureCard(_rolesPanel);
+            _rolesPanel.BackColor = Color.White;
+            _rolesPanel.Dock = DockStyle.Fill;
+            _rolesPanel.Margin = new Padding(0, 0, 16, 0);
+            _rolesPanel.Padding = new Padding(16);
+            _rolesPanel.BorderStyle = BorderStyle.FixedSingle;
             _rolesPanel.Controls.Add(_rolesGrid);
             _rolesPanel.Controls.Add(_rolesEmptyLabel);
             _rolesPanel.Controls.Add(_roleSearchTextBox);
@@ -153,7 +169,16 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _rolesGrid.AllowUserToDeleteRows = false;
             _rolesGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             _rolesGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            ConfigureGrid(_rolesGrid);
+            _rolesGrid.BackgroundColor = Color.White;
+            _rolesGrid.BorderStyle = BorderStyle.None;
+            _rolesGrid.ColumnHeadersHeight = 38;
+            _rolesGrid.EnableHeadersVisualStyles = false;
+            _rolesGrid.GridColor = Color.FromArgb(226, 232, 240);
+            _rolesGrid.RowHeadersVisible = false;
+            _rolesGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+            _rolesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(71, 85, 105);
+            _rolesGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
+            _rolesGrid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
             _rolesGrid.Location = new Point(16, 82);
             _rolesGrid.MultiSelect = false;
             _rolesGrid.ReadOnly = true;
@@ -162,9 +187,15 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _rolesGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _roleNameColumn, _roleCountColumn, _roleCodeColumn
             });
-            ConfigureTextColumn(_roleNameColumn, "Vai trò", "RoleName", 48F);
-            ConfigureTextColumn(_roleCountColumn, "Quyền", "PermissionCount", 25F);
-            ConfigureTextColumn(_roleCodeColumn, "Mã", "RoleCode", 27F);
+            _roleNameColumn.FillWeight = 48F;
+            _roleNameColumn.HeaderText = "Vai trò";
+            _roleNameColumn.Name = "RoleName";
+            _roleCountColumn.FillWeight = 25F;
+            _roleCountColumn.HeaderText = "Quyền";
+            _roleCountColumn.Name = "PermissionCount";
+            _roleCodeColumn.FillWeight = 27F;
+            _roleCodeColumn.HeaderText = "Mã";
+            _roleCodeColumn.Name = "RoleCode";
             _roleCodeColumn.Visible = false;
             _rolesEmptyLabel.Anchor = AnchorStyles.None;
             _rolesEmptyLabel.AutoSize = true;
@@ -173,7 +204,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _rolesEmptyLabel.Text = "Không tìm thấy vai trò phù hợp.";
             _rolesEmptyLabel.Visible = false;
 
-            ConfigureCard(_permissionsPanel);
+            _permissionsPanel.BackColor = Color.White;
+            _permissionsPanel.Dock = DockStyle.Fill;
+            _permissionsPanel.Margin = new Padding(0, 0, 16, 0);
+            _permissionsPanel.Padding = new Padding(16);
+            _permissionsPanel.BorderStyle = BorderStyle.FixedSingle;
             _permissionsPanel.Controls.Add(_permissionsGrid);
             _permissionsPanel.Controls.Add(_permissionEmptyLabel);
             _permissionsPanel.Controls.Add(_adminInfoLabel);
@@ -197,16 +232,31 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _permissionsGrid.AllowUserToDeleteRows = false;
             _permissionsGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             _permissionsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            ConfigureGrid(_permissionsGrid);
+            _permissionsGrid.BackgroundColor = Color.White;
+            _permissionsGrid.BorderStyle = BorderStyle.None;
+            _permissionsGrid.ColumnHeadersHeight = 38;
+            _permissionsGrid.EnableHeadersVisualStyles = false;
+            _permissionsGrid.GridColor = Color.FromArgb(226, 232, 240);
+            _permissionsGrid.RowHeadersVisible = false;
+            _permissionsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+            _permissionsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(71, 85, 105);
+            _permissionsGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
+            _permissionsGrid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
             _permissionsGrid.Location = new Point(16, 58);
             _permissionsGrid.RowTemplate.Height = 42;
             _permissionsGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             _permissionsGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _groupColumn, _permissionColumn, _descriptionColumn, _enabledColumn
             });
-            ConfigureTextColumn(_groupColumn, "Nhóm", "Group", 18F);
-            ConfigureTextColumn(_permissionColumn, "Quyền", "Permission", 25F);
-            ConfigureTextColumn(_descriptionColumn, "Mô tả", "Description", 47F);
+            _groupColumn.FillWeight = 18F;
+            _groupColumn.HeaderText = "Nhóm";
+            _groupColumn.Name = "Group";
+            _permissionColumn.FillWeight = 25F;
+            _permissionColumn.HeaderText = "Quyền";
+            _permissionColumn.Name = "Permission";
+            _descriptionColumn.FillWeight = 47F;
+            _descriptionColumn.HeaderText = "Mô tả";
+            _descriptionColumn.Name = "Description";
             _descriptionColumn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             _enabledColumn.FillWeight = 10F;
             _enabledColumn.HeaderText = "Bật";
@@ -255,46 +305,5 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ResumeLayout(false);
         }
 
-        private static void ConfigureCard(Panel panel)
-        {
-            panel.BackColor = Color.White;
-            panel.Dock = DockStyle.Fill;
-            panel.Margin = new Padding(0, 0, 16, 0);
-            panel.Padding = new Padding(16);
-            panel.BorderStyle = BorderStyle.FixedSingle;
-        }
-
-        private static void ConfigureGrid(DataGridView grid)
-        {
-            grid.BackgroundColor = Color.White;
-            grid.BorderStyle = BorderStyle.None;
-            grid.ColumnHeadersHeight = 38;
-            grid.EnableHeadersVisualStyles = false;
-            grid.GridColor = Color.FromArgb(226, 232, 240);
-            grid.RowHeadersVisible = false;
-            grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(71, 85, 105);
-            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
-            grid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
-        }
-
-        private static void ConfigureTextColumn(
-            DataGridViewTextBoxColumn column, string title, string name, float fill)
-        {
-            column.FillWeight = fill;
-            column.HeaderText = title;
-            column.Name = name;
-        }
-
-        private static void ConfigureButton(Button button, string text, bool primary, int width)
-        {
-            button.BackColor = primary ? Color.FromArgb(37, 99, 235) : Color.White;
-            button.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            button.FlatStyle = FlatStyle.Flat;
-            button.ForeColor = primary ? Color.White : Color.FromArgb(51, 65, 85);
-            button.Margin = new Padding(0, 0, 10, 0);
-            button.Size = new Size(width, 40);
-            button.Text = text;
-        }
     }
 }

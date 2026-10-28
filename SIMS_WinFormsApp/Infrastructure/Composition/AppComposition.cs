@@ -185,7 +185,12 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
 
         public static IPromotionService CreatePromotionService()
         {
-            return new DemoPromotionService();
+            return new SqlPromotionService(new PromotionRepository(CreateConnectionFactory()));
+        }
+
+        public static IPromotionManagementService CreatePromotionManagementService()
+        {
+            return new SqlPromotionService(new PromotionRepository(CreateConnectionFactory()));
         }
 
         public static IBarcodeScannerLauncher CreateBarcodeScannerLauncher()

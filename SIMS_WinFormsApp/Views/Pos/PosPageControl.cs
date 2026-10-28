@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
@@ -79,6 +80,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             {
                 if (!string.IsNullOrWhiteSpace(_promoTextBox.Text))
                     PromoApplyRequested?.Invoke(this, _promoTextBox.Text.Trim());
+            };
+            _promoDropdownButton.Click += (sender, args) =>
+            {
+                if (_promoTextBox.Items.Count > 0)
+                {
+                    _promoTextBox.Focus();
+                    _promoTextBox.DroppedDown = true;
+                }
             };
             _holdButton.Click += (sender, args) => HoldCartRequested?.Invoke(this, EventArgs.Empty);
             _heldCartsButton.Click += (sender, args) => ViewHeldCartsRequested?.Invoke(this, EventArgs.Empty);
@@ -197,6 +206,27 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _customerPoints = 0;
             _usePointsCheckBox.Checked = false;
             _usePointsCheckBox.Visible = false;
+        }
+
+        public void BindPromotions(IReadOnlyList<PromotionDto> promotions)
+        {
+            string currentCode = _promoTextBox.Text;
+            _promoTextBox.BeginUpdate();
+            try
+            {
+                _promoTextBox.DataSource = null;
+                _promoTextBox.Items.Clear();
+                _promoTextBox.DisplayMember = nameof(PromotionDto.Code);
+                _promoTextBox.DataSource = promotions == null
+                    ? new List<PromotionDto>()
+                    : promotions.ToList();
+                _promoTextBox.SelectedIndex = -1;
+                _promoTextBox.Text = currentCode;
+            }
+            finally
+            {
+                _promoTextBox.EndUpdate();
+            }
         }
 
         public void SetTotals(CartTotalsDto totals)
