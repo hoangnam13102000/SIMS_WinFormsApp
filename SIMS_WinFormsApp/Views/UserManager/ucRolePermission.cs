@@ -117,7 +117,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
                             AddPermissionRow(
                                 group.Title,
                                 toggleEntry.Toggle.Label,
-                                JoinDescription(group.Hint, toggleEntry.Toggle.Description),
+                                toggleEntry.Toggle.Description,
                                 toggleEntry.Toggle,
                                 isAdminRole);
                         }
@@ -129,7 +129,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
                                 AddPermissionRow(
                                     group.Title,
                                     resource.Name + " — " + tier.Label,
-                                    JoinDescription(resource.Description, tier.Description),
+                                    tier.Description,
                                     tier,
                                     isAdminRole);
                             }
@@ -160,13 +160,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             DataGridViewRow row = _permissionsGrid.Rows[index];
             row.Tag = permission.Permission;
             row.Cells[_enabledColumn.Index].ReadOnly = isAdminRole;
-        }
-
-        private static string JoinDescription(string first, string second)
-        {
-            if (string.IsNullOrWhiteSpace(first)) return second ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(second)) return first;
-            return first + " " + second;
         }
 
         private void OnRoleSelectionChanged(object sender, EventArgs e)

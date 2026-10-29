@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.Infrastructure;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -23,10 +24,12 @@ namespace SIMS_WinFormsApp.Views.Shell
         private string _currentPageKey;
         private int _unreadCount;
         private int _orderBadgeCount;
+        private bool _notificationsEnabled;
         private bool _sidebarCollapsed;
         private int _expandedSidebarWidth = 240;
         private ToolStripMenuItem _accountNameMenuItem;
         private ToolStripMenuItem _accountEmailMenuItem;
+        private SettingsQuickPopup _settingsPopup;
 
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
@@ -44,6 +47,10 @@ namespace SIMS_WinFormsApp.Views.Shell
         public MainLayoutControl(string headerSubtitle)
         {
             InitializeComponent();
+            ConfigureFloatingButtons();
+            _settingsButton.BringToFront();
+            _chatbotButton.BringToFront();
+            _notificationsEnabled = ReadNotificationsEnabled();
             _sidebarToolTip = new ToolTip(components);
             _sidebarToolTip.SetToolTip(_sidebarToggleButton, Lang.Get("sidebar.toggle.tooltip"));
             SetSubtitle(headerSubtitle);
@@ -65,11 +72,8 @@ namespace SIMS_WinFormsApp.Views.Shell
                     LogoutRequested?.Invoke(this, EventArgs.Empty);
             };
             _chatbotButton.Click += (sender, args) => AiChatRequested?.Invoke(this, EventArgs.Empty);
-            _settingsButton.Click += (sender, args) =>
-            {
-                if (_pages.ContainsKey("settings"))
-                    ShowPage("settings");
-            };
+            ConfigureSettingsMenu();
+            _settingsButton.Click += (sender, args) => ToggleSettingsPopup();
             _sidebarToggleButton.Click += (sender, args) => SetSidebarCollapsed(!_sidebarCollapsed);
             _navigationTree.NodeMouseDoubleClick += (sender, args) =>
             {
@@ -79,7 +83,76 @@ namespace SIMS_WinFormsApp.Views.Shell
             ThemeManager.Instance.ThemeChanged += OnAppearanceChanged;
             LanguageManager.Instance.LanguageChanged += OnAppearanceChanged;
             UpdateHeaderMenuLabels();
+            ApplyNotificationPreference();
             ApplyAppearance();
+        }
+
+        private void ConfigureFloatingButtons()
+        {
+            ConfigureFloatingButton(_chatbotButton, IconChar.Robot);
+            ConfigureFloatingButton(_settingsButton, IconChar.Gear);
+        }
+
+        private void ConfigureFloatingButton(IconButton button, IconChar icon)
+        {
+            button.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            button.BackColor = AppColors.Blue;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(29, 78, 216);
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(29, 78, 216);
+            button.ForeColor = Color.White;
+            button.IconChar = icon;
+            button.IconColor = Color.White;
+            button.IconFont = IconFont.Solid;
+            button.IconSize = 18;
+            button.ImageAlign = ContentAlignment.MiddleCenter;
+            button.Text = string.Empty;
+            button.UseVisualStyleBackColor = false;
+            button.Cursor = Cursors.Hand;
+            button.Size = new Size(40, 40);
+            SetCircularRegion(button);
+            button.SizeChanged += (sender, args) =>
+                SetCircularRegion(button);
+        }
+
+        private static void SetCircularRegion(Control control)
+        {
+            Region previousRegion = control.Region;
+            using (var path = new GraphicsPath())
+            {
+                path.AddEllipse(0, 0, control.Width, control.Height);
+                control.Region = new Region(path);
+            }
+            previousRegion?.Dispose();
+        }
+
+        private void ToggleSettingsPopup()
+        {
+            if (_settingsPopup.Visible)
+            {
+                _settingsPopup.Hide();
+                return;
+            }
+
+            UpdateHeaderMenuLabels();
+            _settingsPopup.NotificationsEnabled = _notificationsEnabled;
+            Form owner = FindForm();
+            if (owner == null)
+                return;
+
+            Rectangle workingArea = Screen.FromControl(_settingsButton).WorkingArea;
+            Point anchor = _settingsButton.PointToScreen(Point.Empty);
+            int x = anchor.X + _settingsButton.Width - _settingsPopup.Width;
+            int y = anchor.Y - _settingsPopup.Height - 10;
+
+            x = Math.Max(workingArea.Left + 8, Math.Min(x, workingArea.Right - _settingsPopup.Width - 8));
+            if (y < workingArea.Top + 8)
+                y = anchor.Y + _settingsButton.Height + 10;
+            y = Math.Max(workingArea.Top + 8, Math.Min(y, workingArea.Bottom - _settingsPopup.Height - 8));
+            _settingsPopup.Location = new Point(x, y);
+            _settingsPopup.Show(owner);
+            _settingsPopup.BringToFront();
         }
 
         public void SetSubtitle(string subtitle)
@@ -278,6 +351,52 @@ namespace SIMS_WinFormsApp.Views.Shell
             _notificationsTitleMenuItem.Text = _unreadCount > 0
                 ? _notificationsTitleMenuItem.Text + " (" + _unreadCount + ")"
                 : _notificationsTitleMenuItem.Text;
+
+            if (_settingsPopup != null)
+            {
+                _settingsPopup.SetLabels(
+                    Lang.Get("quickSettings.title"),
+                    Lang.Get("quickSettings.subtitle"),
+                    Lang.Get("quickSettings.section"),
+                    Lang.Get("quickSettings.language"),
+                    LanguageManager.Instance.IsVietnamese
+                        ? Lang.Get("quickSettings.language.value.vi")
+                        : Lang.Get("quickSettings.language.value.en"),
+                    LanguageManager.Instance.IsVietnamese,
+                    Lang.Get("quickSettings.notifications"),
+                    _notificationsEnabled
+                        ? Lang.Get("quickSettings.notifications.on")
+                        : Lang.Get("quickSettings.notifications.off"),
+                    Lang.Get("quickSettings.footer"));
+            }
+        }
+
+        private void ConfigureSettingsMenu()
+        {
+            _settingsPopup = new SettingsQuickPopup();
+            _settingsPopup.NotificationsEnabled = _notificationsEnabled;
+            _settingsPopup.LanguageToggleRequested += (sender, args) => LanguageManager.Instance.Toggle();
+            _settingsPopup.NotificationsEnabledChanged += enabled =>
+            {
+                _notificationsEnabled = enabled;
+                AppSettingsStore.Set("sims.notifications.enabled", _notificationsEnabled.ToString());
+                ApplyNotificationPreference();
+                UpdateHeaderMenuLabels();
+            };
+            UpdateHeaderMenuLabels();
+        }
+
+        private static bool ReadNotificationsEnabled()
+        {
+            string value = AppSettingsStore.Get("sims.notifications.enabled", "true");
+            return !bool.TryParse(value, out bool enabled) || enabled;
+        }
+
+        private void ApplyNotificationPreference()
+        {
+            _notificationsButton.Muted = !_notificationsEnabled;
+            _notificationsButton.Enabled = _notificationsEnabled;
+            _notificationsButton.Count = _notificationsEnabled ? _unreadCount : 0;
         }
 
         public void SetBadge(string key, int count)
@@ -292,7 +411,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         public void SetUnreadCount(int count)
         {
             _unreadCount = Math.Max(0, count);
-            _notificationsButton.Count = _unreadCount;
+            _notificationsButton.Count = _notificationsEnabled ? _unreadCount : 0;
             UpdateHeaderMenuLabels();
         }
 
@@ -524,6 +643,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _root.BackColor = AppColors.PageBg;
             _contentHost.BackColor = AppColors.PageBg;
             _navigationTree.BackColor = Color.FromArgb(24, 35, 52);
+            _settingsPopup?.ApplyAppearance();
             Refresh();
         }
 

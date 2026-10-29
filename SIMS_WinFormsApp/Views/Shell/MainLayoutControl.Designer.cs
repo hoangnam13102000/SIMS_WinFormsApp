@@ -33,8 +33,8 @@ namespace SIMS_WinFormsApp.Views.Shell
         private Panel _contentHost;
         private Panel _footerPanel;
         private Label _footerStatusLabel;
-        private Button _settingsButton;
-        private Button _chatbotButton;
+        private IconButton _settingsButton;
+        private IconButton _chatbotButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -42,6 +42,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             {
                 ThemeManager.Instance.ThemeChanged -= OnAppearanceChanged;
                 LanguageManager.Instance.LanguageChanged -= OnAppearanceChanged;
+                _settingsPopup?.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -73,8 +74,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._notificationsTitleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._notificationsEmptyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._settingsButton = new System.Windows.Forms.Button();
-            this._chatbotButton = new System.Windows.Forms.Button();
+            this._settingsButton = new FontAwesome.Sharp.IconButton();
+            this._chatbotButton = new FontAwesome.Sharp.IconButton();
             this._root.SuspendLayout();
             this._headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._logoIcon)).BeginInit();
@@ -366,24 +367,20 @@ namespace SIMS_WinFormsApp.Views.Shell
             // _settingsButton
             // 
             this._settingsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._settingsButton.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this._settingsButton.Location = new System.Drawing.Point(1174, 704);
+            this._settingsButton.Location = new System.Drawing.Point(1216, 726);
             this._settingsButton.Name = "_settingsButton";
-            this._settingsButton.Size = new System.Drawing.Size(54, 54);
+            this._settingsButton.Size = new System.Drawing.Size(40, 40);
             this._settingsButton.TabIndex = 2;
-            this._settingsButton.Text = "⚙";
-            this._settingsButton.UseVisualStyleBackColor = true;
+            this._settingsButton.UseVisualStyleBackColor = false;
             // 
             // _chatbotButton
             // 
             this._chatbotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._chatbotButton.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this._chatbotButton.Location = new System.Drawing.Point(1110, 704);
+            this._chatbotButton.Location = new System.Drawing.Point(1170, 726);
             this._chatbotButton.Name = "_chatbotButton";
-            this._chatbotButton.Size = new System.Drawing.Size(54, 54);
+            this._chatbotButton.Size = new System.Drawing.Size(40, 40);
             this._chatbotButton.TabIndex = 1;
-            this._chatbotButton.Text = "AI";
-            this._chatbotButton.UseVisualStyleBackColor = true;
+            this._chatbotButton.UseVisualStyleBackColor = false;
             // 
             // MainLayoutControl
             // 

@@ -37,6 +37,11 @@ namespace SIMS_WinFormsApp.Views.Sales
                 ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
                 _themeSubscribed = false;
             }
+            if (disposing && _languageSubscribed)
+            {
+                SIMS_WinFormsApp.UI.I18n.LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+                _languageSubscribed = false;
+            }
             if (disposing && components != null)
                 components.Dispose();
             base.Dispose(disposing);
