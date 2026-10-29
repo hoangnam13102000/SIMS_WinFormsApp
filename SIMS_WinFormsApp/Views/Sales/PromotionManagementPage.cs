@@ -9,6 +9,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Toast;
 
@@ -21,6 +22,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         private PromotionEditorDialog _editorDialog;
         private int _selectedId;
         private bool _themeSubscribed;
+        private bool _languageSubscribed;
 
         public PromotionManagementPage()
         {
@@ -37,11 +39,14 @@ namespace SIMS_WinFormsApp.Views.Sales
         {
             InitializeComponent();
             ApplyPageTheme();
+            _grid.DataBindingComplete += (sender, args) => ApplyGridHeaders();
 
             if (_service != null)
             {
                 ThemeManager.Instance.ThemeChanged += OnThemeChanged;
                 _themeSubscribed = true;
+                LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
+                _languageSubscribed = true;
                 Load += (sender, args) => Reload();
                 _reloadButton.Click += (sender, args) => Reload();
                 _newPromotionButton.Click += (sender, args) => OpenEditor(null);
@@ -66,11 +71,36 @@ namespace SIMS_WinFormsApp.Views.Sales
                 _grid.Rows.Add(103, "FREESHIP", "Miễn phí vận chuyển", "20.000đ", "01/10/2026 - 31/10/2026", "0/50", "Không", null);
                 _pager.SetTotalCount(3);
             }
+
+            ApplyGridHeaders();
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
         {
             ApplyPageTheme();
+        }
+
+        private void OnLanguageChanged(object sender, EventArgs e)
+        {
+            ApplyGridHeaders();
+        }
+
+        private void ApplyGridHeaders()
+        {
+            SetGridHeader("PromotionId", "promotion.grid.id");
+            SetGridHeader("Code", "promotion.grid.code");
+            SetGridHeader("Name", "promotion.grid.name");
+            SetGridHeader("Discount", "promotion.grid.discount");
+            SetGridHeader("Period", "promotion.grid.period");
+            SetGridHeader("Usage", "promotion.grid.usage");
+            SetGridHeader("IsActive", "promotion.grid.status");
+            SetGridHeader("Actions", "promotion.grid.actions");
+        }
+
+        private void SetGridHeader(string columnName, string resourceKey)
+        {
+            if (_grid.Columns.Contains(columnName))
+                _grid.Columns[columnName].HeaderText = Lang.Get(resourceKey);
         }
 
         private void ApplyPageTheme()

@@ -719,6 +719,12 @@
     <Compile Include="Views\Shell\MainLayoutControl.Designer.cs">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Shell\SettingsQuickPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Shell\SettingsQuickPopup.Designer.cs">
+      <DependentUpon>SettingsQuickPopup.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />
@@ -776,6 +782,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shell\SettingsQuickPopup.resx">
+      <DependentUpon>SettingsQuickPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\SystemManagement\frmMailConfig.resx">
       <DependentUpon>frmMailConfig.cs</DependentUpon>
