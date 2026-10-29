@@ -50,8 +50,6 @@ INSERT INTO Permissions (PermissionCode, Description) VALUES
 ('REPORT_INVENTORY',    N'Báo cáo tồn kho, biểu đồ xu hướng tồn'),
 ('REPORT_REVENUE',      N'Thống kê doanh thu, biểu đồ xu hướng bán'),
 ('REPORT_PROFIT',       N'Báo cáo lợi nhuận'),
-('ORDER_VIEW',          N'Xem đơn hàng online từ khách'),
-('ORDER_MANAGE',        N'Xác nhận / hủy đơn hàng online từ khách'),
 ('BACKUP_MANAGE',       N'Xem trang Sao lưu & Khôi phục, tự sao lưu / khôi phục DB từ file backup'),
 ('RETURN_EXCHANGE_CREATE',  N'Tạo yêu cầu đổi/trả hàng cho hóa đơn'),
 ('RETURN_EXCHANGE_APPROVE', N'Duyệt / từ chối yêu cầu đổi/trả hàng giá trị lớn'),
@@ -70,7 +68,7 @@ SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'SALES_STAFF'), PermissionID
 FROM Permissions
 WHERE PermissionCode IN ('STOCK_VIEW','PRODUCT_SEARCH','INVOICE_CREATE','INVOICE_CANCEL',
                           'RETURN_EXCHANGE','RETURN_EXCHANGE_CREATE','EXCEPTION_REPORT_SEND',
-                          'EXCEPTION_REPORT_CREATE','CUSTOMER_MANAGE','ORDER_VIEW','ORDER_MANAGE');
+                          'EXCEPTION_REPORT_CREATE','CUSTOMER_MANAGE');
 
 INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'INVENTORY_MANAGER'), PermissionID
@@ -727,10 +725,10 @@ GO
 -- minh hoa constraint CK_Return_ApprovalRequired
 
 -- ---- 14. Tra hang loi ve NCC (SupplierReturns) ----
--- Bang nay KHONG co trigger rieng - logic tru kho/cong no NCC nam trong
+-- Bang nay KHONG co trigger rieng - logic tru kho nam trong
 -- SupplierReturnDAO.java, tai lap y het o day: tru InventoryBatch.RemainingQty
--- (lo Ca phe bot DA HET HAN), tru Products.Stock, ghi InventoryTransactions
--- (SUPPLIER_RETURN, OUT), cong don Suppliers.DebtBalance.
+-- (lo Ca phe bot DA HET HAN), tru Products.Stock va ghi InventoryTransactions
+-- (SUPPLIER_RETURN, OUT).
 DECLARE @SR_SupplierID INT = (SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình');
 DECLARE @SR_ProductID  INT = (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g');
 DECLARE @SR_BatchID    INT = (SELECT BatchID FROM InventoryBatch WHERE LotNumber = N'LOT-CAPHE-EXP-001');
@@ -761,7 +759,6 @@ SELECT @SR_ProductID, 'SUPPLIER_RETURN', 'OUT', @SR_Qty,
        (SELECT UserID FROM Users WHERE Username='invmgr'), N'Trả hàng hết hạn về NCC An Bình'
 FROM Products WHERE ProductID = @SR_ProductID;
 
-UPDATE Suppliers SET DebtBalance = DebtBalance + (@SR_Qty * @SR_UnitPrice) WHERE SupplierID = @SR_SupplierID;
 GO
 
 -- ---- 15. Huy huy kho (StockDisposals) ----

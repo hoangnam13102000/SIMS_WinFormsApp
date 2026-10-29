@@ -24,6 +24,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly ProductManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
+        private readonly ContextMenuStrip _optionsMenu;
         private readonly LocalProductImageStore _imageStore = new LocalProductImageStore();
         private readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
         private int _pageIndex;
@@ -37,6 +38,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public ucProductManagement(ICatalogAdminService service)
         {
             InitializeComponent();
+            _optionsMenu = new ContextMenuStrip(components);
+            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
+            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
+            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
+            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             if (service == null) return;
 
             _service = service;
@@ -78,9 +84,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 LoadPage();
             };
             _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
-            _importButton.Click += (sender, args) => ImportProducts();
-            _exportCsvButton.Click += (sender, args) => ExportProducts(new CsvTableExporter());
-            _exportExcelButton.Click += (sender, args) => ExportProducts(new ExcelTableExporter());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) =>

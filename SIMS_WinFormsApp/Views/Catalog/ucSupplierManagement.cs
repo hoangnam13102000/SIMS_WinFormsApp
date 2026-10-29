@@ -22,6 +22,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly SupplierManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
+        private readonly ContextMenuStrip _optionsMenu;
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
@@ -33,6 +34,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public ucSupplierManagement(ICatalogAdminService service)
         {
             InitializeComponent();
+            _optionsMenu = new ContextMenuStrip(components);
+            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportSuppliers(new CsvTableExporter()));
+            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportSuppliers(new ExcelTableExporter()));
+            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportSuppliers());
+            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             if (service == null) return;
 
             _service = service;
@@ -48,11 +54,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             {
                 _searchTimer.Stop();
                 _searchTimer.Start();
-            };
-            _debtComboBox.SelectedIndexChanged += (sender, args) =>
-            {
-                _pageIndex = 0;
-                LoadPage();
             };
             _pageSizeComboBox.SelectedIndexChanged += (sender, args) =>
             {
@@ -74,9 +75,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 LoadPage();
             };
             _addButton.Click += (sender, args) => EditSupplier(_presenter.NewDraft());
-            _importButton.Click += (sender, args) => ImportSuppliers();
-            _exportCsvButton.Click += (sender, args) => ExportSuppliers(new CsvTableExporter());
-            _exportExcelButton.Click += (sender, args) => ExportSuppliers(new ExcelTableExporter());
             _suppliersGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();
@@ -90,8 +88,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _suppliersGrid.Rows.Clear();
             try
             {
-                string debtFilter = _debtComboBox.SelectedIndex == 1 ? "DEBT" : null;
-                TablePageResult result = _presenter.Load(_pageIndex, _pageSize, _searchTextBox.Text, debtFilter);
+                TablePageResult result = _presenter.Load(_pageIndex, _pageSize, _searchTextBox.Text);
                 _totalCount = result.TotalCount;
                 if (_pageIndex >= PageCount)
                 {
@@ -108,7 +105,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                         row.Email,
                         row.Address,
                         row.SuppliedItems,
-                        CatalogFormat.Money(row.DebtBalance),
                         IconBitmapCache.GetActionStrip(IconChar.Trash, AppColors.Error));
                 }
 
@@ -210,7 +206,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void ExportSuppliers(ITableDataExporter exporter)
         {
-            string[] headers = { "Tên nhà cung cấp", "Số điện thoại", "Email", "Địa chỉ", "Mặt hàng cung cấp", "Công nợ" };
+            string[] headers = { "Tên nhà cung cấp", "Số điện thoại", "Email", "Địa chỉ", "Mặt hàng cung cấp" };
             TableExportRunner.Run(
                 FindForm(), exporter, "Nhà cung cấp", () => headers, _presenter.ExportRows);
         }

@@ -5,13 +5,20 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.Shell
 {
     public partial class MainLayoutControl : UserControl
     {
+        private static readonly Font NotificationReadFont =
+            new Font("Segoe UI", 8.5F, FontStyle.Regular);
+        private static readonly Font NotificationUnreadFont =
+            new Font("Segoe UI", 8.5F, FontStyle.Bold);
+
         private readonly Dictionary<string, Control> _pages =
             new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, TreeNode> _pageNodes =
@@ -19,6 +26,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         private readonly Dictionary<string, string> _pageLabels =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly List<TreeNode> _sectionNodes = new List<TreeNode>();
+        private readonly List<ToolStripMenuItem> _notificationItems = new List<ToolStripMenuItem>();
         private readonly ToolTip _sidebarToolTip;
         private TreeNode _currentSection;
         private string _currentPageKey;
@@ -34,11 +42,13 @@ namespace SIMS_WinFormsApp.Views.Shell
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
         public Control ChatbotButton => _chatbotButton;
+        public bool NotificationsEnabled => _notificationsEnabled;
 
         public event EventHandler LogoutRequested;
         public event EventHandler ProfileRequested;
         public event EventHandler<string> PageChanged;
         public event EventHandler AiChatRequested;
+        public event EventHandler<int> NotificationReadRequested;
 
         public MainLayoutControl() : this("Cửa hàng thực phẩm sạch")
         {
@@ -59,6 +69,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             _navigationTree.NodeMouseClick += NavigationTree_NodeMouseClick;
             _notificationsButton.Click += (sender, args) =>
                 _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
+            _notificationsContextMenu.ItemClicked += (sender, args) =>
+            {
+                if (args.ClickedItem.Tag is int)
+                    NotificationReadRequested?.Invoke(this, (int)args.ClickedItem.Tag);
+            };
             _avatarControl.Click += (sender, args) => ShowAccountMenu();
             _userNameLabel.Click += (sender, args) => ShowAccountMenu();
             _userEmailLabel.Click += (sender, args) => ShowAccountMenu();
@@ -413,6 +428,48 @@ namespace SIMS_WinFormsApp.Views.Shell
             _unreadCount = Math.Max(0, count);
             _notificationsButton.Count = _notificationsEnabled ? _unreadCount : 0;
             UpdateHeaderMenuLabels();
+        }
+
+        internal void SetNotifications(IReadOnlyList<NotificationDto> notifications, int unreadCount)
+        {
+            foreach (ToolStripMenuItem item in _notificationItems)
+            {
+                _notificationsContextMenu.Items.Remove(item);
+                item.Dispose();
+            }
+            _notificationItems.Clear();
+
+            _notificationsEmptyMenuItem.Visible = notifications == null || notifications.Count == 0;
+            if (notifications != null)
+            {
+                int insertIndex = _notificationsContextMenu.Items.IndexOf(_notificationsEmptyMenuItem);
+                foreach (NotificationDto notification in notifications)
+                {
+                    string marker = notification.IsRead ? string.Empty : "● ";
+                    var item = new ToolStripMenuItem(
+                        marker + notification.Title + Environment.NewLine +
+                        notification.Message + Environment.NewLine +
+                        "Ngày yêu cầu: " + notification.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
+                    item.Tag = notification.NotificationId;
+                    item.AutoSize = false;
+                    item.Size = new Size(360, 72);
+                    item.Padding = new Padding(8, 4, 8, 4);
+                    item.TextAlign = ContentAlignment.MiddleLeft;
+                    item.Font = notification.IsRead
+                        ? NotificationReadFont
+                        : NotificationUnreadFont;
+                    _notificationItems.Add(item);
+                    _notificationsContextMenu.Items.Insert(insertIndex++, item);
+                }
+            }
+
+            SetUnreadCount(unreadCount);
+        }
+
+        public void ShowNotificationToast(string title, string message)
+        {
+            if (_notificationsEnabled)
+                AppToast.Info(this, title, message);
         }
 
         public void SetSidebarCollapsed(bool collapsed)

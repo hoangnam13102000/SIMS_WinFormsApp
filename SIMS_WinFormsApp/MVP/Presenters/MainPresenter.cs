@@ -17,6 +17,7 @@ using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Services.Backup;
+using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Controls;
@@ -36,7 +37,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly Func<string> _getEmail;
         private readonly Func<string> _getRole;
         private readonly IUserManagementService _userManagementService;
+        private readonly SIMS_WinFormsApp.Repositories.Interfaces.IAuditLogWriter _auditLogWriter;
+        private HashSet<AppPermission> _currentPermissions;
         private DailyBackupScheduler _dailyBackupScheduler;
+        private ReturnManagementDataService _notificationService;
+        private Timer _notificationTimer;
+        private readonly HashSet<int> _seenNotificationIds = new HashSet<int>();
+        private readonly HashSet<int> _readNotificationIds = new HashSet<int>();
+        private bool _notificationBaselineLoaded;
+        private bool _notificationFailureShown;
         private bool _isLoggingOut;
 
         private static readonly string[] SectionLabelKeysInOrder =
@@ -56,7 +65,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("profile", "header.dropdown.profile"),
             ("pos", "sidebar.page.pos"),
             ("orders", "sidebar.page.orders"),
-            ("invoices", "sidebar.page.invoices"),
             ("returns", "sidebar.page.returns"),
             ("products", "sidebar.page.products"),
             ("categories", "sidebar.page.categories"),
@@ -87,6 +95,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _getRole = getRole ?? (() => UserSession.Instance.CurrentUser?.RoleName ?? string.Empty);
             _userManagementService = userManagementService ??
                 AppComposition.CreateUserManagementService();
+            _auditLogWriter = AppComposition.CreateAuditLogWriter();
             _view.ViewReady += OnViewReady;
             _view.LogoutRequested += OnLogoutRequested;
             _view.ProfileRequested += OnProfileRequested;
@@ -99,6 +108,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             try
             {
                 var permissions = await Task.Run(GetCurrentUserPermissions);
+                _currentPermissions = permissions;
                 _layout = BuildLayout(permissions);
                 _layout.AiChatRequested += OnAiChatRequested;
                 _view.AttachLayout(_layout);
@@ -108,8 +118,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 var role = _getRole() ?? string.Empty;
                 _view.SetUserInfo(name, email);
                 _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
-                _layout.SetBadge("orders", 3);
-                _layout.SetUnreadCount(2);
+                StartNotificationPolling();
+                RefreshUnviewedInvoiceBadge(permissions);
                 _layout.ShowPage(permissions.Contains(AppPermission.DASHBOARD_VIEW) ? "dashboard" : "profile");
 
                 StartDailyBackupScheduler();
@@ -122,6 +132,67 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     "Lỗi khởi tạo",
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void StartNotificationPolling()
+        {
+            var user = UserSession.Instance.CurrentUser;
+            if (user == null)
+                return;
+
+            _notificationService = new ReturnManagementDataService(
+                AppComposition.CreateConnectionFactory());
+            _layout.NotificationReadRequested += OnNotificationReadRequested;
+            _notificationTimer = new Timer { Interval = 10000 };
+            _notificationTimer.Tick += (sender, args) => RefreshNotifications();
+            RefreshNotifications();
+            _notificationTimer.Start();
+        }
+
+        private void RefreshNotifications()
+        {
+            var user = UserSession.Instance.CurrentUser;
+            if (_layout == null || user == null || _notificationService == null)
+                return;
+
+            try
+            {
+                var notifications = _notificationService.GetCompletedReturns(user.UserId);
+                foreach (var notification in notifications)
+                {
+                    if (_seenNotificationIds.Add(notification.NotificationId))
+                    {
+                        if (_notificationBaselineLoaded)
+                            _layout.ShowNotificationToast(notification.Title, notification.Message);
+                        else
+                            _readNotificationIds.Add(notification.NotificationId);
+                    }
+                    notification.IsRead = _readNotificationIds.Contains(notification.NotificationId);
+                }
+
+                _notificationBaselineLoaded = true;
+                _layout.SetNotifications(
+                    notifications,
+                    notifications.Count(notification => !notification.IsRead));
+                _notificationFailureShown = false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    "[MainPresenter] Failed to load notifications: " + ex);
+                if (!_notificationFailureShown)
+                {
+                    _notificationFailureShown = true;
+                    _layout.ShowNotificationToast(
+                        "Không thể tải thông báo", ex.Message);
+                }
+            }
+        }
+
+        private void OnNotificationReadRequested(object sender, int notificationId)
+        {
+            _readNotificationIds.Add(notificationId);
+            RefreshNotifications();
         }
 
         private void StartDailyBackupScheduler()
@@ -190,9 +261,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
 
             if (HasAnyPermission(permissions,
-                    AppPermission.INVOICE_CREATE, AppPermission.ORDER_VIEW, AppPermission.ORDER_MANAGE,
-                    AppPermission.ORDER_VIEW_ASSIGNED, AppPermission.ORDER_PROCESS_ASSIGNED,
-                    AppPermission.ORDER_ASSIGN, AppPermission.INVOICE_VIEW_OWN,
+                    AppPermission.INVOICE_CREATE, AppPermission.INVOICE_VIEW_OWN,
                     AppPermission.INVOICE_VIEW_ALL, AppPermission.INVOICE_CANCEL,
                     AppPermission.INVOICE_CANCEL_REQUEST, AppPermission.RETURN_EXCHANGE_CREATE,
                      AppPermission.RETURN_EXCHANGE_APPROVE, AppPermission.PROMOTION_MANAGE))
@@ -201,34 +270,37 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (HasAnyPermission(permissions, AppPermission.INVOICE_CREATE))
                 {
                     layout.AddLazyPage("pos", Lang.Get("sidebar.page.pos"),
-                        () => PosPage.Create(_getDisplayName()), IconChar.CartShopping);
+                        () => PosPage.Create(
+                            _getDisplayName(),
+                            () => RefreshUnviewedInvoiceBadge(permissions),
+                            invoiceCode => MarkInvoiceViewed(null, invoiceCode, permissions)),
+                        IconChar.CartShopping);
                 }
                 if (HasAnyPermission(permissions, AppPermission.PROMOTION_MANAGE))
                     layout.AddLazyPage("promotions", "Mã giảm giá",
                         () => new PromotionManagementPage(AppComposition.CreatePromotionManagementService()), IconChar.Tags);
                 if (HasAnyPermission(permissions,
-                        AppPermission.ORDER_VIEW, AppPermission.ORDER_MANAGE, AppPermission.ORDER_VIEW_ASSIGNED,
-                        AppPermission.ORDER_PROCESS_ASSIGNED, AppPermission.ORDER_ASSIGN))
+                        AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
+                        AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST,
+                        AppPermission.RETURN_EXCHANGE_CREATE))
                 {
                     layout.AddLazyPage("orders", Lang.Get("sidebar.page.orders"),
-                        () => new ucOrderManagement(), IconChar.ListUl);
-                }
-                if (HasAnyPermission(permissions,
-                        AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
-                        AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST))
-                {
-                    layout.AddLazyPage("invoices", Lang.Get("sidebar.page.invoices"),
                         () => PrepareEmbeddedForm(new InvoiceManagementPage(
                             AppComposition.CreateConnectionFactory(),
                             UserSession.Instance.CurrentUser?.UserId ?? 0,
-                            permissions.Contains(AppPermission.INVOICE_VIEW_ALL) ||
-                            permissions.Contains(AppPermission.INVOICE_CANCEL))), IconChar.Receipt);
+                            CanViewAllInvoices(permissions),
+                            permissions.Contains(AppPermission.RETURN_EXCHANGE_CREATE),
+                            permissions.Contains(AppPermission.RETURN_EXCHANGE_APPROVE),
+                            invoiceId => MarkInvoiceViewed(invoiceId, null, permissions))), IconChar.Receipt);
                 }
                 if (HasAnyPermission(permissions,
                         AppPermission.RETURN_EXCHANGE_CREATE, AppPermission.RETURN_EXCHANGE_APPROVE))
                 {
                     layout.AddLazyPage("returns", Lang.Get("sidebar.page.returns"),
-                        () => new ucReturnManagement(), IconChar.RotateLeft);
+                        () => new ucReturnManagement(
+                            AppComposition.CreateConnectionFactory(),
+                            UserSession.Instance.CurrentUser?.UserId ?? 0,
+                            permissions.Contains(AppPermission.RETURN_EXCHANGE_APPROVE)), IconChar.RotateLeft);
                 }
             }
 
@@ -379,6 +451,54 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private void OnPageChanged(object sender, string pageKey)
         {
             System.Diagnostics.Debug.WriteLine($"[MainPresenter] Navigated -> {pageKey}");
+            if (string.Equals(pageKey, "orders", StringComparison.OrdinalIgnoreCase))
+                RefreshUnviewedInvoiceBadge(_currentPermissions);
+        }
+
+        private void RefreshUnviewedInvoiceBadge(HashSet<AppPermission> permissions)
+        {
+            if (_layout == null)
+                return;
+
+            try
+            {
+                int currentUserId = UserSession.Instance.CurrentUser?.UserId ?? 0;
+                _layout.SetBadge("orders", _auditLogWriter.CountUnviewedInvoices(
+                    currentUserId, CanViewAllInvoices(permissions), DateTime.Today));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainPresenter] Failed to load unseen invoice count: " + ex);
+                _view.ShowMessage(
+                    "Không thể cập nhật số hóa đơn chưa xem.\r\n" + ex.Message,
+                    "Lỗi tải thông tin đơn hàng",
+                    MessageBoxIcon.Warning);
+            }
+        }
+
+        private void MarkInvoiceViewed(int? invoiceId, string invoiceCode, HashSet<AppPermission> permissions)
+        {
+            try
+            {
+                _auditLogWriter.RecordInvoiceViewed(
+                    UserSession.Instance.CurrentUser?.UserId ?? 0, invoiceId, invoiceCode);
+
+                RefreshUnviewedInvoiceBadge(permissions);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[MainPresenter] Failed to record invoice view: " + ex);
+                _view.ShowMessage(
+                    "Không thể cập nhật trạng thái đã xem của hóa đơn.\r\n" + ex.Message,
+                    "Lỗi cập nhật đơn hàng",
+                    MessageBoxIcon.Warning);
+            }
+        }
+
+        private static bool CanViewAllInvoices(HashSet<AppPermission> permissions)
+        {
+            return permissions.Contains(AppPermission.INVOICE_VIEW_ALL) ||
+                   permissions.Contains(AppPermission.INVOICE_CANCEL);
         }
 
         private AiChatPopupForm _aiChatPopup;
@@ -428,9 +548,16 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             if (_layout != null)
             {
                 _layout.AiChatRequested -= OnAiChatRequested;
+                _layout.NotificationReadRequested -= OnNotificationReadRequested;
                 if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
                     _aiChatPopup.Close();
                 _aiChatPopup = null;
+            }
+            if (_notificationTimer != null)
+            {
+                _notificationTimer.Stop();
+                _notificationTimer.Dispose();
+                _notificationTimer = null;
             }
             _dailyBackupScheduler?.Dispose();
             _dailyBackupScheduler = null;

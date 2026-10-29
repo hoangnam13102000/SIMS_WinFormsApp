@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
@@ -32,9 +33,12 @@ namespace SIMS_WinFormsApp.Views.Toast
                 Reflow(owner, siblings);
             };
 
-            Point location = NextLocation(owner, siblings);
+            Point location = NextLocation(owner, siblings, toast.CardWidth);
             siblings.Add(toast);
-            toast.Present(location, durationMs > 0 ? durationMs : DefaultDurationMs);
+            int effectiveDuration = durationMs > 0 ? durationMs : DefaultDurationMs;
+            effectiveDuration = Math.Min(15000,
+                Math.Max(effectiveDuration, DefaultDurationMs + (message ?? string.Empty).Length * 12));
+            toast.Present(location, effectiveDuration);
         }
 
         public void Success(Control anchor, string message) => Show(anchor, DialogType.Success, null, message, DefaultDurationMs);
@@ -55,14 +59,15 @@ namespace SIMS_WinFormsApp.Views.Toast
             return anchor as Form ?? anchor.FindForm();
         }
 
-        private static Point NextLocation(Form owner, List<ToastNotification> siblings)
+        private static Point NextLocation(
+            Form owner, List<ToastNotification> siblings, int toastWidth)
         {
             int y = owner.Top + MarginTop;
             foreach (ToastNotification sibling in siblings)
             {
                 y += sibling.Height + Spacing;
             }
-            int x = owner.Left + owner.Width - ToastNotification.CardWidth - MarginRight;
+            int x = owner.Left + owner.Width - toastWidth - MarginRight;
             return new Point(x, y);
         }
 

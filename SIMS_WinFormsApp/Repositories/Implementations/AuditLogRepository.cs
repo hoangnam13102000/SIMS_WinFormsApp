@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.Repositories.Interfaces;
@@ -11,6 +12,44 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 {
     public class AuditLogRepository : IAuditLogRepository, IAuditLogWriter
     {
+        public int CountUnviewedInvoices(int userId, bool canViewAll, DateTime today)
+        {
+            DateTime start = today.Date;
+            DateTime end = start.AddDays(1);
+            using (var db = new SimsDataContext())
+                return (from invoice in db.Invoices
+                        where invoice.CreatedAt >= start && invoice.CreatedAt < end
+                            && (canViewAll || invoice.CreatedBy == userId)
+                            && !db.AuditLogs.Any(log => log.UserID == userId
+                                && log.Action == "INVOICE_VIEW" && log.TableName == "Invoices"
+                                && log.RecordID == invoice.InvoiceID)
+                        select invoice.InvoiceID).Count();
+        }
+
+        public void RecordInvoiceViewed(int userId, int? invoiceId, string invoiceCode)
+        {
+            using (var db = new SimsDataContext())
+            {
+                if (!invoiceId.HasValue && !string.IsNullOrWhiteSpace(invoiceCode))
+                    invoiceId = db.Invoices.Where(invoice => invoice.InvoiceCode == invoiceCode)
+                        .Select(invoice => (int?)invoice.InvoiceID).FirstOrDefault();
+                if (!invoiceId.HasValue || db.AuditLogs.Any(log => log.UserID == userId
+                    && log.Action == "INVOICE_VIEW" && log.TableName == "Invoices"
+                    && log.RecordID == invoiceId.Value))
+                    return;
+                db.AuditLogs.InsertOnSubmit(new AuditLogEntity
+                {
+                    UserID = userId,
+                    Action = "INVOICE_VIEW",
+                    TableName = "Invoices",
+                    RecordID = invoiceId.Value,
+                    Detail = "Đã xem hóa đơn.",
+                    CreatedAt = DateTime.Now
+                });
+                db.SubmitChanges();
+            }
+        }
+
         public AuditLogPageResult GetPage(AuditLogQuery query)
         {
             query = query ?? new AuditLogQuery();

@@ -11,7 +11,9 @@ namespace SIMS_WinFormsApp.Views.Toast
 
     internal sealed partial class ToastNotification : Form
     {
-        internal const int CardWidth = 380;
+        private const int MinimumCardWidth = 380;
+        private const int MaximumCardWidth = 620;
+        internal int CardWidth => Width;
 
         private const int CardPadding = 16;
         private const int IconSize = 28;
@@ -30,6 +32,7 @@ namespace SIMS_WinFormsApp.Views.Toast
         private IconPictureBox _closeBox;
         private Label _titleLabel;
         private Label _messageLabel;
+        private Panel _contentPanel;
 
         /// <summary>Phát sinh khi toast đã fade-out xong và tự đóng, để ToastService dồn lại các toast còn lại.</summary>
         public event EventHandler Dismissed;
@@ -57,18 +60,30 @@ namespace SIMS_WinFormsApp.Views.Toast
             _accentColor = DialogTypeMetadata.GetAccentColor(type);
             BackColor = DialogTypeMetadata.GetSoftBgColor(type);
 
-            int textLeft = CardPadding + IconSize + TextGap;
-            int textWidth = Math.Max(60, CardWidth - textLeft - CardPadding - CloseSize - TextGap);
-            _titleLabel.MaximumSize = new Size(textWidth, 0);
             _titleLabel.Text = title ?? string.Empty;
-            _messageLabel.MaximumSize = new Size(textWidth, 0);
             _messageLabel.Text = message ?? string.Empty;
+            int textLeft = CardPadding + IconSize + TextGap;
+            int availableWidth = Screen.FromControl(owner ?? this).WorkingArea.Width - 48;
+            int maxCardWidth = Math.Max(MinimumCardWidth,
+                Math.Min(MaximumCardWidth, availableWidth));
+            int desiredTextWidth = Math.Max(
+                TextRenderer.MeasureText(_titleLabel.Text, _titleLabel.Font).Width,
+                TextRenderer.MeasureText(_messageLabel.Text, _messageLabel.Font).Width);
+            int cardWidth = Math.Max(MinimumCardWidth, Math.Min(maxCardWidth,
+                textLeft + desiredTextWidth + CardPadding + CloseSize + TextGap));
+            int textWidth = Math.Max(60, cardWidth - textLeft - CardPadding - CloseSize - TextGap);
+            _titleLabel.MaximumSize = new Size(textWidth, 0);
+            _messageLabel.MaximumSize = new Size(textWidth, 0);
             _messageLabel.Visible = !string.IsNullOrWhiteSpace(message);
             _iconBox.IconChar = DialogTypeMetadata.GetIcon(type);
             _iconBox.IconColor = _accentColor;
             _closeBox.Click += (s, e) => Dismiss();
             _messageLabel.PerformLayout();
             _titleLabel.PerformLayout();
+            Width = cardWidth;
+            _closeBox.Location = new Point(
+                cardWidth - CardPadding - CloseSize,
+                _closeBox.Top);
 
             const int LineGap = 3;
             int titleHeight = _titleLabel.PreferredSize.Height;
@@ -85,9 +100,29 @@ namespace SIMS_WinFormsApp.Views.Toast
 
             int contentBottom = Math.Max(_iconBox.Bottom,
                 _messageLabel.Visible ? _messageLabel.Bottom : _titleLabel.Bottom);
-            ClientSize = new Size(CardWidth, contentBottom + CardPadding);
+            int desiredHeight = contentBottom + CardPadding;
+            int availableHeight = Screen.FromControl(owner ?? this).WorkingArea.Height - 40;
+            int visibleHeight = Math.Min(desiredHeight, availableHeight);
+            ClientSize = new Size(cardWidth, visibleHeight);
 
-            AttachDismissOnClick(this);
+            Controls.Remove(_iconBox);
+            Controls.Remove(_titleLabel);
+            Controls.Remove(_messageLabel);
+            _contentPanel = new Panel
+            {
+                AutoScroll = desiredHeight > visibleHeight,
+                BackColor = BackColor,
+                Location = Point.Empty,
+                Size = ClientSize,
+                AutoScrollMinSize = new Size(cardWidth, desiredHeight)
+            };
+            _contentPanel.Controls.Add(_iconBox);
+            _contentPanel.Controls.Add(_titleLabel);
+            _contentPanel.Controls.Add(_messageLabel);
+            Controls.Add(_contentPanel);
+            _closeBox.BringToFront();
+
+            AttachDismissOnClick(this, false);
 
             _fadeTimer.Interval = FadeStepMs;
             _fadeTimer.Tick += FadeTimer_Tick;
@@ -107,12 +142,14 @@ namespace SIMS_WinFormsApp.Views.Toast
             }
         }
 
-        private void AttachDismissOnClick(Control root)
+        private void AttachDismissOnClick(Control root, bool skipDismiss)
         {
-            root.Click += (s, e) => Dismiss();
+            skipDismiss |= ReferenceEquals(root, _contentPanel) && _contentPanel.AutoScroll;
+            if (!skipDismiss)
+                root.Click += (s, e) => Dismiss();
             foreach (Control child in root.Controls)
             {
-                AttachDismissOnClick(child);
+                AttachDismissOnClick(child, skipDismiss);
             }
         }
 

@@ -1,4 +1,5 @@
 using System;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
@@ -12,6 +13,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private readonly InvoiceDetails _invoice;
         private readonly PrintDocument _printDocument;
         private int _nextLineToPrint;
+        private Func<InvoiceDetails, bool> _returnRequestHandler;
 
         public InvoiceDetailsDialog()
             : this(CreateDesignerInvoice())
@@ -28,8 +30,29 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             InitializeComponent();
             _closeButton.Click += CloseButton_Click;
             _printButton.Click += ShowPrintPreview;
+            _returnButton.Click += ReturnButton_Click;
+            _returnButton.Visible = false;
             PopulateInvoice();
             ApplyThemeColors();
+        }
+
+        internal Func<InvoiceDetails, bool> ReturnRequestHandler
+        {
+            get => _returnRequestHandler;
+            set
+            {
+                _returnRequestHandler = value;
+                _returnButton.Visible = value != null && !_invoice.IsCancelled;
+            }
+        }
+
+        private void ReturnButton_Click(object sender, EventArgs e)
+        {
+            if (_returnRequestHandler != null && _returnRequestHandler(_invoice))
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
 
         private void CloseButton_Click(object sender, EventArgs e)
@@ -101,13 +124,22 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _totalValue.Text = FormatMoney(_invoice.TotalAmount);
 
             _linesGrid.Rows.Clear();
+            foreach (Control control in _receiptContent.Controls)
+            {
+                if (!ReferenceEquals(control, _receiptLogo))
+                    control.Dispose();
+            }
             _receiptContent.Controls.Clear();
 
-            AddReceiptLabel("CONNECT MART", 15F, true, AppColors.TextTitle);
-            AddReceiptLabel("HÓA ĐƠN BÁN HÀNG", 10F, true, AppColors.TextPrimary);
-            AddReceiptLabel(_invoice.InvoiceCode, 9F, true, AppColors.Accent);
-            AddReceiptLabel(_invoice.CreatedAt.ToString("dd/MM/yyyy HH:mm"), 8F, false, AppColors.TextMuted);
-            AddReceiptLabel("Khách: " + _invoice.CustomerName, 8F, false, AppColors.TextPrimary);
+            _receiptContent.Controls.Add(_receiptLogo);
+            AddReceiptLabel("SIMS", 15F, true, AppColors.TextTitle, true);
+            AddReceiptLabel("HÓA ĐƠN BÁN HÀNG", 9F, true, AppColors.TextSecondary, true);
+            AddReceiptLabel("Mã hóa đơn: " + _invoice.InvoiceCode, 9F, true, AppColors.Accent, true);
+            AddReceiptLabel(_invoice.CreatedAt.ToString("dd/MM/yyyy HH:mm"), 8F, false, AppColors.TextMuted, true);
+            AddReceiptSeparator();
+            AddReceiptLabel("Khách hàng: " + _invoice.CustomerName, 8F, false, AppColors.TextPrimary);
+            AddReceiptLabel("Nhân viên: " + _invoice.CashierName, 8F, false, AppColors.TextPrimary);
+            AddReceiptSeparator();
 
             foreach (InvoiceLine line in _invoice.Lines)
             {
@@ -124,32 +156,61 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     AppColors.TextSecondary);
             }
 
+            AddReceiptSeparator();
             AddReceiptLabel("Tạm tính: " + FormatMoney(_invoice.Subtotal), 8F, false, AppColors.TextSecondary);
             AddReceiptLabel(
                 "Giảm giá: " + FormatMoney(_invoice.DiscountAmount + _invoice.PointsDiscountAmount),
                 8F,
                 false,
                 AppColors.TextSecondary);
-            AddReceiptLabel("VAT: " + FormatMoney(_invoice.VatAmount), 8F, false, AppColors.TextSecondary);
-            AddReceiptLabel("TỔNG: " + FormatMoney(_invoice.TotalAmount), 11F, true, AppColors.Accent);
+            AddReceiptLabel(
+                "VAT (" + _invoice.VatRate.ToString("0.##") + "%): " + FormatMoney(_invoice.VatAmount),
+                8F,
+                false,
+                AppColors.TextSecondary);
+            AddReceiptLabel("TỔNG THANH TOÁN", 9F, true, AppColors.TextPrimary, true);
+            AddReceiptLabel(FormatMoney(_invoice.TotalAmount), 15F, true, AppColors.Accent, true);
             AddReceiptLabel("Thanh toán: " + GetPaymentName(_invoice.PaymentMethod), 8F, false, AppColors.TextSecondary);
             AddReceiptLabel(
                 _invoice.IsCancelled ? "HÓA ĐƠN ĐÃ HỦY" : "Cảm ơn quý khách!",
                 8F,
                 true,
-                _invoice.IsCancelled ? AppColors.Error : AppColors.Success);
+                _invoice.IsCancelled ? AppColors.Error : AppColors.Success,
+                true);
         }
 
-        private void AddReceiptLabel(string text, float size, bool bold, Color color)
+        private void AddReceiptLabel(string text, float size, bool bold, Color color, bool centered = false)
+        {
+            using (var font = new Font("Segoe UI", size, bold ? FontStyle.Bold : FontStyle.Regular))
+            {
+                Size textSize = TextRenderer.MeasureText(
+                    text ?? string.Empty,
+                    font,
+                    new Size(300, 1000),
+                    TextFormatFlags.WordBreak | TextFormatFlags.NoPadding);
+                _receiptContent.Controls.Add(new Label
+                {
+                    Text = text,
+                    Anchor = AnchorStyles.Top,
+                    AutoSize = false,
+                    Size = new Size(300, Math.Max(22, textSize.Height + 8)),
+                    Font = new Font(font, font.Style),
+                    ForeColor = color,
+                    TextAlign = centered ? ContentAlignment.MiddleCenter : ContentAlignment.MiddleLeft,
+                    Margin = new Padding(2, 2, 2, 2)
+                });
+            }
+        }
+
+        private void AddReceiptSeparator()
         {
             _receiptContent.Controls.Add(new Label
             {
-                Text = text,
-                AutoSize = true,
-                MaximumSize = new Size(320, 0),
-                Font = new Font("Segoe UI", size, bold ? FontStyle.Bold : FontStyle.Regular),
-                ForeColor = color,
-                Margin = new Padding(2, 4, 2, 4)
+                Anchor = AnchorStyles.Top,
+                BackColor = AppColors.Border,
+                Height = 1,
+                Margin = new Padding(2, 6, 2, 6),
+                Width = 300
             });
         }
 
@@ -184,11 +245,19 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _printButton.BackColor = AppColors.Accent;
             _printButton.ForeColor = Color.White;
             _printButton.FlatAppearance.BorderColor = AppColors.Accent;
+            _returnButton.BackColor = Color.FromArgb(239, 246, 255);
+            _returnButton.ForeColor = AppColors.Accent;
+            _returnButton.FlatAppearance.BorderColor = AppColors.Accent;
         }
 
         private void ShowPrintPreview(object sender, EventArgs e)
         {
             OpenPrintPreview(this);
+        }
+
+        private void _receiptLogo_Click(object sender, EventArgs e)
+        {
+            ShowPrintPreview(sender, e);
         }
 
         public void OpenPrintPreview(IWin32Window owner)
@@ -216,8 +285,21 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             using (var linePen = new Pen(Color.LightGray))
             {
                 float width = e.MarginBounds.Width;
-                DrawPrintLine(e.Graphics, "CONNECT MART", titleFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "HÓA ĐƠN BÁN HÀNG", boldFont, Brushes.Black, left, ref y, width);
+                Image logo = Properties.Resources.logo_icon;
+                if (logo != null)
+                {
+                    const int logoSize = 48;
+                    e.Graphics.DrawImage(
+                        logo,
+                        left + (width - logoSize) / 2,
+                        y,
+                        logoSize,
+                        logoSize);
+                    y += logoSize + 4;
+                }
+
+                DrawCenteredPrintLine(e.Graphics, "SIMS", titleFont, Brushes.Black, left, ref y, width);
+                DrawCenteredPrintLine(e.Graphics, "HÓA ĐƠN BÁN HÀNG", boldFont, Brushes.Black, left, ref y, width);
                 DrawPrintLine(e.Graphics, "Mã: " + _invoice.InvoiceCode, bodyFont, Brushes.Black, left, ref y, width);
                 DrawPrintLine(e.Graphics, "Ngày: " + _invoice.CreatedAt.ToString("dd/MM/yyyy HH:mm"), bodyFont, Brushes.Black, left, ref y, width);
                 DrawPrintLine(e.Graphics, "Khách hàng: " + _invoice.CustomerName, bodyFont, Brushes.Black, left, ref y, width);
@@ -271,6 +353,22 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             string value = text ?? string.Empty;
             float height = graphics.MeasureString(value, font, (int)width).Height;
             graphics.DrawString(value, font, brush, new RectangleF(x, y, width, height + 2));
+            y += height + 3;
+        }
+
+        private static void DrawCenteredPrintLine(
+            Graphics graphics,
+            string text,
+            Font font,
+            Brush brush,
+            float x,
+            ref float y,
+            float width)
+        {
+            string value = text ?? string.Empty;
+            float height = graphics.MeasureString(value, font, (int)width).Height;
+            using (var format = new StringFormat { Alignment = StringAlignment.Center })
+                graphics.DrawString(value, font, brush, new RectangleF(x, y, width, height + 2), format);
             y += height + 3;
         }
 

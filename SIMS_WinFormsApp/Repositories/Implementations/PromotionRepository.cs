@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.Repositories.Interfaces;
@@ -19,46 +20,22 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
         public IReadOnlyList<PromotionDto> GetAvailableForPos()
         {
-            const string sql = @"
-                SELECT PromotionID, Code, Name, DiscountType, DiscountValue, MaxDiscountAmount,
-                       MinOrderAmount, StartDate, EndDate, UsageLimit, UsedCount, IsActive,
-                       IsDeleted, ShowOnBanner
-                FROM Promotions
-                WHERE IsActive = 1
-                  AND IsDeleted = 0
-                  AND StartDate <= CAST(GETDATE() AS DATE)
-                  AND EndDate >= CAST(GETDATE() AS DATE)
-                  AND (UsageLimit IS NULL OR UsedCount < UsageLimit)
-                ORDER BY Code;";
-            var rows = new List<PromotionDto>();
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            using (var reader = command.ExecuteReader())
-                while (reader.Read()) rows.Add(Read(reader));
-            return rows;
+            using (var db = _connections.CreateDataContext())
+            {
+                DateTime today = DateTime.Today;
+                return db.Promotions.Where(p => p.IsActive && !p.IsDeleted
+                        && p.StartDate <= today && p.EndDate >= today
+                        && (!p.UsageLimit.HasValue || p.UsedCount < p.UsageLimit.Value))
+                    .OrderBy(p => p.Code).ToList().Select(Map).ToList();
+            }
         }
 
         public IReadOnlyList<PromotionDto> GetAll(string keyword, bool includeDeleted)
         {
-            const string sql = @"
-                SELECT PromotionID, Code, Name, DiscountType, DiscountValue, MaxDiscountAmount,
-                       MinOrderAmount, StartDate, EndDate, UsageLimit, UsedCount, IsActive,
-                       IsDeleted, ShowOnBanner
-                FROM Promotions
-                WHERE (@IncludeDeleted = 1 OR IsDeleted = 0)
-                  AND (@Keyword = N'' OR Code LIKE @Pattern OR Name LIKE @Pattern)
-                ORDER BY IsDeleted, StartDate DESC, Code;";
-            var rows = new List<PromotionDto>();
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            {
-                command.Parameters.Add("@IncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
-                command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 150).Value = keyword ?? string.Empty;
-                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 160).Value = "%" + (keyword ?? string.Empty) + "%";
-                using (var reader = command.ExecuteReader())
-                    while (reader.Read()) rows.Add(Read(reader));
-            }
-            return rows;
+            using (var db = _connections.CreateDataContext())
+                return Filter(db, keyword, includeDeleted).OrderBy(p => p.IsDeleted)
+                    .ThenByDescending(p => p.StartDate).ThenBy(p => p.Code)
+                    .ToList().Select(Map).ToList();
         }
 
         public PromotionPage GetPage(string keyword, bool includeDeleted, int pageIndex, int pageSize)
@@ -66,183 +43,132 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             if (pageIndex < 0) throw new ArgumentOutOfRangeException(nameof(pageIndex));
             if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
 
-            const string filter = @"
-                FROM Promotions
-                WHERE (@IncludeDeleted = 1 OR IsDeleted = 0)
-                  AND (@Keyword = N'' OR Code LIKE @Pattern OR Name LIKE @Pattern)";
-            const string rowsSql = @"
-                SELECT PromotionID, Code, Name, DiscountType, DiscountValue, MaxDiscountAmount,
-                       MinOrderAmount, StartDate, EndDate, UsageLimit, UsedCount, IsActive,
-                       IsDeleted, ShowOnBanner " + filter + @"
-                ORDER BY IsDeleted, StartDate DESC, Code
-                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
-            const string countSql = "SELECT COUNT(*) " + filter + ";";
-
-            var result = new PromotionPage { Rows = new List<PromotionDto>() };
-            using (var connection = Open())
-            using (var command = new SqlCommand(countSql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                AddSearchParameters(command, keyword, includeDeleted);
-                result.TotalCount = Convert.ToInt32(command.ExecuteScalar());
+                var filtered = Filter(db, keyword, includeDeleted);
+                return new PromotionPage
+                {
+                    TotalCount = filtered.Count(),
+                    Rows = filtered.OrderBy(p => p.IsDeleted).ThenByDescending(p => p.StartDate)
+                        .ThenBy(p => p.Code).Skip(checked(pageIndex * pageSize)).Take(pageSize)
+                        .ToList().Select(Map).ToList()
+                };
             }
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(rowsSql, connection))
-            {
-                AddSearchParameters(command, keyword, includeDeleted);
-                command.Parameters.Add("@Offset", SqlDbType.Int).Value = checked(pageIndex * pageSize);
-                command.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                var rows = new List<PromotionDto>();
-                using (var reader = command.ExecuteReader())
-                    while (reader.Read()) rows.Add(Read(reader));
-                result.Rows = rows;
-            }
-
-            return result;
         }
 
         public PromotionDto GetById(int promotionId)
         {
-            return QueryOne("WHERE PromotionID = @PromotionID", command =>
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId);
+            using (var db = _connections.CreateDataContext())
+            {
+                PromotionEntity entity = db.Promotions.SingleOrDefault(p => p.PromotionID == promotionId);
+                return entity == null ? null : Map(entity);
+            }
         }
 
         public PromotionDto GetByCode(string code)
         {
-            return QueryOne("WHERE Code = @Code", command =>
-                command.Parameters.Add("@Code", SqlDbType.VarChar, 30).Value = (code ?? string.Empty).Trim().ToUpperInvariant());
+            string normalized = (code ?? string.Empty).Trim().ToUpperInvariant();
+            using (var db = _connections.CreateDataContext())
+            {
+                PromotionEntity entity = db.Promotions.SingleOrDefault(p => p.Code == normalized);
+                return entity == null ? null : Map(entity);
+            }
         }
 
         public int Insert(PromotionEditDto dto)
         {
-            const string sql = @"
-                INSERT INTO Promotions
-                    (Code, Name, DiscountType, DiscountValue, MaxDiscountAmount, MinOrderAmount,
-                     StartDate, EndDate, UsageLimit, IsActive, ShowOnBanner, CreatedBy)
-                VALUES
-                    (@Code, @Name, @DiscountType, @DiscountValue, @MaxDiscountAmount, @MinOrderAmount,
-                     @StartDate, @EndDate, @UsageLimit, @IsActive, @ShowOnBanner, @CreatedBy);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                Bind(command, dto);
-                return (int)command.ExecuteScalar();
+                var promotion = new PromotionEntity();
+                Apply(promotion, dto);
+                promotion.IsDeleted = false;
+                promotion.UsedCount = 0;
+                db.Promotions.InsertOnSubmit(promotion);
+                db.SubmitChanges();
+                return promotion.PromotionID;
             }
         }
 
         public void Update(PromotionEditDto dto)
         {
-            const string sql = @"
-                UPDATE Promotions SET Code = @Code, Name = @Name, DiscountType = @DiscountType,
-                    DiscountValue = @DiscountValue, MaxDiscountAmount = @MaxDiscountAmount,
-                    MinOrderAmount = @MinOrderAmount, StartDate = @StartDate, EndDate = @EndDate,
-                    UsageLimit = @UsageLimit, IsActive = @IsActive, ShowOnBanner = @ShowOnBanner
-                WHERE PromotionID = @PromotionID AND IsDeleted = 0;";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                Bind(command, dto);
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = dto.PromotionId;
-                command.ExecuteNonQuery();
+                PromotionEntity promotion = db.Promotions.SingleOrDefault(p =>
+                    p.PromotionID == dto.PromotionId && !p.IsDeleted);
+                if (promotion == null) return;
+                Apply(promotion, dto);
+                db.SubmitChanges();
             }
         }
 
         public void SetActive(int promotionId, bool active)
         {
-            const string sql = "UPDATE Promotions SET IsActive = @Active WHERE PromotionID = @PromotionID AND IsDeleted = 0;";
-            ExecuteTwoParameters(sql, promotionId, active);
+            using (var db = _connections.CreateDataContext())
+            {
+                PromotionEntity promotion = db.Promotions.SingleOrDefault(p =>
+                    p.PromotionID == promotionId && !p.IsDeleted);
+                if (promotion == null) return;
+                promotion.IsActive = active;
+                db.SubmitChanges();
+            }
         }
 
         public void SoftDelete(int promotionId)
         {
-            const string sql = "UPDATE Promotions SET IsDeleted = 1, IsActive = 0, DeletedAt = GETDATE() WHERE PromotionID = @PromotionID;";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId;
-                command.ExecuteNonQuery();
+                PromotionEntity promotion = db.Promotions.SingleOrDefault(p => p.PromotionID == promotionId);
+                if (promotion == null) return;
+                promotion.IsDeleted = true;
+                promotion.IsActive = false;
+                promotion.DeletedAt = DateTime.Now;
+                db.SubmitChanges();
             }
         }
 
-        private PromotionDto QueryOne(string where, Action<SqlCommand> bind)
+        private static IQueryable<PromotionEntity> Filter(
+            SimsDataContext db, string keyword, bool includeDeleted)
         {
-            const string select = @"SELECT PromotionID, Code, Name, DiscountType, DiscountValue, MaxDiscountAmount,
-                       MinOrderAmount, StartDate, EndDate, UsageLimit, UsedCount, IsActive, IsDeleted, ShowOnBanner
-                FROM Promotions ";
-            using (var connection = Open())
-            using (var command = new SqlCommand(select + where, connection))
-            {
-                bind(command);
-                using (var reader = command.ExecuteReader())
-                    return reader.Read() ? Read(reader) : null;
-            }
+            string normalized = (keyword ?? string.Empty).Trim();
+            return db.Promotions.Where(p => (includeDeleted || !p.IsDeleted)
+                && (normalized == string.Empty || p.Code.Contains(normalized) || p.Name.Contains(normalized)));
         }
 
-        private static void AddSearchParameters(SqlCommand command, string keyword, bool includeDeleted)
+        private static void Apply(PromotionEntity entity, PromotionEditDto dto)
         {
-            command.Parameters.Add("@IncludeDeleted", SqlDbType.Bit).Value = includeDeleted;
-            command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 150).Value = keyword ?? string.Empty;
-            command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 160).Value = "%" + (keyword ?? string.Empty) + "%";
+            entity.Code = (dto.Code ?? string.Empty).Trim().ToUpperInvariant();
+            entity.Name = (dto.Name ?? string.Empty).Trim();
+            entity.DiscountType = dto.DiscountType;
+            entity.DiscountValue = dto.DiscountValue;
+            entity.MaxDiscountAmount = dto.MaxDiscountAmount;
+            entity.MinOrderAmount = dto.MinOrderAmount;
+            entity.StartDate = dto.StartDate.Date;
+            entity.EndDate = dto.EndDate.Date;
+            entity.UsageLimit = dto.UsageLimit;
+            entity.IsActive = dto.IsActive;
+            entity.ShowOnBanner = dto.ShowOnBanner;
+            entity.CreatedBy = dto.CreatedBy;
         }
 
-        private void ExecuteTwoParameters(string sql, int promotionId, bool active)
-        {
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            {
-                command.Parameters.Add("@Active", SqlDbType.Bit).Value = active;
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId;
-                command.ExecuteNonQuery();
-            }
-        }
-
-        private static void Bind(SqlCommand command, PromotionEditDto dto)
-        {
-            command.Parameters.Add("@Code", SqlDbType.VarChar, 30).Value = dto.Code.Trim().ToUpperInvariant();
-            command.Parameters.Add("@Name", SqlDbType.NVarChar, 150).Value = dto.Name.Trim();
-            command.Parameters.Add("@DiscountType", SqlDbType.VarChar, 10).Value = dto.DiscountType;
-            AddMoney(command, "@DiscountValue", dto.DiscountValue);
-            AddNullableMoney(command, "@MaxDiscountAmount", dto.MaxDiscountAmount);
-            AddMoney(command, "@MinOrderAmount", dto.MinOrderAmount);
-            command.Parameters.Add("@StartDate", SqlDbType.Date).Value = dto.StartDate.Date;
-            command.Parameters.Add("@EndDate", SqlDbType.Date).Value = dto.EndDate.Date;
-            command.Parameters.Add("@UsageLimit", SqlDbType.Int).Value = dto.UsageLimit.HasValue ? (object)dto.UsageLimit.Value : DBNull.Value;
-            command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = dto.IsActive;
-            command.Parameters.Add("@ShowOnBanner", SqlDbType.Bit).Value = dto.ShowOnBanner;
-            command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = dto.CreatedBy.HasValue ? (object)dto.CreatedBy.Value : DBNull.Value;
-        }
-
-        private static PromotionDto Read(SqlDataReader reader)
+        private static PromotionDto Map(PromotionEntity entity)
         {
             return new PromotionDto
             {
-                PromotionId = reader.GetInt32(0), Code = reader.GetString(1), Name = reader.GetString(2),
-                DiscountType = reader.GetString(3), DiscountValue = reader.GetDecimal(4),
-                MaxDiscountAmount = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
-                MinOrderAmount = reader.GetDecimal(6), StartDate = reader.GetDateTime(7), EndDate = reader.GetDateTime(8),
-                UsageLimit = reader.IsDBNull(9) ? (int?)null : reader.GetInt32(9), UsedCount = reader.GetInt32(10),
-                IsActive = reader.GetBoolean(11), IsDeleted = reader.GetBoolean(12), ShowOnBanner = reader.GetBoolean(13)
+                PromotionId = entity.PromotionID,
+                Code = entity.Code,
+                Name = entity.Name,
+                DiscountType = entity.DiscountType,
+                DiscountValue = entity.DiscountValue,
+                MaxDiscountAmount = entity.MaxDiscountAmount,
+                MinOrderAmount = entity.MinOrderAmount,
+                StartDate = entity.StartDate,
+                EndDate = entity.EndDate,
+                UsageLimit = entity.UsageLimit,
+                UsedCount = entity.UsedCount,
+                IsActive = entity.IsActive,
+                IsDeleted = entity.IsDeleted,
+                ShowOnBanner = entity.ShowOnBanner
             };
-        }
-
-        private SqlConnection Open()
-        {
-            SqlConnection connection = _connections.CreateConnection();
-            connection.Open();
-            return connection;
-        }
-
-        private static void AddMoney(SqlCommand command, string name, decimal value)
-        {
-            SqlParameter parameter = command.Parameters.Add(name, SqlDbType.Decimal);
-            parameter.Precision = 18; parameter.Scale = 0; parameter.Value = value;
-        }
-
-        private static void AddNullableMoney(SqlCommand command, string name, decimal? value)
-        {
-            SqlParameter parameter = command.Parameters.Add(name, SqlDbType.Decimal);
-            parameter.Precision = 18; parameter.Scale = 0; parameter.Value = value.HasValue ? (object)value.Value : DBNull.Value;
         }
     }
 }
