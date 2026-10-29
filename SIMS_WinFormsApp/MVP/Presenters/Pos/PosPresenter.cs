@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
@@ -24,6 +25,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly HeldCartStore _heldCartStore;
         private readonly Func<IWin32Window> _ownerWindowProvider;
         private readonly IUserSession _userSession;
+        private readonly Action _invoiceCreated;
+        private readonly Action<string> _invoiceViewed;
 
         private readonly PosCart _cart = new PosCart();
         private readonly CartCalculator _calculator = new CartCalculator();
@@ -48,7 +51,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
             Func<IWin32Window> ownerWindowProvider,
-            IUserSession userSession)
+            IUserSession userSession,
+            Action invoiceCreated = null,
+            Action<string> invoiceViewed = null)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
@@ -59,6 +64,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
             _ownerWindowProvider = ownerWindowProvider ?? throw new ArgumentNullException(nameof(ownerWindowProvider));
             _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
+            _invoiceCreated = invoiceCreated;
+            _invoiceViewed = invoiceViewed;
 
             _view.ViewReady += OnViewReady;
             _view.ProductSearchChanged += OnProductSearchChanged;
@@ -336,6 +343,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             ResetForNewSale();
             _view.SetBusy(false);
+            _invoiceCreated?.Invoke();
             DialogResult printChoice = MessageBox.Show(
                 owner,
                 "Hóa đơn " + invoiceCode + " đã được lưu thành công.\r\nBạn có muốn xem trước và in hóa đơn không?",
@@ -344,6 +352,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 MessageBoxIcon.Question);
             if (printChoice == DialogResult.Yes)
             {
+                _invoiceViewed?.Invoke(invoiceCode);
                 using (var dialog = new InvoiceDetailsDialog(receiptInvoice))
                     dialog.OpenPrintPreview(owner);
             }

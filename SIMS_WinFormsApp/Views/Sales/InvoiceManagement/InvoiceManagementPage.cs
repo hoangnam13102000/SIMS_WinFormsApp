@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
+using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
@@ -16,6 +15,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly int _currentUserId;
         private readonly bool _canViewAll;
+        private readonly bool _canCreateReturns;
+        private readonly bool _canApproveReturns;
+        private readonly Action<int> _onInvoiceViewed;
+        private readonly InvoiceManagementDataService _dataService;
         private bool _themeSubscribed;
 
         public InvoiceManagementPage()
@@ -24,10 +27,25 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         }
 
         public InvoiceManagementPage(IDbConnectionFactory connectionFactory, int currentUserId, bool canViewAll)
+            : this(connectionFactory, currentUserId, canViewAll, false, false)
+        {
+        }
+
+        public InvoiceManagementPage(
+            IDbConnectionFactory connectionFactory,
+            int currentUserId,
+            bool canViewAll,
+            bool canCreateReturns,
+            bool canApproveReturns,
+            Action<int> onInvoiceViewed = null)
         {
             _connectionFactory = connectionFactory;
+            _dataService = connectionFactory == null ? null : new InvoiceManagementDataService(connectionFactory);
             _currentUserId = currentUserId;
             _canViewAll = canViewAll;
+            _canCreateReturns = canCreateReturns;
+            _canApproveReturns = canApproveReturns;
+            _onInvoiceViewed = onInvoiceViewed;
 
             InitializeComponent();
             ConfigurePage();
@@ -48,7 +66,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 _invoicesGrid.CellMouseMove += InvoicesGrid_CellMouseMove;
                 _invoicesGrid.CellDoubleClick += (sender, args) =>
                 {
-                    if (args.RowIndex >= 0 && args.ColumnIndex != _actionsColumn.Index)
+                    if (args.RowIndex >= 0 &&
+                        args.ColumnIndex != _invoicesGrid.Columns["Actions"].Index)
                         ShowSelectedInvoice();
                 };
             }
@@ -67,9 +86,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         private void ConfigurePage()
         {
-            _title.Text = "Quản lý hóa đơn";
-            _subtitle.Text = "Tra cứu, xem chi tiết và xem trước hóa đơn bán hàng";
-            _exportButton.Text = "Lọc hóa đơn";
+            _title.Text = "Quản lý đơn hàng";
+            _subtitle.Text = "Tra cứu đơn hàng, xem chi tiết và in hóa đơn";
+            _exportButton.Text = "Lọc đơn hàng";
             _searchBox.Text = string.Empty;
             _fromDate.Value = DateTime.Today.AddDays(-30);
             _toDate.Value = DateTime.Today;
@@ -81,7 +100,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _invoicesGrid.RowTemplate.Height = 40;
             _invoicesGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
             _invoicesGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            _invoiceIdColumn.Visible = false;
+            _invoicesGrid.Columns["InvoiceId"].Visible = false;
             _invoicesGrid.Columns["Total"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             _invoicesGrid.Columns["Date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
         }
@@ -107,8 +126,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _exportButton.BackColor = AppColors.CancelBg;
             _exportButton.ForeColor = AppColors.TextPrimary;
             _exportButton.FlatAppearance.MouseOverBackColor = AppColors.CancelHover;
-            _actionsColumn.DefaultCellStyle.BackColor = AppColors.White;
-            _actionsColumn.DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
+            _invoicesGrid.Columns["Actions"].DefaultCellStyle.BackColor = AppColors.White;
+            _invoicesGrid.Columns["Actions"].DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
             _invoicesGrid.Columns["Print"].DefaultCellStyle.BackColor = AppColors.White;
             _invoicesGrid.Columns["Print"].DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
         }
@@ -141,57 +160,24 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
             try
             {
-                using (SqlConnection connection = _connectionFactory.CreateConnection())
-                using (SqlCommand command = connection.CreateCommand())
+                string status = _statusFilter.SelectedIndex == 1 ? "ACTIVE" :
+                    _statusFilter.SelectedIndex == 2 ? "CANCELLED" : "ALL";
+                var rows = _dataService.GetInvoices(_fromDate.Value.Date, _toDate.Value.Date,
+                    _canViewAll, _currentUserId, status, _searchBox.Text);
+                _invoicesGrid.Rows.Clear();
+                foreach (var row in rows)
                 {
-                    command.CommandText = @"
-SELECT i.InvoiceID, i.InvoiceCode, i.CreatedAt,
-       ISNULL(customer.FullName, N'Khách lẻ') AS CustomerName,
-       cashier.FullName AS CashierName, i.TotalAmount, i.Status
-FROM Invoices i
-INNER JOIN Users cashier ON cashier.UserID = i.CreatedBy
-LEFT JOIN Users customer ON customer.UserID = i.CustomerID
-WHERE i.CreatedAt >= @FromDate
-  AND i.CreatedAt < DATEADD(DAY, 1, @ToDate)
-  AND (@CanViewAll = 1 OR i.CreatedBy = @CurrentUserId)
-  AND (@Status = 'ALL' OR i.Status = @Status)
-  AND (@Search = '' OR i.InvoiceCode LIKE '%' + @Search + '%'
-       OR customer.FullName LIKE '%' + @Search + '%'
-       OR cashier.FullName LIKE '%' + @Search + '%')
-ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
-                    command.Parameters.Add("@FromDate", SqlDbType.Date).Value = _fromDate.Value.Date;
-                    command.Parameters.Add("@ToDate", SqlDbType.Date).Value = _toDate.Value.Date;
-                    command.Parameters.Add("@CanViewAll", SqlDbType.Bit).Value = _canViewAll;
-                    command.Parameters.Add("@CurrentUserId", SqlDbType.Int).Value = _currentUserId;
-                    command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value =
-                        _statusFilter.SelectedIndex == 1 ? "ACTIVE" :
-                        _statusFilter.SelectedIndex == 2 ? "CANCELLED" : "ALL";
-                    command.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = _searchBox.Text.Trim();
-
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        _invoicesGrid.Rows.Clear();
-                        while (reader.Read())
-                        {
-                            bool cancelled = string.Equals(reader.GetString(6), "CANCELLED",
-                                StringComparison.OrdinalIgnoreCase);
-                            int rowIndex = _invoicesGrid.Rows.Add(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetDateTime(2).ToString("dd/MM/yyyy HH:mm"),
-                                reader.GetString(3),
-                                reader.GetString(4),
-                                FormatMoney(reader.GetDecimal(5)),
-                                cancelled ? "Đã hủy" : "Hoàn thành",
-                                IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)),
-                                IconBitmapCache.Get(IconChar.Print, AppColors.Accent, new Size(24, 24)));
-                            _invoicesGrid.Rows[rowIndex].Cells["Status"].Style.ForeColor =
-                                cancelled ? AppColors.Error : AppColors.Success;
-                            _invoicesGrid.Rows[rowIndex].Cells["Actions"].ToolTipText = "Xem chi tiết hóa đơn";
-                            _invoicesGrid.Rows[rowIndex].Cells["Print"].ToolTipText = "In hóa đơn";
-                        }
-                    }
+                    bool cancelled = string.Equals(row.Status, "CANCELLED", StringComparison.OrdinalIgnoreCase);
+                    int rowIndex = _invoicesGrid.Rows.Add(
+                        row.InvoiceId, row.InvoiceCode, row.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+                        row.CustomerName, row.CashierName, FormatMoney(row.TotalAmount),
+                        cancelled ? "Đã hủy" : "Hoàn thành",
+                        IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)),
+                        IconBitmapCache.Get(IconChar.Print, AppColors.Accent, new Size(24, 24)));
+                    _invoicesGrid.Rows[rowIndex].Cells["Status"].Style.ForeColor =
+                        cancelled ? AppColors.Error : AppColors.Success;
+                    _invoicesGrid.Rows[rowIndex].Cells["Actions"].ToolTipText = "Xem chi tiết hóa đơn";
+                    _invoicesGrid.Rows[rowIndex].Cells["Print"].ToolTipText = "In hóa đơn";
                 }
             }
             catch (Exception ex)
@@ -207,7 +193,7 @@ ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
                 return;
 
             _invoicesGrid.CurrentCell = _invoicesGrid.Rows[e.RowIndex].Cells["Invoice"];
-            if (e.ColumnIndex == _actionsColumn.Index)
+            if (e.ColumnIndex == _invoicesGrid.Columns["Actions"].Index)
                 ShowSelectedInvoice();
             else if (e.ColumnIndex == _invoicesGrid.Columns["Print"].Index)
                 PrintSelectedInvoice();
@@ -216,7 +202,8 @@ ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
         private void InvoicesGrid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
         {
             _invoicesGrid.Cursor = e.RowIndex >= 0 &&
-                (e.ColumnIndex == _actionsColumn.Index || e.ColumnIndex == _invoicesGrid.Columns["Print"].Index)
+                (e.ColumnIndex == _invoicesGrid.Columns["Actions"].Index ||
+                 e.ColumnIndex == _invoicesGrid.Columns["Print"].Index)
                 ? Cursors.Hand
                 : Cursors.Default;
         }
@@ -238,6 +225,7 @@ ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
                     return;
                 }
 
+                _onInvoiceViewed?.Invoke(invoiceId);
                 using (var dialog = new InvoiceDetailsDialog(invoice))
                     dialog.OpenPrintPreview(this);
             }
@@ -265,8 +253,13 @@ ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
                     return;
                 }
 
+                _onInvoiceViewed?.Invoke(invoiceId);
                 using (var dialog = new InvoiceDetailsDialog(invoice))
+                {
+                    if (_canCreateReturns)
+                        dialog.ReturnRequestHandler = CreateReturnRequest;
                     dialog.ShowDialog(this);
+                }
             }
             catch (Exception ex)
             {
@@ -277,78 +270,31 @@ ORDER BY i.CreatedAt DESC, i.InvoiceID DESC;";
 
         private InvoiceDetails LoadInvoiceDetails(int invoiceId)
         {
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
+            return _dataService.GetInvoiceDetails(invoiceId, _canViewAll, _currentUserId);
+        }
+
+        private bool CreateReturnRequest(InvoiceDetails invoice)
+        {
+            try
             {
-                connection.Open();
-                using (SqlCommand command = connection.CreateCommand())
+                using (var dialog = new InvoiceReturnDialog(
+                    _connectionFactory,
+                    invoice,
+                    _currentUserId,
+                    _canApproveReturns))
                 {
-                    command.CommandText = @"
-SELECT i.InvoiceID, i.InvoiceCode, i.CreatedAt, cashier.FullName,
-       ISNULL(customer.FullName, N'Khách lẻ'), i.PaymentMethod, i.SubTotal,
-       i.DiscountAmount, i.PromotionCode, i.VATRate, i.VATAmount, i.TotalAmount,
-       i.Status, i.CancelReason, i.CancelledAt, i.PointsUsed, i.PointsDiscountAmount
-FROM Invoices i
-INNER JOIN Users cashier ON cashier.UserID = i.CreatedBy
-LEFT JOIN Users customer ON customer.UserID = i.CustomerID
-WHERE i.InvoiceID = @InvoiceID
-  AND (@CanViewAll = 1 OR i.CreatedBy = @CurrentUserId);";
-                    command.Parameters.Add("@InvoiceID", SqlDbType.Int).Value = invoiceId;
-                    command.Parameters.Add("@CanViewAll", SqlDbType.Bit).Value = _canViewAll;
-                    command.Parameters.Add("@CurrentUserId", SqlDbType.Int).Value = _currentUserId;
-
-                    InvoiceDetails invoice;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (!reader.Read())
-                            return null;
-
-                        invoice = new InvoiceDetails
-                        {
-                            InvoiceId = reader.GetInt32(0),
-                            InvoiceCode = reader.GetString(1),
-                            CreatedAt = reader.GetDateTime(2),
-                            CashierName = reader.GetString(3),
-                            CustomerName = reader.GetString(4),
-                            PaymentMethod = reader.GetString(5),
-                            Subtotal = reader.GetDecimal(6),
-                            DiscountAmount = reader.GetDecimal(7),
-                            PromotionCode = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                            VatRate = reader.GetDecimal(9),
-                            VatAmount = reader.GetDecimal(10),
-                            TotalAmount = reader.GetDecimal(11),
-                            IsCancelled = string.Equals(reader.GetString(12), "CANCELLED",
-                                StringComparison.OrdinalIgnoreCase),
-                            CancelReason = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
-                            CancelledAt = reader.IsDBNull(14) ? (DateTime?)null : reader.GetDateTime(14),
-                            PointsUsed = reader.GetInt32(15),
-                            PointsDiscountAmount = reader.GetDecimal(16)
-                        };
-                    }
-
-                    command.Parameters.Clear();
-                    command.CommandText = @"
-SELECT p.ProductName, d.Quantity, d.UnitPrice, d.LineTotal
-FROM InvoiceDetails d
-INNER JOIN Products p ON p.ProductID = d.ProductID
-WHERE d.InvoiceID = @InvoiceID
-ORDER BY d.InvoiceDetailID;";
-                    command.Parameters.Add("@InvoiceID", SqlDbType.Int).Value = invoiceId;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            invoice.Lines.Add(new InvoiceLine
-                            {
-                                ProductName = reader.GetString(0),
-                                Quantity = reader.GetInt32(1),
-                                UnitPrice = reader.GetDecimal(2),
-                                LineTotal = reader.GetDecimal(3)
-                            });
-                        }
-                    }
-
-                    return invoice;
+                    if (dialog.ShowDialog(this) != DialogResult.OK)
+                        return false;
                 }
+
+                ReloadInvoices();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Không thể mở yêu cầu trả hàng.\r\n" + ex.Message,
+                    "Lỗi trả hàng", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
@@ -356,36 +302,11 @@ ORDER BY d.InvoiceDetailID;";
         {
             return amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) + " đ";
         }
-    }
 
-    internal sealed class InvoiceDetails
-    {
-        public int InvoiceId { get; set; }
-        public string InvoiceCode { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string CashierName { get; set; }
-        public string CustomerName { get; set; }
-        public string PaymentMethod { get; set; }
-        public decimal Subtotal { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public string PromotionCode { get; set; }
-        public decimal VatRate { get; set; }
-        public decimal VatAmount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsCancelled { get; set; }
-        public string CancelReason { get; set; }
-        public DateTime? CancelledAt { get; set; }
-        public int PointsUsed { get; set; }
-        public decimal PointsDiscountAmount { get; set; }
-        public List<InvoiceLine> Lines { get; } = new List<InvoiceLine>();
-    }
+        private void _subtitle_Click(object sender, EventArgs e)
+        {
 
-    internal sealed class InvoiceLine
-    {
-        public string ProductName { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal LineTotal { get; set; }
+        }
     }
 
 }

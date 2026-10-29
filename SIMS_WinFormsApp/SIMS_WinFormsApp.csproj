@@ -17,6 +17,11 @@
     <ApplicationIcon>Resources\Logo\app_logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Models\DTOs\Sales\InvoiceDetailsDto.cs" />
+    <Compile Include="Services\Implementations\Sales\InvoiceManagementDataService.cs" />
+    <Compile Include="Services\Implementations\Sales\ReturnManagementDataService.cs" />
+    <Compile Include="DAL\Linq\Entities\Business\CatalogEntities.cs" />
+    <Compile Include="DAL\Linq\Entities\Business\SalesEntities.cs" />
     <Content Include="Resources\Logo\app_logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -589,6 +594,12 @@
     <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.Designer.cs">
       <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.Designer.cs">
+      <DependentUpon>InvoiceReturnDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Reports\ucInventoryReport.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -767,6 +778,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.resx">
+      <DependentUpon>InvoiceManagementPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\PromotionDetailsDialog.resx">
       <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>

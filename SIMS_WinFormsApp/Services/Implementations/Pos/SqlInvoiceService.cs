@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
@@ -33,18 +34,50 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             string invoiceCode = "HD-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" +
                                  Guid.NewGuid().ToString("N").Substring(0, 8).ToUpperInvariant();
 
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                connection.Open();
-                using (SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.Serializable))
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    ValidateStockAndPrices(connection, transaction, orderedLines);
-                    int invoiceId = InsertInvoice(
-                        connection, transaction, invoiceCode, createdBy, customerId, paymentMethod, totals,
-                        promotionId, promotionCode);
-                    ConsumePromotion(connection, transaction, promotionId);
-                    InsertInvoiceDetails(connection, transaction, invoiceId, orderedLines);
-                    DeductLoyaltyPoints(connection, transaction, customerId, totals);
+                    db.Transaction = transaction;
+                    ValidateStockAndPrices(db, orderedLines);
+
+                    decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
+                    decimal vatRate = taxableAmount == 0
+                        ? 0
+                        : Math.Round(totals.VatAmount * 100m / taxableAmount, 2, MidpointRounding.AwayFromZero);
+                    var invoice = new InvoiceEntity
+                    {
+                        InvoiceCode = invoiceCode,
+                        CreatedBy = createdBy,
+                        CustomerID = customerId,
+                        SubTotal = totals.Subtotal,
+                        DiscountAmount = totals.DiscountAmount,
+                        PromotionID = promotionId,
+                        PromotionCode = string.IsNullOrWhiteSpace(promotionCode) ? null : promotionCode,
+                        VATRate = vatRate,
+                        TotalAmount = totals.GrandTotal,
+                        PaymentMethod = paymentMethod,
+                        PointsUsed = GetPointsUsed(totals),
+                        PointsDiscountAmount = totals.PointsDiscountAmount,
+                        Status = "ACTIVE"
+                    };
+                    db.Invoices.InsertOnSubmit(invoice);
+                    db.SubmitChanges();
+
+                    ConsumePromotion(db, promotionId);
+                    foreach (CartLineDto line in orderedLines)
+                    {
+                        db.InvoiceDetails.InsertOnSubmit(new InvoiceDetailEntity
+                        {
+                            InvoiceID = invoice.InvoiceID,
+                            ProductID = line.ProductId,
+                            Quantity = line.Quantity,
+                            UnitPrice = line.UnitPrice
+                        });
+                    }
+                    DeductLoyaltyPoints(db, customerId, totals);
+                    db.SubmitChanges();
                     transaction.Commit();
                 }
             }
@@ -52,146 +85,42 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             return invoiceCode;
         }
 
-        private static void ValidateStockAndPrices(
-            SqlConnection connection,
-            SqlTransaction transaction,
-            IReadOnlyList<CartLineDto> lines)
+        private static void ValidateStockAndPrices(SimsDataContext db, IReadOnlyList<CartLineDto> lines)
         {
-            const string sql = @"
-                SELECT p.SellPrice, ISNULL(SUM(b.RemainingQty), 0) AS Available
-                FROM Products p WITH (UPDLOCK, HOLDLOCK)
-                LEFT JOIN InventoryBatch b WITH (UPDLOCK, HOLDLOCK)
-                    ON b.ProductID = p.ProductID
-                   AND b.Status = 'ACTIVE'
-                   AND (b.ExpiryDate IS NULL OR b.ExpiryDate >= CAST(GETDATE() AS DATE))
-                WHERE p.ProductID = @ProductID
-                  AND p.Status = 'ACTIVE'
-                GROUP BY p.SellPrice;";
-
-            using (var command = new SqlCommand(sql, connection, transaction))
+            DateTime today = DateTime.Today;
+            foreach (CartLineDto line in lines)
             {
-                SqlParameter productIdParameter = command.Parameters.Add("@ProductID", SqlDbType.Int);
-                foreach (CartLineDto line in lines)
-                {
-                    productIdParameter.Value = line.ProductId;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (!reader.Read())
-                            throw new InvalidOperationException("Một sản phẩm trong giỏ không còn hoạt động.");
+                ProductEntity product = db.Products.SingleOrDefault(item =>
+                    item.ProductID == line.ProductId && item.Status == "ACTIVE");
+                if (product == null)
+                    throw new InvalidOperationException("Một sản phẩm trong giỏ không còn hoạt động.");
 
-                        decimal currentPrice = reader.GetDecimal(0);
-                        int available = reader.GetInt32(1);
-                        if (currentPrice != line.UnitPrice)
-                            throw new InvalidOperationException(
-                                "Giá sản phẩm đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");
-                        if (available < line.Quantity)
-                            throw new InvalidOperationException(
-                                "Tồn kho không đủ cho sản phẩm \"" + line.ProductName + "\".");
-                    }
-                }
+                int available = db.InventoryBatches
+                    .Where(batch => batch.ProductID == line.ProductId && batch.Status == "ACTIVE"
+                        && (!batch.ExpiryDate.HasValue || batch.ExpiryDate.Value >= today))
+                    .Select(batch => (int?)batch.RemainingQty).Sum() ?? 0;
+                if (product.SellPrice != line.UnitPrice)
+                    throw new InvalidOperationException(
+                        "Giá sản phẩm đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");
+                if (available < line.Quantity)
+                    throw new InvalidOperationException(
+                        "Tồn kho không đủ cho sản phẩm \"" + line.ProductName + "\".");
             }
         }
 
-        private static int InsertInvoice(
-            SqlConnection connection,
-            SqlTransaction transaction,
-            string invoiceCode,
-            int createdBy,
-            int? customerId,
-            string paymentMethod,
-            CartTotalsDto totals,
-            int? promotionId,
-            string promotionCode)
-        {
-            const string sql = @"
-                INSERT INTO Invoices
-                    (InvoiceCode, CreatedBy, CustomerID, SubTotal, DiscountAmount, PromotionID, PromotionCode, VATRate,
-                     TotalAmount, PaymentMethod, PointsUsed, PointsDiscountAmount)
-                OUTPUT INSERTED.InvoiceID
-                VALUES
-                    (@InvoiceCode, @CreatedBy, @CustomerID, @SubTotal, @DiscountAmount, @PromotionID, @PromotionCode, @VATRate,
-                     @TotalAmount, @PaymentMethod, @PointsUsed, @PointsDiscountAmount);";
-
-            decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
-            decimal vatRate = taxableAmount == 0
-                ? 0
-                : Math.Round(totals.VatAmount * 100m / taxableAmount, 2, MidpointRounding.AwayFromZero);
-            int pointsUsed = GetPointsUsed(totals);
-
-            using (var command = new SqlCommand(sql, connection, transaction))
-            {
-                command.Parameters.Add("@InvoiceCode", SqlDbType.VarChar, 30).Value = invoiceCode;
-                command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = createdBy;
-                command.Parameters.Add("@CustomerID", SqlDbType.Int).Value =
-                    customerId.HasValue ? (object)customerId.Value : DBNull.Value;
-                AddMoneyParameter(command, "@SubTotal", totals.Subtotal);
-                AddMoneyParameter(command, "@DiscountAmount", totals.DiscountAmount);
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId.HasValue ? (object)promotionId.Value : DBNull.Value;
-                command.Parameters.Add("@PromotionCode", SqlDbType.VarChar, 30).Value =
-                    string.IsNullOrWhiteSpace(promotionCode) ? (object)DBNull.Value : promotionCode;
-
-                SqlParameter rateParameter = command.Parameters.Add("@VATRate", SqlDbType.Decimal);
-                rateParameter.Precision = 5;
-                rateParameter.Scale = 2;
-                rateParameter.Value = vatRate;
-
-                AddMoneyParameter(command, "@TotalAmount", totals.GrandTotal);
-                command.Parameters.Add("@PaymentMethod", SqlDbType.VarChar, 20).Value = paymentMethod;
-                command.Parameters.Add("@PointsUsed", SqlDbType.Int).Value = pointsUsed;
-                AddMoneyParameter(command, "@PointsDiscountAmount", totals.PointsDiscountAmount);
-                return (int)command.ExecuteScalar();
-            }
-        }
-
-        private static void ConsumePromotion(SqlConnection connection, SqlTransaction transaction, int? promotionId)
+        private static void ConsumePromotion(SimsDataContext db, int? promotionId)
         {
             if (!promotionId.HasValue) return;
-            const string sql = @"
-                UPDATE Promotions WITH (UPDLOCK, ROWLOCK)
-                SET UsedCount = UsedCount + 1
-                WHERE PromotionID = @PromotionID AND IsDeleted = 0 AND IsActive = 1
-                  AND CAST(GETDATE() AS DATE) BETWEEN StartDate AND EndDate
-                  AND (UsageLimit IS NULL OR UsedCount < UsageLimit);";
-            using (var command = new SqlCommand(sql, connection, transaction))
-            {
-                command.Parameters.Add("@PromotionID", SqlDbType.Int).Value = promotionId.Value;
-                if (command.ExecuteNonQuery() != 1)
-                    throw new InvalidOperationException("Mã giảm giá vừa hết lượt sử dụng hoặc không còn hiệu lực.");
-            }
+            PromotionEntity promotion = db.Promotions.SingleOrDefault(item =>
+                item.PromotionID == promotionId.Value && !item.IsDeleted && item.IsActive);
+            DateTime today = DateTime.Today;
+            if (promotion == null || promotion.StartDate.Date > today || promotion.EndDate.Date < today
+                || (promotion.UsageLimit.HasValue && promotion.UsedCount >= promotion.UsageLimit.Value))
+                throw new InvalidOperationException("Mã giảm giá vừa hết lượt sử dụng hoặc không còn hiệu lực.");
+            promotion.UsedCount++;
         }
 
-        private static void InsertInvoiceDetails(
-            SqlConnection connection,
-            SqlTransaction transaction,
-            int invoiceId,
-            IReadOnlyList<CartLineDto> lines)
-        {
-            const string sql = @"
-                INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice)
-                VALUES (@InvoiceID, @ProductID, @Quantity, @UnitPrice);";
-
-            using (var command = new SqlCommand(sql, connection, transaction))
-            {
-                command.Parameters.Add("@InvoiceID", SqlDbType.Int).Value = invoiceId;
-                SqlParameter productId = command.Parameters.Add("@ProductID", SqlDbType.Int);
-                SqlParameter quantity = command.Parameters.Add("@Quantity", SqlDbType.Int);
-                SqlParameter unitPrice = AddMoneyParameter(command, "@UnitPrice", 0m);
-
-                foreach (CartLineDto line in lines)
-                {
-                    productId.Value = line.ProductId;
-                    quantity.Value = line.Quantity;
-                    unitPrice.Value = line.UnitPrice;
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private static void DeductLoyaltyPoints(
-            SqlConnection connection,
-            SqlTransaction transaction,
-            int? customerId,
-            CartTotalsDto totals)
+        private static void DeductLoyaltyPoints(SimsDataContext db, int? customerId, CartTotalsDto totals)
         {
             int pointsUsed = GetPointsUsed(totals);
             if (pointsUsed == 0)
@@ -199,26 +128,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             if (!customerId.HasValue)
                 throw new InvalidOperationException("Cần chọn khách hàng để sử dụng điểm thưởng.");
 
-            using (var command = new SqlCommand(@"
-                UPDATE Customers
-                SET MemberPoint = MemberPoint - @PointsUsed
-                WHERE CustomerID = @CustomerID
-                  AND MemberPoint >= @PointsUsed;", connection, transaction))
-            {
-                command.Parameters.Add("@CustomerID", SqlDbType.Int).Value = customerId.Value;
-                command.Parameters.Add("@PointsUsed", SqlDbType.Int).Value = pointsUsed;
-                if (command.ExecuteNonQuery() != 1)
-                    throw new InvalidOperationException("Điểm thưởng hiện có không đủ để thanh toán.");
-            }
-        }
-
-        private static SqlParameter AddMoneyParameter(SqlCommand command, string name, decimal value)
-        {
-            SqlParameter parameter = command.Parameters.Add(name, SqlDbType.Decimal);
-            parameter.Precision = 18;
-            parameter.Scale = 0;
-            parameter.Value = value;
-            return parameter;
+            CustomerEntity customer = db.Customers.SingleOrDefault(item => item.CustomerID == customerId.Value);
+            if (customer == null || customer.MemberPoint < pointsUsed)
+                throw new InvalidOperationException("Điểm thưởng hiện có không đủ để thanh toán.");
+            customer.MemberPoint -= pointsUsed;
         }
 
         private static void ValidateRequest(

@@ -17,7 +17,7 @@ namespace SIMS_WinFormsApp.Services.Interfaces
         CatalogSaveResult SaveCategory(CategoryEditDto dto);
         CatalogSaveResult SetCategoryActive(int categoryId, bool active);
 
-        CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword, bool debtOnly);
+        CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword);
         SupplierEditDto GetSupplier(int supplierId);
         CatalogSaveResult SaveSupplier(SupplierEditDto dto);
         CatalogSaveResult DeleteSupplier(int supplierId);

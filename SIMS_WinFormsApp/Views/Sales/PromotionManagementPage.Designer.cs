@@ -21,15 +21,6 @@ namespace SIMS_WinFormsApp.Views.Sales
         private CheckBox _includeDeleted;
         private DataGridView _grid;
         private UserManagementPager _pager;
-        private DataGridViewTextBoxColumn _promotionIdColumn;
-        private DataGridViewTextBoxColumn _codeColumn;
-        private DataGridViewTextBoxColumn _nameColumn;
-        private DataGridViewTextBoxColumn _discountColumn;
-        private DataGridViewTextBoxColumn _periodColumn;
-        private DataGridViewTextBoxColumn _usageColumn;
-        private DataGridViewTextBoxColumn _activeColumn;
-        private DataGridViewImageColumn _actionsColumn;
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && _themeSubscribed)

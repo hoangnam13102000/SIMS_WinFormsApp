@@ -14,9 +14,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private TextBox _searchTextBox;
         private ComboBox _statusComboBox;
         private Button _addButton;
-        private Button _importButton;
-        private Button _exportCsvButton;
-        private Button _exportExcelButton;
+        private Button _optionsButton;
         private DataGridView _productsGrid;
         private DataGridViewImageColumn _imageColumn;
         private DataGridViewTextBoxColumn _codeColumn;
@@ -52,9 +50,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _searchTextBox = new TextBox();
             _statusComboBox = new ComboBox();
             _addButton = new Button();
-            _importButton = new Button();
-            _exportCsvButton = new Button();
-            _exportExcelButton = new Button();
+            _optionsButton = new Button();
             _productsGrid = new DataGridView();
             _imageColumn = new DataGridViewImageColumn();
             _codeColumn = new DataGridViewTextBoxColumn();
@@ -84,12 +80,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.ColumnCount = 1;
             _root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             _root.Dock = DockStyle.Fill;
+            _root.BackColor = Color.FromArgb(244, 247, 250);
             _root.Padding = new Padding(24);
             _root.RowCount = 4;
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 82F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 102F));
+            _root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 52F));
+            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             _root.Controls.Add(_header, 0, 0);
             _root.Controls.Add(_toolbar, 0, 1);
             _root.Controls.Add(_productsGrid, 0, 2);
@@ -98,30 +95,38 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _header.Controls.Add(_subtitleLabel);
             _header.Controls.Add(_titleLabel);
             _header.Dock = DockStyle.Fill;
+            _header.Margin = Padding.Empty;
             _titleLabel.AutoSize = true;
-            _titleLabel.Font = new Font("Segoe UI", 21F, FontStyle.Bold);
+            _titleLabel.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
             _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
             _titleLabel.Location = new Point(0, 0);
             _titleLabel.Text = "Quản lý sản phẩm";
             _subtitleLabel.AutoSize = true;
+            _subtitleLabel.Font = new Font("Segoe UI", 10F);
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _subtitleLabel.Location = new Point(2, 44);
+            _subtitleLabel.Location = new Point(2, 52);
             _subtitleLabel.Text = "Danh sách sản phẩm, giá bán, tồn kho và trạng thái";
             _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _statusComboBox, _addButton, _importButton, _exportCsvButton, _exportExcelButton
+                _searchTextBox, _statusComboBox, _addButton, _optionsButton
             });
+            _toolbar.AutoSize = true;
+            _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             _toolbar.Dock = DockStyle.Fill;
+            _toolbar.Margin = Padding.Empty;
+            _toolbar.Padding = new Padding(0, 5, 0, 5);
             _toolbar.WrapContents = false;
-            _searchTextBox.Margin = new Padding(0, 7, 8, 0);
+            _searchTextBox.Font = new Font("Segoe UI", 10F);
+            _searchTextBox.Margin = new Padding(0, 3, 0, 3);
             _searchTextBox.Name = "_searchTextBox";
-            _searchTextBox.Size = new Size(270, 28);
+            _searchTextBox.Size = new Size(230, 34);
             _searchTextBox.AccessibleName = "Tìm theo tên, mã hoặc danh mục";
+            _statusComboBox.Font = new Font("Segoe UI", 10F);
             _statusComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             _statusComboBox.Items.AddRange(new object[] { "Tất cả trạng thái", "Đang hoạt động", "Vô hiệu hóa" });
-            _statusComboBox.Margin = new Padding(4, 7, 8, 0);
+            _statusComboBox.Margin = new Padding(8, 3, 0, 3);
             _statusComboBox.Name = "_statusComboBox";
             _statusComboBox.SelectedIndex = 0;
-            _statusComboBox.Size = new Size(165, 28);
+            _statusComboBox.Size = new Size(170, 36);
             _addButton.BackColor = Color.FromArgb(37, 99, 235);
             _addButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
             _addButton.FlatAppearance.BorderSize = 0;
@@ -130,34 +135,20 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _addButton.Margin = new Padding(4, 4, 4, 0);
             _addButton.Size = new Size(132, 34);
             _addButton.Text = "Thêm sản phẩm";
-            _importButton.BackColor = Color.White;
-            _importButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _importButton.FlatStyle = FlatStyle.Flat;
-            _importButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _importButton.Margin = new Padding(4, 4, 4, 0);
-            _importButton.Size = new Size(112, 34);
-            _importButton.Text = "Nhập dữ liệu";
-            _exportCsvButton.BackColor = Color.White;
-            _exportCsvButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _exportCsvButton.FlatStyle = FlatStyle.Flat;
-            _exportCsvButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _exportCsvButton.Margin = new Padding(4, 4, 4, 0);
-            _exportCsvButton.Size = new Size(94, 34);
-            _exportCsvButton.Text = "Xuất CSV";
-            _exportExcelButton.BackColor = Color.White;
-            _exportExcelButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _exportExcelButton.FlatStyle = FlatStyle.Flat;
-            _exportExcelButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _exportExcelButton.Margin = new Padding(4, 4, 4, 0);
-            _exportExcelButton.Size = new Size(104, 34);
-            _exportExcelButton.Text = "Xuất Excel";
+            _optionsButton.Font = new Font("Segoe UI", 9F);
+            _optionsButton.Margin = new Padding(8, 0, 0, 0);
+            _optionsButton.Name = "_optionsButton";
+            _optionsButton.Size = new Size(110, 36);
+            _optionsButton.Text = "Tùy chọn";
+            _optionsButton.UseVisualStyleBackColor = true;
 
             _productsGrid.AllowUserToAddRows = false;
             _productsGrid.AllowUserToDeleteRows = false;
             _productsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _productsGrid.BackgroundColor = Color.White;
-            _productsGrid.BorderStyle = BorderStyle.FixedSingle;
-            _productsGrid.ColumnHeadersHeight = 42;
+            _productsGrid.BorderStyle = BorderStyle.None;
+            _productsGrid.ColumnHeadersHeight = 40;
+            _productsGrid.Margin = new Padding(0, 4, 0, 0);
             _productsGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _imageColumn, _codeColumn, _nameColumn, _categoryColumn, _priceColumn, _stockColumn,
                 _statusColumn, _actionsColumn
@@ -167,6 +158,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _productsGrid.ReadOnly = true;
             _productsGrid.RowHeadersVisible = false;
             _productsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            _productsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+            _productsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(51, 65, 85);
+            _productsGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            _productsGrid.EnableHeadersVisualStyles = false;
+            _productsGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            _productsGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
+            _productsGrid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
+            _productsGrid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
             _imageColumn.FillWeight = 8F;
             _imageColumn.HeaderText = "Ảnh";
             _imageColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
@@ -270,9 +269,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _pageSizeComboBox.Size = new Size(94, 28);
             _pageSizeComboBox.AccessibleName = "Số dòng mỗi trang";
 
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(244, 247, 250);
             Controls.Add(_root);
             Name = "ucProductManagement";
-            Size = new Size(1100, 680);
+            Size = new Size(1100, 720);
             _pagingNavigation.ResumeLayout(false);
             _pagingInfo.ResumeLayout(false);
             _paging.ResumeLayout(false);

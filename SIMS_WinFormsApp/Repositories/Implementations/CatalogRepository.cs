@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 using SIMS_WinFormsApp.Repositories.Interfaces;
@@ -19,499 +20,362 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
         public CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status)
         {
-            const string sql = @"
-                SELECT ProductID, ProductCode, ProductName, CategoryName, SellPrice, Stock, Status, ImageUrl
-                FROM (
-                    SELECT p.ProductID, p.ProductCode, p.ProductName, c.CategoryName, p.SellPrice, p.Stock, p.Status, p.ImageUrl,
-                           ROW_NUMBER() OVER (ORDER BY p.ProductName) AS rn
-                    FROM Products p
-                    INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                    WHERE (@Keyword = N'' OR p.ProductName LIKE @Pattern OR p.ProductCode LIKE @Pattern OR c.CategoryName LIKE @Pattern)
-                      AND (@Status IS NULL OR p.Status = @Status)
-                ) x
-                WHERE rn BETWEEN @Start AND @End;
-
-                SELECT COUNT(*)
-                FROM Products p
-                INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                WHERE (@Keyword = N'' OR p.ProductName LIKE @Pattern OR p.ProductCode LIKE @Pattern OR c.CategoryName LIKE @Pattern)
-                  AND (@Status IS NULL OR p.Status = @Status);";
-
-            var page = new CatalogPage<ProductRowDto> { Rows = new List<ProductRowDto>() };
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            ValidatePage(pageIndex, pageSize);
+            string term = (keyword ?? string.Empty).Trim();
+            using (var db = _connections.CreateDataContext())
             {
-                AddFilter(command, keyword, status, pageIndex, pageSize);
-                using (var reader = command.ExecuteReader())
-                {
-                    var rows = (List<ProductRowDto>)page.Rows;
-                    while (reader.Read())
+                var query = from product in db.Products
+                            join category in db.Categories on product.CategoryID equals category.CategoryID
+                            where (term == string.Empty || product.ProductName.Contains(term)
+                                || product.ProductCode.Contains(term) || category.CategoryName.Contains(term))
+                                && (status == null || product.Status == status)
+                            select new
+                            {
+                                product.ProductID, product.ProductCode, product.ProductName,
+                                category.CategoryName, product.SellPrice, product.Stock, product.Status, product.ImageUrl
+                            };
+                int count = query.Count();
+                var rows = query.OrderBy(row => row.ProductName).Skip(checked(pageIndex * pageSize)).Take(pageSize)
+                    .ToList().Select(row => new ProductRowDto
                     {
-                        rows.Add(new ProductRowDto
-                        {
-                            ProductId = reader.GetInt32(0),
-                            Code = ReadString(reader, 1),
-                            Name = ReadString(reader, 2),
-                            CategoryName = ReadString(reader, 3),
-                            SellPrice = ReadDecimal(reader, 4),
-                            Stock = ReadInt(reader, 5),
-                            IsActive = string.Equals(ReadString(reader, 6), "ACTIVE", StringComparison.OrdinalIgnoreCase),
-                            ImagePath = ReadString(reader, 7)
-                        });
-                    }
-                    if (reader.NextResult() && reader.Read())
-                        page.TotalCount = reader.GetInt32(0);
-                }
+                        ProductId = row.ProductID,
+                        Code = row.ProductCode,
+                        Name = row.ProductName,
+                        CategoryName = row.CategoryName,
+                        SellPrice = row.SellPrice,
+                        Stock = row.Stock,
+                        IsActive = row.Status == "ACTIVE",
+                        ImagePath = row.ImageUrl
+                    }).ToList();
+                return new CatalogPage<ProductRowDto> { TotalCount = count, Rows = rows };
             }
-            return page;
         }
 
         public ProductEditDto GetProduct(int productId)
         {
-            const string sql = @"
-                SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID, p.Brand, p.Unit, p.WeightVolume,
-                       p.Description, p.ImportPrice, p.SellPrice, p.Stock, p.MinStock, p.ImageUrl, p.Status,
-                       (SELECT TOP 1 sp.SupplierID FROM SupplierProducts sp
-                        WHERE sp.ProductID = p.ProductID AND sp.IsPreferred = 1) AS SupplierID
-                FROM Products p
-                WHERE p.ProductID = @ProductID";
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                using (var reader = command.ExecuteReader())
+                ProductEntity product = db.Products.SingleOrDefault(p => p.ProductID == productId);
+                if (product == null) return null;
+                return new ProductEditDto
                 {
-                    if (!reader.Read()) return null;
-                    return new ProductEditDto
-                    {
-                        ProductId = reader.GetInt32(0),
-                        Code = ReadString(reader, 1),
-                        Name = ReadString(reader, 2),
-                        CategoryId = ReadInt(reader, 3),
-                        Brand = ReadString(reader, 4),
-                        Unit = ReadString(reader, 5),
-                        WeightVolume = ReadString(reader, 6),
-                        Description = ReadString(reader, 7),
-                        ImportPrice = ReadDecimal(reader, 8),
-                        SellPrice = ReadDecimal(reader, 9),
-                        Stock = ReadInt(reader, 10),
-                        MinStock = ReadInt(reader, 11),
-                        ImagePath = ReadString(reader, 12),
-                        IsActive = string.Equals(ReadString(reader, 13), "ACTIVE", StringComparison.OrdinalIgnoreCase),
-                        SupplierId = reader.IsDBNull(14) ? (int?)null : reader.GetInt32(14)
-                    };
-                }
+                    ProductId = product.ProductID,
+                    Code = product.ProductCode,
+                    Name = product.ProductName,
+                    CategoryId = product.CategoryID,
+                    SupplierId = db.SupplierProducts.Where(sp => sp.ProductID == productId && sp.IsPreferred)
+                        .Select(sp => (int?)sp.SupplierID).FirstOrDefault(),
+                    Brand = product.Brand,
+                    Unit = product.Unit,
+                    WeightVolume = product.WeightVolume,
+                    Description = product.Description,
+                    ImportPrice = product.ImportPrice,
+                    SellPrice = product.SellPrice,
+                    Stock = product.Stock,
+                    MinStock = product.MinStock,
+                    ImagePath = product.ImageUrl,
+                    IsActive = product.Status == "ACTIVE"
+                };
             }
         }
 
         public int InsertProduct(ProductEditDto dto)
         {
-            const string sql = @"
-                INSERT INTO Products
-                    (ProductName, CategoryID, Brand, Unit, WeightVolume, Description,
-                     ImportPrice, SellPrice, Margin, AutoPrice, ImageUrl, Stock, MinStock, Status, UpdatedAt)
-                VALUES
-                    (@Name, @CategoryID, @Brand, @Unit, @WeightVolume, @Description,
-                     @ImportPrice, @SellPrice, @Margin, 0, @ImageUrl, @Stock, @MinStock, @Status, GETDATE());
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                BindProduct(command, dto, includeStock: true);
-                return (int)command.ExecuteScalar();
+                var product = new ProductEntity();
+                ApplyProduct(product, dto);
+                product.Stock = dto.Stock;
+                db.Products.InsertOnSubmit(product);
+                db.SubmitChanges();
+                return product.ProductID;
             }
         }
 
         public void UpdateProduct(ProductEditDto dto)
         {
-            const string sql = @"
-                UPDATE Products SET
-                    ProductName = @Name,
-                    CategoryID = @CategoryID,
-                    Brand = @Brand,
-                    Unit = @Unit,
-                    WeightVolume = @WeightVolume,
-                    Description = @Description,
-                    ImportPrice = @ImportPrice,
-                    SellPrice = @SellPrice,
-                    Margin = @Margin,
-                    AutoPrice = 0,
-                    ImageUrl = @ImageUrl,
-                    MinStock = @MinStock,
-                    Status = @Status,
-                    UpdatedAt = GETDATE()
-                WHERE ProductID = @ProductID";
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                BindProduct(command, dto, includeStock: false);
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = dto.ProductId;
-                command.ExecuteNonQuery();
+                ProductEntity product = db.Products.SingleOrDefault(p => p.ProductID == dto.ProductId);
+                if (product == null) return;
+                ApplyProduct(product, dto);
+                db.SubmitChanges();
             }
         }
 
         public void SetProductStatus(int productId, bool active)
         {
-            const string sql = "UPDATE Products SET Status = @Status, UpdatedAt = GETDATE() WHERE ProductID = @ProductID";
-            ExecuteStatus(sql, "@ProductID", productId, active);
+            using (var db = _connections.CreateDataContext())
+            {
+                ProductEntity product = db.Products.SingleOrDefault(p => p.ProductID == productId);
+                if (product == null) return;
+                product.Status = active ? "ACTIVE" : "DISABLED";
+                product.UpdatedAt = DateTime.Now;
+                db.SubmitChanges();
+            }
         }
 
         public void SetPreferredSupplier(int productId, int? supplierId)
         {
-            const string sql = @"
-                UPDATE SupplierProducts SET IsPreferred = 0 WHERE ProductID = @ProductID;
-                IF @SupplierID IS NOT NULL
-                BEGIN
-                    IF EXISTS (SELECT 1 FROM SupplierProducts WHERE ProductID = @ProductID AND SupplierID = @SupplierID)
-                        UPDATE SupplierProducts SET IsPreferred = 1 WHERE ProductID = @ProductID AND SupplierID = @SupplierID;
-                    ELSE
-                        INSERT INTO SupplierProducts (SupplierID, ProductID, SupplyPrice, IsPreferred)
-                        VALUES (@SupplierID, @ProductID, NULL, 1);
-                END";
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                command.Parameters.Add("@SupplierID", SqlDbType.Int).Value = (object)supplierId ?? DBNull.Value;
-                command.ExecuteNonQuery();
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction(System.Data.IsolationLevel.Serializable))
+                {
+                    db.Transaction = transaction;
+                    var links = db.SupplierProducts.Where(sp => sp.ProductID == productId).ToList();
+                    foreach (SupplierProductEntity link in links)
+                        link.IsPreferred = false;
+                    if (supplierId.HasValue)
+                    {
+                        SupplierProductEntity selected = links.FirstOrDefault(link => link.SupplierID == supplierId.Value);
+                        if (selected == null)
+                            db.SupplierProducts.InsertOnSubmit(new SupplierProductEntity
+                            {
+                                SupplierID = supplierId.Value,
+                                ProductID = productId,
+                                IsPreferred = true
+                            });
+                        else
+                            selected.IsPreferred = true;
+                    }
+                    db.SubmitChanges();
+                    transaction.Commit();
+                }
             }
         }
 
         public int? FindProductIdByName(string name)
         {
-            return FindId("SELECT TOP 1 ProductID FROM Products WHERE ProductName = @Name", name);
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            using (var db = _connections.CreateDataContext())
+                return db.Products.Where(p => p.ProductName == name.Trim())
+                    .OrderBy(p => p.ProductID).Select(p => (int?)p.ProductID).FirstOrDefault();
         }
 
         public CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status)
         {
-            const string sql = @"
-                SELECT CategoryID, CategoryName, ProductCount, Status
-                FROM (
-                    SELECT c.CategoryID, c.CategoryName, c.Status,
-                           (SELECT COUNT(*) FROM Products p WHERE p.CategoryID = c.CategoryID) AS ProductCount,
-                           ROW_NUMBER() OVER (ORDER BY c.CategoryName) AS rn
-                    FROM Categories c
-                    WHERE (@Keyword = N'' OR c.CategoryName LIKE @Pattern)
-                      AND (@Status IS NULL OR c.Status = @Status)
-                ) x
-                WHERE rn BETWEEN @Start AND @End;
-
-                SELECT COUNT(*) FROM Categories c
-                WHERE (@Keyword = N'' OR c.CategoryName LIKE @Pattern)
-                  AND (@Status IS NULL OR c.Status = @Status);";
-
-            var page = new CatalogPage<CategoryRowDto> { Rows = new List<CategoryRowDto>() };
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            ValidatePage(pageIndex, pageSize);
+            string term = (keyword ?? string.Empty).Trim();
+            using (var db = _connections.CreateDataContext())
             {
-                AddFilter(command, keyword, status, pageIndex, pageSize);
-                using (var reader = command.ExecuteReader())
-                {
-                    var rows = (List<CategoryRowDto>)page.Rows;
-                    while (reader.Read())
+                var query = db.Categories.Where(c => (term == string.Empty || c.CategoryName.Contains(term))
+                    && (status == null || c.Status == status));
+                int count = query.Count();
+                var rows = query.OrderBy(c => c.CategoryName).Skip(checked(pageIndex * pageSize)).Take(pageSize)
+                    .Select(c => new
                     {
-                        rows.Add(new CategoryRowDto
-                        {
-                            CategoryId = reader.GetInt32(0),
-                            Name = ReadString(reader, 1),
-                            ProductCount = ReadInt(reader, 2),
-                            IsActive = string.Equals(ReadString(reader, 3), "ACTIVE", StringComparison.OrdinalIgnoreCase)
-                        });
-                    }
-                    if (reader.NextResult() && reader.Read())
-                        page.TotalCount = reader.GetInt32(0);
-                }
+                        c.CategoryID, c.CategoryName, c.Status,
+                        ProductCount = db.Products.Count(p => p.CategoryID == c.CategoryID)
+                    }).ToList().Select(c => new CategoryRowDto
+                    {
+                        CategoryId = c.CategoryID,
+                        Name = c.CategoryName,
+                        ProductCount = c.ProductCount,
+                        IsActive = c.Status == "ACTIVE"
+                    }).ToList();
+                return new CatalogPage<CategoryRowDto> { TotalCount = count, Rows = rows };
             }
-            return page;
         }
 
         public IReadOnlyList<LookupItem> GetActiveCategories()
         {
-            return ReadLookup("SELECT CategoryID, CategoryName FROM Categories WHERE Status = 'ACTIVE' ORDER BY CategoryName");
+            using (var db = _connections.CreateDataContext())
+                return db.Categories.Where(c => c.Status == "ACTIVE").OrderBy(c => c.CategoryName)
+                    .Select(c => new LookupItem { Id = c.CategoryID, Name = c.CategoryName }).ToList();
         }
 
         public CategoryEditDto GetCategory(int categoryId)
         {
-            const string sql = "SELECT CategoryID, CategoryName, Status FROM Categories WHERE CategoryID = @Id";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Id", SqlDbType.Int).Value = categoryId;
-                using (var reader = command.ExecuteReader())
+                CategoryEntity category = db.Categories.SingleOrDefault(c => c.CategoryID == categoryId);
+                return category == null ? null : new CategoryEditDto
                 {
-                    if (!reader.Read()) return null;
-                    return new CategoryEditDto
-                    {
-                        CategoryId = reader.GetInt32(0),
-                        Name = ReadString(reader, 1),
-                        IsActive = string.Equals(ReadString(reader, 2), "ACTIVE", StringComparison.OrdinalIgnoreCase)
-                    };
-                }
+                    CategoryId = category.CategoryID,
+                    Name = category.CategoryName,
+                    IsActive = category.Status == "ACTIVE"
+                };
             }
         }
 
         public int InsertCategory(CategoryEditDto dto)
         {
-            const string sql = @"
-                INSERT INTO Categories (CategoryName, Status) VALUES (@Name, @Status);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = dto.Name.Trim();
-                command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value = dto.IsActive ? "ACTIVE" : "DISABLED";
-                return (int)command.ExecuteScalar();
+                var category = new CategoryEntity
+                {
+                    CategoryName = dto.Name.Trim(),
+                    Status = dto.IsActive ? "ACTIVE" : "DISABLED"
+                };
+                db.Categories.InsertOnSubmit(category);
+                db.SubmitChanges();
+                return category.CategoryID;
             }
         }
 
         public void UpdateCategory(CategoryEditDto dto)
         {
-            const string sql = "UPDATE Categories SET CategoryName = @Name, Status = @Status WHERE CategoryID = @Id";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = dto.Name.Trim();
-                command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value = dto.IsActive ? "ACTIVE" : "DISABLED";
-                command.Parameters.Add("@Id", SqlDbType.Int).Value = dto.CategoryId;
-                command.ExecuteNonQuery();
+                CategoryEntity category = db.Categories.SingleOrDefault(c => c.CategoryID == dto.CategoryId);
+                if (category == null) return;
+                category.CategoryName = dto.Name.Trim();
+                category.Status = dto.IsActive ? "ACTIVE" : "DISABLED";
+                db.SubmitChanges();
             }
         }
 
         public void SetCategoryStatus(int categoryId, bool active)
         {
-            ExecuteStatus("UPDATE Categories SET Status = @Status WHERE CategoryID = @Id", "@Id", categoryId, active);
+            using (var db = _connections.CreateDataContext())
+            {
+                CategoryEntity category = db.Categories.SingleOrDefault(c => c.CategoryID == categoryId);
+                if (category == null) return;
+                category.Status = active ? "ACTIVE" : "DISABLED";
+                db.SubmitChanges();
+            }
         }
 
         public int? FindCategoryIdByName(string name)
         {
-            return FindId("SELECT TOP 1 CategoryID FROM Categories WHERE CategoryName = @Name", name);
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            using (var db = _connections.CreateDataContext())
+                return db.Categories.Where(c => c.CategoryName == name.Trim()).OrderBy(c => c.CategoryID)
+                    .Select(c => (int?)c.CategoryID).FirstOrDefault();
         }
 
-        public CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword, bool debtOnly)
+        public CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword)
         {
-            const string sql = @"
-                SELECT SupplierID, SupplierName, Phone, Email, Address, SuppliedItems, DebtBalance
-                FROM (
-                    SELECT SupplierID, SupplierName, Phone, Email, Address, SuppliedItems, DebtBalance,
-                           ROW_NUMBER() OVER (ORDER BY SupplierName) AS rn
-                    FROM Suppliers
-                    WHERE IsDeleted = 0
-                      AND (@Keyword = N'' OR SupplierName LIKE @Pattern OR Phone LIKE @Pattern OR Email LIKE @Pattern)
-                      AND (@DebtOnly = 0 OR DebtBalance > 0)
-                ) x
-                WHERE rn BETWEEN @Start AND @End;
-
-                SELECT COUNT(*) FROM Suppliers
-                WHERE IsDeleted = 0
-                  AND (@Keyword = N'' OR SupplierName LIKE @Pattern OR Phone LIKE @Pattern OR Email LIKE @Pattern)
-                  AND (@DebtOnly = 0 OR DebtBalance > 0);";
-
-            var page = new CatalogPage<SupplierRowDto> { Rows = new List<SupplierRowDto>() };
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            ValidatePage(pageIndex, pageSize);
+            string term = (keyword ?? string.Empty).Trim();
+            using (var db = _connections.CreateDataContext())
             {
-                AddKeyword(command, keyword);
-                command.Parameters.Add("@DebtOnly", SqlDbType.Bit).Value = debtOnly;
-                command.Parameters.Add("@Start", SqlDbType.Int).Value = pageIndex * pageSize + 1;
-                command.Parameters.Add("@End", SqlDbType.Int).Value = pageIndex * pageSize + pageSize;
-                using (var reader = command.ExecuteReader())
-                {
-                    var rows = (List<SupplierRowDto>)page.Rows;
-                    while (reader.Read())
+                var query = db.Suppliers.Where(s => !s.IsDeleted
+                    && (term == string.Empty || s.SupplierName.Contains(term)
+                        || s.Phone.Contains(term) || s.Email.Contains(term)));
+                int count = query.Count();
+                var rows = query.OrderBy(s => s.SupplierName).Skip(checked(pageIndex * pageSize)).Take(pageSize)
+                    .Select(s => new SupplierRowDto
                     {
-                        rows.Add(new SupplierRowDto
-                        {
-                            SupplierId = reader.GetInt32(0),
-                            Name = ReadString(reader, 1),
-                            Phone = ReadString(reader, 2),
-                            Email = ReadString(reader, 3),
-                            Address = ReadString(reader, 4),
-                            SuppliedItems = ReadString(reader, 5),
-                            DebtBalance = ReadDecimal(reader, 6)
-                        });
-                    }
-                    if (reader.NextResult() && reader.Read())
-                        page.TotalCount = reader.GetInt32(0);
-                }
+                        SupplierId = s.SupplierID,
+                        Name = s.SupplierName,
+                        Phone = s.Phone,
+                        Email = s.Email,
+                        Address = s.Address,
+                        SuppliedItems = s.SuppliedItems
+                    }).ToList();
+                return new CatalogPage<SupplierRowDto> { TotalCount = count, Rows = rows };
             }
-            return page;
         }
 
         public IReadOnlyList<LookupItem> GetActiveSuppliers()
         {
-            return ReadLookup("SELECT SupplierID, SupplierName FROM Suppliers WHERE IsDeleted = 0 ORDER BY SupplierName");
+            using (var db = _connections.CreateDataContext())
+                return db.Suppliers.Where(s => !s.IsDeleted).OrderBy(s => s.SupplierName)
+                    .Select(s => new LookupItem { Id = s.SupplierID, Name = s.SupplierName }).ToList();
         }
 
         public SupplierEditDto GetSupplier(int supplierId)
         {
-            const string sql = @"
-                SELECT SupplierID, SupplierName, Phone, Email, Address, SuppliedItems, DebtBalance
-                FROM Suppliers WHERE SupplierID = @Id AND IsDeleted = 0";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Id", SqlDbType.Int).Value = supplierId;
-                using (var reader = command.ExecuteReader())
-                {
-                    if (!reader.Read()) return null;
-                    return new SupplierEditDto
-                    {
-                        SupplierId = reader.GetInt32(0),
-                        Name = ReadString(reader, 1),
-                        Phone = ReadString(reader, 2),
-                        Email = ReadString(reader, 3),
-                        Address = ReadString(reader, 4),
-                        SuppliedItems = ReadString(reader, 5),
-                        DebtBalance = ReadDecimal(reader, 6)
-                    };
-                }
+                SupplierEntity supplier = db.Suppliers.SingleOrDefault(s => s.SupplierID == supplierId && !s.IsDeleted);
+                return supplier == null ? null : MapSupplier(supplier);
             }
         }
 
         public int InsertSupplier(SupplierEditDto dto)
         {
-            const string sql = @"
-                INSERT INTO Suppliers (SupplierName, Address, Phone, Email, SuppliedItems)
-                VALUES (@Name, @Address, @Phone, @Email, @Items);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                BindSupplier(command, dto);
-                return (int)command.ExecuteScalar();
+                var supplier = new SupplierEntity();
+                ApplySupplier(supplier, dto);
+                supplier.IsDeleted = false;
+                db.Suppliers.InsertOnSubmit(supplier);
+                db.SubmitChanges();
+                return supplier.SupplierID;
             }
         }
 
         public void UpdateSupplier(SupplierEditDto dto)
         {
-            const string sql = @"
-                UPDATE Suppliers SET
-                    SupplierName = @Name, Address = @Address, Phone = @Phone, Email = @Email, SuppliedItems = @Items
-                WHERE SupplierID = @Id AND IsDeleted = 0";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                BindSupplier(command, dto);
-                command.Parameters.Add("@Id", SqlDbType.Int).Value = dto.SupplierId;
-                command.ExecuteNonQuery();
+                SupplierEntity supplier = db.Suppliers.SingleOrDefault(s => s.SupplierID == dto.SupplierId && !s.IsDeleted);
+                if (supplier == null) return;
+                ApplySupplier(supplier, dto);
+                db.SubmitChanges();
             }
         }
 
         public void SoftDeleteSupplier(int supplierId)
         {
-            const string sql = "UPDATE Suppliers SET IsDeleted = 1, DeletedAt = GETDATE() WHERE SupplierID = @Id";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Id", SqlDbType.Int).Value = supplierId;
-                command.ExecuteNonQuery();
+                SupplierEntity supplier = db.Suppliers.SingleOrDefault(s => s.SupplierID == supplierId);
+                if (supplier == null) return;
+                supplier.IsDeleted = true;
+                supplier.DeletedAt = DateTime.Now;
+                db.SubmitChanges();
             }
         }
 
         public int? FindSupplierIdByName(string name)
         {
-            return FindId("SELECT TOP 1 SupplierID FROM Suppliers WHERE SupplierName = @Name AND IsDeleted = 0", name);
-        }
-
-        private SqlConnection Open()
-        {
-            var connection = _connections.CreateConnection();
-            connection.Open();
-            return connection;
-        }
-
-        private IReadOnlyList<LookupItem> ReadLookup(string sql)
-        {
-            var items = new List<LookupItem>();
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                    items.Add(new LookupItem { Id = reader.GetInt32(0), Name = ReadString(reader, 1) });
-            }
-            return items;
-        }
-
-        private int? FindId(string sql, string name)
-        {
             if (string.IsNullOrWhiteSpace(name)) return null;
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connections.CreateDataContext())
+                return db.Suppliers.Where(s => !s.IsDeleted && s.SupplierName == name.Trim())
+                    .OrderBy(s => s.SupplierID).Select(s => (int?)s.SupplierID).FirstOrDefault();
+        }
+
+        private static void ApplyProduct(ProductEntity product, ProductEditDto dto)
+        {
+            product.ProductName = dto.Name.Trim();
+            product.CategoryID = dto.CategoryId;
+            product.Brand = Normalize(dto.Brand);
+            product.Unit = Normalize(dto.Unit);
+            product.WeightVolume = Normalize(dto.WeightVolume);
+            product.Description = Normalize(dto.Description);
+            product.ImportPrice = dto.ImportPrice;
+            product.SellPrice = dto.SellPrice;
+            product.Margin = dto.SellPrice - dto.ImportPrice;
+            product.AutoPrice = false;
+            product.ImageUrl = Normalize(dto.ImagePath);
+            product.MinStock = dto.MinStock;
+            product.Status = dto.IsActive ? "ACTIVE" : "DISABLED";
+            product.UpdatedAt = DateTime.Now;
+        }
+
+        private static void ApplySupplier(SupplierEntity supplier, SupplierEditDto dto)
+        {
+            supplier.SupplierName = dto.Name.Trim();
+            supplier.Address = Normalize(dto.Address);
+            supplier.Phone = Normalize(dto.Phone);
+            supplier.Email = Normalize(dto.Email);
+            supplier.SuppliedItems = Normalize(dto.SuppliedItems);
+        }
+
+        private static SupplierEditDto MapSupplier(SupplierEntity supplier)
+        {
+            return new SupplierEditDto
             {
-                command.Parameters.Add("@Name", SqlDbType.NVarChar, 150).Value = name.Trim();
-                object value = command.ExecuteScalar();
-                return value == null || value == DBNull.Value ? (int?)null : Convert.ToInt32(value);
-            }
+                SupplierId = supplier.SupplierID,
+                Name = supplier.SupplierName,
+                Address = supplier.Address,
+                Phone = supplier.Phone,
+                Email = supplier.Email,
+                SuppliedItems = supplier.SuppliedItems
+            };
         }
 
-        private void ExecuteStatus(string sql, string idParameter, int id, bool active)
+        private static string Normalize(string value) =>
+            string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+        private static void ValidatePage(int pageIndex, int pageSize)
         {
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            {
-                command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value = active ? "ACTIVE" : "DISABLED";
-                command.Parameters.Add(idParameter, SqlDbType.Int).Value = id;
-                command.ExecuteNonQuery();
-            }
+            if (pageIndex < 0) throw new ArgumentOutOfRangeException(nameof(pageIndex));
+            if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
         }
-
-        private static void AddFilter(SqlCommand command, string keyword, string status, int pageIndex, int pageSize)
-        {
-            AddKeyword(command, keyword);
-            command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value = (object)status ?? DBNull.Value;
-            command.Parameters.Add("@Start", SqlDbType.Int).Value = pageIndex * pageSize + 1;
-            command.Parameters.Add("@End", SqlDbType.Int).Value = pageIndex * pageSize + pageSize;
-        }
-
-        private static void AddKeyword(SqlCommand command, string keyword)
-        {
-            string normalized = (keyword ?? string.Empty).Trim();
-            command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 150).Value = normalized;
-            command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 152).Value = "%" + normalized + "%";
-        }
-
-        private static void BindProduct(SqlCommand command, ProductEditDto dto, bool includeStock)
-        {
-            command.Parameters.Add("@Name", SqlDbType.NVarChar, 150).Value = dto.Name.Trim();
-            command.Parameters.Add("@CategoryID", SqlDbType.Int).Value = dto.CategoryId;
-            command.Parameters.Add("@Brand", SqlDbType.NVarChar, 100).Value = Db(dto.Brand);
-            command.Parameters.Add("@Unit", SqlDbType.NVarChar, 30).Value = Db(dto.Unit);
-            command.Parameters.Add("@WeightVolume", SqlDbType.NVarChar, 50).Value = Db(dto.WeightVolume);
-            command.Parameters.Add("@Description", SqlDbType.NVarChar, 1000).Value = Db(dto.Description);
-            command.Parameters.Add("@ImportPrice", SqlDbType.Decimal).Value = dto.ImportPrice;
-            command.Parameters.Add("@SellPrice", SqlDbType.Decimal).Value = dto.SellPrice;
-            command.Parameters.Add("@Margin", SqlDbType.Decimal).Value = dto.SellPrice - dto.ImportPrice;
-            command.Parameters.Add("@ImageUrl", SqlDbType.NVarChar, 500).Value = Db(dto.ImagePath);
-            command.Parameters.Add("@MinStock", SqlDbType.Int).Value = dto.MinStock;
-            command.Parameters.Add("@Status", SqlDbType.VarChar, 20).Value = dto.IsActive ? "ACTIVE" : "DISABLED";
-            if (includeStock)
-                command.Parameters.Add("@Stock", SqlDbType.Int).Value = dto.Stock;
-        }
-
-        private static void BindSupplier(SqlCommand command, SupplierEditDto dto)
-        {
-            command.Parameters.Add("@Name", SqlDbType.NVarChar, 150).Value = dto.Name.Trim();
-            command.Parameters.Add("@Address", SqlDbType.NVarChar, 255).Value = Db(dto.Address);
-            command.Parameters.Add("@Phone", SqlDbType.VarChar, 20).Value = Db(dto.Phone);
-            command.Parameters.Add("@Email", SqlDbType.VarChar, 100).Value = Db(dto.Email);
-            command.Parameters.Add("@Items", SqlDbType.NVarChar, 255).Value = Db(dto.SuppliedItems);
-        }
-
-        private static object Db(string value) =>
-            string.IsNullOrWhiteSpace(value) ? (object)DBNull.Value : value.Trim();
-
-        private static string ReadString(IDataRecord reader, int index) =>
-            reader.IsDBNull(index) ? null : reader.GetString(index);
-
-        private static int ReadInt(IDataRecord reader, int index) =>
-            reader.IsDBNull(index) ? 0 : Convert.ToInt32(reader.GetValue(index));
-
-        private static decimal ReadDecimal(IDataRecord reader, int index) =>
-            reader.IsDBNull(index) ? 0m : Convert.ToDecimal(reader.GetValue(index));
     }
 }

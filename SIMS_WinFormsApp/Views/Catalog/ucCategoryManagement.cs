@@ -23,6 +23,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly CategoryManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
+        private readonly ContextMenuStrip _optionsMenu;
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
@@ -34,6 +35,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public ucCategoryManagement(ICatalogAdminService service)
         {
             InitializeComponent();
+            _optionsMenu = new ContextMenuStrip(components);
+            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportCategories(new CsvTableExporter()));
+            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportCategories(new ExcelTableExporter()));
+            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportCategories());
+            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             if (service == null) return;
 
             _service = service;
@@ -76,9 +82,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 LoadPage();
             };
             _addButton.Click += (sender, args) => EditCategory(_presenter.NewDraft());
-            _importButton.Click += (sender, args) => ImportCategories();
-            _exportCsvButton.Click += (sender, args) => ExportCategories(new CsvTableExporter());
-            _exportExcelButton.Click += (sender, args) => ExportCategories(new ExcelTableExporter());
             _categoriesGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();

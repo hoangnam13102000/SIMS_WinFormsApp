@@ -117,8 +117,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
             }
         }
 
-        public CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword, bool debtOnly) =>
-            _repository.GetSuppliers(pageIndex, pageSize, keyword, debtOnly);
+        public CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword) =>
+            _repository.GetSuppliers(pageIndex, pageSize, keyword);
 
         public SupplierEditDto GetSupplier(int supplierId) => _repository.GetSupplier(supplierId);
 

@@ -78,8 +78,7 @@ CREATE TABLE Suppliers (
     Email           VARCHAR(100) NULL,
     SuppliedItems   NVARCHAR(255) NULL,               -- mat hang cung cap (mo ta)
     IsDeleted       BIT NOT NULL DEFAULT 0,           -- xoa mem - khong DELETE that
-    DeletedAt       DATETIME NULL,
-    DebtBalance     DECIMAL(18,0) NOT NULL DEFAULT 0   -- công nợ NCC (đã tích hợp từ phần XII)
+    DeletedAt       DATETIME NULL
 );
 GO
 
@@ -456,8 +455,8 @@ GO
 
 /* ============================================================
    XI. TRA HANG LO VE NHA CUNG CAP (loi/hong/sai quy cach)
-   Tru kho NGAY khi lap phieu (khong qua duyet), ghi nhan cong no
-   NCC (DebtBalance) de theo doi hoan tien.
+   Tru kho NGAY khi lap phieu (khong qua duyet), luu tong gia tri
+   hoan tra trong phieu SupplierReturns.
    ============================================================ */
 CREATE TABLE SupplierReturns (
     SupplierReturnID    INT IDENTITY(1,1) PRIMARY KEY,
