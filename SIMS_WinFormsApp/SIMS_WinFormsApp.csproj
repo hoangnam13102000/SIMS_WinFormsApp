@@ -287,6 +287,11 @@
     <Compile Include="Services\Interfaces\IInventoryService.cs" />
     <Compile Include="Services\Implementations\Catalog\CatalogAdminService.cs" />
     <Compile Include="Services\Implementations\Inventory\InventoryService.cs" />
+    <Compile Include="Models\DTOs\Inventory\StockDisposalDtos.cs" />
+    <Compile Include="Repositories\Interfaces\IStockDisposalRepository.cs" />
+    <Compile Include="Repositories\Implementations\StockDisposalRepository.cs" />
+    <Compile Include="Services\Interfaces\IStockDisposalService.cs" />
+    <Compile Include="Services\Implementations\Inventory\StockDisposalService.cs" />
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
     <Compile Include="Services\Implementations\Import\PurchaseReceiptImportRowHandler.cs" />

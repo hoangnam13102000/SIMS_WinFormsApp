@@ -173,6 +173,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new InventoryService(new InventoryRepository(CreateConnectionFactory()));
         }
 
+        public static IStockDisposalService CreateStockDisposalService()
+        {
+            return new StockDisposalService(new StockDisposalRepository(CreateConnectionFactory()));
+        }
+
         public static ICustomerLookupService CreateCustomerLookupService()
         {
             return new SqlCustomerLookupService(CreateConnectionFactory());

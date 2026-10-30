@@ -30,6 +30,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
+        private bool _loadedOnce;
 
         public ucProductManagement() : this(null)
         {
@@ -42,6 +43,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
             _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
+            _optionsMenu.Items.Add("Làm mới", null, (sender, args) => LoadPage());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             if (service == null) return;
 
@@ -85,7 +87,16 @@ namespace SIMS_WinFormsApp.Views.Catalog
             };
             _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
-            Load += (sender, args) => LoadPage();
+            Load += (sender, args) =>
+            {
+                LoadPage();
+                _loadedOnce = true;
+            };
+            // Trang được giữ lại khi đổi menu: hiện lại thì tải lại để thấy tồn kho mới (nhập hàng, kiểm kê, bán hàng).
+            VisibleChanged += (sender, args) =>
+            {
+                if (Visible && _loadedOnce) LoadPage();
+            };
             Disposed += (sender, args) =>
             {
                 _searchTimer.Dispose();
