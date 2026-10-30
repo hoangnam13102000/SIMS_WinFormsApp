@@ -331,7 +331,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
                         AppPermission.STOCK_DISPOSE))
                     layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
-                        () => PrepareEmbeddedForm(new frmStockReconciliation()), IconChar.Warehouse);
+                        () => PrepareEmbeddedForm(new frmStockReconciliation(AppComposition.CreateInventoryService(), UserSession.Instance)));
                 if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
                     layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
                         () => new ucPurchaseReceiptManagement(), IconChar.Truck);
