@@ -13,6 +13,9 @@ namespace SIMS_WinFormsApp.Views.Toast
     {
         private const int MinimumCardWidth = 380;
         private const int MaximumCardWidth = 620;
+        private const int TextSlack = 6;
+        private const TextFormatFlags LabelTextFlags =
+            TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl | TextFormatFlags.NoPrefix;
         internal int CardWidth => Width;
 
         private const int CardPadding = 16;
@@ -62,33 +65,36 @@ namespace SIMS_WinFormsApp.Views.Toast
 
             _titleLabel.Text = title ?? string.Empty;
             _messageLabel.Text = message ?? string.Empty;
+            bool hasMessage = !string.IsNullOrWhiteSpace(message);
+            _messageLabel.Visible = hasMessage;
+
             int textLeft = CardPadding + IconSize + TextGap;
-            int availableWidth = Screen.FromControl(owner ?? this).WorkingArea.Width - 48;
+            int sideSpace = textLeft + CardPadding + CloseSize + TextGap;
+            Rectangle workArea = Screen.FromControl(owner ?? this).WorkingArea;
             int maxCardWidth = Math.Max(MinimumCardWidth,
-                Math.Min(MaximumCardWidth, availableWidth));
+                Math.Min(MaximumCardWidth, workArea.Width - 48));
             int desiredTextWidth = Math.Max(
-                TextRenderer.MeasureText(_titleLabel.Text, _titleLabel.Font).Width,
-                TextRenderer.MeasureText(_messageLabel.Text, _messageLabel.Font).Width);
-            int cardWidth = Math.Max(MinimumCardWidth, Math.Min(maxCardWidth,
-                textLeft + desiredTextWidth + CardPadding + CloseSize + TextGap));
-            int textWidth = Math.Max(60, cardWidth - textLeft - CardPadding - CloseSize - TextGap);
-            _titleLabel.MaximumSize = new Size(textWidth, 0);
-            _messageLabel.MaximumSize = new Size(textWidth, 0);
-            _messageLabel.Visible = !string.IsNullOrWhiteSpace(message);
+                MeasureSingleLine(_titleLabel),
+                hasMessage ? MeasureSingleLine(_messageLabel) : 0) + TextSlack;
+            int cardWidth = Math.Max(MinimumCardWidth,
+                Math.Min(maxCardWidth, sideSpace + desiredTextWidth));
+            int textWidth = Math.Max(60, cardWidth - sideSpace);
+
+            FitLabel(_titleLabel, textWidth);
+            FitLabel(_messageLabel, textWidth);
+
             _iconBox.IconChar = DialogTypeMetadata.GetIcon(type);
             _iconBox.IconColor = _accentColor;
             _closeBox.Click += (s, e) => Dismiss();
-            _messageLabel.PerformLayout();
-            _titleLabel.PerformLayout();
             Width = cardWidth;
             _closeBox.Location = new Point(
                 cardWidth - CardPadding - CloseSize,
                 _closeBox.Top);
 
             const int LineGap = 3;
-            int titleHeight = _titleLabel.PreferredSize.Height;
-            int messageHeight = _messageLabel.Visible ? _messageLabel.PreferredSize.Height : 0;
-            int textBlockHeight = _messageLabel.Visible ? titleHeight + LineGap + messageHeight : titleHeight;
+            int titleHeight = _titleLabel.Height;
+            int messageHeight = hasMessage ? _messageLabel.Height : 0;
+            int textBlockHeight = hasMessage ? titleHeight + LineGap + messageHeight : titleHeight;
 
             int blockHeight = Math.Max(IconSize, textBlockHeight);
             int iconTop = CardPadding + (blockHeight - IconSize) / 2;
@@ -96,12 +102,11 @@ namespace SIMS_WinFormsApp.Views.Toast
 
             _iconBox.Location = new Point(CardPadding, iconTop);
             _titleLabel.Location = new Point(textLeft, textTop);
-            _messageLabel.Location = new Point(textLeft, _titleLabel.Bottom + LineGap);
+            _messageLabel.Location = new Point(textLeft, textTop + titleHeight + LineGap);
 
-            int contentBottom = Math.Max(_iconBox.Bottom,
-                _messageLabel.Visible ? _messageLabel.Bottom : _titleLabel.Bottom);
+            int contentBottom = Math.Max(_iconBox.Bottom, textTop + textBlockHeight);
             int desiredHeight = contentBottom + CardPadding;
-            int availableHeight = Screen.FromControl(owner ?? this).WorkingArea.Height - 40;
+            int availableHeight = workArea.Height - 40;
             int visibleHeight = Math.Min(desiredHeight, availableHeight);
             ClientSize = new Size(cardWidth, visibleHeight);
 
@@ -114,7 +119,7 @@ namespace SIMS_WinFormsApp.Views.Toast
                 BackColor = BackColor,
                 Location = Point.Empty,
                 Size = ClientSize,
-                AutoScrollMinSize = new Size(cardWidth, desiredHeight)
+                AutoScrollMinSize = new Size(0, desiredHeight)
             };
             _contentPanel.Controls.Add(_iconBox);
             _contentPanel.Controls.Add(_titleLabel);
@@ -126,6 +131,20 @@ namespace SIMS_WinFormsApp.Views.Toast
 
             _fadeTimer.Interval = FadeStepMs;
             _fadeTimer.Tick += FadeTimer_Tick;
+        }
+
+        private static int MeasureSingleLine(Label label)
+        {
+            return TextRenderer.MeasureText(label.Text, label.Font, Size.Empty, TextFormatFlags.NoPrefix).Width;
+        }
+
+        private static void FitLabel(Label label, int width)
+        {
+            label.AutoSize = false;
+            label.MaximumSize = Size.Empty;
+            Size measured = TextRenderer.MeasureText(label.Text, label.Font,
+                new Size(width, int.MaxValue), LabelTextFlags);
+            label.Size = new Size(width, measured.Height + TextSlack);
         }
 
         /// <summary>Toast không cướp focus của cửa sổ đang thao tác khi xuất hiện (giống toast hệ thống Windows).</summary>

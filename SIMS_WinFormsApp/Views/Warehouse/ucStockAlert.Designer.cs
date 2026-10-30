@@ -1,14 +1,14 @@
 using System.ComponentModel;
 using System.Drawing;
-using System.Globalization;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.UI.Controls;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
     partial class ucStockAlert
     {
+        private IContainer components = null;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && components != null)
@@ -20,14 +20,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this._headerCard = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._titleLabel = new System.Windows.Forms.Label();
             this._subtitleLabel = new System.Windows.Forms.Label();
@@ -39,22 +35,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox = new System.Windows.Forms.TextBox();
             this._categoryCombo = new System.Windows.Forms.ComboBox();
             this._fromLabel = new System.Windows.Forms.Label();
-            this._fromDate = new SIMS_WinFormsApp.UI.Controls.DateFilterBox();
+            this._fromDatePicker = new System.Windows.Forms.DateTimePicker();
             this._toLabel = new System.Windows.Forms.Label();
-            this._toDate = new SIMS_WinFormsApp.UI.Controls.DateFilterBox();
+            this._toDatePicker = new System.Windows.Forms.DateTimePicker();
             this._clearFilterLink = new System.Windows.Forms.LinkLabel();
             this._totalLabel = new System.Windows.Forms.Label();
-            this._pagerPanel = new System.Windows.Forms.Panel();
-            this._pagerFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this._prevButton = new System.Windows.Forms.Button();
-            this._pageLabel = new System.Windows.Forms.Label();
-            this._nextButton = new System.Windows.Forms.Button();
-            this._pageInfoLabel = new System.Windows.Forms.Label();
-            this._displayLabel = new System.Windows.Forms.Label();
-            this._pageSizeCombo = new System.Windows.Forms.ComboBox();
-            this._rowsLabel = new System.Windows.Forms.Label();
-            this._pagerGap = new System.Windows.Forms.Panel();
-            this._headerGap = new System.Windows.Forms.Panel();
+            this._gridCard = new System.Windows.Forms.Panel();
             this._grid = new System.Windows.Forms.DataGridView();
             this.colAlertId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colProductCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -63,380 +49,247 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colReporter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colActions = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colPlan = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colResolve = new System.Windows.Forms.DataGridViewImageColumn();
+            this._emptyLabel = new System.Windows.Forms.Label();
+            this._gapHeader = new System.Windows.Forms.Panel();
+            this._gapFilter = new System.Windows.Forms.Panel();
+            this._gapPager = new System.Windows.Forms.Panel();
+            this._pagerPanel = new System.Windows.Forms.Panel();
+            this._pagerInner = new System.Windows.Forms.Panel();
+            this._prevButton = new System.Windows.Forms.Button();
+            this._pageLabel = new System.Windows.Forms.Label();
+            this._nextButton = new System.Windows.Forms.Button();
+            this._pageInfoLabel = new System.Windows.Forms.Label();
+            this._displayLabel = new System.Windows.Forms.Label();
+            this._pageSizeCombo = new System.Windows.Forms.ComboBox();
+            this._rowsLabel = new System.Windows.Forms.Label();
             this._headerCard.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._optionsMenu.SuspendLayout();
             this._filterCard.SuspendLayout();
-            this._pagerPanel.SuspendLayout();
-            this._pagerFlow.SuspendLayout();
+            this._gridCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
+            this._pagerPanel.SuspendLayout();
+            this._pagerInner.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // _headerCard
-            // 
+            //
+            //_headerCard
+            //
             this._headerCard.BackColor = System.Drawing.Color.White;
             this._headerCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._headerCard.Controls.Add(this._headerIcon);
+            this._headerCard.Controls.Add(this._headerIconPanel);
             this._headerCard.Controls.Add(this._titleLabel);
             this._headerCard.Controls.Add(this._subtitleLabel);
             this._headerCard.Controls.Add(this._optionsButton);
             this._headerCard.Dock = System.Windows.Forms.DockStyle.Top;
-            this._headerCard.Location = new System.Drawing.Point(30, 30);
-            this._headerCard.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerCard.Location = new System.Drawing.Point(16, 16);
             this._headerCard.Name = "_headerCard";
-            this._headerCard.Size = new System.Drawing.Size(1440, 120);
+            this._headerCard.Size = new System.Drawing.Size(1068, 84);
             this._headerCard.TabIndex = 0;
-            // 
-            // _headerIcon
-            // 
-            this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
-            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            //
+            //_headerIconPanel
+            //
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(243)))), ((int)(((byte)(199)))));
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(16, 16);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(50, 50);
+            this._headerIconPanel.TabIndex = 0;
+            //
+            //_headerIcon
+            //
+            this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(243)))), ((int)(((byte)(199)))));
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(119)))), ((int)(((byte)(6)))));
             this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.ExclamationTriangle;
-            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(119)))), ((int)(((byte)(6)))));
             this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._headerIcon.IconSize = 70;
-            this._headerIcon.Location = new System.Drawing.Point(30, 25);
-            this._headerIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerIcon.IconSize = 24;
+            this._headerIcon.Location = new System.Drawing.Point(13, 13);
             this._headerIcon.Name = "_headerIcon";
-            this._headerIcon.Size = new System.Drawing.Size(70, 70);
+            this._headerIcon.Size = new System.Drawing.Size(24, 24);
             this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._headerIcon.TabIndex = 0;
             this._headerIcon.TabStop = false;
-            // 
-            // _titleLabel
-            // 
-            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._titleLabel.Location = new System.Drawing.Point(120, 22);
-            this._titleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            //
+            //_titleLabel
+            //
+            this._titleLabel.AutoSize = false;
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
+            this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._titleLabel.Location = new System.Drawing.Point(80, 12);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(625, 42);
+            this._titleLabel.Size = new System.Drawing.Size(600, 32);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Cảnh báo tồn kho";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._titleLabel.UseMnemonic = false;
-            // 
-            // _subtitleLabel
-            // 
-            this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(120, 68);
-            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            //
+            //_subtitleLabel
+            //
+            this._subtitleLabel.AutoSize = false;
+            this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this._subtitleLabel.Location = new System.Drawing.Point(80, 46);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(950, 28);
+            this._subtitleLabel.Size = new System.Drawing.Size(700, 22);
             this._subtitleLabel.TabIndex = 2;
-            this._subtitleLabel.Text = "Các báo cáo hết/sắp hết hàng từ nhân viên bán hàng · lên kế hoạch nhập hàng bổ su" +
-    "ng";
+            this._subtitleLabel.Text = "Các báo cáo hết/sắp hết hàng từ nhân viên bán hàng · lên kế hoạch nhập hàng bổ sung";
             this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._subtitleLabel.UseMnemonic = false;
-            // 
-            // _optionsButton
-            // 
-            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            //_optionsButton
+            //
+            this._optionsButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this._optionsButton.BackColor = System.Drawing.Color.White;
             this._optionsButton.ContextMenuStrip = this._optionsMenu;
+            this._optionsButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._optionsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._optionsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._optionsButton.Location = new System.Drawing.Point(1222, 35);
-            this._optionsButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._optionsButton.Location = new System.Drawing.Point(936, 22);
             this._optionsButton.Name = "_optionsButton";
-            this._optionsButton.Size = new System.Drawing.Size(188, 50);
+            this._optionsButton.Size = new System.Drawing.Size(130, 38);
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn ▾";
             this._optionsButton.UseVisualStyleBackColor = false;
-            // 
-            // _optionsMenu
-            // 
-            this._optionsMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            //
+            //_optionsMenu
+            //
             this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._exportCsvItem,
             this._exportExcelItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(147, 52);
-            // 
-            // _exportCsvItem
-            // 
+            this._optionsMenu.Size = new System.Drawing.Size(181, 70);
+            //
+            //_exportCsvItem
+            //
             this._exportCsvItem.Name = "_exportCsvItem";
-            this._exportCsvItem.Size = new System.Drawing.Size(146, 24);
+            this._exportCsvItem.Size = new System.Drawing.Size(180, 22);
             this._exportCsvItem.Text = "Xuất CSV";
-            // 
-            // _exportExcelItem
-            // 
+            //
+            //_exportExcelItem
+            //
             this._exportExcelItem.Name = "_exportExcelItem";
-            this._exportExcelItem.Size = new System.Drawing.Size(146, 24);
+            this._exportExcelItem.Size = new System.Drawing.Size(180, 22);
             this._exportExcelItem.Text = "Xuất Excel";
-            // 
-            // _filterCard
-            // 
+            //
+            //_filterCard
+            //
             this._filterCard.BackColor = System.Drawing.Color.White;
             this._filterCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._filterCard.Controls.Add(this._searchBox);
             this._filterCard.Controls.Add(this._categoryCombo);
             this._filterCard.Controls.Add(this._fromLabel);
-            this._filterCard.Controls.Add(this._fromDate);
+            this._filterCard.Controls.Add(this._fromDatePicker);
             this._filterCard.Controls.Add(this._toLabel);
-            this._filterCard.Controls.Add(this._toDate);
+            this._filterCard.Controls.Add(this._toDatePicker);
             this._filterCard.Controls.Add(this._clearFilterLink);
             this._filterCard.Controls.Add(this._totalLabel);
             this._filterCard.Dock = System.Windows.Forms.DockStyle.Top;
-            this._filterCard.Location = new System.Drawing.Point(30, 165);
-            this._filterCard.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._filterCard.Location = new System.Drawing.Point(16, 112);
             this._filterCard.Name = "_filterCard";
-            this._filterCard.Size = new System.Drawing.Size(1440, 90);
+            this._filterCard.Size = new System.Drawing.Size(1068, 60);
             this._filterCard.TabIndex = 1;
-            // 
-            // _searchBox
-            // 
+            //
+            //_searchBox
+            //
             this._searchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._searchBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            this._searchBox.ForeColor = System.Drawing.Color.Gray;
-            this._searchBox.Location = new System.Drawing.Point(25, 22);
-            this._searchBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._searchBox.Location = new System.Drawing.Point(16, 18);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(400, 31);
+            this._searchBox.Size = new System.Drawing.Size(260, 23);
             this._searchBox.TabIndex = 0;
-            this._searchBox.Text = "Tìm theo tên sản phẩm, mã SP...";
-            // 
-            // _categoryCombo
-            // 
+            //
+            //_categoryCombo
+            //
             this._categoryCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._categoryCombo.Font = new System.Drawing.Font("Segoe UI", 10.5F);
             this._categoryCombo.FormattingEnabled = true;
-            this._categoryCombo.Items.AddRange(new object[] {
-            "Tất cả loại SP"});
-            this._categoryCombo.Location = new System.Drawing.Point(445, 22);
-            this._categoryCombo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._categoryCombo.Location = new System.Drawing.Point(290, 18);
             this._categoryCombo.Name = "_categoryCombo";
-            this._categoryCombo.Size = new System.Drawing.Size(249, 31);
+            this._categoryCombo.Size = new System.Drawing.Size(170, 23);
             this._categoryCombo.TabIndex = 1;
-            // 
-            // _fromLabel
-            // 
+            //
+            //_fromLabel
+            //
             this._fromLabel.AutoSize = true;
-            this._fromLabel.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._fromLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._fromLabel.Location = new System.Drawing.Point(715, 34);
-            this._fromLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._fromLabel.Location = new System.Drawing.Point(476, 21);
             this._fromLabel.Name = "_fromLabel";
-            this._fromLabel.Size = new System.Drawing.Size(29, 23);
+            this._fromLabel.Size = new System.Drawing.Size(22, 15);
             this._fromLabel.TabIndex = 2;
             this._fromLabel.Text = "Từ";
-            this._fromLabel.UseMnemonic = false;
-            // 
-            // _fromDate
-            // 
-            this._fromDate.Location = new System.Drawing.Point(750, 22);
-            this._fromDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this._fromDate.MinimumSize = new System.Drawing.Size(125, 45);
-            this._fromDate.Name = "_fromDate";
-            this._fromDate.Size = new System.Drawing.Size(200, 45);
-            this._fromDate.TabIndex = 3;
-            this._fromDate.Value = null;
-            // 
-            // _toLabel
-            // 
+            //
+            //_fromDatePicker
+            //
+            this._fromDatePicker.Checked = false;
+            this._fromDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this._fromDatePicker.Location = new System.Drawing.Point(500, 18);
+            this._fromDatePicker.Name = "_fromDatePicker";
+            this._fromDatePicker.ShowCheckBox = true;
+            this._fromDatePicker.Size = new System.Drawing.Size(125, 23);
+            this._fromDatePicker.TabIndex = 3;
+            //
+            //_toLabel
+            //
             this._toLabel.AutoSize = true;
-            this._toLabel.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._toLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._toLabel.Location = new System.Drawing.Point(965, 34);
-            this._toLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._toLabel.Location = new System.Drawing.Point(637, 21);
             this._toLabel.Name = "_toLabel";
-            this._toLabel.Size = new System.Drawing.Size(41, 23);
+            this._toLabel.Size = new System.Drawing.Size(23, 15);
             this._toLabel.TabIndex = 4;
             this._toLabel.Text = "Đến";
-            this._toLabel.UseMnemonic = false;
-            // 
-            // _toDate
-            // 
-            this._toDate.Location = new System.Drawing.Point(1008, 22);
-            this._toDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this._toDate.MinimumSize = new System.Drawing.Size(125, 45);
-            this._toDate.Name = "_toDate";
-            this._toDate.Size = new System.Drawing.Size(200, 45);
-            this._toDate.TabIndex = 5;
-            this._toDate.Value = null;
-            // 
-            // _clearFilterLink
-            // 
+            //
+            //_toDatePicker
+            //
+            this._toDatePicker.Checked = false;
+            this._toDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this._toDatePicker.Location = new System.Drawing.Point(669, 18);
+            this._toDatePicker.Name = "_toDatePicker";
+            this._toDatePicker.ShowCheckBox = true;
+            this._toDatePicker.Size = new System.Drawing.Size(125, 23);
+            this._toDatePicker.TabIndex = 5;
+            //
+            //_clearFilterLink
+            //
             this._clearFilterLink.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this._clearFilterLink.AutoSize = true;
-            this._clearFilterLink.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._clearFilterLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._clearFilterLink.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this._clearFilterLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this._clearFilterLink.Location = new System.Drawing.Point(1225, 34);
-            this._clearFilterLink.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._clearFilterLink.Location = new System.Drawing.Point(806, 21);
             this._clearFilterLink.Name = "_clearFilterLink";
-            this._clearFilterLink.Size = new System.Drawing.Size(59, 20);
+            this._clearFilterLink.Size = new System.Drawing.Size(57, 15);
             this._clearFilterLink.TabIndex = 6;
             this._clearFilterLink.TabStop = true;
-            this._clearFilterLink.Text = "Xóa lọc";
-            this._clearFilterLink.UseMnemonic = false;
+            this._clearFilterLink.Text = "✕ Xóa lọc";
             this._clearFilterLink.Visible = false;
-            // 
-            // _totalLabel
-            // 
-            this._totalLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._totalLabel.AutoSize = true;
-            this._totalLabel.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._totalLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._totalLabel.Location = new System.Drawing.Point(1255, 34);
-            this._totalLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            //
+            //_totalLabel
+            //
+            this._totalLabel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._totalLabel.AutoSize = false;
+            this._totalLabel.Location = new System.Drawing.Point(880, 19);
             this._totalLabel.Name = "_totalLabel";
-            this._totalLabel.Size = new System.Drawing.Size(186, 23);
+            this._totalLabel.Size = new System.Drawing.Size(170, 22);
             this._totalLabel.TabIndex = 7;
             this._totalLabel.Text = "Tổng cộng: 0 cảnh báo";
             this._totalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._totalLabel.UseMnemonic = false;
-            // 
-            // _pagerPanel
-            // 
-            this._pagerPanel.BackColor = System.Drawing.Color.White;
-            this._pagerPanel.Controls.Add(this._pagerFlow);
-            this._pagerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._pagerPanel.Location = new System.Drawing.Point(30, 845);
-            this._pagerPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this._pagerPanel.Name = "_pagerPanel";
-            this._pagerPanel.Size = new System.Drawing.Size(1440, 75);
-            this._pagerPanel.TabIndex = 2;
-            // 
-            // _pagerFlow
-            // 
-            this._pagerFlow.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this._pagerFlow.AutoSize = true;
-            this._pagerFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._pagerFlow.BackColor = System.Drawing.Color.White;
-            this._pagerFlow.Controls.Add(this._prevButton);
-            this._pagerFlow.Controls.Add(this._pageLabel);
-            this._pagerFlow.Controls.Add(this._nextButton);
-            this._pagerFlow.Controls.Add(this._pageInfoLabel);
-            this._pagerFlow.Controls.Add(this._displayLabel);
-            this._pagerFlow.Controls.Add(this._pageSizeCombo);
-            this._pagerFlow.Controls.Add(this._rowsLabel);
-            this._pagerFlow.Location = new System.Drawing.Point(488, 15);
-            this._pagerFlow.Margin = new System.Windows.Forms.Padding(0);
-            this._pagerFlow.Name = "_pagerFlow";
-            this._pagerFlow.Size = new System.Drawing.Size(496, 45);
-            this._pagerFlow.TabIndex = 0;
-            this._pagerFlow.WrapContents = false;
-            // 
-            // _prevButton
-            // 
-            this._prevButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._prevButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._prevButton.Font = new System.Drawing.Font("Segoe UI", 16F);
-            this._prevButton.Location = new System.Drawing.Point(0, 0);
-            this._prevButton.Margin = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this._prevButton.Name = "_prevButton";
-            this._prevButton.Size = new System.Drawing.Size(45, 45);
-            this._prevButton.TabIndex = 0;
-            this._prevButton.Text = "‹";
-            this._prevButton.UseVisualStyleBackColor = true;
-            // 
-            // _pageLabel
-            // 
-            this._pageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._pageLabel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this._pageLabel.ForeColor = System.Drawing.Color.White;
-            this._pageLabel.Location = new System.Drawing.Point(53, 0);
-            this._pageLabel.Margin = new System.Windows.Forms.Padding(0, 0, 8, 0);
-            this._pageLabel.Name = "_pageLabel";
-            this._pageLabel.Size = new System.Drawing.Size(45, 45);
-            this._pageLabel.TabIndex = 1;
-            this._pageLabel.Text = "1";
-            this._pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this._pageLabel.UseMnemonic = false;
-            // 
-            // _nextButton
-            // 
-            this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._nextButton.Font = new System.Drawing.Font("Segoe UI", 16F);
-            this._nextButton.Location = new System.Drawing.Point(106, 0);
-            this._nextButton.Margin = new System.Windows.Forms.Padding(0, 0, 15, 0);
-            this._nextButton.Name = "_nextButton";
-            this._nextButton.Size = new System.Drawing.Size(45, 45);
-            this._nextButton.TabIndex = 2;
-            this._nextButton.Text = "›";
-            this._nextButton.UseVisualStyleBackColor = true;
-            // 
-            // _pageInfoLabel
-            // 
-            this._pageInfoLabel.AutoSize = true;
-            this._pageInfoLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._pageInfoLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._pageInfoLabel.Location = new System.Drawing.Point(186, 11);
-            this._pageInfoLabel.Margin = new System.Windows.Forms.Padding(20, 11, 0, 0);
-            this._pageInfoLabel.Name = "_pageInfoLabel";
-            this._pageInfoLabel.Size = new System.Drawing.Size(80, 20);
-            this._pageInfoLabel.TabIndex = 3;
-            this._pageInfoLabel.Text = "Trang 1 / 1";
-            this._pageInfoLabel.UseMnemonic = false;
-            // 
-            // _displayLabel
-            // 
-            this._displayLabel.AutoSize = true;
-            this._displayLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._displayLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._displayLabel.Location = new System.Drawing.Point(286, 11);
-            this._displayLabel.Margin = new System.Windows.Forms.Padding(20, 11, 8, 0);
-            this._displayLabel.Name = "_displayLabel";
-            this._displayLabel.Size = new System.Drawing.Size(64, 20);
-            this._displayLabel.TabIndex = 4;
-            this._displayLabel.Text = "Hiển thị:";
-            this._displayLabel.UseMnemonic = false;
-            // 
-            // _pageSizeCombo
-            // 
-            this._pageSizeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._pageSizeCombo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._pageSizeCombo.Items.AddRange(new object[] {
-            10,
-            20,
-            50});
-            this._pageSizeCombo.Location = new System.Drawing.Point(358, 2);
-            this._pageSizeCombo.Margin = new System.Windows.Forms.Padding(0, 2, 8, 0);
-            this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(86, 28);
-            this._pageSizeCombo.TabIndex = 5;
-            // 
-            // _rowsLabel
-            // 
-            this._rowsLabel.AutoSize = true;
-            this._rowsLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._rowsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._rowsLabel.Location = new System.Drawing.Point(452, 11);
-            this._rowsLabel.Margin = new System.Windows.Forms.Padding(0, 11, 0, 0);
-            this._rowsLabel.Name = "_rowsLabel";
-            this._rowsLabel.Size = new System.Drawing.Size(44, 20);
-            this._rowsLabel.TabIndex = 6;
-            this._rowsLabel.Text = "dòng";
-            this._rowsLabel.UseMnemonic = false;
-            // 
-            // _pagerGap
-            // 
-            this._pagerGap.BackColor = System.Drawing.Color.Transparent;
-            this._pagerGap.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._pagerGap.Location = new System.Drawing.Point(30, 830);
-            this._pagerGap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this._pagerGap.Name = "_pagerGap";
-            this._pagerGap.Size = new System.Drawing.Size(1440, 15);
-            this._pagerGap.TabIndex = 1;
-            // 
-            // _headerGap
-            // 
-            this._headerGap.BackColor = System.Drawing.Color.Transparent;
-            this._headerGap.Dock = System.Windows.Forms.DockStyle.Top;
-            this._headerGap.Location = new System.Drawing.Point(30, 150);
-            this._headerGap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this._headerGap.Name = "_headerGap";
-            this._headerGap.Size = new System.Drawing.Size(1440, 15);
-            this._headerGap.TabIndex = 3;
-            // 
-            // _grid
-            // 
+            //
+            //_gridCard
+            //
+            this._gridCard.BackColor = System.Drawing.Color.White;
+            this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._gridCard.Controls.Add(this._grid);
+            this._gridCard.Controls.Add(this._emptyLabel);
+            this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._gridCard.Location = new System.Drawing.Point(16, 184);
+            this._gridCard.Name = "_gridCard";
+            this._gridCard.Size = new System.Drawing.Size(1068, 400);
+            this._gridCard.TabIndex = 2;
+            //
+            //_grid
+            //
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
@@ -447,14 +300,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this._grid.ColumnHeadersHeight = 44;
+            this._grid.ColumnHeadersHeight = 38;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colAlertId,
@@ -464,170 +317,316 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colReporter,
             this.colCreatedAt,
             this.colStatus,
-            this.colActions});
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Segoe UI", 10F);
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(242)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._grid.DefaultCellStyle = dataGridViewCellStyle8;
+            this.colPlan,
+            this.colResolve});
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._grid.DefaultCellStyle = dataGridViewCellStyle2;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EnableHeadersVisualStyles = false;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
-            this._grid.Location = new System.Drawing.Point(30, 255);
-            this._grid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._grid.Location = new System.Drawing.Point(0, 0);
             this._grid.MultiSelect = false;
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
             this._grid.RowHeadersVisible = false;
-            this._grid.RowHeadersWidth = 51;
-            this._grid.RowTemplate.Height = 44;
-            this._grid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this._grid.RowTemplate.Height = 36;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._grid.Size = new System.Drawing.Size(1440, 575);
+            this._grid.Size = new System.Drawing.Size(1066, 398);
             this._grid.TabIndex = 0;
-            // 
-            // colAlertId
-            // 
+            this._grid.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            //
+            //colAlertId
+            //
             this.colAlertId.HeaderText = "AlertID";
-            this.colAlertId.MinimumWidth = 6;
             this.colAlertId.Name = "colAlertId";
             this.colAlertId.ReadOnly = true;
             this.colAlertId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colAlertId.Visible = false;
-            // 
-            // colProductCode
-            // 
+            //
+            //colProductCode
+            //
             this.colProductCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.colProductCode.DefaultCellStyle = dataGridViewCellStyle2;
             this.colProductCode.FillWeight = 10F;
             this.colProductCode.HeaderText = "Mã SP";
-            this.colProductCode.MinimumWidth = 6;
             this.colProductCode.Name = "colProductCode";
             this.colProductCode.ReadOnly = true;
             this.colProductCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colProductName
-            // 
+            //
+            //colProductName
+            //
             this.colProductName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.colProductName.DefaultCellStyle = dataGridViewCellStyle3;
-            this.colProductName.FillWeight = 24F;
+            this.colProductName.FillWeight = 22F;
             this.colProductName.HeaderText = "Tên sản phẩm";
-            this.colProductName.MinimumWidth = 6;
             this.colProductName.Name = "colProductName";
             this.colProductName.ReadOnly = true;
             this.colProductName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colAlertType
-            // 
+            //
+            //colAlertType
+            //
             this.colAlertType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colAlertType.DefaultCellStyle = dataGridViewCellStyle4;
-            this.colAlertType.FillWeight = 14F;
+            this.colAlertType.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colAlertType.FillWeight = 13F;
+            this.colAlertType.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colAlertType.HeaderText = "Loại cảnh báo";
-            this.colAlertType.MinimumWidth = 6;
             this.colAlertType.Name = "colAlertType";
             this.colAlertType.ReadOnly = true;
             this.colAlertType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colReporter
-            // 
+            //
+            //colReporter
+            //
             this.colReporter.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.colReporter.DefaultCellStyle = dataGridViewCellStyle5;
-            this.colReporter.FillWeight = 16F;
+            this.colReporter.FillWeight = 15F;
             this.colReporter.HeaderText = "Người báo cáo";
-            this.colReporter.MinimumWidth = 6;
             this.colReporter.Name = "colReporter";
             this.colReporter.ReadOnly = true;
             this.colReporter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colCreatedAt
-            // 
+            //
+            //colCreatedAt
+            //
             this.colCreatedAt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.Format = "dd/MM/yy HH:mm";
-            dataGridViewCellStyle6.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
-            this.colCreatedAt.DefaultCellStyle = dataGridViewCellStyle6;
-            this.colCreatedAt.FillWeight = 14F;
+            this.colCreatedAt.FillWeight = 13F;
             this.colCreatedAt.HeaderText = "Thời gian";
-            this.colCreatedAt.MinimumWidth = 6;
             this.colCreatedAt.Name = "colCreatedAt";
             this.colCreatedAt.ReadOnly = true;
             this.colCreatedAt.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colStatus
-            // 
+            //
+            //colStatus
+            //
             this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colStatus.DefaultCellStyle = dataGridViewCellStyle7;
+            this.colStatus.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colStatus.FillWeight = 14F;
+            this.colStatus.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colStatus.HeaderText = "Trạng thái";
-            this.colStatus.MinimumWidth = 6;
             this.colStatus.Name = "colStatus";
             this.colStatus.ReadOnly = true;
             this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colActions
-            // 
-            this.colActions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colActions.HeaderText = "Thao tác";
-            this.colActions.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.colActions.MinimumWidth = 6;
-            this.colActions.Name = "colActions";
-            this.colActions.ReadOnly = true;
-            this.colActions.Width = 110;
-            // 
-            // ucStockAlert
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
-            this.Controls.Add(this._grid);
-            this.Controls.Add(this._pagerGap);
+            //
+            //colPlan
+            //
+            this.colPlan.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colPlan.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colPlan.DefaultCellStyle.NullValue = null;
+            this.colPlan.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colPlan.HeaderText = "Thao tác";
+            this.colPlan.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
+            this.colPlan.Name = "colPlan";
+            this.colPlan.ReadOnly = true;
+            this.colPlan.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colPlan.Width = 56;
+            //
+            //colResolve
+            //
+            this.colResolve.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colResolve.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colResolve.DefaultCellStyle.NullValue = null;
+            this.colResolve.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colResolve.HeaderText = "";
+            this.colResolve.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
+            this.colResolve.Name = "colResolve";
+            this.colResolve.ReadOnly = true;
+            this.colResolve.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colResolve.Width = 56;
+            //
+            //_emptyLabel
+            //
+            this._emptyLabel.BackColor = System.Drawing.Color.White;
+            this._emptyLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._emptyLabel.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this._emptyLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._emptyLabel.Location = new System.Drawing.Point(0, 0);
+            this._emptyLabel.Name = "_emptyLabel";
+            this._emptyLabel.Size = new System.Drawing.Size(1066, 398);
+            this._emptyLabel.TabIndex = 1;
+            this._emptyLabel.Text = "Chưa có cảnh báo nào";
+            this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._emptyLabel.Visible = false;
+            //
+            //_gapHeader
+            //
+            this._gapHeader.BackColor = System.Drawing.Color.Transparent;
+            this._gapHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this._gapHeader.Location = new System.Drawing.Point(16, 100);
+            this._gapHeader.Name = "_gapHeader";
+            this._gapHeader.Size = new System.Drawing.Size(1068, 12);
+            this._gapHeader.TabIndex = 3;
+            //
+            //_gapFilter
+            //
+            this._gapFilter.BackColor = System.Drawing.Color.Transparent;
+            this._gapFilter.Dock = System.Windows.Forms.DockStyle.Top;
+            this._gapFilter.Location = new System.Drawing.Point(16, 172);
+            this._gapFilter.Name = "_gapFilter";
+            this._gapFilter.Size = new System.Drawing.Size(1068, 12);
+            this._gapFilter.TabIndex = 4;
+            //
+            //_gapPager
+            //
+            this._gapPager.BackColor = System.Drawing.Color.Transparent;
+            this._gapPager.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this._gapPager.Location = new System.Drawing.Point(16, 584);
+            this._gapPager.Name = "_gapPager";
+            this._gapPager.Size = new System.Drawing.Size(1068, 12);
+            this._gapPager.TabIndex = 5;
+            //
+            //_pagerPanel
+            //
+            this._pagerPanel.BackColor = System.Drawing.Color.Transparent;
+            this._pagerPanel.Controls.Add(this._pagerInner);
+            this._pagerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this._pagerPanel.Location = new System.Drawing.Point(16, 596);
+            this._pagerPanel.Name = "_pagerPanel";
+            this._pagerPanel.Size = new System.Drawing.Size(1068, 52);
+            this._pagerPanel.TabIndex = 6;
+            //
+            //_pagerInner
+            //
+            this._pagerInner.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this._pagerInner.BackColor = System.Drawing.Color.Transparent;
+            this._pagerInner.Controls.Add(this._prevButton);
+            this._pagerInner.Controls.Add(this._pageLabel);
+            this._pagerInner.Controls.Add(this._nextButton);
+            this._pagerInner.Controls.Add(this._pageInfoLabel);
+            this._pagerInner.Controls.Add(this._displayLabel);
+            this._pagerInner.Controls.Add(this._pageSizeCombo);
+            this._pagerInner.Controls.Add(this._rowsLabel);
+            this._pagerInner.Location = new System.Drawing.Point(334, 8);
+            this._pagerInner.Name = "_pagerInner";
+            this._pagerInner.Size = new System.Drawing.Size(400, 36);
+            this._pagerInner.TabIndex = 0;
+            //
+            //_prevButton
+            //
+            this._prevButton.BackColor = System.Drawing.Color.White;
+            this._prevButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._prevButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._prevButton.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this._prevButton.Location = new System.Drawing.Point(0, 2);
+            this._prevButton.Name = "_prevButton";
+            this._prevButton.Size = new System.Drawing.Size(32, 32);
+            this._prevButton.TabIndex = 0;
+            this._prevButton.Text = "‹";
+            this._prevButton.UseVisualStyleBackColor = false;
+            //
+            //_pageLabel
+            //
+            this._pageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._pageLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._pageLabel.ForeColor = System.Drawing.Color.White;
+            this._pageLabel.Location = new System.Drawing.Point(38, 2);
+            this._pageLabel.Name = "_pageLabel";
+            this._pageLabel.Size = new System.Drawing.Size(32, 32);
+            this._pageLabel.TabIndex = 1;
+            this._pageLabel.Text = "1";
+            this._pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            //_nextButton
+            //
+            this._nextButton.BackColor = System.Drawing.Color.White;
+            this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._nextButton.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this._nextButton.Location = new System.Drawing.Point(76, 2);
+            this._nextButton.Name = "_nextButton";
+            this._nextButton.Size = new System.Drawing.Size(32, 32);
+            this._nextButton.TabIndex = 2;
+            this._nextButton.Text = "›";
+            this._nextButton.UseVisualStyleBackColor = false;
+            //
+            //_pageInfoLabel
+            //
+            this._pageInfoLabel.AutoSize = false;
+            this._pageInfoLabel.Location = new System.Drawing.Point(118, 9);
+            this._pageInfoLabel.Name = "_pageInfoLabel";
+            this._pageInfoLabel.Size = new System.Drawing.Size(92, 20);
+            this._pageInfoLabel.TabIndex = 3;
+            this._pageInfoLabel.Text = "Trang 1 / 1";
+            this._pageInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            //_displayLabel
+            //
+            this._displayLabel.AutoSize = false;
+            this._displayLabel.Location = new System.Drawing.Point(214, 9);
+            this._displayLabel.Name = "_displayLabel";
+            this._displayLabel.Size = new System.Drawing.Size(60, 20);
+            this._displayLabel.TabIndex = 4;
+            this._displayLabel.Text = "Hiển thị:";
+            this._displayLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            //
+            //_pageSizeCombo
+            //
+            this._pageSizeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._pageSizeCombo.FormattingEnabled = true;
+            this._pageSizeCombo.Items.AddRange(new object[] {
+            10,
+            20,
+            50});
+            this._pageSizeCombo.Location = new System.Drawing.Point(278, 5);
+            this._pageSizeCombo.Name = "_pageSizeCombo";
+            this._pageSizeCombo.Size = new System.Drawing.Size(60, 23);
+            this._pageSizeCombo.TabIndex = 5;
+            this._pageSizeCombo.SelectedIndex = 0;
+            //
+            //_rowsLabel
+            //
+            this._rowsLabel.AutoSize = false;
+            this._rowsLabel.Location = new System.Drawing.Point(344, 9);
+            this._rowsLabel.Name = "_rowsLabel";
+            this._rowsLabel.Size = new System.Drawing.Size(40, 20);
+            this._rowsLabel.TabIndex = 6;
+            this._rowsLabel.Text = "dòng";
+            this._rowsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            //ucStockAlert
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.Controls.Add(this._gridCard);
+            this.Controls.Add(this._gapPager);
             this.Controls.Add(this._pagerPanel);
+            this.Controls.Add(this._gapFilter);
             this.Controls.Add(this._filterCard);
-            this.Controls.Add(this._headerGap);
+            this.Controls.Add(this._gapHeader);
             this.Controls.Add(this._headerCard);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Name = "ucStockAlert";
-            this.Padding = new System.Windows.Forms.Padding(30, 30, 30, 30);
-            this.Size = new System.Drawing.Size(1500, 950);
+            this.Padding = new System.Windows.Forms.Padding(16);
+            this.Size = new System.Drawing.Size(1100, 680);
             this._headerCard.ResumeLayout(false);
+            this._headerIconPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             this._optionsMenu.ResumeLayout(false);
             this._filterCard.ResumeLayout(false);
             this._filterCard.PerformLayout();
-            this._pagerPanel.ResumeLayout(false);
-            this._pagerPanel.PerformLayout();
-            this._pagerFlow.ResumeLayout(false);
-            this._pagerFlow.PerformLayout();
+            this._gridCard.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
+            this._pagerPanel.ResumeLayout(false);
+            this._pagerInner.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
-        private IContainer components = null;
         private Panel _headerCard;
+        private Panel _headerIconPanel;
         private IconPictureBox _headerIcon;
         private Label _titleLabel;
         private Label _subtitleLabel;
         private Button _optionsButton;
-        private Panel _headerGap;
+        private ContextMenuStrip _optionsMenu;
+        private ToolStripMenuItem _exportCsvItem;
+        private ToolStripMenuItem _exportExcelItem;
         private Panel _filterCard;
         private TextBox _searchBox;
         private ComboBox _categoryCombo;
         private Label _fromLabel;
-        private DateFilterBox _fromDate;
+        private DateTimePicker _fromDatePicker;
         private Label _toLabel;
-        private DateFilterBox _toDate;
+        private DateTimePicker _toDatePicker;
         private LinkLabel _clearFilterLink;
         private Label _totalLabel;
+        private Panel _gridCard;
         private DataGridView _grid;
         private DataGridViewTextBoxColumn colAlertId;
         private DataGridViewTextBoxColumn colProductCode;
@@ -636,10 +635,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private DataGridViewTextBoxColumn colReporter;
         private DataGridViewTextBoxColumn colCreatedAt;
         private DataGridViewTextBoxColumn colStatus;
-        private DataGridViewImageColumn colActions;
-        private Panel _pagerGap;
+        private DataGridViewImageColumn colPlan;
+        private DataGridViewImageColumn colResolve;
+        private Label _emptyLabel;
+        private Panel _gapHeader;
+        private Panel _gapFilter;
+        private Panel _gapPager;
         private Panel _pagerPanel;
-        private FlowLayoutPanel _pagerFlow;
+        private Panel _pagerInner;
         private Button _prevButton;
         private Label _pageLabel;
         private Button _nextButton;
@@ -647,8 +650,5 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private Label _displayLabel;
         private ComboBox _pageSizeCombo;
         private Label _rowsLabel;
-        private ContextMenuStrip _optionsMenu;
-        private ToolStripMenuItem _exportCsvItem;
-        private ToolStripMenuItem _exportExcelItem;
     }
 }
