@@ -16,6 +16,7 @@ namespace SIMS_WinFormsApp.UI.Controls
         private readonly IconPictureBox _icon;
         private readonly NotificationBadgeControl _badge;
         private int _count;
+        private bool _muted;
 
         public NotificationBellButton()
         {
@@ -51,8 +52,23 @@ namespace SIMS_WinFormsApp.UI.Controls
 
                 _count = v;
                 _badge.Text = v > 9 ? "9+" : v.ToString();
-                _badge.Visible = v > 0;
+                _badge.Visible = v > 0 && !_muted;
                 LayoutChildren();
+                Invalidate(true);
+            }
+        }
+
+        public bool Muted
+        {
+            get => _muted;
+            set
+            {
+                if (value == _muted) return;
+
+                _muted = value;
+                _icon.IconChar = value ? IconChar.BellSlash : IconChar.Bell;
+                _icon.IconColor = value ? LayoutColors.TextMuted : LayoutColors.TextWhite;
+                _badge.Visible = !value && _count > 0;
                 Invalidate(true);
             }
         }

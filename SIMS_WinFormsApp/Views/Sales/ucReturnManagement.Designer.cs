@@ -21,7 +21,10 @@ namespace SIMS_WinFormsApp.Views.Sales
         private DataGridViewTextBoxColumn _customer;
         private DataGridViewTextBoxColumn _date;
         private DataGridViewTextBoxColumn _reasonColumn;
+        private DataGridViewTextBoxColumn _totalColumn;
         private DataGridViewTextBoxColumn _status;
+        private DataGridViewButtonColumn _approve;
+        private DataGridViewButtonColumn _reject;
 
         protected override void Dispose(bool disposing)
         {
@@ -47,7 +50,10 @@ namespace SIMS_WinFormsApp.Views.Sales
             _customer = new DataGridViewTextBoxColumn();
             _date = new DataGridViewTextBoxColumn();
             _reasonColumn = new DataGridViewTextBoxColumn();
+            _totalColumn = new DataGridViewTextBoxColumn();
             _status = new DataGridViewTextBoxColumn();
+            _approve = new DataGridViewButtonColumn();
+            _reject = new DataGridViewButtonColumn();
             _root.SuspendLayout();
             _header.SuspendLayout();
             _filters.SuspendLayout();
@@ -104,7 +110,16 @@ namespace SIMS_WinFormsApp.Views.Sales
             _grid.BackgroundColor = Color.White;
             _grid.BorderStyle = BorderStyle.None;
             _grid.ColumnHeadersHeight = 40;
-            _grid.Columns.AddRange(new DataGridViewColumn[] { _returnCode, _orderCode, _customer, _date, _reasonColumn, _status });
+            _grid.EnableHeadersVisualStyles = false;
+            _grid.GridColor = Color.FromArgb(226, 232, 240);
+            _grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+            _grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(71, 85, 105);
+            _grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
+            _grid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
+            _grid.RowTemplate.Height = 40;
+            _grid.Columns.AddRange(new DataGridViewColumn[] {
+                _returnCode, _orderCode, _customer, _date, _reasonColumn, _totalColumn, _status, _approve, _reject
+            });
             _grid.Dock = DockStyle.Fill;
             _grid.ReadOnly = true;
             _grid.RowHeadersVisible = false;
@@ -118,8 +133,25 @@ namespace SIMS_WinFormsApp.Views.Sales
             _date.Name = "Date";
             _reasonColumn.HeaderText = "Lý do";
             _reasonColumn.Name = "Reason";
+            _totalColumn.HeaderText = "Tiền hoàn dự kiến";
+            _totalColumn.Name = "Total";
+            _totalColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             _status.HeaderText = "Trạng thái";
             _status.Name = "Status";
+            _approve.HeaderText = "";
+            _approve.Name = "Approve";
+            _approve.Text = "Duyệt";
+            _approve.UseColumnTextForButtonValue = true;
+            _approve.Width = 72;
+            _approve.MinimumWidth = 72;
+            _approve.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            _reject.HeaderText = "";
+            _reject.Name = "Reject";
+            _reject.Text = "Từ chối";
+            _reject.UseColumnTextForButtonValue = true;
+            _reject.Width = 78;
+            _reject.MinimumWidth = 78;
+            _reject.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(244, 247, 250);
             Controls.Add(_root);

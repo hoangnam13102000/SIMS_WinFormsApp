@@ -138,11 +138,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 new FlatPermissionLayoutEntry(AppPermission.SHIFT_APPROVE),
                 new FlatPermissionLayoutEntry(AppPermission.RETURN_EXCHANGE_CREATE),
                 new FlatPermissionLayoutEntry(AppPermission.RETURN_EXCHANGE_APPROVE),
-                new FlatPermissionLayoutEntry(AppPermission.ORDER_VIEW),
-                new FlatPermissionLayoutEntry(AppPermission.ORDER_MANAGE),
-                new FlatPermissionLayoutEntry(AppPermission.ORDER_VIEW_ASSIGNED),
-                new FlatPermissionLayoutEntry(AppPermission.ORDER_PROCESS_ASSIGNED),
-                new FlatPermissionLayoutEntry(AppPermission.ORDER_ASSIGN),
                 new FlatPermissionLayoutEntry(AppPermission.POS_CART_HOLD),
                 new FlatPermissionLayoutEntry(AppPermission.POS_CART_RESTORE),
                 new FlatPermissionLayoutEntry(AppPermission.PROMOTION_MANAGE)

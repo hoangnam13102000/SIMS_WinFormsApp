@@ -21,21 +21,17 @@ namespace SIMS_WinFormsApp.Views.Sales
         private CheckBox _includeDeleted;
         private DataGridView _grid;
         private UserManagementPager _pager;
-        private DataGridViewTextBoxColumn _promotionIdColumn;
-        private DataGridViewTextBoxColumn _codeColumn;
-        private DataGridViewTextBoxColumn _nameColumn;
-        private DataGridViewTextBoxColumn _discountColumn;
-        private DataGridViewTextBoxColumn _periodColumn;
-        private DataGridViewTextBoxColumn _usageColumn;
-        private DataGridViewTextBoxColumn _activeColumn;
-        private DataGridViewImageColumn _actionsColumn;
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && _themeSubscribed)
             {
                 ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
                 _themeSubscribed = false;
+            }
+            if (disposing && _languageSubscribed)
+            {
+                SIMS_WinFormsApp.UI.I18n.LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+                _languageSubscribed = false;
             }
             if (disposing && components != null)
                 components.Dispose();
@@ -59,14 +55,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._gridPanel = new System.Windows.Forms.Panel();
             this._grid = new System.Windows.Forms.DataGridView();
             this._pager = new SIMS_WinFormsApp.UI.Controls.UserManagementPager();
-            this._promotionIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._codeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._discountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._periodColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._usageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._activeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._toolbar.SuspendLayout();
@@ -212,7 +200,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             // 
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
-            this._grid.AutoGenerateColumns = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -228,15 +215,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this._grid.ColumnHeadersHeight = 40;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this._promotionIdColumn,
-            this._codeColumn,
-            this._nameColumn,
-            this._discountColumn,
-            this._periodColumn,
-            this._usageColumn,
-            this._activeColumn,
-            this._actionsColumn});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -259,52 +237,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1244, 609);
             this._grid.TabIndex = 0;
-            this._promotionIdColumn.DataPropertyName = "PromotionId";
-            this._promotionIdColumn.Name = "PromotionId";
-            this._promotionIdColumn.Visible = false;
-            this._codeColumn.DataPropertyName = "Code";
-            this._codeColumn.FillWeight = 85F;
-            this._codeColumn.HeaderText = "Mã giảm giá";
-            this._codeColumn.MinimumWidth = 70;
-            this._codeColumn.Name = "Code";
-            this._codeColumn.ReadOnly = true;
-            this._nameColumn.DataPropertyName = "Name";
-            this._nameColumn.FillWeight = 145F;
-            this._nameColumn.HeaderText = "Tên chương trình";
-            this._nameColumn.MinimumWidth = 70;
-            this._nameColumn.Name = "Name";
-            this._nameColumn.ReadOnly = true;
-            this._discountColumn.DataPropertyName = "Discount";
-            this._discountColumn.FillWeight = 75F;
-            this._discountColumn.HeaderText = "Mức giảm";
-            this._discountColumn.MinimumWidth = 70;
-            this._discountColumn.Name = "Discount";
-            this._discountColumn.ReadOnly = true;
-            this._periodColumn.DataPropertyName = "Period";
-            this._periodColumn.FillWeight = 120F;
-            this._periodColumn.HeaderText = "Thời hạn áp dụng";
-            this._periodColumn.MinimumWidth = 70;
-            this._periodColumn.Name = "Period";
-            this._periodColumn.ReadOnly = true;
-            this._usageColumn.DataPropertyName = "Usage";
-            this._usageColumn.FillWeight = 75F;
-            this._usageColumn.HeaderText = "Lượt sử dụng";
-            this._usageColumn.MinimumWidth = 70;
-            this._usageColumn.Name = "Usage";
-            this._usageColumn.ReadOnly = true;
-            this._activeColumn.DataPropertyName = "IsActive";
-            this._activeColumn.FillWeight = 70F;
-            this._activeColumn.HeaderText = "Trạng thái";
-            this._activeColumn.MinimumWidth = 70;
-            this._activeColumn.Name = "IsActive";
-            this._activeColumn.ReadOnly = true;
-            this._actionsColumn.DataPropertyName = "Actions";
-            this._actionsColumn.HeaderText = "Thao tác";
-            this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this._actionsColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
-            this._actionsColumn.Name = "Actions";
-            this._actionsColumn.Width = 120;
-            this._actionsColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             // 
             // _pager
             // 

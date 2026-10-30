@@ -86,16 +86,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 "Tạo yêu cầu đổi/trả", "Tạo yêu cầu đổi/trả hàng cho 1 hoá đơn (bắt buộc ghi rõ lý do).");
             Put(AppPermission.RETURN_EXCHANGE_APPROVE, "Bán hàng",
                 "Duyệt đổi/trả hàng", "Duyệt/từ chối yêu cầu đổi/trả hàng giá trị lớn.");
-            Put(AppPermission.ORDER_VIEW, "Bán hàng",
-                "Xem đơn hàng online", "Xem đơn hàng online từ khách.");
-            Put(AppPermission.ORDER_MANAGE, "Bán hàng",
-                "Xử lý tất cả đơn online", "Xác nhận / huỷ tất cả đơn hàng online từ khách.");
-            Put(AppPermission.ORDER_VIEW_ASSIGNED, "Bán hàng",
-                "Xem đơn được giao", "Chỉ xem các đơn hàng online được gán cho chính nhân viên đang đăng nhập.");
-            Put(AppPermission.ORDER_PROCESS_ASSIGNED, "Bán hàng",
-                "Xử lý đơn được giao", "Chỉ xử lý trạng thái các đơn hàng online được gán cho chính nhân viên đang đăng nhập.");
-            Put(AppPermission.ORDER_ASSIGN, "Bán hàng",
-                "Gán đơn cho nhân viên", "Gán hoặc đổi nhân viên bán hàng phụ trách đơn online.");
             Put(AppPermission.POS_CART_HOLD, "Bán hàng",
                 "Tạm giữ giỏ POS", "Tạm giữ giỏ hàng hiện tại để phục vụ khách khác trong cùng ca.");
             Put(AppPermission.POS_CART_RESTORE, "Bán hàng",

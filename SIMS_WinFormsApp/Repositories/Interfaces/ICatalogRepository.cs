@@ -21,7 +21,7 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         void SetCategoryStatus(int categoryId, bool active);
         int? FindCategoryIdByName(string name);
 
-        CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword, bool debtOnly);
+        CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword);
         IReadOnlyList<LookupItem> GetActiveSuppliers();
         SupplierEditDto GetSupplier(int supplierId);
         int InsertSupplier(SupplierEditDto dto);

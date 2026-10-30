@@ -17,6 +17,11 @@
     <ApplicationIcon>Resources\Logo\app_logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Models\DTOs\Sales\InvoiceDetailsDto.cs" />
+    <Compile Include="Services\Implementations\Sales\InvoiceManagementDataService.cs" />
+    <Compile Include="Services\Implementations\Sales\ReturnManagementDataService.cs" />
+    <Compile Include="DAL\Linq\Entities\Business\CatalogEntities.cs" />
+    <Compile Include="DAL\Linq\Entities\Business\SalesEntities.cs" />
     <Content Include="Resources\Logo\app_logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -596,11 +601,23 @@
     <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Reports\frmInvoiceReport.cs">
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Reports\frmInvoiceReport.Designer.cs">
-      <DependentUpon>frmInvoiceReport.cs</DependentUpon>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.Designer.cs">
+      <DependentUpon>InvoiceManagementPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.Designer.cs">
+      <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.Designer.cs">
+      <DependentUpon>InvoiceReturnDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Reports\ucInventoryReport.cs">
       <SubType>UserControl</SubType>
@@ -750,6 +767,12 @@
     <Compile Include="Views\Shell\MainLayoutControl.Designer.cs">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Shell\SettingsQuickPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Shell\SettingsQuickPopup.Designer.cs">
+      <DependentUpon>SettingsQuickPopup.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Theme\AccentColor.cs" />
     <Compile Include="UI\Theme\AppColors.cs" />
     <Compile Include="UI\Theme\AppFonts.cs" />
@@ -793,6 +816,15 @@
     <EmbeddedResource Include="Views\Reports\frmChartDashboard.resx">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.resx">
+      <DependentUpon>InvoiceManagementPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\PromotionDetailsDialog.resx">
+      <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\PromotionEditorDialog.resx">
+      <DependentUpon>PromotionEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\PromotionManagementPage.resx">
       <DependentUpon>PromotionManagementPage.cs</DependentUpon>
     </EmbeddedResource>
@@ -801,6 +833,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Shell\SettingsQuickPopup.resx">
+      <DependentUpon>SettingsQuickPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\SystemManagement\frmMailConfig.resx">
       <DependentUpon>frmMailConfig.cs</DependentUpon>

@@ -123,10 +123,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         public IReadOnlyList<SupplierRowDto> CurrentRows => _currentRows;
         public int TotalCount { get; private set; }
 
-        public TablePageResult Load(int pageIndex, int pageSize, string keyword, string debtFilter)
+        public TablePageResult Load(int pageIndex, int pageSize, string keyword)
         {
-            bool debtOnly = string.Equals(debtFilter, "DEBT", StringComparison.OrdinalIgnoreCase);
-            var page = _service.GetSuppliers(pageIndex, pageSize, keyword, debtOnly);
+            var page = _service.GetSuppliers(pageIndex, pageSize, keyword);
             _currentRows = page.Rows;
             TotalCount = page.TotalCount;
             return new TablePageResult
@@ -137,8 +136,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
                     row.Name,
                     row.Phone,
                     row.Email,
-                    row.Address,
-                    CatalogFormat.Money(row.DebtBalance)
+                    row.Address
                 }).ToList()
             };
         }
@@ -150,10 +148,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
 
         public IReadOnlyList<object[]> ExportRows()
         {
-            var page = _service.GetSuppliers(0, 100000, null, false);
+            var page = _service.GetSuppliers(0, 100000, null);
             return page.Rows.Select(row => new object[]
             {
-                row.Name, row.Phone, row.Email, row.Address, row.SuppliedItems, CatalogFormat.Money(row.DebtBalance)
+                row.Name, row.Phone, row.Email, row.Address, row.SuppliedItems
             }).Cast<object[]>().ToList();
         }
     }

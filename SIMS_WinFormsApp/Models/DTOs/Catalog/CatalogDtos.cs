@@ -112,7 +112,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
         public string Email { get; set; }
         public string Address { get; set; }
         public string SuppliedItems { get; set; }
-        public decimal DebtBalance { get; set; }
     }
 
     public sealed class SupplierEditDto
@@ -123,7 +122,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
         public string Email { get; set; }
         public string Address { get; set; }
         public string SuppliedItems { get; set; }
-        public decimal DebtBalance { get; set; }
 
         public SupplierEditDto Copy() => new SupplierEditDto
         {
@@ -132,8 +130,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
             Phone = Phone,
             Email = Email,
             Address = Address,
-            SuppliedItems = SuppliedItems,
-            DebtBalance = DebtBalance
+            SuppliedItems = SuppliedItems
         };
     }
 }
