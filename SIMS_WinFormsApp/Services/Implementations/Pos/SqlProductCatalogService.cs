@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using System.Drawing;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
@@ -32,81 +32,57 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
 
         public IReadOnlyList<CategoryOptionDto> GetCategories()
         {
-            const string sql = @"
-                SELECT CategoryID, CategoryName
-                FROM Categories
-                WHERE Status = 'ACTIVE'
-                ORDER BY CategoryName";
-
-            var categories = new List<CategoryOptionDto>();
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
-            {
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
+            using (var db = _connectionFactory.CreateDataContext())
+                return db.Categories.Where(category => category.Status == "ACTIVE")
+                    .OrderBy(category => category.CategoryName)
+                    .Select(category => new CategoryOptionDto
                     {
-                        categories.Add(new CategoryOptionDto
-                        {
-                            CategoryId = reader.GetInt32(0),
-                            Name = reader.GetString(1)
-                        });
-                    }
-                }
-            }
-            return categories;
+                        CategoryId = category.CategoryID,
+                        Name = category.CategoryName
+                    }).ToList();
         }
 
         public IReadOnlyList<ProductCatalogItemDto> Search(string keyword, int? categoryId)
         {
-            const string sql = @"
-                SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
-                FROM Products p
-                INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                WHERE p.Status = 'ACTIVE'
-                  AND c.Status = 'ACTIVE'
-                  AND (@Keyword = N''
-                       OR p.ProductName LIKE @Pattern
-                       OR p.ProductCode LIKE @Pattern)
-                  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
-                ORDER BY p.ProductName";
-
-            var products = new List<ProductCatalogItemDto>();
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
+            string normalizedKeyword = (keyword ?? string.Empty).Trim();
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                AddSearchParameters(command, keyword, categoryId);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read()) products.Add(MapProduct(reader));
-                }
+                var query = from product in db.Products
+                            join category in db.Categories on product.CategoryID equals category.CategoryID
+                            where product.Status == "ACTIVE" && category.Status == "ACTIVE"
+                                && (normalizedKeyword == string.Empty
+                                    || product.ProductName.Contains(normalizedKeyword)
+                                    || product.ProductCode.Contains(normalizedKeyword))
+                            orderby product.ProductName
+                            select new
+                            {
+                                product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
+                                category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                            };
+                if (categoryId.HasValue)
+                    query = query.Where(row => row.CategoryID == categoryId.Value);
+
+                return query.ToList().Select(row => MapProduct(
+                    row.ProductID, row.ProductCode, row.ProductName, row.CategoryID, row.CategoryName,
+                    row.SellPrice, row.Stock, row.ImageUrl)).ToList();
             }
-            return products;
         }
 
         public ProductCatalogItemDto GetById(int productId)
         {
-            const string sql = @"
-                SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
-                FROM Products p
-                INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                WHERE p.ProductID = @ProductID
-                  AND p.Status = 'ACTIVE'
-                  AND c.Status = 'ACTIVE'";
-
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    return reader.Read() ? MapProduct(reader) : null;
-                }
+                var row = (from product in db.Products
+                           join category in db.Categories on product.CategoryID equals category.CategoryID
+                           where product.ProductID == productId && product.Status == "ACTIVE"
+                               && category.Status == "ACTIVE"
+                           select new
+                           {
+                               product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
+                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                           }).FirstOrDefault();
+                return row == null ? null : MapProduct(row.ProductID, row.ProductCode, row.ProductName,
+                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.ImageUrl);
             }
         }
 
@@ -114,49 +90,36 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
         {
             if (string.IsNullOrWhiteSpace(barcode)) return null;
 
-            const string sql = @"
-                SELECT p.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       c.CategoryName, p.SellPrice, p.Stock, p.ImageUrl
-                FROM Products p
-                INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                WHERE p.ProductCode = @ProductCode
-                  AND p.Status = 'ACTIVE'
-                  AND c.Status = 'ACTIVE'";
-
-            using (var connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                command.Parameters.Add("@ProductCode", SqlDbType.VarChar, 20).Value = barcode.Trim();
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    return reader.Read() ? MapProduct(reader) : null;
-                }
+                var row = (from product in db.Products
+                           join category in db.Categories on product.CategoryID equals category.CategoryID
+                           where product.ProductCode == barcode.Trim() && product.Status == "ACTIVE"
+                               && category.Status == "ACTIVE"
+                           select new
+                           {
+                               product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
+                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                           }).FirstOrDefault();
+                return row == null ? null : MapProduct(row.ProductID, row.ProductCode, row.ProductName,
+                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.ImageUrl);
             }
         }
 
-        private static void AddSearchParameters(SqlCommand command, string keyword, int? categoryId)
+        private ProductCatalogItemDto MapProduct(
+            int productId, string code, string name, int categoryId, string categoryName,
+            decimal price, int stock, string imageUrl)
         {
-            string normalizedKeyword = (keyword ?? string.Empty).Trim();
-            command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 150).Value = normalizedKeyword;
-            command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 152).Value = "%" + normalizedKeyword + "%";
-            command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
-        }
-
-        private ProductCatalogItemDto MapProduct(IDataRecord record)
-        {
-            int productId = record.GetInt32(0);
             return new ProductCatalogItemDto
             {
                 ProductId = productId,
-                Barcode = record.GetString(1),
-                Name = record.GetString(2),
-                CategoryId = record.GetInt32(3),
-                CategoryName = record.GetString(4),
-                Price = record.GetDecimal(5),
-                StockQuantity = record.GetInt32(6),
-                ImagePath = _images.Resolve(record.IsDBNull(7) ? null : record.GetString(7)),
+                Barcode = code,
+                Name = name,
+                CategoryId = categoryId,
+                CategoryName = categoryName,
+                Price = price,
+                StockQuantity = stock,
+                ImagePath = _images.Resolve(imageUrl),
                 TileColor = TilePalette[Math.Abs(productId) % TilePalette.Length]
             };
         }

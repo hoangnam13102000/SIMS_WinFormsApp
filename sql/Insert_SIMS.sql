@@ -50,8 +50,6 @@ INSERT INTO Permissions (PermissionCode, Description) VALUES
 ('REPORT_INVENTORY',    N'Báo cáo tồn kho, biểu đồ xu hướng tồn'),
 ('REPORT_REVENUE',      N'Thống kê doanh thu, biểu đồ xu hướng bán'),
 ('REPORT_PROFIT',       N'Báo cáo lợi nhuận'),
-('ORDER_VIEW',          N'Xem đơn hàng online từ khách'),
-('ORDER_MANAGE',        N'Xác nhận / hủy đơn hàng online từ khách'),
 ('BACKUP_MANAGE',       N'Xem trang Sao lưu & Khôi phục, tự sao lưu / khôi phục DB từ file backup'),
 ('RETURN_EXCHANGE_CREATE',  N'Tạo yêu cầu đổi/trả hàng cho hóa đơn'),
 ('RETURN_EXCHANGE_APPROVE', N'Duyệt / từ chối yêu cầu đổi/trả hàng giá trị lớn'),
@@ -70,7 +68,7 @@ SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'SALES_STAFF'), PermissionID
 FROM Permissions
 WHERE PermissionCode IN ('STOCK_VIEW','PRODUCT_SEARCH','INVOICE_CREATE','INVOICE_CANCEL',
                           'RETURN_EXCHANGE','RETURN_EXCHANGE_CREATE','EXCEPTION_REPORT_SEND',
-                          'EXCEPTION_REPORT_CREATE','CUSTOMER_MANAGE','ORDER_VIEW','ORDER_MANAGE');
+                          'EXCEPTION_REPORT_CREATE','CUSTOMER_MANAGE');
 
 INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'INVENTORY_MANAGER'), PermissionID
@@ -97,9 +95,9 @@ GO
 -- (BCrypt cost 12, xem UPDATE Users o cuoi file - dat sau khi bang Users co du dong).
 INSERT INTO Users (Username, PasswordHash, FullName, Email, Phone, AvatarUrl, RoleID) VALUES
 ('admin',    '$2a$10$examplehash.admin.0000000000000000000000000000',    N'Hoàng Trung Nam',  'hoangnam131020@gmail.com',   '0969036498', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='ADMIN')),
-('salesmgr', '$2a$10$examplehash.salesmgr.000000000000000000000000000', N'Hà Minh Tuấn',     'tuan.sm@connectmart.vn', '0900000002', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_MANAGER')),
-('invmgr',   '$2a$10$examplehash.invmgr.0000000000000000000000000000',  N'Trần Tài Phương',        'phuongkho.im@connectmart.vn',  '0900000003', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='INVENTORY_MANAGER')),
-('staff01',  '$2a$10$examplehash.staff01.000000000000000000000000000', N'Lê Hoa Trường Vũ',     'vu.staff@connectmart.vn', '0900000004', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
+('salesmgr', '$2a$10$examplehash.salesmgr.000000000000000000000000000', N'Lê Thị Vân Anh', 'tuan.sm@connectmart.vn', '0900000002', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_MANAGER')),
+('invmgr',   '$2a$10$examplehash.invmgr.0000000000000000000000000000',  N'Hồ Thị Mỹ Thuận', 'phuongkho.im@connectmart.vn', '0900000003', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='INVENTORY_MANAGER')),
+('staff01',  '$2a$10$examplehash.staff01.000000000000000000000000000', N'Lê Thanh Tú', 'vu.staff@connectmart.vn', '0900000004', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
 ('staff02',  '$2a$10$examplehash.staff02.000000000000000000000000000', N'Hoàng Văn Sơn',     'son.staff@connectmart.vn', '0900000005', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='SALES_STAFF')),
 -- Tai khoan khach hang (Role = CUSTOMER) - can co truoc vi Customers gio ke thua Users
 ('lan.nguyen',  '$2a$10$examplehash.customer1.00000000000000000000000', N'Nguyễn Thị Lan',  'lan.nguyen@gmail.com', '0912345678', NULL, (SELECT RoleID FROM Roles WHERE RoleCode='CUSTOMER')),
@@ -727,10 +725,10 @@ GO
 -- minh hoa constraint CK_Return_ApprovalRequired
 
 -- ---- 14. Tra hang loi ve NCC (SupplierReturns) ----
--- Bang nay KHONG co trigger rieng - logic tru kho/cong no NCC nam trong
+-- Bang nay KHONG co trigger rieng - logic tru kho nam trong
 -- SupplierReturnDAO.java, tai lap y het o day: tru InventoryBatch.RemainingQty
--- (lo Ca phe bot DA HET HAN), tru Products.Stock, ghi InventoryTransactions
--- (SUPPLIER_RETURN, OUT), cong don Suppliers.DebtBalance.
+-- (lo Ca phe bot DA HET HAN), tru Products.Stock va ghi InventoryTransactions
+-- (SUPPLIER_RETURN, OUT).
 DECLARE @SR_SupplierID INT = (SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình');
 DECLARE @SR_ProductID  INT = (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g');
 DECLARE @SR_BatchID    INT = (SELECT BatchID FROM InventoryBatch WHERE LotNumber = N'LOT-CAPHE-EXP-001');
@@ -761,7 +759,6 @@ SELECT @SR_ProductID, 'SUPPLIER_RETURN', 'OUT', @SR_Qty,
        (SELECT UserID FROM Users WHERE Username='invmgr'), N'Trả hàng hết hạn về NCC An Bình'
 FROM Products WHERE ProductID = @SR_ProductID;
 
-UPDATE Suppliers SET DebtBalance = DebtBalance + (@SR_Qty * @SR_UnitPrice) WHERE SupplierID = @SR_SupplierID;
 GO
 
 -- ---- 15. Huy huy kho (StockDisposals) ----
@@ -961,7 +958,7 @@ INSERT INTO ChatMessages (ConversationID, SenderUserID, SenderName, FromStaff, B
  (SELECT UserID FROM Users WHERE Username='lan.nguyen'), N'Nguyễn Thị Lan', 0,
  N'Shop ơi, đơn hàng của mình khi nào giao vậy ạ?', DATEADD(HOUR, -3, GETDATE()), 1),
 ((SELECT TOP 1 ConversationID FROM ChatConversations WHERE ConversationType='CUSTOMER_SUPPORT' ORDER BY ConversationID DESC),
- (SELECT UserID FROM Users WHERE Username='staff01'), N'Lê Hoa Trường Vũ', 1,
+ (SELECT UserID FROM Users WHERE Username='staff01'), N'Lê Thanh Tú', 1,
  N'Chào chị Lan, đơn hàng đang được đóng gói và sẽ giao trong hôm nay ạ.', DATEADD(MINUTE, -20, GETDATE()), 0);
 GO
 

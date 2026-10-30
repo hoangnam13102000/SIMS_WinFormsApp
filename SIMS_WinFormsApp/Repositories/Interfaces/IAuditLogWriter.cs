@@ -2,6 +2,9 @@
 {
     public interface IAuditLogWriter
     {
+        int CountUnviewedInvoices(int userId, bool canViewAll, System.DateTime today);
+        void RecordInvoiceViewed(int userId, int? invoiceId, string invoiceCode);
+
         void Record(
             int? userId,
             string action,

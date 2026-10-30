@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
@@ -22,67 +22,47 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             if (string.IsNullOrWhiteSpace(keyword))
                 return null;
 
-            const string sql = @"
-                SELECT TOP 1 c.CustomerID, u.FullName, u.Phone, c.MemberPoint
-                FROM Customers c
-                INNER JOIN Users u ON u.UserID = c.CustomerID
-                WHERE u.Status = 'ACTIVE'
-                  AND u.IsDeleted = 0
-                  AND (u.Phone = @Keyword OR c.CustomerCode = @Keyword)
-                ORDER BY c.CustomerID";
-
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
+            string normalizedKeyword = keyword.Trim();
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 100).Value = keyword.Trim();
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    return reader.Read() ? MapCustomer(reader) : null;
-                }
+                var row = (from customer in db.Customers
+                           join user in db.Users on customer.CustomerID equals user.UserID
+                           where user.Status == "ACTIVE" && !user.IsDeleted
+                               && (user.Phone == normalizedKeyword || customer.CustomerCode == normalizedKeyword)
+                           orderby customer.CustomerID
+                           select new { customer.CustomerID, user.FullName, user.Phone, customer.MemberPoint })
+                           .FirstOrDefault();
+                return row == null ? null : MapCustomer(row.CustomerID, row.FullName, row.Phone, row.MemberPoint);
             }
         }
 
         public IReadOnlyList<CustomerLookupDto> Search(string keyword)
         {
-            const string sql = @"
-                SELECT TOP 50 c.CustomerID, u.FullName, u.Phone, c.MemberPoint
-                FROM Customers c
-                INNER JOIN Users u ON u.UserID = c.CustomerID
-                WHERE u.Status = 'ACTIVE'
-                  AND u.IsDeleted = 0
-                  AND (@Keyword = N''
-                       OR u.FullName LIKE @Pattern
-                       OR u.Phone LIKE @Pattern
-                       OR c.CustomerCode LIKE @Pattern)
-                ORDER BY u.FullName";
-
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
-            var customers = new List<CustomerLookupDto>();
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(sql, connection))
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 100).Value = normalizedKeyword;
-                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 102).Value = "%" + normalizedKeyword + "%";
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                        customers.Add(MapCustomer(reader));
-                }
+                var rows = (from customer in db.Customers
+                            join user in db.Users on customer.CustomerID equals user.UserID
+                            where user.Status == "ACTIVE" && !user.IsDeleted
+                                && (normalizedKeyword == string.Empty
+                                    || user.FullName.Contains(normalizedKeyword)
+                                    || user.Phone.Contains(normalizedKeyword)
+                                    || customer.CustomerCode.Contains(normalizedKeyword))
+                            orderby user.FullName
+                            select new { customer.CustomerID, user.FullName, user.Phone, customer.MemberPoint })
+                            .Take(50).ToList();
+                return rows.Select(row => MapCustomer(row.CustomerID, row.FullName, row.Phone, row.MemberPoint)).ToList();
             }
-
-            return customers;
         }
 
-        private static CustomerLookupDto MapCustomer(SqlDataReader reader)
+        private static CustomerLookupDto MapCustomer(int id, string name, string phone, int points)
         {
             return new CustomerLookupDto
             {
-                CustomerId = reader.GetInt32(0),
-                FullName = reader.GetString(1),
-                Phone = reader.IsDBNull(2) ? null : reader.GetString(2),
-                LoyaltyPoints = reader.GetInt32(3)
+                CustomerId = id,
+                FullName = name,
+                Phone = phone,
+                LoyaltyPoints = points
             };
         }
     }

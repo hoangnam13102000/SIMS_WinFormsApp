@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Reports
@@ -44,11 +44,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
     public sealed class RevenueReportService
     {
-        private const string DateFilter = @"
-            i.Status = 'ACTIVE'
-            AND i.CreatedAt >= @FromDate
-            AND i.CreatedAt < @ToDateExclusive";
-
         private readonly IDbConnectionFactory _connectionFactory;
 
         public RevenueReportService(IDbConnectionFactory connectionFactory)
@@ -58,16 +53,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
         public DateTime? GetLatestInvoiceDate()
         {
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
-            using (var command = new SqlCommand(
-                "SELECT MAX(CreatedAt) FROM Invoices WHERE Status = 'ACTIVE';",
-                connection))
+            using (var db = _connectionFactory.CreateDataContext())
             {
-                connection.Open();
-                object result = command.ExecuteScalar();
-                return result == null || result == DBNull.Value
-                    ? (DateTime?)null
-                    : Convert.ToDateTime(result).Date;
+                DateTime? latest = db.Invoices.Where(i => i.Status == "ACTIVE")
+                    .Select(i => (DateTime?)i.CreatedAt).Max();
+                return latest.HasValue ? latest.Value.Date : (DateTime?)null;
             }
         }
 
@@ -75,128 +65,114 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         {
             if (fromDate.Date > toDate.Date)
                 throw new ArgumentException("Ngày bắt đầu không được sau ngày kết thúc.");
-
             if (!Enum.IsDefined(typeof(RevenueReportPeriod), period))
                 throw new ArgumentOutOfRangeException(nameof(period));
 
-            var report = new RevenueReportData();
             DateTime from = fromDate.Date;
             DateTime toExclusive = toDate.Date.AddDays(1);
-
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                connection.Open();
-
-                using (var command = new SqlCommand(@"
-                    SELECT ISNULL(SUM(i.TotalAmount), 0), COUNT(*)
-                    FROM Invoices i
-                    WHERE " + DateFilter + ";", connection))
+                var invoices = db.Invoices.Where(i => i.Status == "ACTIVE"
+                    && i.CreatedAt >= from && i.CreatedAt < toExclusive);
+                var report = new RevenueReportData
                 {
-                    AddDateParameters(command, from, toExclusive);
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
+                    Revenue = invoices.Select(i => (decimal?)i.TotalAmount).Sum() ?? 0m,
+                    OrderCount = invoices.Count()
+                };
+
+                if (period == RevenueReportPeriod.Week)
+                {
+                    var buckets = invoices.GroupBy(i => i.CreatedAt.Date)
+                        .Select(group => new
                         {
-                            report.Revenue = reader.GetDecimal(0);
-                            report.OrderCount = reader.GetInt32(1);
-                        }
-                    }
+                            Year = group.Key.Year,
+                            Month = group.Key.Month,
+                            Day = group.Key.Day,
+                            Revenue = group.Sum(i => i.TotalAmount),
+                            Count = group.Count()
+                        }).OrderBy(bucket => bucket.Year).ThenBy(bucket => bucket.Month).ThenBy(bucket => bucket.Day)
+                        .ToList();
+                    foreach (var bucket in buckets)
+                        report.Trend.Add(new RevenueTrendPoint
+                        {
+                            PeriodStart = new DateTime(bucket.Year, bucket.Month, bucket.Day),
+                            Revenue = bucket.Revenue,
+                            OrderCount = bucket.Count
+                        });
+                }
+                else if (period == RevenueReportPeriod.Month)
+                {
+                    var buckets = invoices.GroupBy(i => new { i.CreatedAt.Year, i.CreatedAt.Month })
+                        .Select(group => new
+                        {
+                            group.Key.Year,
+                            group.Key.Month,
+                            Revenue = group.Sum(i => i.TotalAmount),
+                            Count = group.Count()
+                        }).OrderBy(bucket => bucket.Year).ThenBy(bucket => bucket.Month).ToList();
+                    foreach (var bucket in buckets)
+                        report.Trend.Add(new RevenueTrendPoint
+                        {
+                            PeriodStart = new DateTime(bucket.Year, bucket.Month, 1),
+                            Revenue = bucket.Revenue,
+                            OrderCount = bucket.Count
+                        });
+                }
+                else
+                {
+                    var buckets = invoices.GroupBy(i => new
+                        {
+                            i.CreatedAt.Year,
+                            Quarter = (i.CreatedAt.Month - 1) / 3
+                        })
+                        .Select(group => new
+                        {
+                            group.Key.Year,
+                            group.Key.Quarter,
+                            Revenue = group.Sum(i => i.TotalAmount),
+                            Count = group.Count()
+                        }).OrderBy(bucket => bucket.Year).ThenBy(bucket => bucket.Quarter).ToList();
+                    foreach (var bucket in buckets)
+                        report.Trend.Add(new RevenueTrendPoint
+                        {
+                            PeriodStart = new DateTime(bucket.Year, bucket.Quarter * 3 + 1, 1),
+                            Revenue = bucket.Revenue,
+                            OrderCount = bucket.Count
+                        });
                 }
 
-                const string trendSql = @"
-                    SELECT BucketStart, SUM(i.TotalAmount) AS Revenue, COUNT(*) AS OrderCount
-                    FROM (
-                        SELECT i.InvoiceID, i.TotalAmount,
-                            CASE @Period
-                                WHEN 0 THEN CONVERT(date, i.CreatedAt)
-                                WHEN 1 THEN DATEFROMPARTS(YEAR(i.CreatedAt), MONTH(i.CreatedAt), 1)
-                                ELSE DATEFROMPARTS(YEAR(i.CreatedAt), ((DATEPART(QUARTER, i.CreatedAt) - 1) * 3) + 1, 1)
-                            END AS BucketStart
-                        FROM Invoices i
-                        WHERE " + DateFilter + @"
-                    ) i
-                    GROUP BY BucketStart
-                    ORDER BY BucketStart;";
+                var categoryRows = (from invoice in invoices
+                                    join detail in db.InvoiceDetails on invoice.InvoiceID equals detail.InvoiceID
+                                    join product in db.Products on detail.ProductID equals product.ProductID
+                                    join category in db.Categories on product.CategoryID equals category.CategoryID
+                                    group detail by category.CategoryName into categoryDetails
+                                    let revenue = categoryDetails.Sum(detail => detail.LineTotal)
+                                    where revenue > 0
+                                    orderby revenue descending
+                                    select new { Name = categoryDetails.Key, Revenue = revenue }).ToList();
+                foreach (var row in categoryRows)
+                    report.Categories.Add(new RevenueCategoryTotal { Name = row.Name, Revenue = row.Revenue });
 
-                using (var command = new SqlCommand(trendSql, connection))
-                {
-                    AddDateParameters(command, from, toExclusive);
-                    command.Parameters.Add("@Period", SqlDbType.Int).Value = (int)period;
-                    using (SqlDataReader reader = command.ExecuteReader())
+                var productRows = (from invoice in invoices
+                                   join detail in db.InvoiceDetails on invoice.InvoiceID equals detail.InvoiceID
+                                   join product in db.Products on detail.ProductID equals product.ProductID
+                                   group new { detail.Quantity, detail.LineTotal } by product.ProductName into productDetails
+                                   orderby productDetails.Sum(item => item.LineTotal) descending
+                                   select new
+                                   {
+                                       Name = productDetails.Key,
+                                       Quantity = productDetails.Sum(item => item.Quantity),
+                                       Revenue = productDetails.Sum(item => item.LineTotal)
+                                   }).Take(5).ToList();
+                foreach (var row in productRows)
+                    report.TopProducts.Add(new RevenueProductTotal
                     {
-                        while (reader.Read())
-                        {
-                            report.Trend.Add(new RevenueTrendPoint
-                            {
-                                PeriodStart = reader.GetDateTime(0),
-                                Revenue = reader.GetDecimal(1),
-                                OrderCount = reader.GetInt32(2)
-                            });
-                        }
-                    }
-                }
-
-                const string categorySql = @"
-                    SELECT c.CategoryName, SUM(d.LineTotal) AS Revenue
-                    FROM Invoices i
-                    INNER JOIN InvoiceDetails d ON d.InvoiceID = i.InvoiceID
-                    INNER JOIN Products p ON p.ProductID = d.ProductID
-                    INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                    WHERE " + DateFilter + @"
-                    GROUP BY c.CategoryName
-                    HAVING SUM(d.LineTotal) > 0
-                    ORDER BY Revenue DESC;";
-
-                using (var command = new SqlCommand(categorySql, connection))
-                {
-                    AddDateParameters(command, from, toExclusive);
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            report.Categories.Add(new RevenueCategoryTotal
-                            {
-                                Name = reader.GetString(0),
-                                Revenue = reader.GetDecimal(1)
-                            });
-                        }
-                    }
-                }
-
-                const string productsSql = @"
-                    SELECT TOP 5 p.ProductName, SUM(d.Quantity) AS Quantity, SUM(d.LineTotal) AS Revenue
-                    FROM Invoices i
-                    INNER JOIN InvoiceDetails d ON d.InvoiceID = i.InvoiceID
-                    INNER JOIN Products p ON p.ProductID = d.ProductID
-                    WHERE " + DateFilter + @"
-                    GROUP BY p.ProductName
-                    ORDER BY Revenue DESC;";
-
-                using (var command = new SqlCommand(productsSql, connection))
-                {
-                    AddDateParameters(command, from, toExclusive);
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            report.TopProducts.Add(new RevenueProductTotal
-                            {
-                                Name = reader.GetString(0),
-                                Quantity = reader.GetInt32(1),
-                                Revenue = reader.GetDecimal(2)
-                            });
-                        }
-                    }
-                }
+                        Name = row.Name,
+                        Quantity = row.Quantity,
+                        Revenue = row.Revenue
+                    });
+                return report;
             }
-
-            return report;
-        }
-
-        private static void AddDateParameters(SqlCommand command, DateTime from, DateTime toExclusive)
-        {
-            command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = from;
-            command.Parameters.Add("@ToDateExclusive", SqlDbType.DateTime).Value = toExclusive;
         }
     }
 }

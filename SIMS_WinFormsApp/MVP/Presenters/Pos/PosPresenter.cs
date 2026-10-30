@@ -2,11 +2,13 @@
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
 using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Views.Sales.InvoiceManagement;
 
 namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 {
@@ -23,6 +25,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly HeldCartStore _heldCartStore;
         private readonly Func<IWin32Window> _ownerWindowProvider;
         private readonly IUserSession _userSession;
+        private readonly Action _invoiceCreated;
+        private readonly Action<string> _invoiceViewed;
 
         private readonly PosCart _cart = new PosCart();
         private readonly CartCalculator _calculator = new CartCalculator();
@@ -47,7 +51,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
             Func<IWin32Window> ownerWindowProvider,
-            IUserSession userSession)
+            IUserSession userSession,
+            Action invoiceCreated = null,
+            Action<string> invoiceViewed = null)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
@@ -58,6 +64,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
             _ownerWindowProvider = ownerWindowProvider ?? throw new ArgumentNullException(nameof(ownerWindowProvider));
             _userSession = userSession ?? throw new ArgumentNullException(nameof(userSession));
+            _invoiceCreated = invoiceCreated;
+            _invoiceViewed = invoiceViewed;
 
             _view.ViewReady += OnViewReady;
             _view.ProductSearchChanged += OnProductSearchChanged;
@@ -296,19 +304,23 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 return;
             }
 
+            InvoiceDetails receiptInvoice;
             string invoiceCode;
             _view.SetBusy(true);
             try
             {
                 var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
+                string paymentMethod = _view.SelectedPaymentMethod;
+                receiptInvoice = CreateReceiptInvoice(paymentMethod, totals);
                 invoiceCode = _invoiceService.CreateInvoice(
                     _userSession.CurrentUser.UserId,
                     _selectedCustomer == null ? (int?)null : _selectedCustomer.CustomerId,
-                    _view.SelectedPaymentMethod,
+                    paymentMethod,
                     totals,
                     _promotionId,
                     _promotionCode,
                     _cart.Lines);
+                receiptInvoice.InvoiceCode = invoiceCode;
             }
             catch (SqlException exception)
             {
@@ -331,8 +343,62 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             ResetForNewSale();
             _view.SetBusy(false);
-            AppToast.Success(owner as Control, "Thanh toán thành công",
-                "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
+            _invoiceCreated?.Invoke();
+            DialogResult printChoice = MessageBox.Show(
+                owner,
+                "Hóa đơn " + invoiceCode + " đã được lưu thành công.\r\nBạn có muốn xem trước và in hóa đơn không?",
+                "Thanh toán thành công",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            if (printChoice == DialogResult.Yes)
+            {
+                _invoiceViewed?.Invoke(invoiceCode);
+                using (var dialog = new InvoiceDetailsDialog(receiptInvoice))
+                    dialog.OpenPrintPreview(owner);
+            }
+            else
+            {
+                AppToast.Success(owner as Control, "Thanh toán thành công",
+                    "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
+            }
+        }
+
+        private InvoiceDetails CreateReceiptInvoice(string paymentMethod, CartTotalsDto totals)
+        {
+            decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
+            decimal vatRate = taxableAmount == 0m
+                ? 0m
+                : Math.Round(totals.VatAmount * 100m / taxableAmount, 2, MidpointRounding.AwayFromZero);
+
+            var invoice = new InvoiceDetails
+            {
+                InvoiceCode = string.Empty,
+                CreatedAt = DateTime.Now,
+                CashierName = _userSession.CurrentUser.FullName,
+                CustomerName = _selectedCustomer == null ? "Khách lẻ" : _selectedCustomer.FullName,
+                PaymentMethod = paymentMethod,
+                Subtotal = totals.Subtotal,
+                DiscountAmount = totals.DiscountAmount,
+                VatRate = vatRate,
+                VatAmount = totals.VatAmount,
+                TotalAmount = totals.GrandTotal,
+                PointsUsed = decimal.ToInt32(Math.Round(
+                    totals.PointsDiscountAmount / CartCalculator.PointRedeemRateVnd, 0)),
+                PointsDiscountAmount = totals.PointsDiscountAmount
+            };
+
+            foreach (var line in _cart.Lines)
+            {
+                invoice.Lines.Add(new InvoiceLine
+                {
+                    ProductName = line.ProductName,
+                    Quantity = line.Quantity,
+                    UnitPrice = line.UnitPrice,
+                    LineTotal = line.LineTotal
+                });
+            }
+
+            return invoice;
         }
 
         private void ResetForNewSale()

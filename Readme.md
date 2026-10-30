@@ -65,7 +65,7 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 | Thành viên | MSSV | Vai trò | Module chính phụ trách |
 |---|---|---|---|
 | Hoàng Trung Nam | 44.01.104.145 | Admin | Quản lý tài khoản nhân viên và khách hàng; phân quyền vai trò; đăng nhập; cấu hình hệ thống và kết nối; sao lưu, phục hồi và nhật ký hoạt động. |
-| Lê Thị Vân Anh | 46.01.103.007 | Quản lý bán hàng | Theo dõi doanh thu và báo cáo bán hàng; quản lý đơn hàng; duyệt yêu cầu huỷ hóa đơn và đổi/trả; quản lý ca và đối soát bán hàng. |
+| Lê Thị Vân Anh | 46.01.103.007 | Quản lý bán hàng | Theo dõi doanh thu và báo cáo bán hàng; quản lý đơn hàng; duyệt yêu cầu huỷ hóa đơn và đổi/trả; quản lý ca và đối soát bán hàng. Viết báo cáo Word |
 | Hồ Thị Mỹ Thuận | 50.01.104.157 | Quản lý kho | Quản lý nhập kho, kiểm kê/đối chiếu tồn; theo dõi và xử lý cảnh báo hàng sắp hết; quản lý hàng tiêu huỷ, trả hàng nhà cung cấp và báo cáo kho. |
 | Lê Thanh Tú | 50.01.104.172 | Nhân viên bán hàng | Bán hàng tại quầy (POS); quản lý khách hàng; xem hóa đơn cá nhân; vận hành ca; tiếp nhận đơn được giao và tạo yêu cầu đổi/trả hoặc huỷ hóa đơn. |
 

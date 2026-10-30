@@ -1,6 +1,6 @@
 using System;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Dashboard;
 using SIMS_WinFormsApp.Services.Interfaces;
@@ -22,69 +22,23 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             DateTime today = DateTime.Today;
             DateTime firstTrendDate = today.AddDays(-6);
 
-            using (SqlConnection connection = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                connection.Open();
+                DateTime tomorrow = today.AddDays(1);
+                data.RevenueToday = db.Invoices.Where(i => i.Status == "ACTIVE"
+                        && i.CreatedAt >= today && i.CreatedAt < tomorrow)
+                    .Select(i => (decimal?)i.TotalAmount).Sum() ?? 0m;
+                data.OrdersToday = db.Invoices.Count(i => i.Status == "ACTIVE"
+                    && i.CreatedAt >= today && i.CreatedAt < tomorrow);
+                data.StockQuantity = db.Products.Select(p => (long?)p.Stock).Sum() ?? 0L;
+                data.CustomerCount = db.Customers.Count();
 
-                using (var command = new SqlCommand(@"
-                    SELECT
-                        COALESCE((
-                            SELECT SUM(i.TotalAmount)
-                            FROM Invoices i
-                            WHERE i.Status = 'ACTIVE'
-                                AND i.CreatedAt >= @Today
-                                AND i.CreatedAt < @Tomorrow
-                        ), 0) AS RevenueToday,
-                        (
-                            SELECT COUNT_BIG(*)
-                            FROM Invoices i
-                            WHERE i.Status = 'ACTIVE'
-                                AND i.CreatedAt >= @Today
-                                AND i.CreatedAt < @Tomorrow
-                        ) AS OrdersToday,
-                        COALESCE((
-                            SELECT SUM(CONVERT(bigint, p.Stock))
-                            FROM Products p
-                        ), 0) AS StockQuantity,
-                        (
-                            SELECT COUNT_BIG(*)
-                            FROM Customers
-                        ) AS CustomerCount;", connection))
-                {
-                    command.Parameters.Add("@Today", SqlDbType.DateTime).Value = today;
-                    command.Parameters.Add("@Tomorrow", SqlDbType.DateTime).Value = today.AddDays(1);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            data.RevenueToday = Convert.ToDecimal(reader["RevenueToday"]);
-                            data.OrdersToday = Convert.ToInt64(reader["OrdersToday"]);
-                            data.StockQuantity = Convert.ToInt64(reader["StockQuantity"]);
-                            data.CustomerCount = Convert.ToInt64(reader["CustomerCount"]);
-                        }
-                    }
-                }
-
-                var revenueByDate = new System.Collections.Generic.Dictionary<DateTime, decimal>();
-                using (var command = new SqlCommand(@"
-                    SELECT CONVERT(date, i.CreatedAt) AS InvoiceDate, SUM(i.TotalAmount) AS Revenue
-                    FROM Invoices i
-                    WHERE i.Status = 'ACTIVE'
-                        AND i.CreatedAt >= @FromDate
-                        AND i.CreatedAt < @ToDateExclusive
-                    GROUP BY CONVERT(date, i.CreatedAt)
-                    ORDER BY InvoiceDate;", connection))
-                {
-                    command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = firstTrendDate;
-                    command.Parameters.Add("@ToDateExclusive", SqlDbType.DateTime).Value = today.AddDays(1);
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                            revenueByDate[reader.GetDateTime(0).Date] = reader.GetDecimal(1);
-                    }
-                }
+                var revenueByDate = db.Invoices.Where(i => i.Status == "ACTIVE"
+                        && i.CreatedAt >= firstTrendDate && i.CreatedAt < tomorrow)
+                    .GroupBy(i => i.CreatedAt.Date)
+                    .Select(group => new { Date = group.Key, Revenue = group.Sum(i => i.TotalAmount) })
+                    .ToList()
+                    .ToDictionary(row => row.Date.Date, row => row.Revenue);
 
                 for (int day = 0; day < 7; day++)
                 {
@@ -96,34 +50,21 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     });
                 }
 
-                using (var command = new SqlCommand(@"
-                    SELECT TOP (@Take)
-                        l.Action,
-                        l.TableName,
-                        l.Detail,
-                        COALESCE(u.Username, N'(đã xóa)') AS Username,
-                        l.CreatedAt
-                    FROM AuditLogs l
-                    LEFT JOIN Users u ON u.UserID = l.UserID
-                    ORDER BY l.CreatedAt DESC, l.LogID DESC;", connection))
-                {
-                    command.Parameters.Add("@Take", SqlDbType.Int).Value = 10;
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                var activities = (from log in db.AuditLogs
+                                  join user in db.Users on log.UserID equals (int?)user.UserID into userLogs
+                                  from user in userLogs.DefaultIfEmpty()
+                                  orderby log.CreatedAt descending, log.LogID descending
+                                  select new { log.Action, log.TableName, log.Detail, Username = user == null ? null : user.Username, log.CreatedAt })
+                                 .Take(10).ToList();
+                foreach (var activity in activities)
+                    data.RecentActivities.Add(new DashboardActivityDto
                     {
-                        while (reader.Read())
-                        {
-                            data.RecentActivities.Add(new DashboardActivityDto
-                            {
-                                Action = reader.GetString(0),
-                                TableName = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                Detail = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                Username = reader.GetString(3),
-                                CreatedAt = reader.GetDateTime(4)
-                            });
-                        }
-                    }
-                }
+                        Action = activity.Action,
+                        TableName = activity.TableName,
+                        Detail = activity.Detail,
+                        Username = activity.Username ?? "(đã xóa)",
+                        CreatedAt = activity.CreatedAt
+                    });
             }
 
             return data;
