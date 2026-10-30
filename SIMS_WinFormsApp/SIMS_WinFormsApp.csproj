@@ -297,10 +297,12 @@
     <Compile Include="Services\Implementations\Import\PurchaseReceiptImportRowHandler.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockDisposalEditorPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptListPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\StockAlertPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\StockReconciliationPresenter.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptView.cs" />
+    <Compile Include="Views\Interfaces\IStockDisposalEditorView.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptListView.cs" />
     <Compile Include="Views\Interfaces\IStockAlertView.cs" />
     <Compile Include="Views\Interfaces\IStockReconciliationView.cs" />
@@ -691,6 +693,12 @@
     <Compile Include="Views\Warehouse\frmStockDisposalDetail.Designer.cs">
       <DependentUpon>frmStockDisposalDetail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Warehouse\frmStockDisposalEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmStockDisposalEditor.Designer.cs">
+      <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -905,6 +913,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockDisposalDetail.resx">
       <DependentUpon>frmStockDisposalDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmStockDisposalEditor.resx">
+      <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliation.resx">
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
