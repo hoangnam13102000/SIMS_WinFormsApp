@@ -859,6 +859,9 @@
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliation.resx">
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucPurchaseReceiptManagement.resx">
+      <DependentUpon>ucPurchaseReceiptManagement.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockAlert.resx">
       <DependentUpon>ucStockAlert.cs</DependentUpon>
     </EmbeddedResource>
