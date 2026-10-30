@@ -11,11 +11,13 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.MVP.Presenters.Inventory;
+using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Views.SystemManagement;
 using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
@@ -79,6 +81,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất Excel",
                 IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new Size(18, 18)),
                 (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty)));
+            _optionsMenu.Items.Add(new ToolStripMenuItem("Nhập dữ liệu",
+                IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new Size(18, 18)),
+                (sender, args) => ImportReceipts()));
             _optionsButton.Click += (sender, args) =>
                 _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
 
@@ -214,6 +219,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             using (var form = new frmPurchaseReceiptEditor(_service, UserSession.Instance))
                 if (form.ShowDialog(FindForm()) == DialogResult.OK)
                     _presenter.RefreshAfterCreate();
+        }
+
+        private void ImportReceipts()
+        {
+            var importer = new PurchaseReceiptImportRowHandler(_service, UserSession.Instance);
+            DialogResult result = frmImportData.Show(
+                FindForm(),
+                "Phiếu nhập kho",
+                PurchaseReceiptImportRowHandler.ExpectedColumns,
+                "Mỗi dòng tạo 1 phiếu nhập. Nhà cung cấp ghi đúng tên đã có. Sản phẩm ghi mã (VD SP_0001) hoặc đúng tên. Số lượng > 0, giá nhập là số. Ngày sản xuất/Hạn sử dụng dạng dd/MM/yyyy, có thể để trống; hạn sử dụng phải sau hôm nay và sau ngày sản xuất.",
+                DefaultSpreadsheetImporters.All,
+                importer.Handle);
+            if (result == DialogResult.OK) _presenter.RefreshAfterCreate();
         }
 
         public void OpenDetail(PurchaseReceiptListItemDto receipt)

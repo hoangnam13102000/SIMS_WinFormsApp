@@ -289,6 +289,7 @@
     <Compile Include="Services\Implementations\Inventory\InventoryService.cs" />
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
+    <Compile Include="Services\Implementations\Import\PurchaseReceiptImportRowHandler.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptListPresenter.cs" />
