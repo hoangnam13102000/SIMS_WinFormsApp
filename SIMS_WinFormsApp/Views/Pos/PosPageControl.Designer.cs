@@ -38,6 +38,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private Label _promoLabel;
         private ComboBox _promoTextBox;
         private IconButton _promoDropdownButton;
+        private Panel _applyPromoButtonBorder;
         private Button _applyPromoButton;
         private TableLayoutPanel _totalsLayout;
         private Label _subtotalCaption;
@@ -103,6 +104,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoLabel = new System.Windows.Forms.Label();
             this._promoTextBox = new System.Windows.Forms.ComboBox();
             this._promoDropdownButton = new FontAwesome.Sharp.IconButton();
+            this._applyPromoButtonBorder = new System.Windows.Forms.Panel();
             this._applyPromoButton = new System.Windows.Forms.Button();
             this._totalsLayout = new System.Windows.Forms.TableLayoutPanel();
             this._subtotalCaption = new System.Windows.Forms.Label();
@@ -557,7 +559,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // _checkoutScrollPanel
             // 
             this._checkoutScrollPanel.AutoScroll = true;
-            this._checkoutScrollPanel.AutoScrollMinSize = new System.Drawing.Size(0, 314);
+            this._checkoutScrollPanel.AutoScrollMinSize = new System.Drawing.Size(0, 322);
             this._checkoutScrollPanel.BackColor = System.Drawing.Color.White;
             this._checkoutScrollPanel.Controls.Add(this._checkoutLayout);
             this._checkoutScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -577,10 +579,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this._checkoutLayout.Location = new System.Drawing.Point(0, 0);
             this._checkoutLayout.Margin = new System.Windows.Forms.Padding(0);
-            this._checkoutLayout.MinimumSize = new System.Drawing.Size(0, 314);
+            this._checkoutLayout.MinimumSize = new System.Drawing.Size(0, 322);
             this._checkoutLayout.Name = "_checkoutLayout";
             this._checkoutLayout.RowCount = 4;
-            this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
@@ -593,11 +595,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
             this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 88F));
+            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this._promoLayout.Controls.Add(this._promoLabel, 0, 0);
             this._promoLayout.Controls.Add(this._promoTextBox, 1, 0);
             this._promoLayout.Controls.Add(this._promoDropdownButton, 2, 0);
-            this._promoLayout.Controls.Add(this._applyPromoButton, 3, 0);
+            this._promoLayout.Controls.Add(this._applyPromoButtonBorder, 3, 0);
             this._promoLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._promoLayout.Location = new System.Drawing.Point(3, 3);
             this._promoLayout.Name = "_promoLayout";
@@ -641,17 +643,33 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoDropdownButton.TabIndex = 2;
             this._promoDropdownButton.UseVisualStyleBackColor = true;
             //
+            // _applyPromoButtonBorder
+            //
+            this._applyPromoButtonBorder.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._applyPromoButtonBorder.Controls.Add(this._applyPromoButton);
+            this._applyPromoButtonBorder.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._applyPromoButtonBorder.Location = new System.Drawing.Point(288, 4);
+            this._applyPromoButtonBorder.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
+            this._applyPromoButtonBorder.Name = "_applyPromoButtonBorder";
+            this._applyPromoButtonBorder.Padding = new System.Windows.Forms.Padding(1);
+            this._applyPromoButtonBorder.Size = new System.Drawing.Size(120, 32);
+            this._applyPromoButtonBorder.TabIndex = 3;
+            //
             // _applyPromoButton
             // 
             this._applyPromoButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._applyPromoButton.BackColor = System.Drawing.Color.White;
+            this._applyPromoButton.FlatAppearance.BorderSize = 0;
             this._applyPromoButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._applyPromoButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._applyPromoButton.Location = new System.Drawing.Point(288, 4);
-            this._applyPromoButton.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this._applyPromoButton.Location = new System.Drawing.Point(1, 1);
+            this._applyPromoButton.Margin = new System.Windows.Forms.Padding(0);
             this._applyPromoButton.Name = "_applyPromoButton";
-            this._applyPromoButton.Size = new System.Drawing.Size(60, 28);
+            this._applyPromoButton.Size = new System.Drawing.Size(118, 30);
             this._applyPromoButton.TabIndex = 3;
-            this._applyPromoButton.Text = "Áp dụng";
+            this._applyPromoButton.Text = "ÁP DỤNG";
+            this._applyPromoButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._applyPromoButton.UseVisualStyleBackColor = false;
             // 
             // _totalsLayout
             // 

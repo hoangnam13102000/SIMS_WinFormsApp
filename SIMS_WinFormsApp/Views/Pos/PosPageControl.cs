@@ -58,6 +58,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             InitializeComponent();
             _designTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+            ConfigurePromoApplyButton();
             _cashierNameLabel.Text = string.IsNullOrWhiteSpace(cashierDisplayName)
                 ? "Nhân viên:"
                 : "Nhân viên: " + cashierDisplayName;
@@ -94,6 +95,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _checkoutButton.Click += (sender, args) => CheckoutRequested?.Invoke(this, EventArgs.Empty);
             Load += (sender, args) =>
             {
+                ConfigurePromoApplyButton();
                 if (!_designTime)
                 {
                     BeginInvoke((Action)SetInitialCartSplitterDistance);
@@ -101,6 +103,33 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 }
             };
             _cartCheckoutSplit.SplitterMoving += OnCartCheckoutSplitterMoving;
+        }
+
+        private void ConfigurePromoApplyButton()
+        {
+            int textWidth = TextRenderer.MeasureText(
+                _applyPromoButton.Text,
+                _applyPromoButton.Font).Width;
+            int buttonWidth = Math.Max(120, textWidth + 24);
+
+            _checkoutLayout.RowStyles[0].Height = 50F;
+            _checkoutLayout.MinimumSize = new Size(0, 322);
+            _checkoutScrollPanel.AutoScrollMinSize = new Size(0, 322);
+            _promoLayout.ColumnStyles[3].SizeType = SizeType.Absolute;
+            _promoLayout.ColumnStyles[3].Width = buttonWidth;
+            _applyPromoButtonBorder.BackColor = Color.FromArgb(37, 99, 235);
+            _applyPromoButtonBorder.Padding = new Padding(1);
+            _applyPromoButtonBorder.Margin = new Padding(0, 2, 0, 2);
+            _applyPromoButtonBorder.MinimumSize = new Size(buttonWidth, 0);
+            _applyPromoButton.MinimumSize = Size.Empty;
+            _applyPromoButton.Margin = Padding.Empty;
+            _applyPromoButton.AutoSize = false;
+            _applyPromoButton.Dock = DockStyle.Fill;
+            _applyPromoButton.BackColor = Color.White;
+            _applyPromoButton.FlatAppearance.BorderSize = 0;
+            _applyPromoButton.TextAlign = ContentAlignment.MiddleCenter;
+            _applyPromoButton.UseVisualStyleBackColor = false;
+            _promoLayout.PerformLayout();
         }
 
         public void BindCategories(IReadOnlyList<CategoryOptionDto> categories)
