@@ -67,12 +67,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerCard = new System.Windows.Forms.Panel();
             this._headerLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -236,36 +236,42 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCopyLayout.Controls.Add(this._subtitleLabel, 0, 1);
             this._headerCopyLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerCopyLayout.Location = new System.Drawing.Point(68, 12);
-            this._headerCopyLayout.Margin = new System.Windows.Forms.Padding(0, 12, 0, 12);
+            this._headerCopyLayout.Margin = new System.Windows.Forms.Padding(0, 11, 0, 11);
             this._headerCopyLayout.Name = "_headerCopyLayout";
             this._headerCopyLayout.RowCount = 2;
-            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54F));
-            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46F));
-            this._headerCopyLayout.Size = new System.Drawing.Size(726, 62);
+            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this._headerCopyLayout.Size = new System.Drawing.Size(726, 64);
             this._headerCopyLayout.TabIndex = 1;
             // 
             // _titleLabel
             // 
-            this._titleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._titleLabel.AutoEllipsis = true;
+            this._titleLabel.AutoSize = false;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this._titleLabel.Location = new System.Drawing.Point(3, 0);
+            this._titleLabel.Margin = new System.Windows.Forms.Padding(3, 0, 4, 0);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(720, 33);
+            this._titleLabel.Size = new System.Drawing.Size(719, 40);
             this._titleLabel.TabIndex = 0;
             this._titleLabel.Text = "Quản lý nhập kho";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // _subtitleLabel
             // 
-            this._subtitleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._subtitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._subtitleLabel.AutoEllipsis = true;
+            this._subtitleLabel.AutoSize = false;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(3, 33);
+            this._subtitleLabel.Location = new System.Drawing.Point(3, 44);
+            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(3, 4, 4, 0);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(720, 29);
+            this._subtitleLabel.Size = new System.Drawing.Size(719, 20);
             this._subtitleLabel.TabIndex = 1;
-            this._subtitleLabel.Text = "Lập phiếu nhập nhiều sản phẩm và tra cứu lịch sử theo nhà cung cấp";
+            this._subtitleLabel.Text = "Lập phiếu nhập và tra cứu lịch sử nhập hàng";
             // 
             // _headerActions
             // 
@@ -276,7 +282,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerActions.Location = new System.Drawing.Point(794, 0);
             this._headerActions.Margin = new System.Windows.Forms.Padding(0);
             this._headerActions.Name = "_headerActions";
-            this._headerActions.Padding = new System.Windows.Forms.Padding(0, 26, 8, 0);
+            this._headerActions.Padding = new System.Windows.Forms.Padding(0, 21, 6, 0);
             this._headerActions.Size = new System.Drawing.Size(340, 86);
             this._headerActions.TabIndex = 1;
             this._headerActions.WrapContents = false;
@@ -284,13 +290,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _createButton
             // 
             this._createButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._createButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._createButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._createButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(78)))), ((int)(((byte)(216)))));
             this._createButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._createButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._createButton.ForeColor = System.Drawing.Color.White;
-            this._createButton.Location = new System.Drawing.Point(152, 26);
-            this._createButton.Margin = new System.Windows.Forms.Padding(0);
+            this._createButton.Location = new System.Drawing.Point(154, 21);
+            this._createButton.Margin = new System.Windows.Forms.Padding(12, 0, 0, 0);
             this._createButton.Name = "_createButton";
             this._createButton.Size = new System.Drawing.Size(180, 44);
             this._createButton.TabIndex = 0;
@@ -300,13 +307,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _optionsButton
             // 
             this._optionsButton.BackColor = System.Drawing.Color.White;
+            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._optionsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._optionsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._optionsButton.Location = new System.Drawing.Point(22, 26);
-            this._optionsButton.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
+            this._optionsButton.Location = new System.Drawing.Point(12, 21);
+            this._optionsButton.Margin = new System.Windows.Forms.Padding(0);
             this._optionsButton.Name = "_optionsButton";
             this._optionsButton.Size = new System.Drawing.Size(130, 44);
             this._optionsButton.TabIndex = 1;
@@ -332,17 +340,17 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 180F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 180F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42F));
+            this._filterLayout.Controls.Add(this._toDateLabel, 3, 0);
             this._filterLayout.Controls.Add(this._searchContainer, 0, 0);
             this._filterLayout.Controls.Add(this._fromDateLabel, 1, 0);
             this._filterLayout.Controls.Add(this._fromDate, 2, 0);
-            this._filterLayout.Controls.Add(this._toDateLabel, 3, 0);
             this._filterLayout.Controls.Add(this._toDate, 4, 0);
-            this._filterLayout.Controls.Add(this._clearDateLink, 5, 0);
             this._filterLayout.Controls.Add(this._totalLabel, 6, 0);
+            this._filterLayout.Controls.Add(this._clearDateLink, 5, 0);
             this._filterLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._filterLayout.Location = new System.Drawing.Point(8, 8);
             this._filterLayout.Margin = new System.Windows.Forms.Padding(0);
@@ -428,47 +436,51 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _fromDateLabel
             // 
-            this._fromDateLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._fromDateLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this._fromDateLabel.AutoSize = true;
+            this._fromDateLabel.Dock = System.Windows.Forms.DockStyle.None;
             this._fromDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._fromDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._fromDateLabel.Location = new System.Drawing.Point(392, 0);
             this._fromDateLabel.Name = "_fromDateLabel";
             this._fromDateLabel.Size = new System.Drawing.Size(44, 54);
             this._fromDateLabel.TabIndex = 1;
-            this._fromDateLabel.Text = "Từ ngày";
-            this._fromDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._fromDateLabel.Text = "Từ";
+            this._fromDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // _fromDate
             // 
             this._fromDate.Anchor = System.Windows.Forms.AnchorStyles.None;
             this._fromDate.Location = new System.Drawing.Point(439, 9);
-            this._fromDate.Margin = new System.Windows.Forms.Padding(0);
+            this._fromDate.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this._fromDate.MinimumSize = new System.Drawing.Size(100, 36);
             this._fromDate.Name = "_fromDate";
-            this._fromDate.Size = new System.Drawing.Size(180, 36);
+            this._fromDate.Size = new System.Drawing.Size(177, 36);
             this._fromDate.TabIndex = 0;
             this._fromDate.Value = null;
             // 
             // _toDateLabel
             // 
-            this._toDateLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._toDateLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this._toDateLabel.AutoSize = true;
+            this._toDateLabel.Dock = System.Windows.Forms.DockStyle.None;
             this._toDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._toDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._toDateLabel.Location = new System.Drawing.Point(622, 0);
             this._toDateLabel.Name = "_toDateLabel";
             this._toDateLabel.Size = new System.Drawing.Size(22, 54);
             this._toDateLabel.TabIndex = 2;
-            this._toDateLabel.Text = "đến";
-            this._toDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._toDateLabel.Text = "Đến";
+            this._toDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // _toDate
             // 
             this._toDate.Anchor = System.Windows.Forms.AnchorStyles.None;
             this._toDate.Location = new System.Drawing.Point(647, 9);
-            this._toDate.Margin = new System.Windows.Forms.Padding(0);
+            this._toDate.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this._toDate.MinimumSize = new System.Drawing.Size(100, 36);
             this._toDate.Name = "_toDate";
-            this._toDate.Size = new System.Drawing.Size(180, 36);
+            this._toDate.Size = new System.Drawing.Size(177, 36);
             this._toDate.TabIndex = 1;
             this._toDate.Value = null;
             // 
@@ -520,21 +532,21 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle7;
             this._grid.BackgroundColor = System.Drawing.Color.White;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this._grid.ColumnHeadersHeight = 64;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            this._grid.ColumnHeadersHeight = 44;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._receiptIdColumn,
@@ -546,15 +558,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._totalColumn,
             this._statusColumn,
             this._actionColumn});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._grid.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle12.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            dataGridViewCellStyle12.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._grid.DefaultCellStyle = dataGridViewCellStyle12;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EnableHeadersVisualStyles = false;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -562,9 +574,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.MultiSelect = false;
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
+            this._grid.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 51;
-            this._grid.RowTemplate.Height = 60;
+            this._grid.RowTemplate.Height = 44;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1158, 482);
             this._grid.TabIndex = 0;
@@ -604,9 +617,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _dateColumn
             // 
-            dataGridViewCellStyle3.Format = "dd/MM/yyyy";
-            dataGridViewCellStyle3.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
-            this._dateColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle9.Format = "dd/MM/yyyy";
+            dataGridViewCellStyle9.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
+            this._dateColumn.DefaultCellStyle = dataGridViewCellStyle9;
             this._dateColumn.HeaderText = "Ngày tạo";
             this._dateColumn.MinimumWidth = 6;
             this._dateColumn.Name = "_dateColumn";
@@ -619,12 +632,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._itemCountColumn.MinimumWidth = 6;
             this._itemCountColumn.Name = "_itemCountColumn";
             this._itemCountColumn.ReadOnly = true;
+            this._itemCountColumn.Width = 125;
             // 
             // _totalColumn
             // 
-            dataGridViewCellStyle4.Format = "N0";
-            dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
-            this._totalColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle10.Format = "N0";
+            dataGridViewCellStyle10.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
+            this._totalColumn.DefaultCellStyle = dataGridViewCellStyle10;
             this._totalColumn.HeaderText = "Tổng tiền";
             this._totalColumn.MinimumWidth = 6;
             this._totalColumn.Name = "_totalColumn";
@@ -642,8 +656,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _actionColumn
             // 
             this._actionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this._actionColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this._actionColumn.DefaultCellStyle = dataGridViewCellStyle11;
             this._actionColumn.HeaderText = "Thao tác";
             this._actionColumn.MinimumWidth = 6;
             this._actionColumn.Name = "_actionColumn";

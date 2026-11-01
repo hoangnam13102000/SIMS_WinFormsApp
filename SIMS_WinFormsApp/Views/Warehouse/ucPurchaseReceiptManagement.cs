@@ -32,6 +32,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly ContextMenuStrip _optionsMenu;
         private bool _initialized;
         private bool _suppressDateEvents;
+        private int _lastVisibleRowCapacity;
 
         public ucPurchaseReceiptManagement() : this(null)
         {
@@ -43,8 +44,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
+            if (_pageSizeCombo.SelectedIndex < 0)
+                _pageSizeCombo.SelectedIndex = 0;
+            _lastVisibleRowCapacity = GetVisibleRowCapacity();
+
             _service = service ?? AppComposition.CreateInventoryService();
             _presenter = new PurchaseReceiptListPresenter(this, _service);
+            _grid.Resize += Grid_Resize;
             _searchTimer = new Timer(components) { Interval = 300 };
             _searchTimer.Tick += (sender, args) =>
             {
@@ -81,6 +87,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất Excel",
                 IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new Size(18, 18)),
                 (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty)));
+            _optionsMenu.Items.Add(new ToolStripSeparator());
             _optionsMenu.Items.Add(new ToolStripMenuItem("Nhập dữ liệu",
                 IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new Size(18, 18)),
                 (sender, args) => ImportReceipts()));
@@ -113,10 +120,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public string Keyword => _searchBox.Text;
         public DateTime? FromDate => _fromDate.Value;
         public DateTime? ToDate => _toDate.Value;
-        public int PageSize => _pageSizeCombo.SelectedItem == null
-            ? 10
-            : Convert.ToInt32(_pageSizeCombo.SelectedItem, CultureInfo.InvariantCulture);
+        public int PageSize => Math.Min(
+            _pageSizeCombo.SelectedItem == null
+                ? 10
+                : Convert.ToInt32(_pageSizeCombo.SelectedItem, CultureInfo.InvariantCulture),
+            GetVisibleRowCapacity());
         public IWin32Window Owner => FindForm();
+
+        private int GetVisibleRowCapacity()
+        {
+            return Math.Max(1, (_grid.ClientSize.Height - _grid.ColumnHeadersHeight) / _grid.RowTemplate.Height);
+        }
+
+        private void Grid_Resize(object sender, EventArgs e)
+        {
+            int visibleRowCapacity = GetVisibleRowCapacity();
+            if (visibleRowCapacity == _lastVisibleRowCapacity)
+                return;
+
+            _lastVisibleRowCapacity = visibleRowCapacity;
+            PageSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         public void DisplayPage(
             IReadOnlyList<PurchaseReceiptListItemDto> rows,

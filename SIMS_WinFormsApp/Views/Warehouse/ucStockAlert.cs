@@ -29,6 +29,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly Timer _searchTimer;
         private bool _initialized;
         private bool _suppressEvents;
+        private bool _fromDateActive;
+        private bool _toDateActive;
 
         public ucStockAlert()
             : this(null, null, null)
@@ -83,11 +85,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
         }
 
-        public DateTime? FromDate => _fromDatePicker.Checked
+        public DateTime? FromDate => _fromDateActive
             ? _fromDatePicker.Value.Date
             : (DateTime?)null;
 
-        public DateTime? ToDate => _toDatePicker.Checked
+        public DateTime? ToDate => _toDateActive
             ? _toDatePicker.Value.Date
             : (DateTime?)null;
 
@@ -215,6 +217,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 _categoryCombo.SelectedIndex = _categoryCombo.Items.Count > 0 ? 0 : -1;
                 _fromDatePicker.Checked = false;
                 _toDatePicker.Checked = false;
+                _fromDateActive = false;
+                _toDateActive = false;
+                _fromDatePicker.CustomFormat = " ";
+                _toDatePicker.CustomFormat = " ";
             }
             finally
             {
@@ -229,6 +235,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             try
             {
                 _toDatePicker.Checked = false;
+                _toDateActive = false;
+                _toDatePicker.CustomFormat = " ";
             }
             finally
             {
@@ -293,6 +301,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (_suppressEvents)
                 return;
 
+            if (sender == _fromDatePicker)
+            {
+                _fromDatePicker.Checked = true;
+                _fromDateActive = true;
+                _fromDatePicker.CustomFormat = "dd/MM/yyyy";
+            }
+            else if (sender == _toDatePicker)
+            {
+                _toDatePicker.Checked = true;
+                _toDateActive = true;
+                _toDatePicker.CustomFormat = "dd/MM/yyyy";
+            }
+
             UpdateClearFilterVisibility();
             FiltersChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -306,7 +327,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         {
             CategoryOption category = _categoryCombo.SelectedItem as CategoryOption;
             return _searchBox.TextLength > 0 || (category != null && category.Id.HasValue) ||
-                _fromDatePicker.Checked || _toDatePicker.Checked;
+                _fromDateActive || _toDateActive;
         }
 
         private void ClearFilterLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

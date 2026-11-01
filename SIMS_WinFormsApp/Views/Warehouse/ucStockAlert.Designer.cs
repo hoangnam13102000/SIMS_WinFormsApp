@@ -21,7 +21,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this._headerCard = new System.Windows.Forms.Panel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
@@ -74,9 +78,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pagerPanel.SuspendLayout();
             this._pagerInner.SuspendLayout();
             this.SuspendLayout();
-            //
-            //_headerCard
-            //
+            // 
+            // _headerCard
+            // 
             this._headerCard.BackColor = System.Drawing.Color.White;
             this._headerCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._headerCard.Controls.Add(this._headerIconPanel);
@@ -86,20 +90,20 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCard.Dock = System.Windows.Forms.DockStyle.Top;
             this._headerCard.Location = new System.Drawing.Point(16, 16);
             this._headerCard.Name = "_headerCard";
-            this._headerCard.Size = new System.Drawing.Size(1068, 84);
+            this._headerCard.Size = new System.Drawing.Size(1068, 88);
             this._headerCard.TabIndex = 0;
-            //
-            //_headerIconPanel
-            //
+            // 
+            // _headerIconPanel
+            // 
             this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(243)))), ((int)(((byte)(199)))));
             this._headerIconPanel.Controls.Add(this._headerIcon);
-            this._headerIconPanel.Location = new System.Drawing.Point(16, 16);
+            this._headerIconPanel.Location = new System.Drawing.Point(16, 19);
             this._headerIconPanel.Name = "_headerIconPanel";
             this._headerIconPanel.Size = new System.Drawing.Size(50, 50);
             this._headerIconPanel.TabIndex = 0;
-            //
-            //_headerIcon
-            //
+            // 
+            // _headerIcon
+            // 
             this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(243)))), ((int)(((byte)(199)))));
             this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(217)))), ((int)(((byte)(119)))), ((int)(((byte)(6)))));
             this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.ExclamationTriangle;
@@ -112,35 +116,40 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._headerIcon.TabIndex = 0;
             this._headerIcon.TabStop = false;
-            //
-            //_titleLabel
-            //
+            // 
+            // _titleLabel
+            // 
+            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._titleLabel.AutoEllipsis = true;
             this._titleLabel.AutoSize = false;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this._titleLabel.Location = new System.Drawing.Point(80, 12);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(600, 32);
+            this._titleLabel.Size = new System.Drawing.Size(822, 36);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Cảnh báo tồn kho";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._titleLabel.UseMnemonic = false;
-            //
-            //_subtitleLabel
-            //
+            // 
+            // _subtitleLabel
+            // 
+            this._subtitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._subtitleLabel.AutoEllipsis = true;
             this._subtitleLabel.AutoSize = false;
+            this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(80, 46);
+            this._subtitleLabel.Location = new System.Drawing.Point(80, 52);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(700, 22);
+            this._subtitleLabel.Size = new System.Drawing.Size(822, 20);
             this._subtitleLabel.TabIndex = 2;
-            this._subtitleLabel.Text = "Các báo cáo hết/sắp hết hàng từ nhân viên bán hàng · lên kế hoạch nhập hàng bổ sung";
+                this._subtitleLabel.Text = "Sản phẩm hết hoặc sắp hết hàng cần nhập thêm";
             this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._subtitleLabel.UseMnemonic = false;
-            //
-            //_optionsButton
-            //
-            this._optionsButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            // 
+            // _optionsButton
+            // 
+            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._optionsButton.BackColor = System.Drawing.Color.White;
             this._optionsButton.ContextMenuStrip = this._optionsMenu;
             this._optionsButton.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -148,35 +157,36 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._optionsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._optionsButton.Location = new System.Drawing.Point(936, 22);
+            this._optionsButton.Location = new System.Drawing.Point(918, 25);
             this._optionsButton.Name = "_optionsButton";
             this._optionsButton.Size = new System.Drawing.Size(130, 38);
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn ▾";
             this._optionsButton.UseVisualStyleBackColor = false;
-            //
-            //_optionsMenu
-            //
+            // 
+            // _optionsMenu
+            // 
+            this._optionsMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._exportCsvItem,
             this._exportExcelItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(181, 70);
-            //
-            //_exportCsvItem
-            //
+            this._optionsMenu.Size = new System.Drawing.Size(147, 52);
+            // 
+            // _exportCsvItem
+            // 
             this._exportCsvItem.Name = "_exportCsvItem";
-            this._exportCsvItem.Size = new System.Drawing.Size(180, 22);
+            this._exportCsvItem.Size = new System.Drawing.Size(146, 24);
             this._exportCsvItem.Text = "Xuất CSV";
-            //
-            //_exportExcelItem
-            //
+            // 
+            // _exportExcelItem
+            // 
             this._exportExcelItem.Name = "_exportExcelItem";
-            this._exportExcelItem.Size = new System.Drawing.Size(180, 22);
+            this._exportExcelItem.Size = new System.Drawing.Size(146, 24);
             this._exportExcelItem.Text = "Xuất Excel";
-            //
-            //_filterCard
-            //
+            // 
+            // _filterCard
+            // 
             this._filterCard.BackColor = System.Drawing.Color.White;
             this._filterCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._filterCard.Controls.Add(this._searchBox);
@@ -192,92 +202,93 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._filterCard.Name = "_filterCard";
             this._filterCard.Size = new System.Drawing.Size(1068, 60);
             this._filterCard.TabIndex = 1;
-            //
-            //_searchBox
-            //
+            // 
+            // _searchBox
+            // 
             this._searchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._searchBox.Location = new System.Drawing.Point(16, 18);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(260, 23);
+            this._searchBox.Size = new System.Drawing.Size(260, 27);
             this._searchBox.TabIndex = 0;
-            //
-            //_categoryCombo
-            //
+            // 
+            // _categoryCombo
+            // 
             this._categoryCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._categoryCombo.FormattingEnabled = true;
             this._categoryCombo.Location = new System.Drawing.Point(290, 18);
             this._categoryCombo.Name = "_categoryCombo";
-            this._categoryCombo.Size = new System.Drawing.Size(170, 23);
+            this._categoryCombo.Size = new System.Drawing.Size(170, 28);
             this._categoryCombo.TabIndex = 1;
-            //
-            //_fromLabel
-            //
+            // 
+            // _fromLabel
+            // 
             this._fromLabel.AutoSize = true;
-            this._fromLabel.Location = new System.Drawing.Point(476, 21);
+            this._fromLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._fromLabel.Location = new System.Drawing.Point(476, 22);
             this._fromLabel.Name = "_fromLabel";
-            this._fromLabel.Size = new System.Drawing.Size(22, 15);
+            this._fromLabel.Size = new System.Drawing.Size(26, 20);
             this._fromLabel.TabIndex = 2;
             this._fromLabel.Text = "Từ";
-            //
-            //_fromDatePicker
-            //
+            // 
+            // _fromDatePicker
+            // 
             this._fromDatePicker.Checked = false;
-            this._fromDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._fromDatePicker.CustomFormat = " ";
             this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this._fromDatePicker.Location = new System.Drawing.Point(500, 18);
+            this._fromDatePicker.Location = new System.Drawing.Point(510, 18);
             this._fromDatePicker.Name = "_fromDatePicker";
-            this._fromDatePicker.ShowCheckBox = true;
-            this._fromDatePicker.Size = new System.Drawing.Size(125, 23);
+            this._fromDatePicker.ShowCheckBox = false;
+            this._fromDatePicker.Size = new System.Drawing.Size(140, 27);
             this._fromDatePicker.TabIndex = 3;
-            //
-            //_toLabel
-            //
+            // 
+            // _toLabel
+            // 
             this._toLabel.AutoSize = true;
-            this._toLabel.Location = new System.Drawing.Point(637, 21);
+            this._toLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._toLabel.Location = new System.Drawing.Point(666, 22);
             this._toLabel.Name = "_toLabel";
-            this._toLabel.Size = new System.Drawing.Size(23, 15);
+            this._toLabel.Size = new System.Drawing.Size(36, 20);
             this._toLabel.TabIndex = 4;
             this._toLabel.Text = "Đến";
-            //
-            //_toDatePicker
-            //
+            // 
+            // _toDatePicker
+            // 
             this._toDatePicker.Checked = false;
-            this._toDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._toDatePicker.CustomFormat = " ";
             this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this._toDatePicker.Location = new System.Drawing.Point(669, 18);
+            this._toDatePicker.Location = new System.Drawing.Point(710, 18);
             this._toDatePicker.Name = "_toDatePicker";
-            this._toDatePicker.ShowCheckBox = true;
-            this._toDatePicker.Size = new System.Drawing.Size(125, 23);
+            this._toDatePicker.ShowCheckBox = false;
+            this._toDatePicker.Size = new System.Drawing.Size(140, 27);
             this._toDatePicker.TabIndex = 5;
-            //
-            //_clearFilterLink
-            //
+            // 
+            // _clearFilterLink
+            // 
             this._clearFilterLink.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this._clearFilterLink.AutoSize = true;
             this._clearFilterLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._clearFilterLink.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this._clearFilterLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this._clearFilterLink.Location = new System.Drawing.Point(806, 21);
+            this._clearFilterLink.Location = new System.Drawing.Point(860, 0);
             this._clearFilterLink.Name = "_clearFilterLink";
-            this._clearFilterLink.Size = new System.Drawing.Size(57, 15);
+            this._clearFilterLink.Size = new System.Drawing.Size(77, 20);
             this._clearFilterLink.TabIndex = 6;
             this._clearFilterLink.TabStop = true;
             this._clearFilterLink.Text = "✕ Xóa lọc";
             this._clearFilterLink.Visible = false;
-            //
-            //_totalLabel
-            //
-            this._totalLabel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this._totalLabel.AutoSize = false;
-            this._totalLabel.Location = new System.Drawing.Point(880, 19);
+            // 
+            // _totalLabel
+            // 
+            this._totalLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._totalLabel.Location = new System.Drawing.Point(880, 22);
             this._totalLabel.Name = "_totalLabel";
             this._totalLabel.Size = new System.Drawing.Size(170, 22);
             this._totalLabel.TabIndex = 7;
             this._totalLabel.Text = "Tổng cộng: 0 cảnh báo";
             this._totalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
-            //_gridCard
-            //
+            // 
+            // _gridCard
+            // 
             this._gridCard.BackColor = System.Drawing.Color.White;
             this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._gridCard.Controls.Add(this._grid);
@@ -285,28 +296,30 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this._gridCard.Location = new System.Drawing.Point(16, 184);
             this._gridCard.Name = "_gridCard";
-            this._gridCard.Size = new System.Drawing.Size(1068, 400);
+            this._gridCard.Size = new System.Drawing.Size(1068, 416);
             this._gridCard.TabIndex = 2;
-            //
-            //_grid
-            //
+            // 
+            // _grid
+            // 
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grid.BackgroundColor = System.Drawing.Color.White;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this._grid.ColumnHeadersHeight = 38;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -319,11 +332,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colStatus,
             this.colPlan,
             this.colResolve});
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._grid.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._grid.DefaultCellStyle = dataGridViewCellStyle7;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EnableHeadersVisualStyles = false;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -332,157 +349,162 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.Name = "_grid";
             this._grid.ReadOnly = true;
             this._grid.RowHeadersVisible = false;
+            this._grid.RowHeadersWidth = 51;
             this._grid.RowTemplate.Height = 36;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._grid.Size = new System.Drawing.Size(1066, 398);
+            this._grid.Size = new System.Drawing.Size(1066, 414);
             this._grid.TabIndex = 0;
-            this._grid.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            //
-            //colAlertId
-            //
+            // 
+            // colAlertId
+            // 
             this.colAlertId.HeaderText = "AlertID";
+            this.colAlertId.MinimumWidth = 6;
             this.colAlertId.Name = "colAlertId";
             this.colAlertId.ReadOnly = true;
             this.colAlertId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colAlertId.Visible = false;
-            //
-            //colProductCode
-            //
+            // 
+            // colProductCode
+            // 
             this.colProductCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colProductCode.FillWeight = 10F;
             this.colProductCode.HeaderText = "Mã SP";
+            this.colProductCode.MinimumWidth = 6;
             this.colProductCode.Name = "colProductCode";
             this.colProductCode.ReadOnly = true;
             this.colProductCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colProductName
-            //
+            // 
+            // colProductName
+            // 
             this.colProductName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colProductName.FillWeight = 22F;
             this.colProductName.HeaderText = "Tên sản phẩm";
+            this.colProductName.MinimumWidth = 6;
             this.colProductName.Name = "colProductName";
             this.colProductName.ReadOnly = true;
             this.colProductName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colAlertType
-            //
+            // 
+            // colAlertType
+            // 
             this.colAlertType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colAlertType.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colAlertType.DefaultCellStyle = dataGridViewCellStyle3;
             this.colAlertType.FillWeight = 13F;
-            this.colAlertType.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colAlertType.HeaderText = "Loại cảnh báo";
+            this.colAlertType.MinimumWidth = 6;
             this.colAlertType.Name = "colAlertType";
             this.colAlertType.ReadOnly = true;
             this.colAlertType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colReporter
-            //
+            // 
+            // colReporter
+            // 
             this.colReporter.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colReporter.FillWeight = 15F;
             this.colReporter.HeaderText = "Người báo cáo";
+            this.colReporter.MinimumWidth = 6;
             this.colReporter.Name = "colReporter";
             this.colReporter.ReadOnly = true;
             this.colReporter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colCreatedAt
-            //
+            // 
+            // colCreatedAt
+            // 
             this.colCreatedAt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.colCreatedAt.FillWeight = 13F;
             this.colCreatedAt.HeaderText = "Thời gian";
+            this.colCreatedAt.MinimumWidth = 6;
             this.colCreatedAt.Name = "colCreatedAt";
             this.colCreatedAt.ReadOnly = true;
             this.colCreatedAt.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colStatus
-            //
+            // 
+            // colStatus
+            // 
             this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colStatus.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colStatus.DefaultCellStyle = dataGridViewCellStyle4;
             this.colStatus.FillWeight = 14F;
-            this.colStatus.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colStatus.HeaderText = "Trạng thái";
+            this.colStatus.MinimumWidth = 6;
             this.colStatus.Name = "colStatus";
             this.colStatus.ReadOnly = true;
             this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            //colPlan
-            //
+            // 
+            // colPlan
+            // 
             this.colPlan.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colPlan.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colPlan.DefaultCellStyle.NullValue = null;
-            this.colPlan.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.NullValue = null;
+            this.colPlan.DefaultCellStyle = dataGridViewCellStyle5;
             this.colPlan.HeaderText = "Thao tác";
-            this.colPlan.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
+            this.colPlan.MinimumWidth = 6;
             this.colPlan.Name = "colPlan";
             this.colPlan.ReadOnly = true;
-            this.colPlan.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colPlan.Width = 56;
-            //
-            //colResolve
-            //
+            // 
+            // colResolve
+            // 
             this.colResolve.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colResolve.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colResolve.DefaultCellStyle.NullValue = null;
-            this.colResolve.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.NullValue = null;
+            this.colResolve.DefaultCellStyle = dataGridViewCellStyle6;
             this.colResolve.HeaderText = "";
-            this.colResolve.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
+            this.colResolve.MinimumWidth = 6;
             this.colResolve.Name = "colResolve";
             this.colResolve.ReadOnly = true;
-            this.colResolve.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colResolve.Width = 56;
-            //
-            //_emptyLabel
-            //
+            // 
+            // _emptyLabel
+            // 
             this._emptyLabel.BackColor = System.Drawing.Color.White;
             this._emptyLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._emptyLabel.Font = new System.Drawing.Font("Segoe UI", 10F);
             this._emptyLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._emptyLabel.Location = new System.Drawing.Point(0, 0);
             this._emptyLabel.Name = "_emptyLabel";
-            this._emptyLabel.Size = new System.Drawing.Size(1066, 398);
+            this._emptyLabel.Size = new System.Drawing.Size(1066, 414);
             this._emptyLabel.TabIndex = 1;
             this._emptyLabel.Text = "Chưa có cảnh báo nào";
             this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this._emptyLabel.Visible = false;
-            //
-            //_gapHeader
-            //
+            // 
+            // _gapHeader
+            // 
             this._gapHeader.BackColor = System.Drawing.Color.Transparent;
             this._gapHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this._gapHeader.Location = new System.Drawing.Point(16, 100);
             this._gapHeader.Name = "_gapHeader";
             this._gapHeader.Size = new System.Drawing.Size(1068, 12);
             this._gapHeader.TabIndex = 3;
-            //
-            //_gapFilter
-            //
+            // 
+            // _gapFilter
+            // 
             this._gapFilter.BackColor = System.Drawing.Color.Transparent;
             this._gapFilter.Dock = System.Windows.Forms.DockStyle.Top;
             this._gapFilter.Location = new System.Drawing.Point(16, 172);
             this._gapFilter.Name = "_gapFilter";
             this._gapFilter.Size = new System.Drawing.Size(1068, 12);
             this._gapFilter.TabIndex = 4;
-            //
-            //_gapPager
-            //
+            // 
+            // _gapPager
+            // 
             this._gapPager.BackColor = System.Drawing.Color.Transparent;
             this._gapPager.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._gapPager.Location = new System.Drawing.Point(16, 584);
+            this._gapPager.Location = new System.Drawing.Point(16, 600);
             this._gapPager.Name = "_gapPager";
             this._gapPager.Size = new System.Drawing.Size(1068, 12);
             this._gapPager.TabIndex = 5;
-            //
-            //_pagerPanel
-            //
+            // 
+            // _pagerPanel
+            // 
             this._pagerPanel.BackColor = System.Drawing.Color.Transparent;
             this._pagerPanel.Controls.Add(this._pagerInner);
             this._pagerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._pagerPanel.Location = new System.Drawing.Point(16, 596);
+            this._pagerPanel.Location = new System.Drawing.Point(16, 612);
             this._pagerPanel.Name = "_pagerPanel";
             this._pagerPanel.Size = new System.Drawing.Size(1068, 52);
             this._pagerPanel.TabIndex = 6;
-            //
-            //_pagerInner
-            //
+            // 
+            // _pagerInner
+            // 
             this._pagerInner.Anchor = System.Windows.Forms.AnchorStyles.None;
             this._pagerInner.BackColor = System.Drawing.Color.Transparent;
             this._pagerInner.Controls.Add(this._prevButton);
@@ -496,9 +518,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pagerInner.Name = "_pagerInner";
             this._pagerInner.Size = new System.Drawing.Size(400, 36);
             this._pagerInner.TabIndex = 0;
-            //
-            //_prevButton
-            //
+            // 
+            // _prevButton
+            // 
             this._prevButton.BackColor = System.Drawing.Color.White;
             this._prevButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._prevButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -509,9 +531,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
             this._prevButton.UseVisualStyleBackColor = false;
-            //
-            //_pageLabel
-            //
+            // 
+            // _pageLabel
+            // 
             this._pageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._pageLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._pageLabel.ForeColor = System.Drawing.Color.White;
@@ -521,9 +543,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageLabel.TabIndex = 1;
             this._pageLabel.Text = "1";
             this._pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
-            //_nextButton
-            //
+            // 
+            // _nextButton
+            // 
             this._nextButton.BackColor = System.Drawing.Color.White;
             this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -534,29 +556,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
             this._nextButton.UseVisualStyleBackColor = false;
-            //
-            //_pageInfoLabel
-            //
-            this._pageInfoLabel.AutoSize = false;
+            // 
+            // _pageInfoLabel
+            // 
             this._pageInfoLabel.Location = new System.Drawing.Point(118, 9);
             this._pageInfoLabel.Name = "_pageInfoLabel";
             this._pageInfoLabel.Size = new System.Drawing.Size(92, 20);
             this._pageInfoLabel.TabIndex = 3;
             this._pageInfoLabel.Text = "Trang 1 / 1";
             this._pageInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
-            //_displayLabel
-            //
-            this._displayLabel.AutoSize = false;
+            // 
+            // _displayLabel
+            // 
             this._displayLabel.Location = new System.Drawing.Point(214, 9);
             this._displayLabel.Name = "_displayLabel";
             this._displayLabel.Size = new System.Drawing.Size(60, 20);
             this._displayLabel.TabIndex = 4;
             this._displayLabel.Text = "Hiển thị:";
             this._displayLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
-            //_pageSizeCombo
-            //
+            // 
+            // _pageSizeCombo
+            // 
             this._pageSizeCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._pageSizeCombo.FormattingEnabled = true;
             this._pageSizeCombo.Items.AddRange(new object[] {
@@ -565,23 +585,21 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             50});
             this._pageSizeCombo.Location = new System.Drawing.Point(278, 5);
             this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(60, 23);
+            this._pageSizeCombo.Size = new System.Drawing.Size(60, 28);
             this._pageSizeCombo.TabIndex = 5;
-            this._pageSizeCombo.SelectedIndex = 0;
-            //
-            //_rowsLabel
-            //
-            this._rowsLabel.AutoSize = false;
+            // 
+            // _rowsLabel
+            // 
             this._rowsLabel.Location = new System.Drawing.Point(344, 9);
             this._rowsLabel.Name = "_rowsLabel";
             this._rowsLabel.Size = new System.Drawing.Size(40, 20);
             this._rowsLabel.TabIndex = 6;
             this._rowsLabel.Text = "dòng";
             this._rowsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
-            //ucStockAlert
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            // 
+            // ucStockAlert
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.Controls.Add(this._gridCard);
@@ -606,6 +624,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pagerPanel.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         private Panel _headerCard;

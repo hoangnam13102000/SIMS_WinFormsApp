@@ -72,6 +72,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("inventory", "sidebar.page.inventory"),
             ("purchase", "sidebar.page.purchase"),
             ("stock-alert", "sidebar.page.stockAlert"),
+            ("disposal", "sidebar.page.disposal"),
             ("report-revenue", "sidebar.page.reportRevenue"),
             ("report-inventory", "sidebar.page.reportInventory"),
             ("accounts", "sidebar.page.accounts"),
@@ -331,7 +332,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
                         AppPermission.STOCK_DISPOSE))
                     layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
-                        () => PrepareEmbeddedForm(new frmStockReconciliation(AppComposition.CreateInventoryService(), UserSession.Instance)), IconChar.Warehouse);
+                        () => new ucStockReconciliation(
+                            AppComposition.CreateStockReconciliationService(),
+                            UserSession.Instance),
+                        IconChar.ScaleBalanced);
                 if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
                     layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),
                         () => new ucPurchaseReceiptManagement(), IconChar.Truck);
@@ -342,6 +346,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                             UserSession.Instance,
                             () => _view.SetUnreadNotifications(0)),
                         IconChar.TriangleExclamation);
+                if (HasAnyPermission(permissions, AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW))
+                    layout.AddLazyPage("disposal", Lang.Get("sidebar.page.disposal"),
+                        () => new ucStockDisposalManagement(
+                            AppComposition.CreateStockDisposalService(),
+                            UserSession.Instance,
+                            permissions.Contains(AppPermission.STOCK_DISPOSE)),
+                        IconChar.TrashCan);
             }
 
             if (HasAnyPermission(permissions,
