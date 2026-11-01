@@ -20,10 +20,17 @@ namespace SIMS_WinFormsApp.Views.Dashboard
     public partial class ucDashboard : UserControl, IDashboardView
     {
         private readonly DashboardPresenter _presenter;
+        private Panel _revenueSummaryPanel;
         private Chart _revenueSummaryChart;
         private Label _revenueSummaryTitle;
+        private Panel _invoiceFilterPanel;
+        private ComboBox _invoicePeriodFilter;
+        private DateTimePicker _invoiceDatePicker;
+        private Button _applyInvoiceFilterButton;
+        private int _loadedInvoiceCount;
         private bool _isLoading;
         private bool _hasLoaded;
+        private bool _reloadRequested;
 
         public ucDashboard() : this(null, null)
         {
@@ -46,6 +53,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             InitializeComponent();
             BackColor = AppColors.PageBg;
             ConfigureRevenueSummaryChart();
+            ConfigureRecentInvoiceFilter();
 
             bool isDesignTime = DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
             if (isDesignTime)
@@ -80,20 +88,24 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             if (data.IsSalesStaffDashboard)
             {
                 _titleLabel.Text = "Bảng điều khiển nhân viên";
-                _revenueCaption.Text = "Doanh thu của bạn hôm nay";
+                _revenueCaption.Text = "Doanh thu cửa hàng hôm nay";
                 _ordersCaption.Text = "Hóa đơn hôm nay";
-                _stockCaption.Text = "Doanh thu 7 ngày";
+                _stockCaption.Text = "Doanh thu cửa hàng 7 ngày";
                 _customersCaption.Text = "Hóa đơn 7 ngày";
                 _stockValue.Text = data.RevenueLast7Days.ToString("N0", vietnamese) + " VNĐ";
                 _customersValue.Text = data.OrdersLast7Days.ToString("N0", vietnamese);
-                _revenueSummaryTitle.Text = "Doanh thu của bạn · 7 ngày gần nhất";
+                _revenueSummaryTitle.Text = "Doanh thu cửa hàng · 7 ngày gần nhất";
                 _activityTitle.Text = "Hóa đơn gần đây của bạn";
-                _activitySubtitle.Text = "10 hóa đơn mới nhất do bạn tạo";
+                _loadedInvoiceCount = data.RecentActivities.Count;
+                _invoiceFilterPanel.Visible = true;
+                ConfigureDashboardLayout(true);
                 Activity.HeaderText = "Mã hóa đơn";
                 User.HeaderText = "Tổng tiền";
             }
             else
             {
+                _invoiceFilterPanel.Visible = false;
+                ConfigureDashboardLayout(false);
                 _stockValue.Text = data.StockQuantity.ToString("N0", vietnamese);
                 _customersValue.Text = data.CustomerCount.ToString("N0", vietnamese);
             }
@@ -137,6 +149,54 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
+        private void ConfigureDashboardLayout(bool isSalesStaffDashboard)
+        {
+            _contentLayout.SuspendLayout();
+            try
+            {
+                _contentLayout.ColumnCount = isSalesStaffDashboard ? 2 : 1;
+                _contentLayout.ColumnStyles.Clear();
+                if (isSalesStaffDashboard)
+                {
+                    _contentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42F));
+                    _contentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58F));
+                }
+                else
+                {
+                    _contentLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+                }
+
+                _contentLayout.RowCount = isSalesStaffDashboard ? 2 : 3;
+                _contentLayout.RowStyles.Clear();
+                _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 128F));
+                if (isSalesStaffDashboard)
+                {
+                    _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+                }
+                else
+                {
+                    _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 260F));
+                    _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+                }
+
+                _contentLayout.SetColumn(_statsLayout, 0);
+                _contentLayout.SetRow(_statsLayout, 0);
+                _contentLayout.SetColumnSpan(_statsLayout, isSalesStaffDashboard ? 2 : 1);
+                _contentLayout.SetColumn(_revenueSummaryPanel, 0);
+                _contentLayout.SetRow(_revenueSummaryPanel, 1);
+                _contentLayout.SetColumn(_activityCard, isSalesStaffDashboard ? 1 : 0);
+                _contentLayout.SetRow(_activityCard, isSalesStaffDashboard ? 1 : 2);
+
+                _revenueSummaryPanel.Visible = true;
+                _revenueSummaryPanel.Margin = new Padding(0, 14, isSalesStaffDashboard ? 7 : 0, 0);
+                _activityCard.Margin = new Padding(isSalesStaffDashboard ? 7 : 0, 14, 0, 0);
+            }
+            finally
+            {
+                _contentLayout.ResumeLayout(true);
+            }
+        }
+
         private void ConfigureRevenueSummaryChart()
         {
             _contentLayout.RowCount = 3;
@@ -146,7 +206,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             _contentLayout.SetRow(_activityCard, 2);
 
-            var chartPanel = new Panel
+            _revenueSummaryPanel = new Panel
             {
                 BackColor = Color.White,
                 Dock = DockStyle.Fill,
@@ -205,8 +265,154 @@ namespace SIMS_WinFormsApp.Views.Dashboard
 
             chartLayout.Controls.Add(_revenueSummaryTitle, 0, 0);
             chartLayout.Controls.Add(_revenueSummaryChart, 0, 1);
-            chartPanel.Controls.Add(chartLayout);
-            _contentLayout.Controls.Add(chartPanel, 0, 1);
+            _revenueSummaryPanel.Controls.Add(chartLayout);
+            _contentLayout.Controls.Add(_revenueSummaryPanel, 0, 1);
+        }
+
+        private void ConfigureRecentInvoiceFilter()
+        {
+            const int filterPanelWidth = 350;
+            _invoicePeriodFilter = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(64, 2),
+                Size = new Size(88, 26),
+                TabIndex = 0
+            };
+            _invoicePeriodFilter.Items.AddRange(new object[] { "Tất cả", "Ngày", "Tuần", "Tháng", "Năm" });
+            _invoicePeriodFilter.SelectedIndex = 0;
+
+            _invoiceDatePicker = new DateTimePicker
+            {
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "dd/MM/yyyy",
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(158, 2),
+                Size = new Size(112, 26),
+                TabIndex = 1,
+                Value = DateTime.Today
+            };
+
+            _applyInvoiceFilterButton = new Button
+            {
+                Location = new Point(276, 1),
+                Name = "_applyInvoiceFilterButton",
+                Size = new Size(66, 28),
+                TabIndex = 2,
+                Text = "Lọc",
+                UseVisualStyleBackColor = true
+            };
+            _invoiceFilterPanel = new Panel
+            {
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                BackColor = Color.White,
+                Location = new Point(Math.Max(18, _activityCard.ClientSize.Width - 18 - filterPanelWidth), 14),
+                Name = "_invoiceFilterPanel",
+                Size = new Size(filterPanelWidth, 32),
+                Visible = false
+            };
+            var filterLabel = new Label
+            {
+                AutoSize = false,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                Location = new Point(0, 3),
+                Name = "_invoiceFilterLabel",
+                Size = new Size(60, 24),
+                Text = "Lọc theo:",
+                TextAlign = ContentAlignment.MiddleLeft,
+                UseMnemonic = false
+            };
+            _invoiceFilterPanel.Controls.Add(filterLabel);
+            _invoiceFilterPanel.Controls.Add(_invoicePeriodFilter);
+            _invoiceFilterPanel.Controls.Add(_invoiceDatePicker);
+            _invoiceFilterPanel.Controls.Add(_applyInvoiceFilterButton);
+            _activityCard.Controls.Add(_invoiceFilterPanel);
+            _invoiceFilterPanel.BringToFront();
+
+            _applyInvoiceFilterButton.Click += OnApplyInvoiceFilterClick;
+            _activityCard.SizeChanged += OnActivityCardSizeChanged;
+        }
+
+        private void OnActivityCardSizeChanged(object sender, EventArgs e)
+        {
+            _invoiceFilterPanel.Location = new Point(
+                Math.Max(18, _activityCard.ClientSize.Width - 18 - _invoiceFilterPanel.Width),
+                14);
+        }
+
+        private async void OnApplyInvoiceFilterClick(object sender, EventArgs e)
+        {
+            await LoadDashboardDataAsync();
+        }
+
+        private void GetSelectedInvoicePeriod(out DateTime? periodStart, out DateTime? periodEnd)
+        {
+            DateTime selectedDate = _invoiceDatePicker.Value.Date;
+            switch (_invoicePeriodFilter.SelectedIndex)
+            {
+                case 1:
+                    periodStart = selectedDate;
+                    periodEnd = selectedDate.AddDays(1);
+                    break;
+                case 2:
+                    int daysSinceMonday = ((int)selectedDate.DayOfWeek + 6) % 7;
+                    periodStart = selectedDate.AddDays(-daysSinceMonday);
+                    periodEnd = periodStart.Value.AddDays(7);
+                    break;
+                case 4:
+                    periodStart = new DateTime(selectedDate.Year, 1, 1);
+                    periodEnd = periodStart.Value.AddYears(1);
+                    break;
+                case 3:
+                    periodStart = new DateTime(selectedDate.Year, selectedDate.Month, 1);
+                    periodEnd = periodStart.Value.AddMonths(1);
+                    break;
+                default:
+                    periodStart = null;
+                    periodEnd = null;
+                    break;
+            }
+        }
+
+        private void UpdateInvoicePeriodSubtitle()
+        {
+            if (_invoicePeriodFilter.SelectedItem == null)
+                return;
+
+            DateTime? periodStart;
+            DateTime? periodEnd;
+            GetSelectedInvoicePeriod(out periodStart, out periodEnd);
+            string periodText;
+            switch (_invoicePeriodFilter.SelectedIndex)
+            {
+                case 0:
+                    _activitySubtitle.Text = string.Format(
+                        CultureInfo.GetCultureInfo("vi-VN"),
+                        "Tìm thấy {0:N0} hóa đơn do bạn tạo",
+                        _loadedInvoiceCount);
+                    return;
+                case 1:
+                    periodText = "ngày " + periodStart.Value.ToString("dd/MM/yyyy");
+                    break;
+                case 2:
+                    periodText = "tuần " + periodStart.Value.ToString("dd/MM")
+                        + " - " + periodEnd.Value.AddDays(-1).ToString("dd/MM/yyyy");
+                    break;
+                case 4:
+                    periodText = "năm " + periodStart.Value.ToString("yyyy");
+                    break;
+                default:
+                    periodText = "tháng " + periodStart.Value.ToString("MM/yyyy");
+                    break;
+            }
+
+            _activitySubtitle.Text = string.Format(
+                CultureInfo.GetCultureInfo("vi-VN"),
+                "Tìm thấy {0:N0} hóa đơn của bạn trong {1}",
+                _loadedInvoiceCount,
+                periodText);
         }
 
         private void PopulateRevenueChartDesignPreview()
@@ -234,13 +440,25 @@ namespace SIMS_WinFormsApp.Views.Dashboard
 
         private async Task LoadDashboardDataAsync()
         {
-            if (_presenter == null || _isLoading) return;
+            if (_presenter == null) return;
+            if (_isLoading)
+            {
+                _reloadRequested = true;
+                return;
+            }
 
             _isLoading = true;
             try
             {
-                await _presenter.LoadAsync();
+                DateTime? periodStart;
+                DateTime? periodEnd;
+                GetSelectedInvoicePeriod(out periodStart, out periodEnd);
+                if (periodStart.HasValue && periodEnd.HasValue)
+                    await _presenter.LoadAsync(periodStart.Value, periodEnd.Value);
+                else
+                    await _presenter.LoadAsync();
                 _hasLoaded = true;
+                UpdateInvoicePeriodSubtitle();
             }
             catch (SqlException ex)
             {
@@ -253,6 +471,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             finally
             {
                 _isLoading = false;
+                if (_reloadRequested)
+                {
+                    _reloadRequested = false;
+                    await LoadDashboardDataAsync();
+                }
             }
         }
 

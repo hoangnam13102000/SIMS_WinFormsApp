@@ -24,10 +24,25 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         public DashboardDataDto GetSalesStaffDashboardData(int userId)
         {
             if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId));
-            return GetDashboardData(userId);
+            return GetDashboardData(userId, null, null);
         }
 
-        private DashboardDataDto GetDashboardData(int? salesStaffUserId)
+        public DashboardDataDto GetSalesStaffDashboardData(
+            int userId,
+            DateTime invoicePeriodStart,
+            DateTime invoicePeriodEnd)
+        {
+            if (userId <= 0) throw new ArgumentOutOfRangeException(nameof(userId));
+            if (invoicePeriodEnd <= invoicePeriodStart)
+                throw new ArgumentOutOfRangeException(nameof(invoicePeriodEnd), "Ngày kết thúc phải sau ngày bắt đầu.");
+
+            return GetDashboardData(userId, invoicePeriodStart, invoicePeriodEnd);
+        }
+
+        private DashboardDataDto GetDashboardData(
+            int? salesStaffUserId,
+            DateTime? invoicePeriodStart = null,
+            DateTime? invoicePeriodEnd = null)
         {
             var data = new DashboardDataDto
             {
@@ -40,19 +55,20 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             {
                 DateTime tomorrow = today.AddDays(1);
                 var invoices = db.Invoices.Where(i => i.Status == "ACTIVE");
+                var userInvoices = invoices;
                 if (salesStaffUserId.HasValue)
-                    invoices = invoices.Where(i => i.CreatedBy == salesStaffUserId.Value);
+                    userInvoices = invoices.Where(i => i.CreatedBy == salesStaffUserId.Value);
 
                 data.RevenueToday = invoices.Where(i => i.CreatedAt >= today && i.CreatedAt < tomorrow)
                     .Select(i => (decimal?)i.TotalAmount).Sum() ?? 0m;
-                data.OrdersToday = invoices.Count(i => i.CreatedAt >= today && i.CreatedAt < tomorrow);
+                data.OrdersToday = userInvoices.Count(i => i.CreatedAt >= today && i.CreatedAt < tomorrow);
 
                 if (salesStaffUserId.HasValue)
                 {
                     data.RevenueLast7Days = invoices
                         .Where(i => i.CreatedAt >= firstTrendDate && i.CreatedAt < tomorrow)
                         .Select(i => (decimal?)i.TotalAmount).Sum() ?? 0m;
-                    data.OrdersLast7Days = invoices
+                    data.OrdersLast7Days = userInvoices
                         .Count(i => i.CreatedAt >= firstTrendDate && i.CreatedAt < tomorrow);
                 }
                 else
@@ -79,8 +95,14 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
                 if (salesStaffUserId.HasValue)
                 {
-                    var recentInvoices = db.Invoices
-                        .Where(i => i.CreatedBy == salesStaffUserId.Value)
+                    var recentInvoicesQuery = db.Invoices
+                        .Where(i => i.CreatedBy == salesStaffUserId.Value);
+                    if (invoicePeriodStart.HasValue)
+                        recentInvoicesQuery = recentInvoicesQuery.Where(i => i.CreatedAt >= invoicePeriodStart.Value);
+                    if (invoicePeriodEnd.HasValue)
+                        recentInvoicesQuery = recentInvoicesQuery.Where(i => i.CreatedAt < invoicePeriodEnd.Value);
+
+                    var recentInvoices = recentInvoicesQuery
                         .OrderByDescending(i => i.CreatedAt)
                         .ThenByDescending(i => i.InvoiceID)
                         .Select(i => new
@@ -90,7 +112,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                             i.Status,
                             i.CreatedAt
                         })
-                        .Take(10)
                         .ToList();
 
                     foreach (var invoice in recentInvoices)
