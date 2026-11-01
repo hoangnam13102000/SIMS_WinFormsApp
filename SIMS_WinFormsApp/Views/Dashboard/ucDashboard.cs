@@ -37,6 +37,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private bool _isLoading;
         private bool _hasLoaded;
         private bool _reloadRequested;
+        private LinkLabel _expiryBatchesLink;
 
         public ucDashboard() : this(null, null)
         {
@@ -56,6 +57,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
+            ConfigureExpiryBatchesLink();
             ConfigureRevenueSummaryChart();
             ConfigureRevenuePeriodFilter();
             ConfigureRecentInvoiceFilter();
@@ -83,6 +85,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _welcomeLabel.Text = "Chào mừng bạn quay trở lại, " +
                 (string.IsNullOrWhiteSpace(displayName) ? "bạn" : displayName);
         }
+
+        public event EventHandler ExpiryBatchesRequested;
 
         public void ShowDashboardData(DashboardDataDto data)
         {
@@ -122,6 +126,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 ? "Tổng quan kho hàng"
                 : data.Kind == DashboardKind.SalesManagement ? "Tổng quan quản lý bán hàng"
                 : data.Kind == DashboardKind.Sales ? "Tổng quan bán hàng" : "Tổng quan";
+            _expiryBatchesLink.Visible = data.Kind == DashboardKind.Inventory;
             _chartTitleLabel.Text = data.ChartTitle;
             _revenueSummaryChart.Series[0].Name = data.SeriesTitle;
             _revenueSummaryChart.Series[0].LegendText = data.SeriesTitle;
@@ -169,6 +174,25 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                     activity.CreatedAt.ToString("dd/MM/yyyy HH:mm", vietnamese),
                     status);
             }
+        }
+
+        private void ConfigureExpiryBatchesLink()
+        {
+            _expiryBatchesLink = new LinkLabel
+            {
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                LinkColor = Color.FromArgb(37, 99, 235),
+                Location = new Point(820, 62),
+                Name = "_expiryBatchesLink",
+                Text = "Xem lô cận hạn / hết hạn →",
+                Visible = false
+            };
+            _expiryBatchesLink.LinkClicked += (sender, args) =>
+                ExpiryBatchesRequested?.Invoke(this, EventArgs.Empty);
+            _headerPanel.Controls.Add(_expiryBatchesLink);
+            _expiryBatchesLink.BringToFront();
         }
 
         private void ConfigureDashboardLayout(bool isSalesStaffDashboard, bool showActivities)

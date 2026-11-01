@@ -281,6 +281,7 @@
     <Compile Include="Services\Implementations\Import\EmployeeImportRowHandler.cs" />
     <Compile Include="Models\DTOs\Catalog\CatalogDtos.cs" />
     <Compile Include="Models\DTOs\Inventory\InventoryDtos.cs" />
+    <Compile Include="Models\DTOs\Inventory\ExpiryBatchDto.cs" />
     <Compile Include="Repositories\Interfaces\ICatalogRepository.cs" />
     <Compile Include="Repositories\Interfaces\IInventoryRepository.cs" />
     <Compile Include="Repositories\Implementations\CatalogRepository.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Services\Interfaces\IInventoryService.cs" />
     <Compile Include="Services\Implementations\Catalog\CatalogAdminService.cs" />
     <Compile Include="Services\Implementations\Inventory\InventoryService.cs" />
+    <Compile Include="Services\Implementations\Inventory\ExpiryBatchManagementService.cs" />
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
@@ -707,6 +709,12 @@
     </Compile>
     <Compile Include="Views\Warehouse\ucStockAlert.Designer.cs">
       <DependentUpon>ucStockAlert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucExpiryBatchManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucExpiryBatchManagement.Designer.cs">
+      <DependentUpon>ucExpiryBatchManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsStore.cs" />
     <Compile Include="Infrastructure\Configuration\ConnectionConfigurationService.cs" />

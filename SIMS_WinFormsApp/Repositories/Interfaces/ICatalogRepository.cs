@@ -5,7 +5,7 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
 {
     public interface ICatalogRepository
     {
-        CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status);
+        CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status, int? categoryId);
         ProductEditDto GetProduct(int productId);
         int InsertProduct(ProductEditDto dto);
         void UpdateProduct(ProductEditDto dto);
@@ -15,6 +15,7 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
 
         CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status);
         IReadOnlyList<LookupItem> GetActiveCategories();
+        IReadOnlyList<LookupItem> GetAllCategories();
         CategoryEditDto GetCategory(int categoryId);
         int InsertCategory(CategoryEditDto dto);
         void UpdateCategory(CategoryEditDto dto);

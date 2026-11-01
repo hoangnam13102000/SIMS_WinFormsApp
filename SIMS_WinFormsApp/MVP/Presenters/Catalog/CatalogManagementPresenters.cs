@@ -22,9 +22,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         public IReadOnlyList<ProductRowDto> CurrentRows => _currentRows;
         public int TotalCount { get; private set; }
 
-        public TablePageResult Load(int pageIndex, int pageSize, string keyword, string status)
+        public TablePageResult Load(int pageIndex, int pageSize, string keyword, string status, int? categoryId = null)
         {
-            var page = _service.GetProducts(pageIndex, pageSize, keyword, NormalizeStatus(status));
+            var page = _service.GetProducts(pageIndex, pageSize, keyword, NormalizeStatus(status), categoryId);
             _currentRows = page.Rows;
             TotalCount = page.TotalCount;
             return new TablePageResult
@@ -48,11 +48,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         public CatalogSaveResult Save(ProductEditDto dto) => _service.SaveProduct(dto);
         public CatalogSaveResult SetActive(int productId, bool active) => _service.SetProductActive(productId, active);
         public IReadOnlyList<LookupItem> Categories() => _service.GetCategoryOptions();
+        public IReadOnlyList<LookupItem> CategoryFilterOptions() => _service.GetAllCategoryOptions();
         public IReadOnlyList<LookupItem> Suppliers() => _service.GetSupplierOptions();
 
         public IReadOnlyList<object[]> ExportRows()
         {
-            var page = _service.GetProducts(0, 100000, null, null);
+            var page = _service.GetProducts(0, 100000, null, null, null);
             return page.Rows.Select(row => new object[]
             {
                 row.Code, row.Name, row.CategoryName, CatalogFormat.Money(row.SellPrice),

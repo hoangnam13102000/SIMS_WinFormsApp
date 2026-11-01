@@ -6,8 +6,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Catalog
 {
     public static class CatalogPages
     {
-        public static Control Products() =>
-            new ucProductManagement(AppComposition.CreateCatalogAdminService());
+        public static Control Products(bool canEdit, bool canManage) =>
+            new ucProductManagement(AppComposition.CreateCatalogAdminService(), canEdit, canManage);
 
         public static Control Categories() =>
             new ucCategoryManagement(AppComposition.CreateCatalogAdminService());

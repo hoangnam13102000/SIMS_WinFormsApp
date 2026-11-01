@@ -72,6 +72,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("inventory", "sidebar.page.inventory"),
             ("purchase", "sidebar.page.purchase"),
             ("stock-alert", "sidebar.page.stockAlert"),
+            ("expiry-batches", "sidebar.page.expiryBatches"),
             ("report-revenue", "sidebar.page.reportRevenue"),
             ("report-inventory", "sidebar.page.reportInventory"),
             ("accounts", "sidebar.page.accounts"),
@@ -231,17 +232,19 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private MainLayoutControl BuildLayout(HashSet<AppPermission> permissions)
         {
             var layout = new MainLayoutControl(Lang.Get("main.header.subtitle"));
+            ucDashboard dashboard = null;
             layout.AddLazyPage("profile", Lang.Get("header.dropdown.profile"),
                 () => new SIMS_WinFormsApp.Views.Profile.ucMyProfile(), IconChar.UserCircle, showInSidebar: false);
             if (CanViewDashboard(permissions))
             {
                 layout.AddSection(Lang.Get("sidebar.section.overview"));
+                dashboard = new ucDashboard(
+                    _getDisplayName(),
+                    UserSession.Instance.CurrentUser?.RoleCode,
+                    UserSession.Instance.CurrentUser?.UserId ?? 0,
+                    AppComposition.CreateDashboardDataService());
                 layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
-                    new ucDashboard(
-                        _getDisplayName(),
-                        UserSession.Instance.CurrentUser?.RoleCode,
-                        UserSession.Instance.CurrentUser?.UserId ?? 0,
-                        AppComposition.CreateDashboardDataService()), IconChar.House);
+                    dashboard, IconChar.House);
             }
 
             if (HasAnyPermission(permissions,
@@ -321,7 +324,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (HasAnyPermission(permissions,
                         AppPermission.PRODUCT_VIEW, AppPermission.PRODUCT_EDIT, AppPermission.PRODUCT_MANAGE))
                     layout.AddLazyPage("products", Lang.Get("sidebar.page.products"),
-                        CatalogPages.Products, IconChar.Box);
+                        () => CatalogPages.Products(
+                            permissions.Contains(AppPermission.PRODUCT_EDIT) ||
+                                permissions.Contains(AppPermission.PRODUCT_MANAGE),
+                            permissions.Contains(AppPermission.PRODUCT_MANAGE)), IconChar.Box);
                 if (HasAnyPermission(permissions,
                         AppPermission.CATEGORY_VIEW, AppPermission.CATEGORY_EDIT, AppPermission.CATEGORY_MANAGE))
                     layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"),
@@ -333,7 +339,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         CatalogPages.Suppliers, IconChar.Building);
                 if (HasAnyPermission(permissions,
                         AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
-                        AppPermission.STOCK_DISPOSE))
+                        AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW))
                     layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
                         () => PrepareEmbeddedForm(new frmStockReconciliation(AppComposition.CreateInventoryService(), UserSession.Instance)));
                 if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
@@ -346,6 +352,16 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                             UserSession.Instance,
                             () => _view.SetUnreadNotifications(0)),
                         IconChar.TriangleExclamation);
+                if (HasAnyPermission(permissions,
+                        AppPermission.STOCK_VIEW, AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW))
+                {
+                    if (dashboard != null)
+                        dashboard.ExpiryBatchesRequested += (sender, args) => layout.ShowPage("expiry-batches");
+                    layout.AddLazyPage("expiry-batches", Lang.Get("sidebar.page.expiryBatches"),
+                        () => new ucExpiryBatchManagement(
+                            HasAnyPermission(permissions, AppPermission.STOCK_DISPOSE)),
+                        IconChar.HourglassHalf);
+                }
             }
 
             if (HasAnyPermission(permissions,
@@ -364,7 +380,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             layout.AddSection(Lang.Get("sidebar.section.support"));
             layout.AddLazyPage("chat", Lang.Get("sidebar.page.chat"),
                 () => new ucChat(), IconChar.Comments);
-            if (HasAnyPermission(permissions,
+            if (!IsAdmin() && HasAnyPermission(permissions,
                     AppPermission.SHIFT_OPERATE, AppPermission.SHIFT_VIEW_ALL, AppPermission.SHIFT_APPROVE))
             {
                 layout.AddLazyPage("shifts", Lang.Get("sidebar.page.shifts"),

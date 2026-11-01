@@ -161,6 +161,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             if (role != null && _roleCache.TryGetValue(role.RoleId, out var current))
             {
                 _workingSet.UnionWith(current);
+                NormalizeResourcePermissions(_workingSet);
             }
             RenderRoleList();
             RenderPermissionGroups();
@@ -216,8 +217,61 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         {
             if (_selectedRole == null || IsAdmin(_selectedRole)) return;
 
-            if (e.IsChecked) _workingSet.Add(e.Permission);
+            if (e.IsChecked)
+            {
+                _workingSet.Add(e.Permission);
+                foreach (AppPermission sibling in GetSiblingTierPermissions(e.Permission))
+                    _workingSet.Remove(sibling);
+                RenderPermissionGroups();
+            }
             else _workingSet.Remove(e.Permission);
+        }
+
+        private static IEnumerable<AppPermission> GetSiblingTierPermissions(AppPermission permission)
+        {
+            foreach (PermissionGroupLayout group in PermissionDisplayLayout.Groups())
+            {
+                foreach (ResourcePermissionLayoutEntry resource in group.Entries.OfType<ResourcePermissionLayoutEntry>())
+                {
+                    if (!resource.Resource.Tiers.Any(tier => tier.Permission == permission))
+                        continue;
+
+                    return resource.Resource.Tiers
+                        .Where(tier => tier.Permission != permission)
+                        .Select(tier => tier.Permission)
+                        .ToList();
+                }
+            }
+
+            return Enumerable.Empty<AppPermission>();
+        }
+
+        private static void NormalizeResourcePermissions(HashSet<AppPermission> permissions)
+        {
+            foreach (PermissionGroupLayout group in PermissionDisplayLayout.Groups())
+            {
+                foreach (ResourcePermissionLayoutEntry resource in group.Entries.OfType<ResourcePermissionLayoutEntry>())
+                {
+                    PermissionResourceTierLayout selectedTier = null;
+                    foreach (PermissionResourceTierLayout tier in resource.Resource.Tiers)
+                    {
+                        if (!permissions.Contains(tier.Permission))
+                            continue;
+
+                        selectedTier = tier;
+                        break;
+                    }
+
+                    if (selectedTier == null)
+                        continue;
+
+                    foreach (PermissionResourceTierLayout tier in resource.Resource.Tiers)
+                    {
+                        if (tier.Permission != selectedTier.Permission)
+                            permissions.Remove(tier.Permission);
+                    }
+                }
+            }
         }
 
         // ==================== Hành động ====================

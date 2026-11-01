@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
+using Newtonsoft.Json;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.Services.Session;
 
 namespace SIMS_WinFormsApp.Repositories.Implementations
 {
@@ -135,6 +138,31 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         command.Parameters.Add("@ReceiptID", SqlDbType.Int).Value = receiptId;
                         command.ExecuteNonQuery();
                     }
+
+                    WriteAuditLog(
+                        connection,
+                        transaction,
+                        receipt.CreatedBy,
+                        "DATA_CREATE",
+                        "PurchaseReceipts",
+                        receiptId,
+                        null,
+                        JsonConvert.SerializeObject(new
+                        {
+                            ReceiptCode = receiptCode,
+                            receipt.SupplierId,
+                            TotalAmount = receipt.Lines.Sum(line => line.Quantity * line.ImportPrice),
+                            Lines = receipt.Lines.Select(line => new
+                            {
+                                line.ProductId,
+                                line.Quantity,
+                                line.ImportPrice,
+                                line.LotNumber,
+                                line.ManufactureDate,
+                                line.ExpiryDate
+                            }).ToList()
+                        }),
+                        "Đã tạo phiếu nhập " + receiptCode + ".");
 
                     transaction.Commit();
                     return receiptId;
@@ -404,12 +432,32 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             const string sql = @"
                 UPDATE StockAlerts
                 SET Status = 'PLANNED'
+                OUTPUT DELETED.Status, INSERTED.Status
                 WHERE AlertID = @id AND Status = 'NEW'";
             using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var transaction = connection.BeginTransaction())
+            using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
-                return command.ExecuteNonQuery();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        transaction.Commit();
+                        return 0;
+                    }
+                    string oldStatus = reader.GetString(0);
+                    string newStatus = reader.GetString(1);
+                    reader.Close();
+                    WriteAuditLog(
+                        connection, transaction, UserSession.Instance.CurrentUser?.UserId,
+                        "DATA_UPDATE", "StockAlerts", alertId,
+                        JsonConvert.SerializeObject(new { Status = oldStatus }),
+                        JsonConvert.SerializeObject(new { Status = newStatus }),
+                        "Đã chuyển cảnh báo tồn kho sang trạng thái dự kiến.");
+                    transaction.Commit();
+                    return 1;
+                }
             }
         }
 
@@ -418,13 +466,33 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             const string sql = @"
                 UPDATE StockAlerts
                 SET Status = 'RESOLVED', ResolvedBy = @userId, ResolvedAt = GETDATE()
+                OUTPUT DELETED.Status, INSERTED.Status
                 WHERE AlertID = @id AND Status <> 'RESOLVED'";
             using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (var transaction = connection.BeginTransaction())
+            using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
                 command.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
-                return command.ExecuteNonQuery();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        transaction.Commit();
+                        return 0;
+                    }
+                    string oldStatus = reader.GetString(0);
+                    string newStatus = reader.GetString(1);
+                    reader.Close();
+                    WriteAuditLog(
+                        connection, transaction, userId,
+                        "DATA_UPDATE", "StockAlerts", alertId,
+                        JsonConvert.SerializeObject(new { Status = oldStatus }),
+                        JsonConvert.SerializeObject(new { Status = newStatus }),
+                        "Đã xử lý cảnh báo tồn kho.");
+                    transaction.Commit();
+                    return 1;
+                }
             }
         }
 
@@ -466,6 +534,22 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                                 (object)count.Note ?? DBNull.Value;
                             command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = createdBy;
                             command.ExecuteNonQuery();
+                            WriteAuditLog(
+                                connection,
+                                transaction,
+                                createdBy,
+                                "DATA_CREATE",
+                                "StockReconciliation",
+                                null,
+                                null,
+                                JsonConvert.SerializeObject(new
+                                {
+                                    count.ProductId,
+                                    count.SystemStock,
+                                    count.ActualStock,
+                                    count.Note
+                                }),
+                                "Đã tạo bản ghi kiểm kê tồn kho.");
                         }
                     }
 
@@ -484,6 +568,33 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             var connection = _connections.CreateConnection();
             connection.Open();
             return connection;
+        }
+
+        private static void WriteAuditLog(
+            SqlConnection connection,
+            SqlTransaction transaction,
+            int? userId,
+            string action,
+            string tableName,
+            int? recordId,
+            string oldValue,
+            string newValue,
+            string detail)
+        {
+            const string sql = @"
+                INSERT INTO AuditLogs (UserID, Action, TableName, RecordID, OldValue, NewValue, Detail, CreatedAt)
+                VALUES (@UserID, @Action, @TableName, @RecordID, @OldValue, @NewValue, @Detail, GETDATE())";
+            using (var command = new SqlCommand(sql, connection, transaction))
+            {
+                command.Parameters.Add("@UserID", SqlDbType.Int).Value = (object)userId ?? DBNull.Value;
+                command.Parameters.Add("@Action", SqlDbType.VarChar, 50).Value = action;
+                command.Parameters.Add("@TableName", SqlDbType.VarChar, 50).Value = tableName;
+                command.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object)recordId ?? DBNull.Value;
+                command.Parameters.Add("@OldValue", SqlDbType.NVarChar, -1).Value = (object)oldValue ?? DBNull.Value;
+                command.Parameters.Add("@NewValue", SqlDbType.NVarChar, -1).Value = (object)newValue ?? DBNull.Value;
+                command.Parameters.Add("@Detail", SqlDbType.NVarChar, -1).Value = (object)detail ?? DBNull.Value;
+                command.ExecuteNonQuery();
+            }
         }
 
         private IReadOnlyList<LookupItem> ReadLookup(string sql)

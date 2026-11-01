@@ -13,6 +13,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private FlowLayoutPanel _toolbar;
         private TextBox _searchTextBox;
         private ComboBox _statusComboBox;
+        private ComboBox _categoryComboBox;
         private Button _addButton;
         private Button _optionsButton;
         private DataGridView _productsGrid;
@@ -49,6 +50,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _toolbar = new FlowLayoutPanel();
             _searchTextBox = new TextBox();
             _statusComboBox = new ComboBox();
+            _categoryComboBox = new ComboBox();
             _addButton = new Button();
             _optionsButton = new Button();
             _productsGrid = new DataGridView();
@@ -107,7 +109,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _subtitleLabel.Location = new Point(2, 52);
             _subtitleLabel.Text = "Danh sách sản phẩm, giá bán, tồn kho và trạng thái";
             _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _statusComboBox, _addButton, _optionsButton
+                _searchTextBox, _statusComboBox, _categoryComboBox, _addButton, _optionsButton
             });
             _toolbar.AutoSize = true;
             _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -127,6 +129,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _statusComboBox.Name = "_statusComboBox";
             _statusComboBox.SelectedIndex = 0;
             _statusComboBox.Size = new Size(170, 36);
+            _categoryComboBox.Font = new Font("Segoe UI", 10F);
+            _categoryComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            _categoryComboBox.Margin = new Padding(8, 3, 0, 3);
+            _categoryComboBox.Name = "_categoryComboBox";
+            _categoryComboBox.Size = new Size(170, 36);
+            _categoryComboBox.AccessibleName = "Lọc theo danh mục";
             _addButton.BackColor = Color.FromArgb(37, 99, 235);
             _addButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
             _addButton.FlatAppearance.BorderSize = 0;
