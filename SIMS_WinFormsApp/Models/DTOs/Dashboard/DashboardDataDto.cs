@@ -7,6 +7,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
     {
         public bool IsSalesStaffDashboard { get; set; }
         public decimal RevenueToday { get; set; }
+        public decimal RevenueSelectedPeriod { get; set; }
         public long OrdersToday { get; set; }
         public decimal RevenueLast7Days { get; set; }
         public long OrdersLast7Days { get; set; }
