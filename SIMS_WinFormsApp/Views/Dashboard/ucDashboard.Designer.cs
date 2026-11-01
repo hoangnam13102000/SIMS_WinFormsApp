@@ -327,6 +327,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityGrid.ReadOnly = true;
             this._activityGrid.RowHeadersVisible = false;
             this._activityGrid.RowHeadersWidth = 62;
+            this._activityGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this._activityGrid.Size = new System.Drawing.Size(1905, 781);
             this._activityGrid.TabIndex = 0;
             // 

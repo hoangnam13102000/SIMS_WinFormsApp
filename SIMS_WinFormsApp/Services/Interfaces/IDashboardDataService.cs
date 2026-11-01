@@ -1,3 +1,4 @@
+using System;
 using SIMS_WinFormsApp.Models.DTOs.Dashboard;
 
 namespace SIMS_WinFormsApp.Services.Interfaces
@@ -6,5 +7,6 @@ namespace SIMS_WinFormsApp.Services.Interfaces
     {
         DashboardDataDto GetDashboardData();
         DashboardDataDto GetSalesStaffDashboardData(int userId);
+        DashboardDataDto GetSalesStaffDashboardData(int userId, DateTime invoicePeriodStart, DateTime invoicePeriodEnd);
     }
 }
