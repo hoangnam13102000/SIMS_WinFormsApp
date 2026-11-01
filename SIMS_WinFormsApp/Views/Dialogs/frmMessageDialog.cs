@@ -39,6 +39,15 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             Text = title ?? string.Empty;
             lblTitle.Text = title ?? string.Empty;
             lblMessage.Text = message ?? string.Empty;
+            Size messageSize = TextRenderer.MeasureText(
+                lblMessage.Text,
+                lblMessage.Font,
+                new Size(lblMessage.Width, int.MaxValue),
+                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
+            lblMessage.Height = Math.Max(58, messageSize.Height + 8);
+            ClientSize = new Size(
+                ClientSize.Width,
+                88 + lblMessage.Height + 18 + pnlFooter.Height);
             lblIcon.Text = iconText ?? string.Empty;
             pnlIcon.BackColor = Color.FromArgb(
                 (accentColor.R + 4 * 255) / 5,

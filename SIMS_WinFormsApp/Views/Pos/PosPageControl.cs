@@ -266,6 +266,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _heldCartsButton.Enabled = !isBusy;
         }
 
+        public void SetHeldCartCount(int count)
+        {
+            _heldCartsButton.Text = "Giỏ đã giữ (" + Math.Max(0, count) + ")";
+        }
+
         public HeldCartDto PromptPickHeldCart(IReadOnlyList<HeldCartDto> heldCarts)
         {
             var list = heldCarts ?? Array.Empty<HeldCartDto>();

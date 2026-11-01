@@ -17,7 +17,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
-        public CustomerLookupDto FindByPhoneOrCode(string keyword)
+        public CustomerLookupDto FindCustomer(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
                 return null;
@@ -28,7 +28,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 var row = (from customer in db.Customers
                            join user in db.Users on customer.CustomerID equals user.UserID
                            where user.Status == "ACTIVE" && !user.IsDeleted
-                               && (user.Phone == normalizedKeyword || customer.CustomerCode == normalizedKeyword)
+                               && (user.Phone == normalizedKeyword
+                                   || customer.CustomerCode == normalizedKeyword
+                                   || user.FullName == normalizedKeyword
+                                   || user.FullName.Contains(normalizedKeyword))
                            orderby customer.CustomerID
                            select new { customer.CustomerID, user.FullName, user.Phone, customer.MemberPoint })
                            .FirstOrDefault();

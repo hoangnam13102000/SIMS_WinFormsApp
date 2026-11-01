@@ -70,9 +70,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         return;
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                _view.ShowError(Lang.Get("login.error.configMissing"));
+                string detail = exception.GetBaseException().Message;
+                _view.ShowError(
+                    Lang.Get("login.error.configMissing") +
+                    Environment.NewLine +
+                    detail);
             }
             finally
             {
