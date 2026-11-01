@@ -42,6 +42,37 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         public decimal Revenue { get; set; }
     }
 
+    public sealed class StockDisposalReportData
+    {
+        public int DisposalCount { get; set; }
+        public long ProductQuantity { get; set; }
+        public decimal TotalLoss { get; set; }
+        public List<StockDisposalReasonTotal> Reasons { get; } = new List<StockDisposalReasonTotal>();
+        public List<StockDisposalProductTotal> Products { get; } = new List<StockDisposalProductTotal>();
+    }
+
+    public sealed class StockDisposalReasonTotal
+    {
+        public string Reason { get; set; }
+        public int DisposalCount { get; set; }
+        public long ProductQuantity { get; set; }
+        public decimal LossAmount { get; set; }
+    }
+
+    public sealed class StockDisposalProductTotal
+    {
+        public string Name { get; set; }
+        public long Quantity { get; set; }
+        public decimal LossAmount { get; set; }
+    }
+
+    public sealed class FinancialReportSignatories
+    {
+        public string BusinessName { get; set; }
+        public string DirectorName { get; set; }
+        public string InventoryManagerName { get; set; }
+    }
+
     public sealed class RevenueReportService
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -58,6 +89,46 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                 DateTime? latest = db.Invoices.Where(i => i.Status == "ACTIVE")
                     .Select(i => (DateTime?)i.CreatedAt).Max();
                 return latest.HasValue ? latest.Value.Date : (DateTime?)null;
+            }
+        }
+
+        public FinancialReportSignatories GetFinancialReportSignatories()
+        {
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
+            {
+                string businessName = db.StoreConfigs
+                    .Where(config => config.ConfigKey == "STORE_NAME")
+                    .Select(config => config.ConfigValue)
+                    .FirstOrDefault();
+                string directorName = (from user in db.Users
+                                      join role in db.Roles on user.RoleID equals role.RoleID
+                                      where role.RoleCode == "ADMIN"
+                                          && !user.IsDeleted
+                                          && !user.IsLocked
+                                          && user.Status == "ACTIVE"
+                                      orderby user.UserID
+                                      select user.FullName).FirstOrDefault();
+                string inventoryManagerName = (from user in db.Users
+                                               join role in db.Roles on user.RoleID equals role.RoleID
+                                               where role.RoleCode == "INVENTORY_MANAGER"
+                                                   && !user.IsDeleted
+                                                   && !user.IsLocked
+                                                   && user.Status == "ACTIVE"
+                                               orderby user.UserID
+                                               select user.FullName).FirstOrDefault();
+
+                return new FinancialReportSignatories
+                {
+                    BusinessName = string.IsNullOrWhiteSpace(businessName)
+                        ? "Chưa cấu hình tên cửa hàng / đơn vị"
+                        : businessName.Trim(),
+                    DirectorName = string.IsNullOrWhiteSpace(directorName)
+                        ? "Chưa phân công"
+                        : directorName.Trim(),
+                    InventoryManagerName = string.IsNullOrWhiteSpace(inventoryManagerName)
+                        ? "Chưa phân công"
+                        : inventoryManagerName.Trim()
+                };
             }
         }
 
@@ -171,6 +242,80 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                         Quantity = row.Quantity,
                         Revenue = row.Revenue
                     });
+                return report;
+            }
+        }
+
+        public StockDisposalReportData GetStockDisposalReport(DateTime fromDate, DateTime toDate)
+        {
+            if (fromDate.Date > toDate.Date)
+                throw new ArgumentException("Ngày bắt đầu không được sau ngày kết thúc.");
+
+            DateTime from = fromDate.Date;
+            DateTime toExclusive = toDate.Date.AddDays(1);
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
+            {
+                var disposals = db.StockDisposals.Where(item => item.Status == "COMPLETED"
+                    && item.CreatedAt >= from && item.CreatedAt < toExclusive);
+                var report = new StockDisposalReportData
+                {
+                    DisposalCount = disposals.Count(),
+                    TotalLoss = disposals.Select(item => (decimal?)item.TotalLossAmount).Sum() ?? 0m
+                };
+
+                report.ProductQuantity = (from disposal in disposals
+                                          join detail in db.StockDisposalDetails
+                                              on disposal.DisposalID equals detail.DisposalID
+                                          select (long?)detail.Quantity).Sum() ?? 0L;
+
+                var reasonTotals = disposals.GroupBy(item => item.Reason)
+                    .Select(group => new
+                    {
+                        Reason = group.Key,
+                        DisposalCount = group.Count(),
+                        LossAmount = group.Sum(item => item.TotalLossAmount)
+                    })
+                    .ToList();
+                var reasonQuantities = (from disposal in disposals
+                                        join detail in db.StockDisposalDetails
+                                            on disposal.DisposalID equals detail.DisposalID
+                                        group detail by disposal.Reason into reasonGroup
+                                        select new
+                                        {
+                                            Reason = reasonGroup.Key,
+                                            ProductQuantity = reasonGroup.Sum(item => item.Quantity)
+                                        })
+                    .ToList()
+                    .ToDictionary(item => item.Reason, item => item.ProductQuantity);
+                foreach (var row in reasonTotals.OrderByDescending(item => item.LossAmount))
+                    report.Reasons.Add(new StockDisposalReasonTotal
+                    {
+                        Reason = row.Reason,
+                        DisposalCount = row.DisposalCount,
+                        ProductQuantity = reasonQuantities.TryGetValue(row.Reason, out int quantity) ? quantity : 0,
+                        LossAmount = row.LossAmount
+                    });
+
+                var productRows = (from disposal in disposals
+                                   join detail in db.StockDisposalDetails
+                                       on disposal.DisposalID equals detail.DisposalID
+                                   join product in db.Products on detail.ProductID equals product.ProductID
+                                   group detail by product.ProductName into productGroup
+                                   orderby productGroup.Sum(item => item.LineLossAmount) descending
+                                   select new
+                                   {
+                                       Name = productGroup.Key,
+                                       Quantity = productGroup.Sum(item => item.Quantity),
+                                       LossAmount = productGroup.Sum(item => item.LineLossAmount)
+                                   }).Take(10).ToList();
+                foreach (var row in productRows)
+                    report.Products.Add(new StockDisposalProductTotal
+                    {
+                        Name = row.Name,
+                        Quantity = row.Quantity,
+                        LossAmount = row.LossAmount
+                    });
+
                 return report;
             }
         }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Dashboard;
+using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Mapping;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Services.Interfaces;
@@ -21,6 +22,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
     {
         private readonly DashboardPresenter _presenter;
         private Chart _revenueSummaryChart;
+        private Label _chartTitleLabel;
         private bool _isLoading;
         private bool _hasLoaded;
 
@@ -33,6 +35,12 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         }
 
         public ucDashboard(string displayName, IDashboardDataService dataService)
+            : this(displayName, string.Empty, 0, dataService)
+        {
+        }
+
+        public ucDashboard(
+            string displayName, string roleCode, int currentUserId, IDashboardDataService dataService = null)
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
@@ -49,6 +57,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _presenter = new DashboardPresenter(
                 this,
                 displayName,
+                roleCode,
+                currentUserId,
                 dataService ?? AppComposition.CreateDashboardDataService());
             Load += Dashboard_Load;
             VisibleChanged += Dashboard_VisibleChanged;
@@ -63,22 +73,54 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         public void ShowDashboardData(DashboardDataDto data)
         {
             if (data == null) throw new System.ArgumentNullException(nameof(data));
+            if (data.Metrics.Count != 4)
+                throw new InvalidOperationException("Dashboard phải có đúng 4 chỉ số.");
 
             CultureInfo vietnamese = CultureInfo.GetCultureInfo("vi-VN");
-            _revenueValue.Text = data.RevenueToday.ToString("N0", vietnamese) + " VNĐ";
-            _ordersValue.Text = data.OrdersToday.ToString("N0", vietnamese);
-            _stockValue.Text = data.StockQuantity.ToString("N0", vietnamese);
-            _customersValue.Text = data.CustomerCount.ToString("N0", vietnamese);
+            Label[] captions = { _revenueCaption, _ordersCaption, _stockCaption, _customersCaption };
+            Label[] values = { _revenueValue, _ordersValue, _stockValue, _customersValue };
+            for (int i = 0; i < data.Metrics.Count; i++)
+            {
+                DashboardMetricDto metric = data.Metrics[i];
+                captions[i].Text = metric.Caption;
+                values[i].Text = metric.Value.ToString("N0", vietnamese)
+                    + (metric.IsCurrency ? " VNĐ" : string.Empty);
+            }
 
-            Series revenueSeries = _revenueSummaryChart.Series["Doanh thu"];
-            revenueSeries.Points.Clear();
-            foreach (DashboardRevenuePointDto point in data.RevenueTrend)
+            _titleLabel.Text = data.Kind == DashboardKind.Inventory
+                ? "Tổng quan kho hàng"
+                : data.Kind == DashboardKind.SalesManagement ? "Tổng quan quản lý bán hàng"
+                : data.Kind == DashboardKind.Sales ? "Tổng quan bán hàng" : "Tổng quan";
+            _chartTitleLabel.Text = data.ChartTitle;
+            _revenueSummaryChart.Series[0].Name = data.SeriesTitle;
+            _revenueSummaryChart.Series[0].LegendText = data.SeriesTitle;
+
+            Series chartSeries = _revenueSummaryChart.Series[0];
+            chartSeries.Points.Clear();
+            foreach (DashboardChartPointDto point in data.ChartPoints)
             {
                 string label = point.Date.ToString("dd/MM", vietnamese);
-                int pointIndex = revenueSeries.Points.AddXY(label, point.Revenue);
-                revenueSeries.Points[pointIndex].ToolTip =
+                int pointIndex = chartSeries.Points.AddXY(label, point.Value);
+                chartSeries.Points[pointIndex].ToolTip =
                     point.Date.ToString("dd/MM/yyyy", vietnamese) + ": "
-                    + point.Revenue.ToString("N0", vietnamese) + " VNĐ";
+                    + point.Value.ToString("N0", vietnamese)
+                    + (data.Kind == DashboardKind.Inventory ? " sản phẩm" : " VNĐ");
+            }
+
+            bool showActivities = data.Kind == DashboardKind.Overview;
+            _activityCard.Visible = showActivities;
+            _contentLayout.RowCount = showActivities ? 3 : 2;
+            _contentLayout.RowStyles.Clear();
+            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 128F));
+            if (showActivities)
+            {
+                _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 260F));
+                _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+                _contentLayout.SetRow(_activityCard, 2);
+            }
+            else
+            {
+                _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             }
 
             _activityGrid.Rows.Clear();
@@ -127,7 +169,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
-            var chartTitle = new Label
+            _chartTitleLabel = new Label
             {
                 AutoSize = true,
                 Dock = DockStyle.Fill,
@@ -166,7 +208,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             });
             _revenueSummaryChart.Series["Doanh thu"]["PointWidth"] = "0.55";
 
-            chartLayout.Controls.Add(chartTitle, 0, 0);
+            chartLayout.Controls.Add(_chartTitleLabel, 0, 0);
             chartLayout.Controls.Add(_revenueSummaryChart, 0, 1);
             chartPanel.Controls.Add(chartLayout);
             _contentLayout.Controls.Add(chartPanel, 0, 1);
@@ -175,7 +217,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private void PopulateRevenueChartDesignPreview()
         {
             decimal[] sampleRevenue = { 4200000m, 6100000m, 3800000m, 7500000m, 5600000m, 9200000m, 6800000m };
-            Series revenueSeries = _revenueSummaryChart.Series["Doanh thu"];
+            Series revenueSeries = _revenueSummaryChart.Series[0];
 
             for (int day = 0; day < sampleRevenue.Length; day++)
             {

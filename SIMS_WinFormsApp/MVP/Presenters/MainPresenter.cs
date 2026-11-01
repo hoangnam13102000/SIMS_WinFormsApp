@@ -237,7 +237,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             {
                 layout.AddSection(Lang.Get("sidebar.section.overview"));
                 layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
-                    new ucDashboard(_getDisplayName()), IconChar.House);
+                    new ucDashboard(
+                        _getDisplayName(),
+                        UserSession.Instance.CurrentUser?.RoleCode,
+                        UserSession.Instance.CurrentUser?.UserId ?? 0), IconChar.House);
             }
 
             if (HasAnyPermission(permissions,

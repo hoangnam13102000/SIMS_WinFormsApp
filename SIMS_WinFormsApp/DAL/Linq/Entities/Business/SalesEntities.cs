@@ -67,6 +67,17 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities.Business
         [Column] public decimal UnitPrice { get; set; }
     }
 
+    [Table(Name = "InventoryTransactions")]
+    public class InventoryTransactionEntity
+    {
+        [Column(IsPrimaryKey = true, IsDbGenerated = true)] public long TransactionID { get; set; }
+        [Column] public int ProductID { get; set; }
+        [Column] public string TransactionType { get; set; }
+        [Column] public string Direction { get; set; }
+        [Column] public int Quantity { get; set; }
+        [Column] public DateTime CreatedAt { get; set; }
+    }
+
     [Table(Name = "Promotions")]
     public class PromotionEntity
     {

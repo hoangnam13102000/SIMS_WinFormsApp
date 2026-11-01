@@ -53,6 +53,27 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities.Business
         [Column] public string Status { get; set; }
     }
 
+    [Table(Name = "StockDisposals")]
+    public class StockDisposalEntity
+    {
+        [Column(IsPrimaryKey = true, IsDbGenerated = true)] public int DisposalID { get; set; }
+        [Column] public string Reason { get; set; }
+        [Column] public string Status { get; set; }
+        [Column] public decimal TotalLossAmount { get; set; }
+        [Column] public DateTime CreatedAt { get; set; }
+    }
+
+    [Table(Name = "StockDisposalDetails")]
+    public class StockDisposalDetailEntity
+    {
+        [Column(IsPrimaryKey = true, IsDbGenerated = true)] public int DisposalDetailID { get; set; }
+        [Column] public int DisposalID { get; set; }
+        [Column] public int ProductID { get; set; }
+        [Column] public int Quantity { get; set; }
+        [Column] public decimal UnitCost { get; set; }
+        [Column] public decimal LineLossAmount { get; set; }
+    }
+
     [Table(Name = "Suppliers")]
     public class SupplierEntity
     {

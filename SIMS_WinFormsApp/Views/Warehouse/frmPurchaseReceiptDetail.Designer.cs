@@ -61,7 +61,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._productCountLabel = new System.Windows.Forms.Label();
             this._grid = new System.Windows.Forms.DataGridView();
             this.ProductCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ProductNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BatchCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LotNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ManufactureDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -455,7 +455,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProductCode,
-            this.ProductName,
+            this.ProductNameColumn,
             this.BatchCode,
             this.LotNumber,
             this.ManufactureDate,
@@ -501,19 +501,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.ProductCode.Name = "ProductCode";
             this.ProductCode.ReadOnly = true;
             // 
-            // ProductName
+            // ProductNameColumn
             // 
-            this.ProductName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ProductNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(64)))), ((int)(((byte)(175)))));
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ProductName.DefaultCellStyle = dataGridViewCellStyle3;
-            this.ProductName.FillWeight = 20F;
-            this.ProductName.HeaderText = "Sản phẩm";
-            this.ProductName.MinimumWidth = 130;
-            this.ProductName.Name = "ProductName";
-            this.ProductName.ReadOnly = true;
+            this.ProductNameColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.ProductNameColumn.FillWeight = 20F;
+            this.ProductNameColumn.HeaderText = "Sản phẩm";
+            this.ProductNameColumn.MinimumWidth = 130;
+            this.ProductNameColumn.Name = "ProductName";
+            this.ProductNameColumn.ReadOnly = true;
             // 
             // BatchCode
             // 
@@ -908,17 +908,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private FlowLayoutPanel _totalPanel;
         private Label _totalCaptionLabel;
         private Label _totalValueLabel;
-        private DataGridViewTextBoxColumn _productCodeColumn;
-        private DataGridViewTextBoxColumn _productNameColumn;
-        private DataGridViewTextBoxColumn _batchCodeColumn;
-        private DataGridViewTextBoxColumn _lotNumberColumn;
-        private DataGridViewTextBoxColumn _manufactureDateColumn;
-        private DataGridViewTextBoxColumn _expiryDateColumn;
-        private DataGridViewTextBoxColumn _quantityColumn;
-        private DataGridViewTextBoxColumn _importPriceColumn;
-        private DataGridViewTextBoxColumn _amountColumn;
         private DataGridViewTextBoxColumn ProductCode;
-        private DataGridViewTextBoxColumn ProductName;
+        private DataGridViewTextBoxColumn ProductNameColumn;
         private DataGridViewTextBoxColumn BatchCode;
         private DataGridViewTextBoxColumn LotNumber;
         private DataGridViewTextBoxColumn ManufactureDate;

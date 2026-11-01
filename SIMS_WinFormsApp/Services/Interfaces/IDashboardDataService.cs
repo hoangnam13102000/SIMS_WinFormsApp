@@ -4,6 +4,6 @@ namespace SIMS_WinFormsApp.Services.Interfaces
 {
     public interface IDashboardDataService
     {
-        DashboardDataDto GetDashboardData();
+        DashboardDataDto GetDashboardData(string roleCode, int currentUserId);
     }
 }
