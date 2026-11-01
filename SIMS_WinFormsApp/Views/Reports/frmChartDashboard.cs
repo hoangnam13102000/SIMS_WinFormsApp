@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using SIMS_WinFormsApp.Infrastructure.Composition;
@@ -48,7 +49,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             {
                 RevenueReportPeriod period = (RevenueReportPeriod)_periodFilter.SelectedIndex;
                 RevenueReportData revenue = _reportService.GetReport(from, to, period);
-                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to);
+                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to, period);
                 FinancialReportSignatories signatories = _reportService.GetFinancialReportSignatories();
                 string path = FinancialReportPdfExporter.Save(
                     this,
@@ -127,7 +128,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             area.AxisX.LineColor = Color.FromArgb(226, 232, 240);
             area.AxisY.LabelStyle.ForeColor = Color.FromArgb(100, 116, 139);
             area.AxisY.LabelStyle.Format = "N0";
-            area.AxisY.Title = "Doanh thu (₫)";
+            area.AxisY.Title = "Doanh thu / thiệt hại (₫)";
             area.AxisY.TitleForeColor = Color.FromArgb(100, 116, 139);
             area.AxisY.MajorGrid.LineColor = Color.FromArgb(226, 232, 240);
             area.AxisY.LineColor = Color.Transparent;
@@ -159,7 +160,20 @@ namespace SIMS_WinFormsApp.Views.Reports
                 IsValueShownAsLabel = false,
                 ToolTip = "#VALX: #VAL{N0} ₫"
             });
-            _revenueTrendChart.Series["Doanh thu"]["PointWidth"] = "0.6";
+            _revenueTrendChart.Series["Doanh thu"]["PointWidth"] = "0.4";
+
+            _revenueTrendChart.Series.Add(new Series("Thiệt hại")
+            {
+                ChartArea = area.Name,
+                ChartType = SeriesChartType.Column,
+                Color = Color.FromArgb(239, 68, 68),
+                BorderColor = Color.FromArgb(220, 38, 38),
+                BorderWidth = 1,
+                Legend = _revenueTrendChart.Legends[0].Name,
+                IsValueShownAsLabel = false,
+                ToolTip = "#VALX: #VAL{N0} ₫"
+            });
+            _revenueTrendChart.Series["Thiệt hại"]["PointWidth"] = "0.4";
 
             _revenueTrendChart.Series.Add(new Series("Số đơn")
             {
@@ -255,7 +269,9 @@ namespace SIMS_WinFormsApp.Views.Reports
                     _toDate.Value.Date,
                     (RevenueReportPeriod)_periodFilter.SelectedIndex);
                 StockDisposalReportData disposal = _reportService.GetStockDisposalReport(
-                    _fromDate.Value.Date, _toDate.Value.Date);
+                    _fromDate.Value.Date,
+                    _toDate.Value.Date,
+                    (RevenueReportPeriod)_periodFilter.SelectedIndex);
                 RenderReport(report, disposal);
             }
             catch (SqlException exception)
@@ -279,31 +295,48 @@ namespace SIMS_WinFormsApp.Views.Reports
                 + disposal.ProductQuantity.ToString("N0") + " sản phẩm";
 
             _revenueChartTitle.Text = GetTrendTitle((RevenueReportPeriod)_periodFilter.SelectedIndex);
-            UpdateTrendChart(report);
+            UpdateTrendChart(report, disposal);
             UpdateCategoryChart(report);
             UpdateTopProducts(report);
         }
 
-        private void UpdateTrendChart(RevenueReportData report)
+        private void UpdateTrendChart(RevenueReportData report, StockDisposalReportData disposal)
         {
             var revenueSeries = _revenueTrendChart.Series["Doanh thu"];
+            var lossSeries = _revenueTrendChart.Series["Thiệt hại"];
             var orderSeries = _revenueTrendChart.Series["Số đơn"];
             revenueSeries.Points.Clear();
+            lossSeries.Points.Clear();
             orderSeries.Points.Clear();
 
-            foreach (RevenueTrendPoint point in report.Trend)
+            var revenueByPeriod = report.Trend.ToDictionary(point => point.PeriodStart);
+            var lossByPeriod = disposal.Trend.ToDictionary(point => point.PeriodStart);
+            DateTime[] periods = report.Trend.Select(point => point.PeriodStart)
+                .Concat(disposal.Trend.Select(point => point.PeriodStart))
+                .Distinct()
+                .OrderBy(period => period)
+                .ToArray();
+
+            foreach (DateTime periodStart in periods)
             {
-                string label = FormatPeriod(point.PeriodStart, (RevenueReportPeriod)_periodFilter.SelectedIndex);
-                int revenueIndex = revenueSeries.Points.AddXY(label, point.Revenue);
-                revenueSeries.Points[revenueIndex].ToolTip = label + ": " + point.Revenue.ToString("N0") + " ₫";
-                int orderIndex = orderSeries.Points.AddXY(label, point.OrderCount);
-                orderSeries.Points[orderIndex].ToolTip = label + ": " + point.OrderCount.ToString("N0") + " đơn";
+                revenueByPeriod.TryGetValue(periodStart, out RevenueTrendPoint revenue);
+                lossByPeriod.TryGetValue(periodStart, out StockDisposalTrendPoint loss);
+                string label = FormatPeriod(periodStart, (RevenueReportPeriod)_periodFilter.SelectedIndex);
+                decimal revenueAmount = revenue == null ? 0m : revenue.Revenue;
+                decimal lossAmount = loss == null ? 0m : loss.LossAmount;
+                int revenueIndex = revenueSeries.Points.AddXY(label, revenueAmount);
+                revenueSeries.Points[revenueIndex].ToolTip = label + ": " + revenueAmount.ToString("N0") + " ₫";
+                int lossIndex = lossSeries.Points.AddXY(label, lossAmount);
+                lossSeries.Points[lossIndex].ToolTip = label + ": " + lossAmount.ToString("N0") + " ₫ thiệt hại";
+                int orderIndex = orderSeries.Points.AddXY(label, revenue == null ? 0 : revenue.OrderCount);
+                orderSeries.Points[orderIndex].ToolTip = label + ": "
+                    + (revenue == null ? 0 : revenue.OrderCount).ToString("N0") + " đơn";
             }
 
             _revenueTrendChart.Titles.Clear();
-            if (report.Trend.Count == 0)
+            if (periods.Length == 0)
             {
-                _revenueTrendChart.Titles.Add(new Title("Không có hóa đơn trong khoảng thời gian này")
+                _revenueTrendChart.Titles.Add(new Title("Không có doanh thu hoặc thiệt hại trong khoảng thời gian này")
                 {
                     Font = new Font("Segoe UI", 9F),
                     ForeColor = Color.FromArgb(100, 116, 139)
@@ -361,11 +394,11 @@ namespace SIMS_WinFormsApp.Views.Reports
             switch (period)
             {
                 case RevenueReportPeriod.Month:
-                    return "Doanh thu và số đơn theo tháng";
+                    return "Doanh thu, thiệt hại và số đơn theo tháng";
                 case RevenueReportPeriod.Quarter:
-                    return "Doanh thu và số đơn theo quý";
+                    return "Doanh thu, thiệt hại và số đơn theo quý";
                 default:
-                    return "Doanh thu và số đơn theo ngày";
+                    return "Doanh thu, thiệt hại và số đơn theo ngày";
             }
         }
 

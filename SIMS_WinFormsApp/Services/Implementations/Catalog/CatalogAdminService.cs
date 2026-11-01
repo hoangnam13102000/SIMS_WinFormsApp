@@ -19,9 +19,9 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
             _images = images ?? throw new ArgumentNullException(nameof(images));
         }
 
-        public CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status)
+        public CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status, int? categoryId)
         {
-            var page = _repository.GetProducts(pageIndex, pageSize, keyword, status);
+            var page = _repository.GetProducts(pageIndex, pageSize, keyword, status, categoryId);
             foreach (var row in page.Rows)
                 row.ImagePath = _images.Resolve(row.ImagePath);
             return page;
@@ -75,6 +75,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
         }
 
         public IReadOnlyList<LookupItem> GetCategoryOptions() => _repository.GetActiveCategories();
+        public IReadOnlyList<LookupItem> GetAllCategoryOptions() => _repository.GetAllCategories();
         public IReadOnlyList<LookupItem> GetSupplierOptions() => _repository.GetActiveSuppliers();
 
         public CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status) =>

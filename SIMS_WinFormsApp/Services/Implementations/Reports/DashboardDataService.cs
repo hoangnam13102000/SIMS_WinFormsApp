@@ -113,7 +113,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     && data.Kind != DashboardKind.Inventory)
                 {
                     LoadRevenuePeriodTrend(
-                        db, data, revenuePeriodStart.Value, revenuePeriodEnd.Value);
+                        db, data, currentUserId, revenuePeriodStart.Value, revenuePeriodEnd.Value);
                 }
             }
 
@@ -121,11 +121,17 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         }
 
         private static void LoadRevenuePeriodTrend(
-            SimsDataContext db, DashboardDataDto data, DateTime periodStart, DateTime periodEnd)
+            SimsDataContext db,
+            DashboardDataDto data,
+            int currentUserId,
+            DateTime periodStart,
+            DateTime periodEnd)
         {
             ValidatePeriod(periodStart, periodEnd, nameof(periodEnd));
             var invoices = db.Invoices.Where(invoice => invoice.Status == "ACTIVE"
                 && invoice.CreatedAt >= periodStart && invoice.CreatedAt < periodEnd);
+            if (data.Kind == DashboardKind.Sales)
+                invoices = invoices.Where(invoice => invoice.CreatedBy == currentUserId);
             data.ChartPoints.Clear();
 
             if (periodEnd - periodStart > TimeSpan.FromDays(31))
@@ -168,7 +174,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                 }
             }
 
-            data.ChartTitle = "Doanh thu " + periodStart.ToString("dd/MM/yyyy")
+            data.ChartTitle = (data.Kind == DashboardKind.Sales ? "Doanh thu của bạn " : "Doanh thu ")
+                + periodStart.ToString("dd/MM/yyyy")
                 + " - " + periodEnd.AddDays(-1).ToString("dd/MM/yyyy");
         }
 
@@ -276,17 +283,29 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             data.SeriesTitle = "Sản phẩm nhập";
 
             int lowStockProducts = db.Products.Count(p => p.Status == "ACTIVE" && p.Stock <= p.MinStock);
-            long expiredUnits = db.InventoryBatches.Where(b => b.Status != "DEPLETED"
-                    && b.RemainingQty > 0 && b.ExpiryDate.HasValue && b.ExpiryDate.Value < today)
-                .Select(b => (long?)b.RemainingQty).Sum() ?? 0L;
-            int batchesNearExpiry = db.InventoryBatches.Count(b => b.Status == "ACTIVE"
-                && b.RemainingQty > 0 && b.ExpiryDate.HasValue
-                && b.ExpiryDate.Value >= today && b.ExpiryDate.Value < today.AddDays(31));
-            long totalStock = db.Products.Select(p => (long?)p.Stock).Sum() ?? 0L;
+            long expiredUnits = (from batch in db.InventoryBatches
+                                 join product in db.Products on batch.ProductID equals product.ProductID
+                                 where product.Status == "ACTIVE" && batch.Status != "DEPLETED"
+                                     && batch.RemainingQty > 0 && batch.ExpiryDate.HasValue
+                                     && batch.ExpiryDate.Value < today
+                                 select (long?)batch.RemainingQty).Sum() ?? 0L;
+            int batchesNearExpiry = (from batch in db.InventoryBatches
+                                     join product in db.Products on batch.ProductID equals product.ProductID
+                                     where product.Status == "ACTIVE" && batch.Status == "ACTIVE"
+                                         && batch.RemainingQty > 0 && batch.ExpiryDate.HasValue
+                                         && batch.ExpiryDate.Value >= today
+                                         && batch.ExpiryDate.Value < today.AddDays(31)
+                                     select batch.BatchID).Count();
+            long sellableUnits = (from batch in db.InventoryBatches
+                                  join product in db.Products on batch.ProductID equals product.ProductID
+                                  where product.Status == "ACTIVE" && batch.Status == "ACTIVE"
+                                      && batch.RemainingQty > 0
+                                      && (!batch.ExpiryDate.HasValue || batch.ExpiryDate.Value >= today)
+                                  select (long?)batch.RemainingQty).Sum() ?? 0L;
             AddMetric(data, "Sản phẩm cần bổ sung", lowStockProducts);
-            AddMetric(data, "Số lượng đã hết hạn", expiredUnits);
+            AddMetric(data, "Hết hạn chờ xử lý (SP)", expiredUnits);
             AddMetric(data, "Lô sắp hết hạn (30 ngày)", batchesNearExpiry);
-            AddMetric(data, "Tổng tồn kho", totalStock);
+            AddMetric(data, "Tồn có thể bán (SP)", sellableUnits);
 
             var imports = db.InventoryTransactions.Where(t => t.TransactionType == "IMPORT"
                     && t.CreatedAt >= firstTrendDate && t.CreatedAt < tomorrow)

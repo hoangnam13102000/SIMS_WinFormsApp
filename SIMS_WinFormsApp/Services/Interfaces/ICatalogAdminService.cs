@@ -5,11 +5,12 @@ namespace SIMS_WinFormsApp.Services.Interfaces
 {
     public interface ICatalogAdminService
     {
-        CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status);
+        CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status, int? categoryId);
         ProductEditDto GetProduct(int productId);
         CatalogSaveResult SaveProduct(ProductEditDto dto);
         CatalogSaveResult SetProductActive(int productId, bool active);
         IReadOnlyList<LookupItem> GetCategoryOptions();
+        IReadOnlyList<LookupItem> GetAllCategoryOptions();
         IReadOnlyList<LookupItem> GetSupplierOptions();
 
         CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status);

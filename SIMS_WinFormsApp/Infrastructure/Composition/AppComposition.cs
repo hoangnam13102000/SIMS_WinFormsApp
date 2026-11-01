@@ -137,6 +137,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new InventoryReportService(CreateConnectionFactory());
         }
 
+        public static ExpiryBatchManagementService CreateExpiryBatchManagementService()
+        {
+            return new ExpiryBatchManagementService(CreateConnectionFactory());
+        }
+
         public static IDashboardDataService CreateDashboardDataService()
         {
             return new DashboardDataService(CreateConnectionFactory());

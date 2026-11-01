@@ -23,6 +23,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
     {
         private readonly ProductManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
+        private readonly bool _canEditProducts;
+        private readonly bool _canManageProducts;
         private readonly Timer _searchTimer;
         private readonly ContextMenuStrip _optionsMenu;
         private readonly LocalProductImageStore _imageStore = new LocalProductImageStore();
@@ -30,19 +32,30 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
+        private bool _isBindingCategoryFilter;
+        private bool _categoryFilterLoaded;
 
         public ucProductManagement() : this(null)
         {
         }
 
         public ucProductManagement(ICatalogAdminService service)
+            : this(service, true, true)
+        {
+        }
+
+        public ucProductManagement(ICatalogAdminService service, bool canEditProducts, bool canManageProducts)
         {
             InitializeComponent();
+            _canEditProducts = canEditProducts || canManageProducts;
+            _canManageProducts = canManageProducts;
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
-            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
+            if (_canManageProducts)
+                _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+            _addButton.Visible = _canManageProducts;
             if (service == null) return;
 
             _service = service;
@@ -51,6 +64,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _searchTimer.Tick += (sender, args) =>
             {
                 _searchTimer.Stop();
+                _pageIndex = 0;
+                LoadPage();
+            };
+            _categoryComboBox.SelectedIndexChanged += (sender, args) =>
+            {
+                if (_isBindingCategoryFilter) return;
                 _pageIndex = 0;
                 LoadPage();
             };
@@ -102,10 +121,17 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _productsGrid.Rows.Clear();
             try
             {
+                if (!_categoryFilterLoaded)
+                    LoadCategoryFilterOptions();
+
                 string filter = _statusComboBox.SelectedIndex == 1
                     ? "ACTIVE"
                     : (_statusComboBox.SelectedIndex == 2 ? "DISABLED" : null);
-                _presenter.Load(_pageIndex, _pageSize, _searchTextBox.Text, filter);
+                LookupItem selectedCategory = _categoryComboBox.SelectedItem as LookupItem;
+                int? categoryId = selectedCategory == null || selectedCategory.Id == 0
+                    ? (int?)null
+                    : selectedCategory.Id;
+                _presenter.Load(_pageIndex, _pageSize, _searchTextBox.Text, filter, categoryId);
                 _totalCount = _presenter.TotalCount;
 
                 if (_pageIndex >= PageCount)
@@ -127,9 +153,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
                         CatalogFormat.Money(row.SellPrice),
                         row.Stock,
                         CatalogFormat.Status(row.IsActive),
-                        IconBitmapCache.GetActionStrip(
-                            row.IsActive ? IconChar.CircleXmark : IconChar.CircleCheck,
-                            row.IsActive ? AppColors.Error : AppColors.Success));
+                        _canEditProducts
+                            ? IconBitmapCache.GetActionStrip(
+                                row.IsActive ? IconChar.CircleXmark : IconChar.CircleCheck,
+                                row.IsActive ? AppColors.Error : AppColors.Success)
+                            : IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)));
                     if (imageUnavailable)
                         _productsGrid.Rows[rowIndex].Cells[_imageColumn.Index].ToolTipText =
                             "Không tìm thấy hoặc không thể đọc ảnh sản phẩm.";
@@ -140,6 +168,29 @@ namespace SIMS_WinFormsApp.Views.Catalog
             catch (Exception ex)
             {
                 DialogHelper.ShowError(this, "Lỗi tải dữ liệu", "Không thể tải sản phẩm: " + ex.Message);
+            }
+        }
+
+        private void LoadCategoryFilterOptions()
+        {
+            var options = new List<LookupItem>
+            {
+                new LookupItem { Id = 0, Name = "Tất cả danh mục" }
+            };
+            options.AddRange(_presenter.CategoryFilterOptions());
+
+            _isBindingCategoryFilter = true;
+            try
+            {
+                _categoryComboBox.DisplayMember = nameof(LookupItem.Name);
+                _categoryComboBox.ValueMember = nameof(LookupItem.Id);
+                _categoryComboBox.DataSource = options;
+                _categoryComboBox.SelectedValue = 0;
+                _categoryFilterLoaded = true;
+            }
+            finally
+            {
+                _isBindingCategoryFilter = false;
             }
         }
 
@@ -211,6 +262,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (e.ColumnIndex != _actionsColumn.Index) return;
 
             ProductRowDto row = _presenter.CurrentRows[e.RowIndex];
+            if (!_canEditProducts)
+            {
+                EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
+                return;
+            }
+
             const int iconSize = 24;
             const int gap = 8;
             int stripWidth = iconSize * 3 + gap * 2;
@@ -224,6 +281,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 EditProduct(_presenter.Get(row.ProductId), false, row.CategoryName);
             else
             {
+                if (!_canEditProducts) return;
                 bool activate = !row.IsActive;
                 string action = activate ? "mở bán lại" : "ngừng bán";
                 if (!DialogHelper.Confirm(this, "Xác nhận thao tác",

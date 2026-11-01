@@ -27,6 +27,9 @@ namespace SIMS_WinFormsApp.Models.Mapping
             ["PASSWORD_CHANGE"] = "audit.action.passwordChange",
             ["ROLE_PERMISSION_GRANT"] = "audit.action.rolePermissionGrant",
             ["ROLE_PERMISSION_REVOKE"] = "audit.action.rolePermissionRevoke",
+            ["DATA_CREATE"] = "audit.action.dataCreate",
+            ["DATA_UPDATE"] = "audit.action.dataUpdate",
+            ["DATA_DELETE"] = "audit.action.dataDelete",
             ["SYSTEM_ERROR"] = "audit.action.systemError",
         };
 
@@ -36,9 +39,24 @@ namespace SIMS_WinFormsApp.Models.Mapping
             ["Roles"] = "audit.table.roles",
             ["RolePermissions"] = "audit.table.rolePermissions",
             ["Invoices"] = "audit.table.invoices",
+            ["InvoiceDetails"] = "audit.table.invoiceDetails",
             ["Products"] = "audit.table.products",
+            ["Categories"] = "audit.table.categories",
             ["Customers"] = "audit.table.customers",
             ["Employees"] = "audit.table.employees",
+            ["Suppliers"] = "audit.table.suppliers",
+            ["SupplierProducts"] = "audit.table.supplierProducts",
+            ["InventoryBatch"] = "audit.table.inventoryBatches",
+            ["InventoryTransactions"] = "audit.table.inventoryTransactions",
+            ["StockDisposals"] = "audit.table.stockDisposals",
+            ["StockDisposalDetails"] = "audit.table.stockDisposalDetails",
+            ["ReturnExchanges"] = "audit.table.returnExchanges",
+            ["ReturnExchangeDetails"] = "audit.table.returnExchangeDetails",
+            ["Promotions"] = "audit.table.promotions",
+            ["StoreConfig"] = "audit.table.storeConfig",
+            ["PurchaseReceipts"] = "audit.table.purchaseReceipts",
+            ["StockReconciliation"] = "audit.table.stockReconciliation",
+            ["StockAlerts"] = "audit.table.stockAlerts",
         };
 
         public static bool IsIncident(string action)

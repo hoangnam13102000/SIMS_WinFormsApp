@@ -18,7 +18,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             _connections = connections ?? throw new ArgumentNullException(nameof(connections));
         }
 
-        public CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status)
+        public CatalogPage<ProductRowDto> GetProducts(int pageIndex, int pageSize, string keyword, string status, int? categoryId)
         {
             ValidatePage(pageIndex, pageSize);
             string term = (keyword ?? string.Empty).Trim();
@@ -31,9 +31,12 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                                 && (status == null || product.Status == status)
                             select new
                             {
-                                product.ProductID, product.ProductCode, product.ProductName,
+                                product.ProductID, product.CategoryID, product.ProductCode, product.ProductName,
                                 category.CategoryName, product.SellPrice, product.Stock, product.Status, product.ImageUrl
                             };
+                if (categoryId.HasValue)
+                    query = query.Where(row => row.CategoryID == categoryId.Value);
+
                 int count = query.Count();
                 var rows = query.OrderBy(row => row.ProductName).Skip(checked(pageIndex * pageSize)).Take(pageSize)
                     .ToList().Select(row => new ProductRowDto
@@ -182,6 +185,13 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
         {
             using (var db = _connections.CreateDataContext())
                 return db.Categories.Where(c => c.Status == "ACTIVE").OrderBy(c => c.CategoryName)
+                    .Select(c => new LookupItem { Id = c.CategoryID, Name = c.CategoryName }).ToList();
+        }
+
+        public IReadOnlyList<LookupItem> GetAllCategories()
+        {
+            using (var db = _connections.CreateDataContext())
+                return db.Categories.OrderBy(c => c.CategoryName)
                     .Select(c => new LookupItem { Id = c.CategoryID, Name = c.CategoryName }).ToList();
         }
 

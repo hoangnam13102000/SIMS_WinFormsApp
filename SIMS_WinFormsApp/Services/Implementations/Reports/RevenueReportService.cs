@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Reports
@@ -49,6 +50,13 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         public decimal TotalLoss { get; set; }
         public List<StockDisposalReasonTotal> Reasons { get; } = new List<StockDisposalReasonTotal>();
         public List<StockDisposalProductTotal> Products { get; } = new List<StockDisposalProductTotal>();
+        public List<StockDisposalTrendPoint> Trend { get; } = new List<StockDisposalTrendPoint>();
+    }
+
+    public sealed class StockDisposalTrendPoint
+    {
+        public DateTime PeriodStart { get; set; }
+        public decimal LossAmount { get; set; }
     }
 
     public sealed class StockDisposalReasonTotal
@@ -246,10 +254,15 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             }
         }
 
-        public StockDisposalReportData GetStockDisposalReport(DateTime fromDate, DateTime toDate)
+        public StockDisposalReportData GetStockDisposalReport(
+            DateTime fromDate,
+            DateTime toDate,
+            RevenueReportPeriod period = RevenueReportPeriod.Week)
         {
             if (fromDate.Date > toDate.Date)
                 throw new ArgumentException("Ngày bắt đầu không được sau ngày kết thúc.");
+            if (!Enum.IsDefined(typeof(RevenueReportPeriod), period))
+                throw new ArgumentOutOfRangeException(nameof(period));
 
             DateTime from = fromDate.Date;
             DateTime toExclusive = toDate.Date.AddDays(1);
@@ -262,6 +275,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     DisposalCount = disposals.Count(),
                     TotalLoss = disposals.Select(item => (decimal?)item.TotalLossAmount).Sum() ?? 0m
                 };
+                AddDisposalTrend(report, disposals, from, toExclusive, period);
 
                 report.ProductQuantity = (from disposal in disposals
                                           join detail in db.StockDisposalDetails
@@ -318,6 +332,84 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
                 return report;
             }
+        }
+
+        private static void AddDisposalTrend(
+            StockDisposalReportData report,
+            IQueryable<StockDisposalEntity> disposals,
+            DateTime from,
+            DateTime toExclusive,
+            RevenueReportPeriod period)
+        {
+            var totals = new Dictionary<DateTime, decimal>();
+            if (period == RevenueReportPeriod.Week)
+            {
+                foreach (var row in disposals
+                    .GroupBy(item => item.CreatedAt.Date)
+                    .Select(group => new { PeriodStart = group.Key, LossAmount = group.Sum(item => item.TotalLossAmount) })
+                    .ToList())
+                    totals[row.PeriodStart.Date] = row.LossAmount;
+            }
+            else if (period == RevenueReportPeriod.Month)
+            {
+                foreach (var row in disposals
+                    .GroupBy(item => new { item.CreatedAt.Year, item.CreatedAt.Month })
+                    .Select(group => new
+                    {
+                        group.Key.Year,
+                        group.Key.Month,
+                        LossAmount = group.Sum(item => item.TotalLossAmount)
+                    })
+                    .ToList())
+                    totals[new DateTime(row.Year, row.Month, 1)] = row.LossAmount;
+            }
+            else
+            {
+                foreach (var row in disposals
+                    .GroupBy(item => new
+                    {
+                        item.CreatedAt.Year,
+                        Quarter = (item.CreatedAt.Month - 1) / 3
+                    })
+                    .Select(group => new
+                    {
+                        group.Key.Year,
+                        group.Key.Quarter,
+                        LossAmount = group.Sum(item => item.TotalLossAmount)
+                    })
+                    .ToList())
+                    totals[new DateTime(row.Year, row.Quarter * 3 + 1, 1)] = row.LossAmount;
+            }
+
+            for (DateTime bucketStart = GetPeriodStart(from, period);
+                bucketStart < toExclusive;
+                bucketStart = GetNextPeriodStart(bucketStart, period))
+            {
+                totals.TryGetValue(bucketStart, out decimal lossAmount);
+                report.Trend.Add(new StockDisposalTrendPoint
+                {
+                    PeriodStart = bucketStart,
+                    LossAmount = lossAmount
+                });
+            }
+        }
+
+        private static DateTime GetPeriodStart(DateTime date, RevenueReportPeriod period)
+        {
+            if (period == RevenueReportPeriod.Week)
+                return date.Date;
+            if (period == RevenueReportPeriod.Month)
+                return new DateTime(date.Year, date.Month, 1);
+            return new DateTime(date.Year, ((date.Month - 1) / 3) * 3 + 1, 1);
+        }
+
+        private static DateTime GetNextPeriodStart(DateTime date, RevenueReportPeriod period)
+        {
+            if (period == RevenueReportPeriod.Week)
+                return date.AddDays(1);
+            if (period == RevenueReportPeriod.Month)
+                return date.AddMonths(1);
+            return date.AddMonths(3);
         }
     }
 }
