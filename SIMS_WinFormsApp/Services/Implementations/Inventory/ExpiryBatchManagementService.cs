@@ -19,7 +19,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
             _connections = connections ?? throw new ArgumentNullException(nameof(connections));
         }
 
-        public IReadOnlyList<ExpiryBatchDto> GetExpiryBatches(string keyword, ExpiryBatchFilter filter)
+        public IReadOnlyList<ExpiryBatchDto> GetExpiryBatches(
+            string keyword, ExpiryBatchFilter filter, int? productId = null)
         {
             if (!Enum.IsDefined(typeof(ExpiryBatchFilter), filter))
                 throw new ArgumentOutOfRangeException(nameof(filter));
@@ -30,8 +31,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                 FROM InventoryBatch b
                 INNER JOIN Products p ON p.ProductID = b.ProductID
                 INNER JOIN Suppliers s ON s.SupplierID = b.SupplierID
-                WHERE b.ExpiryDate IS NOT NULL
+                WHERE b.Status = 'ACTIVE'
+                    AND b.ExpiryDate IS NOT NULL
                     AND b.RemainingQty > 0
+                    AND (@ProductID IS NULL OR b.ProductID = @ProductID)
                     AND (@Filter = 0
                         OR (@Filter = 1 AND b.ExpiryDate >= CONVERT(date, GETDATE())
                             AND b.ExpiryDate < DATEADD(day, 31, CONVERT(date, GETDATE())))
@@ -46,6 +49,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
             using (var command = new SqlCommand(sql, connection))
             {
                 command.Parameters.Add("@Filter", SqlDbType.Int).Value = (int)filter;
+                command.Parameters.Add("@ProductID", SqlDbType.Int).Value =
+                    productId.HasValue ? (object)productId.Value : DBNull.Value;
                 command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 200).Value = normalizedKeyword;
                 command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 402).Value =
                     "%" + normalizedKeyword + "%";
@@ -70,6 +75,46 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                     }
 
                     return rows;
+                }
+            }
+        }
+
+        public ExpiryBatchDto GetExpiryBatch(int batchId)
+        {
+            if (batchId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(batchId));
+
+            const string sql = @"
+                SELECT b.BatchID, b.ProductID, b.BatchCode, p.ProductCode, p.ProductName, b.LotNumber,
+                       s.SupplierName, b.ExpiryDate, b.RemainingQty, b.ImportPrice
+                FROM InventoryBatch b
+                INNER JOIN Products p ON p.ProductID = b.ProductID
+                INNER JOIN Suppliers s ON s.SupplierID = b.SupplierID
+                WHERE b.BatchID = @BatchID AND b.Status = 'ACTIVE'
+                    AND b.ExpiryDate IS NOT NULL AND b.RemainingQty > 0";
+
+            using (SqlConnection connection = _connections.CreateConnection())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@BatchID", SqlDbType.Int).Value = batchId;
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (!reader.Read())
+                        return null;
+                    return new ExpiryBatchDto
+                    {
+                        BatchId = reader.GetInt32(0),
+                        ProductId = reader.GetInt32(1),
+                        BatchCode = reader.GetString(2),
+                        ProductCode = reader.GetString(3),
+                        ProductName = reader.GetString(4),
+                        LotNumber = reader.IsDBNull(5) ? "-" : reader.GetString(5),
+                        SupplierName = reader.GetString(6),
+                        ExpiryDate = reader.GetDateTime(7),
+                        RemainingQuantity = reader.GetInt32(8),
+                        UnitCost = reader.GetDecimal(9)
+                    };
                 }
             }
         }

@@ -118,6 +118,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     .Where(batch => batch.ProductID == line.ProductId && batch.Status == "ACTIVE"
                         && (!batch.ExpiryDate.HasValue || batch.ExpiryDate.Value >= today))
                     .Select(batch => (int?)batch.RemainingQty).Sum() ?? 0;
+                available = Math.Max(0, Math.Min(product.Stock, available));
                 if (product.SellPrice != line.UnitPrice)
                     throw new InvalidOperationException(
                         "Giá sản phẩm đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");

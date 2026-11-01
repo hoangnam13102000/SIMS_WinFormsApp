@@ -15,6 +15,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         public decimal Subtotal => _linesByProductId.Values.Sum(l => l.LineTotal);
 
+        public int GetQuantity(int productId)
+        {
+            return _linesByProductId.TryGetValue(productId, out CartLineDto line)
+                ? line.Quantity
+                : 0;
+        }
+
         public void AddOrIncrement(int productId, string productName, decimal unitPrice, int quantity = 1)
         {
             if (quantity <= 0) return;

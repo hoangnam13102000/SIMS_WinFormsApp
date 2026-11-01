@@ -11,10 +11,17 @@ namespace SIMS_WinFormsApp.Models.DTOs.Pos
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public int StockQuantity { get; set; }
+        public int BatchStockQuantity { get; set; }
+        public int SellableQuantity { get; set; }
+        public int ExpiredQuantity { get; set; }
+        public int AvailableToAddQuantity { get; set; }
+        public int StockBatchDifference => StockQuantity - BatchStockQuantity;
         public string ImagePath { get; set; }
 
         public Color TileColor { get; set; }
 
-        public bool IsOutOfStock => StockQuantity <= 0;
+        public bool IsOutOfStock => SellableQuantity <= 0;
+        public bool IsCartQuantityLimitReached =>
+            SellableQuantity > 0 && AvailableToAddQuantity <= 0;
     }
 }

@@ -5,6 +5,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Inventory
     public sealed class ExpiryBatchDto
     {
         public int BatchId { get; set; }
+        public int ProductId { get; set; }
         public string BatchCode { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }

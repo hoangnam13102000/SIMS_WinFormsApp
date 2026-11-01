@@ -45,13 +45,16 @@ namespace SIMS_WinFormsApp.Models.DTOs.Sales
         public string Status { get; set; }
     }
 
-    internal sealed class NotificationDto
+    public sealed class NotificationDto
     {
-        public int NotificationId { get; set; }
+        public string NotificationId { get; set; }
+        public string Kind { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsRead { get; set; }
+        public string TargetPageKey { get; set; }
+        public int? TargetUserId { get; set; }
     }
 
 }

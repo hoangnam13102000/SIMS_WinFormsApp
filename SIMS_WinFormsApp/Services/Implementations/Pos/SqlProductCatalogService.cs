@@ -57,14 +57,37 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                             select new
                             {
                                 product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
-                                category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                                category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl,
+                                BatchStockQuantity = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0)
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0,
+                                SellableQuantity = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0
+                                        && (!batch.ExpiryDate.HasValue
+                                            || batch.ExpiryDate.Value >= DateTime.Today))
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0,
+                                ExpiredQuantity = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0
+                                        && batch.ExpiryDate.HasValue
+                                        && batch.ExpiryDate.Value < DateTime.Today)
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0
                             };
                 if (categoryId.HasValue)
                     query = query.Where(row => row.CategoryID == categoryId.Value);
 
                 return query.ToList().Select(row => MapProduct(
                     row.ProductID, row.ProductCode, row.ProductName, row.CategoryID, row.CategoryName,
-                    row.SellPrice, row.Stock, row.ImageUrl)).ToList();
+                    row.SellPrice, row.Stock, row.BatchStockQuantity,
+                    row.SellableQuantity, row.ExpiredQuantity, row.ImageUrl)).ToList();
             }
         }
 
@@ -79,10 +102,33 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                            select new
                            {
                                product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
-                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl,
+                               BatchStockQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0)
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0,
+                               SellableQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0
+                                       && (!batch.ExpiryDate.HasValue
+                                           || batch.ExpiryDate.Value >= DateTime.Today))
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0,
+                               ExpiredQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0
+                                       && batch.ExpiryDate.HasValue
+                                       && batch.ExpiryDate.Value < DateTime.Today)
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0
                            }).FirstOrDefault();
                 return row == null ? null : MapProduct(row.ProductID, row.ProductCode, row.ProductName,
-                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.ImageUrl);
+                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.BatchStockQuantity,
+                    row.SellableQuantity, row.ExpiredQuantity, row.ImageUrl);
             }
         }
 
@@ -99,16 +145,40 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                            select new
                            {
                                product.ProductID, product.ProductCode, product.ProductName, product.CategoryID,
-                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl
+                               category.CategoryName, product.SellPrice, product.Stock, product.ImageUrl,
+                               BatchStockQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0)
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0,
+                               SellableQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0
+                                       && (!batch.ExpiryDate.HasValue
+                                           || batch.ExpiryDate.Value >= DateTime.Today))
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0,
+                               ExpiredQuantity = db.InventoryBatches
+                                   .Where(batch => batch.ProductID == product.ProductID
+                                       && batch.Status == "ACTIVE"
+                                       && batch.RemainingQty > 0
+                                       && batch.ExpiryDate.HasValue
+                                       && batch.ExpiryDate.Value < DateTime.Today)
+                                   .Select(batch => (int?)batch.RemainingQty)
+                                   .Sum() ?? 0
                            }).FirstOrDefault();
                 return row == null ? null : MapProduct(row.ProductID, row.ProductCode, row.ProductName,
-                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.ImageUrl);
+                    row.CategoryID, row.CategoryName, row.SellPrice, row.Stock, row.BatchStockQuantity,
+                    row.SellableQuantity, row.ExpiredQuantity, row.ImageUrl);
             }
         }
 
         private ProductCatalogItemDto MapProduct(
             int productId, string code, string name, int categoryId, string categoryName,
-            decimal price, int stock, string imageUrl)
+            decimal price, int stock, int batchStockQuantity, int sellableQuantity,
+            int expiredQuantity, string imageUrl)
         {
             return new ProductCatalogItemDto
             {
@@ -119,6 +189,9 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 CategoryName = categoryName,
                 Price = price,
                 StockQuantity = stock,
+                BatchStockQuantity = batchStockQuantity,
+                SellableQuantity = Math.Max(0, Math.Min(stock, sellableQuantity)),
+                ExpiredQuantity = expiredQuantity,
                 ImagePath = _images.Resolve(imageUrl),
                 TileColor = TilePalette[Math.Abs(productId) % TilePalette.Length]
             };

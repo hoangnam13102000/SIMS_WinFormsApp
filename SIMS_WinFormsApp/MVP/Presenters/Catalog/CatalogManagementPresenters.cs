@@ -37,8 +37,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
                     row.Name,
                     row.CategoryName,
                     CatalogFormat.Money(row.SellPrice),
-                    row.Stock.ToString(CultureInfo.InvariantCulture),
-                    CatalogFormat.Status(row.IsActive)
+                    CatalogFormat.StockSummary(row),
+                    CatalogFormat.ProductStatus(row)
                 }).ToList()
             };
         }
@@ -57,7 +57,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
             return page.Rows.Select(row => new object[]
             {
                 row.Code, row.Name, row.CategoryName, CatalogFormat.Money(row.SellPrice),
-                row.Stock, CatalogFormat.Status(row.IsActive)
+                CatalogFormat.StockSummary(row), CatalogFormat.ProductStatus(row)
             }).Cast<object[]>().ToList();
         }
 
@@ -160,6 +160,30 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
     internal static class CatalogFormat
     {
         public static string Status(bool active) => active ? "Đang hoạt động" : "Vô hiệu hóa";
+
+        public static string StockSummary(ProductRowDto row) =>
+            "Tổng kho: " + row.Stock.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) +
+            Environment.NewLine + "Có thể bán: " +
+            row.SellableStock.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) +
+            (row.ExpiredStock > 0
+                ? Environment.NewLine + "Hết hạn theo lô: " +
+                  row.ExpiredStock.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                : string.Empty) +
+            (row.StockBatchDifference != 0
+                ? Environment.NewLine + "Cần đối soát lô: " +
+                  row.StockBatchDifference.ToString("+0;-0;0", CultureInfo.GetCultureInfo("vi-VN"))
+                : string.Empty);
+
+        public static string ProductStatus(ProductRowDto row)
+        {
+            if (!row.IsActive)
+                return Status(false);
+            if (row.StockBatchDifference != 0)
+                return "Đang hoạt động" + Environment.NewLine + "Tồn kho lệch với lô";
+            return row.SellableStock > 0
+                ? "Đang hoạt động" + Environment.NewLine + "Có hàng bán được"
+                : "Đang hoạt động" + Environment.NewLine + "Không có hàng đủ điều kiện bán";
+        }
 
         public static string Money(decimal value) =>
             value.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"));

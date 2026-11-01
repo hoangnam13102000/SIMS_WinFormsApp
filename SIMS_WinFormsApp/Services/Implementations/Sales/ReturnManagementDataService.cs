@@ -329,7 +329,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
 
                 return completedReturns.Select(item => new NotificationDto
                 {
-                    NotificationId = item.ReturnId,
+                    NotificationId = "return-result:" + item.ReturnId.ToString(CultureInfo.InvariantCulture),
+                    Kind = "RETURN_RESULT",
                     Title = item.Status == "APPROVED"
                         ? "Yêu cầu trả hàng đã được duyệt"
                         : "Yêu cầu trả hàng bị từ chối",
@@ -341,6 +342,46 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                             : " đã bị từ chối: " + item.RejectionReason),
                     CreatedAt = item.CreatedAt,
                     IsRead = false
+                }).ToList();
+            }
+        }
+
+        public List<NotificationDto> GetPendingReturnNotifications(int currentUserId)
+        {
+            using (var db = _connections.CreateDataContext())
+            {
+                var pendingRequests = (from request in db.ReturnExchanges
+                    join invoice in db.Invoices on request.InvoiceID equals invoice.InvoiceID
+                    join sender in db.Users on request.CreatedBy equals sender.UserID
+                    join role in db.Roles on sender.RoleID equals role.RoleID
+                    where request.CreatedBy != currentUserId
+                        && request.Type == "RETURN"
+                        && request.Status == "PENDING"
+                        && request.RequiresApproval
+                        && role.RoleCode == "SALES_STAFF"
+                    orderby request.CreatedAt descending
+                    select new
+                    {
+                        request.ReturnID,
+                        invoice.InvoiceCode,
+                        sender.FullName,
+                        sender.Username,
+                        request.CreatedAt
+                    })
+                    .Take(20)
+                    .ToList();
+
+                return pendingRequests.Select(item => new NotificationDto
+                {
+                    NotificationId = "return-pending:" + item.ReturnID.ToString(CultureInfo.InvariantCulture),
+                    Kind = "RETURN_PENDING",
+                    Title = "Yêu cầu hoàn trả cần duyệt",
+                    Message = (string.IsNullOrWhiteSpace(item.FullName) ? item.Username : item.FullName) +
+                        " gửi yêu cầu trả hàng TR-" +
+                        item.ReturnID.ToString("D6", CultureInfo.InvariantCulture) +
+                        " cho hóa đơn " + item.InvoiceCode + ".",
+                    CreatedAt = item.CreatedAt,
+                    TargetPageKey = "returns"
                 }).ToList();
             }
         }

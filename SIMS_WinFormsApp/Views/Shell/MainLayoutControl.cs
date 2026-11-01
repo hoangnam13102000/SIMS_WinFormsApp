@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure;
@@ -26,7 +27,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         private readonly Dictionary<string, string> _pageLabels =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly List<TreeNode> _sectionNodes = new List<TreeNode>();
-        private readonly List<ToolStripMenuItem> _notificationItems = new List<ToolStripMenuItem>();
+        private readonly List<ToolStripControlHost> _notificationItems = new List<ToolStripControlHost>();
         private readonly ToolTip _sidebarToolTip;
         private TreeNode _currentSection;
         private string _currentPageKey;
@@ -37,7 +38,9 @@ namespace SIMS_WinFormsApp.Views.Shell
         private int _expandedSidebarWidth = 240;
         private ToolStripMenuItem _accountNameMenuItem;
         private ToolStripMenuItem _accountEmailMenuItem;
+        private ToolStripMenuItem _notificationsClearItem;
         private SettingsQuickPopup _settingsPopup;
+        private System.Media.SoundPlayer _notificationSoundPlayer;
 
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
@@ -48,7 +51,9 @@ namespace SIMS_WinFormsApp.Views.Shell
         public event EventHandler ProfileRequested;
         public event EventHandler<string> PageChanged;
         public event EventHandler AiChatRequested;
-        public event EventHandler<int> NotificationReadRequested;
+        public event Action<NotificationDto> NotificationReadRequested;
+        public event Action<string> NotificationDeleteRequested;
+        public event Action<IReadOnlyList<string>> NotificationsClearRequested;
 
         public MainLayoutControl() : this("Cửa hàng thực phẩm sạch")
         {
@@ -57,6 +62,10 @@ namespace SIMS_WinFormsApp.Views.Shell
         public MainLayoutControl(string headerSubtitle)
         {
             InitializeComponent();
+            string notificationSoundPath = Path.Combine(
+                Application.StartupPath, "Resources", "Media", "doorbell.wav");
+            _notificationSoundPlayer = new System.Media.SoundPlayer(notificationSoundPath);
+            _notificationSoundPlayer.Load();
             ConfigureFloatingButtons();
             _settingsButton.BringToFront();
             _chatbotButton.BringToFront();
@@ -69,11 +78,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _navigationTree.NodeMouseClick += NavigationTree_NodeMouseClick;
             _notificationsButton.Click += (sender, args) =>
                 _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
-            _notificationsContextMenu.ItemClicked += (sender, args) =>
-            {
-                if (args.ClickedItem.Tag is int)
-                    NotificationReadRequested?.Invoke(this, (int)args.ClickedItem.Tag);
-            };
+            ConfigureNotificationActions();
             _avatarControl.Click += (sender, args) => ShowAccountMenu();
             _userNameLabel.Click += (sender, args) => ShowAccountMenu();
             _userEmailLabel.Click += (sender, args) => ShowAccountMenu();
@@ -106,6 +111,34 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             ConfigureFloatingButton(_chatbotButton, IconChar.Robot);
             ConfigureFloatingButton(_settingsButton, IconChar.Gear);
+        }
+
+        private void ConfigureNotificationActions()
+        {
+            _notificationsClearItem = new ToolStripMenuItem("Xóa tất cả")
+            {
+                Image = IconBitmapCache.Get(IconChar.Trash, AppColors.Error, new Size(16, 16)),
+                Visible = false,
+                Enabled = false
+            };
+            _notificationsClearItem.Click += (sender, args) =>
+                NotificationsClearRequested?.Invoke(GetVisibleNotificationIds());
+            _notificationsContextMenu.Items.Insert(
+                _notificationsContextMenu.Items.IndexOf(_notificationsEmptyMenuItem),
+                _notificationsClearItem);
+        }
+
+        private IReadOnlyList<string> GetVisibleNotificationIds()
+        {
+            var ids = new List<string>();
+            foreach (ToolStripControlHost host in _notificationItems)
+            {
+                NotificationDropdownRow row = host.Control as NotificationDropdownRow;
+                if (row != null)
+                    ids.Add(row.Notification.NotificationId);
+            }
+
+            return ids;
         }
 
         private void ConfigureFloatingButton(IconButton button, IconChar icon)
@@ -432,7 +465,7 @@ namespace SIMS_WinFormsApp.Views.Shell
 
         internal void SetNotifications(IReadOnlyList<NotificationDto> notifications, int unreadCount)
         {
-            foreach (ToolStripMenuItem item in _notificationItems)
+            foreach (ToolStripControlHost item in _notificationItems)
             {
                 _notificationsContextMenu.Items.Remove(item);
                 item.Dispose();
@@ -440,26 +473,25 @@ namespace SIMS_WinFormsApp.Views.Shell
             _notificationItems.Clear();
 
             _notificationsEmptyMenuItem.Visible = notifications == null || notifications.Count == 0;
+            _notificationsClearItem.Visible = notifications != null && notifications.Count > 0;
+            _notificationsClearItem.Enabled = _notificationsClearItem.Visible;
             if (notifications != null)
             {
                 int insertIndex = _notificationsContextMenu.Items.IndexOf(_notificationsEmptyMenuItem);
                 foreach (NotificationDto notification in notifications)
                 {
-                    string marker = notification.IsRead ? string.Empty : "● ";
-                    var item = new ToolStripMenuItem(
-                        marker + notification.Title + Environment.NewLine +
-                        notification.Message + Environment.NewLine +
-                        "Ngày yêu cầu: " + notification.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
-                    item.Tag = notification.NotificationId;
-                    item.AutoSize = false;
-                    item.Size = new Size(360, 72);
-                    item.Padding = new Padding(8, 4, 8, 4);
-                    item.TextAlign = ContentAlignment.MiddleLeft;
-                    item.Font = notification.IsRead
-                        ? NotificationReadFont
-                        : NotificationUnreadFont;
-                    _notificationItems.Add(item);
-                    _notificationsContextMenu.Items.Insert(insertIndex++, item);
+                    var row = new NotificationDropdownRow(notification);
+                    row.OpenRequested += item => NotificationReadRequested?.Invoke(item);
+                    row.DeleteRequested += item => NotificationDeleteRequested?.Invoke(item.NotificationId);
+                    var host = new ToolStripControlHost(row)
+                    {
+                        AutoSize = false,
+                        Size = row.Size,
+                        Margin = Padding.Empty,
+                        Padding = Padding.Empty
+                    };
+                    _notificationItems.Add(host);
+                    _notificationsContextMenu.Items.Insert(insertIndex++, host);
                 }
             }
 
@@ -470,6 +502,115 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             if (_notificationsEnabled)
                 AppToast.Info(this, title, message);
+        }
+
+        public void NotifyNewNotification(string title, string message)
+        {
+            if (!_notificationsEnabled)
+                return;
+
+            _notificationSoundPlayer.Play();
+            AppToast.Info(this, title, message);
+        }
+
+        private static string GetNotificationKindLabel(string kind)
+        {
+            switch (kind)
+            {
+                case "CHAT_MESSAGE":
+                    return "Tin nhắn mới";
+                case "RETURN_PENDING":
+                    return "Hoàn trả cần duyệt";
+                case "RETURN_RESULT":
+                    return "Kết quả hoàn trả";
+                default:
+                    return "Thông báo";
+            }
+        }
+
+        private sealed class NotificationDropdownRow : UserControl
+        {
+            private readonly Label _title;
+            private readonly Label _message;
+            private readonly Label _details;
+            private readonly IconButton _deleteButton;
+
+            public NotificationDto Notification { get; }
+            public event Action<NotificationDto> OpenRequested;
+            public event Action<NotificationDto> DeleteRequested;
+
+            public NotificationDropdownRow(NotificationDto notification)
+            {
+                Notification = notification ?? throw new ArgumentNullException(nameof(notification));
+                Size = new Size(400, 82);
+                BackColor = AppColors.White;
+                Margin = Padding.Empty;
+                Cursor = Cursors.Hand;
+
+                _title = new Label
+                {
+                    AutoEllipsis = true,
+                    Font = notification.IsRead ? NotificationReadFont : NotificationUnreadFont,
+                    ForeColor = AppColors.TextTitle,
+                    Location = new Point(10, 5),
+                    Size = new Size(344, 20),
+                    Text = (notification.IsRead ? string.Empty : "● ") + notification.Title
+                };
+                _message = new Label
+                {
+                    AutoEllipsis = true,
+                    Font = NotificationReadFont,
+                    ForeColor = AppColors.TextPrimary,
+                    Location = new Point(10, 26),
+                    Size = new Size(344, 30),
+                    Text = notification.Message
+                };
+                _details = new Label
+                {
+                    AutoEllipsis = true,
+                    Font = NotificationReadFont,
+                    ForeColor = AppColors.TextMuted,
+                    Location = new Point(10, 57),
+                    Size = new Size(344, 18),
+                    Text = GetNotificationKindLabel(notification.Kind) + " • " +
+                        notification.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                };
+                _deleteButton = new IconButton
+                {
+                    AccessibleName = "Xóa thông báo",
+                    BackColor = AppColors.White,
+                    Cursor = Cursors.Hand,
+                    FlatStyle = FlatStyle.Flat,
+                    ForeColor = AppColors.Error,
+                    IconChar = IconChar.Trash,
+                    IconColor = AppColors.Error,
+                    IconFont = IconFont.Solid,
+                    IconSize = 16,
+                    Location = new Point(360, 25),
+                    Size = new Size(32, 32),
+                    TabStop = true,
+                    Text = string.Empty,
+                    UseVisualStyleBackColor = false
+                };
+                _deleteButton.FlatAppearance.BorderSize = 0;
+                _deleteButton.Click += (sender, args) => DeleteRequested?.Invoke(Notification);
+                Controls.AddRange(new Control[] { _title, _message, _details, _deleteButton });
+
+                Click += OnOpenRequested;
+                _title.Click += OnOpenRequested;
+                _message.Click += OnOpenRequested;
+                _details.Click += OnOpenRequested;
+                ToolTip tooltip = new ToolTip();
+                tooltip.SetToolTip(_title, notification.Title);
+                tooltip.SetToolTip(_message, notification.Message);
+                tooltip.SetToolTip(_deleteButton, "Xóa thông báo");
+                Disposed += (sender, args) => tooltip.Dispose();
+            }
+
+            private void OnOpenRequested(object sender, EventArgs e)
+            {
+                OpenRequested?.Invoke(Notification);
+            }
         }
 
         public void SetSidebarCollapsed(bool collapsed)
@@ -524,13 +665,16 @@ namespace SIMS_WinFormsApp.Views.Shell
         public bool TryGetPage<T>(string key, out T page) where T : Control
         {
             page = null;
-            if (_pages.TryGetValue(key, out Control control) && control is T typed)
+            if (!_pages.TryGetValue(key, out Control control))
+                return false;
+
+            if (control is T typed)
             {
                 page = typed;
                 return true;
             }
 
-            return false;
+            return control is LazyPageHost lazyPage && lazyPage.TryGetPage(out page);
         }
 
         private string FormatPageLabel(string key)
@@ -741,6 +885,22 @@ namespace SIMS_WinFormsApp.Views.Shell
                     System.Diagnostics.Debug.WriteLine("[MainLayout] Page creation failed: " + ex);
                     ShowCreationError(ex);
                 }
+            }
+
+            public bool TryGetPage<T>(out T page) where T : Control
+            {
+                EnsurePageCreated();
+                page = null;
+                foreach (Control child in Controls)
+                {
+                    if (child is T typed)
+                    {
+                        page = typed;
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
             private void ShowCreationError(Exception exception)

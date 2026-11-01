@@ -412,6 +412,22 @@ CREATE TABLE StockReconciliation (
 );
 GO
 
+CREATE TABLE StockReconciliationBatchAdjustments (
+    ReconciliationBatchAdjustmentID INT IDENTITY(1,1) PRIMARY KEY,
+    ReconciliationID INT NOT NULL
+        FOREIGN KEY REFERENCES StockReconciliation(ReconciliationID),
+    BatchID INT NOT NULL FOREIGN KEY REFERENCES InventoryBatch(BatchID),
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    BatchStockBefore INT NOT NULL CHECK (BatchStockBefore >= 0),
+    BatchStockAfter INT NOT NULL CHECK (BatchStockAfter >= 0),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+CREATE INDEX IX_StockReconBatchAdjustments_Reconciliation
+    ON StockReconciliationBatchAdjustments(ReconciliationID);
+GO
+
 /* ============================================================
    X. CAU HINH HE THONG
    ============================================================ */

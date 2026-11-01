@@ -25,6 +25,7 @@ namespace SIMS_WinFormsApp.Views.Chat
 
         private readonly Dictionary<int, OnlineUserInfo> _onlineMap = new Dictionary<int, OnlineUserInfo>();
         private int _selectedPeerId;
+        private int _pendingPeerId;
         private bool _suppressSelectionEvent;
 
         // Chiều cao 1 dòng chữ đo thực tế theo font đang dùng (không đoán số px cứng),
@@ -117,6 +118,13 @@ namespace SIMS_WinFormsApp.Views.Chat
                 _userList.SelectedItem = toReselect;
                 _suppressSelectionEvent = false;
             }
+
+            if (_pendingPeerId > 0)
+            {
+                int pendingPeerId = _pendingPeerId;
+                _pendingPeerId = 0;
+                OpenConversation(pendingPeerId);
+            }
         }
 
         public void SetSelectedPeer(int userId, string displayName)
@@ -144,6 +152,20 @@ namespace SIMS_WinFormsApp.Views.Chat
         public void ClearMessages()
         {
             _messagesPanel.Controls.Clear();
+        }
+
+        public void OpenConversation(int userId)
+        {
+            foreach (UserListItem item in _userList.Items)
+            {
+                if (item.Info.UserId != userId)
+                    continue;
+
+                _userList.SelectedItem = item;
+                return;
+            }
+
+            _pendingPeerId = userId;
         }
 
         public void ShowInfo(string message)

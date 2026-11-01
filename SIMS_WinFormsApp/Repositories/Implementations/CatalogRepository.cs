@@ -32,7 +32,29 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                             select new
                             {
                                 product.ProductID, product.CategoryID, product.ProductCode, product.ProductName,
-                                category.CategoryName, product.SellPrice, product.Stock, product.Status, product.ImageUrl
+                                category.CategoryName, product.SellPrice, product.Stock, product.Status, product.ImageUrl,
+                                BatchStock = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0)
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0,
+                                SellableStock = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0
+                                        && (!batch.ExpiryDate.HasValue
+                                            || batch.ExpiryDate.Value >= DateTime.Today))
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0,
+                                ExpiredStock = db.InventoryBatches
+                                    .Where(batch => batch.ProductID == product.ProductID
+                                        && batch.Status == "ACTIVE"
+                                        && batch.RemainingQty > 0
+                                        && batch.ExpiryDate.HasValue
+                                        && batch.ExpiryDate.Value < DateTime.Today)
+                                    .Select(batch => (int?)batch.RemainingQty)
+                                    .Sum() ?? 0
                             };
                 if (categoryId.HasValue)
                     query = query.Where(row => row.CategoryID == categoryId.Value);
@@ -47,6 +69,9 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         CategoryName = row.CategoryName,
                         SellPrice = row.SellPrice,
                         Stock = row.Stock,
+                        BatchStock = row.BatchStock,
+                        SellableStock = Math.Max(0, Math.Min(row.Stock, row.SellableStock)),
+                        ExpiredStock = row.ExpiredStock,
                         IsActive = row.Status == "ACTIVE",
                         ImagePath = row.ImageUrl
                     }).ToList();

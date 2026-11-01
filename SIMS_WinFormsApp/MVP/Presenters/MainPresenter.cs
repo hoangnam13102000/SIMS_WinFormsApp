@@ -19,12 +19,15 @@ using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Services.Chat;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Controls.Catalog;
 using SIMS_WinFormsApp.UI.Controls.Pos;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Permission;
+using SIMS_WinFormsApp.Models.Chat;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Views.Shell;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
@@ -42,8 +45,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private DailyBackupScheduler _dailyBackupScheduler;
         private ReturnManagementDataService _notificationService;
         private Timer _notificationTimer;
-        private readonly HashSet<int> _seenNotificationIds = new HashSet<int>();
-        private readonly HashSet<int> _readNotificationIds = new HashSet<int>();
+        private readonly HashSet<string> _seenNotificationIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> _readNotificationIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> _dismissedNotificationIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly List<NotificationDto> _chatNotifications = new List<NotificationDto>();
+        private IChatClientService _chatClient;
         private bool _notificationBaselineLoaded;
         private bool _notificationFailureShown;
         private bool _isLoggingOut;
@@ -120,6 +126,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _view.SetUserInfo(name, email);
                 _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
                 StartNotificationPolling();
+                StartChatNotifications();
                 RefreshUnviewedInvoiceBadge(permissions);
                 _layout.ShowPage(CanViewDashboard(permissions) ? "dashboard" : "profile");
 
@@ -144,10 +151,26 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _notificationService = new ReturnManagementDataService(
                 AppComposition.CreateConnectionFactory());
             _layout.NotificationReadRequested += OnNotificationReadRequested;
+            _layout.NotificationDeleteRequested += OnNotificationDeleteRequested;
+            _layout.NotificationsClearRequested += OnNotificationsClearRequested;
             _notificationTimer = new Timer { Interval = 10000 };
             _notificationTimer.Tick += (sender, args) => RefreshNotifications();
             RefreshNotifications();
             _notificationTimer.Start();
+        }
+
+        private void StartChatNotifications()
+        {
+            var user = UserSession.Instance.CurrentUser;
+            if (user == null)
+                return;
+
+            ChatServerHost.Instance.Start();
+            _chatClient = ChatClientService.Instance;
+            _chatClient.MessageReceived += OnChatMessageReceived;
+            if (!_chatClient.IsConnected)
+                _chatClient.ConnectStaff(user.UserId,
+                    user.FullName ?? user.Username, user.RoleCode ?? string.Empty);
         }
 
         private void RefreshNotifications()
@@ -159,21 +182,34 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             try
             {
                 var notifications = _notificationService.GetCompletedReturns(user.UserId);
+                if (_currentPermissions != null &&
+                    _currentPermissions.Contains(AppPermission.RETURN_EXCHANGE_APPROVE))
+                    notifications.AddRange(_notificationService.GetPendingReturnNotifications(user.UserId));
+                notifications.RemoveAll(notification =>
+                    _dismissedNotificationIds.Contains(notification.NotificationId));
+
                 foreach (var notification in notifications)
                 {
                     if (_seenNotificationIds.Add(notification.NotificationId))
                     {
                         if (_notificationBaselineLoaded)
-                            _layout.ShowNotificationToast(notification.Title, notification.Message);
-                        else
+                            _layout.NotifyNewNotification(notification.Title, notification.Message);
+                        else if (notification.Kind != "RETURN_PENDING")
                             _readNotificationIds.Add(notification.NotificationId);
                     }
                     notification.IsRead = _readNotificationIds.Contains(notification.NotificationId);
                 }
 
                 _notificationBaselineLoaded = true;
-                _layout.SetNotifications(
-                    notifications,
+                notifications.AddRange(_chatNotifications.Where(notification =>
+                    !_dismissedNotificationIds.Contains(notification.NotificationId)));
+                foreach (NotificationDto notification in notifications)
+                    notification.IsRead = _readNotificationIds.Contains(notification.NotificationId);
+                notifications = notifications
+                    .OrderByDescending(notification => notification.CreatedAt)
+                    .Take(20)
+                    .ToList();
+                _layout.SetNotifications(notifications,
                     notifications.Count(notification => !notification.IsRead));
                 _notificationFailureShown = false;
             }
@@ -190,9 +226,96 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
         }
 
-        private void OnNotificationReadRequested(object sender, int notificationId)
+        private void OnChatMessageReceived(ChatMessageDto message)
         {
+            var user = UserSession.Instance.CurrentUser;
+            if (message == null || user == null || !message.IsStaffChat ||
+                message.ToUserId != user.UserId || message.UserId == user.UserId ||
+                !string.Equals(message.RoleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            string notificationId = "chat:" + (message.MessageId > 0
+                ? message.MessageId.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                : message.UserId + ":" + message.Timestamp.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture));
+            DateTime createdAt = DateTimeOffset.FromUnixTimeMilliseconds(message.Timestamp).LocalDateTime;
+            var notification = new NotificationDto
+            {
+                NotificationId = notificationId,
+                Kind = "CHAT_MESSAGE",
+                Title = "Tin nhắn mới từ " + (message.UserName ?? "nhân viên bán hàng"),
+                Message = message.Text ?? string.Empty,
+                CreatedAt = createdAt,
+                TargetPageKey = "chat",
+                TargetUserId = message.UserId
+            };
+
+            if (_layout == null || _layout.IsDisposed || !_layout.IsHandleCreated)
+                return;
+
+            Action showNotification = () =>
+            {
+                if (_layout == null || _layout.IsDisposed)
+                    return;
+                if (!_seenNotificationIds.Add(notificationId))
+                    return;
+                _chatNotifications.Insert(0, notification);
+                if (_chatNotifications.Count > 20)
+                    _chatNotifications.RemoveRange(20, _chatNotifications.Count - 20);
+                _layout.NotifyNewNotification(notification.Title, notification.Message);
+                RefreshNotifications();
+            };
+            if (_layout.InvokeRequired)
+                _layout.BeginInvoke(showNotification);
+            else
+                showNotification();
+        }
+
+        private void OnNotificationReadRequested(NotificationDto notification)
+        {
+            if (notification == null)
+                return;
+
+            _readNotificationIds.Add(notification.NotificationId);
+            if (!string.IsNullOrWhiteSpace(notification.TargetPageKey) && _layout != null)
+            {
+                _layout.ShowPage(notification.TargetPageKey);
+                if (notification.TargetPageKey == "chat" &&
+                    notification.TargetUserId.HasValue &&
+                    _layout.TryGetPage<ucChat>("chat", out ucChat chat))
+                    chat.OpenConversation(notification.TargetUserId.Value);
+            }
+            RefreshNotifications();
+        }
+
+        private void OnNotificationDeleteRequested(string notificationId)
+        {
+            if (string.IsNullOrWhiteSpace(notificationId))
+                return;
+
+            _dismissedNotificationIds.Add(notificationId);
             _readNotificationIds.Add(notificationId);
+            _chatNotifications.RemoveAll(notification =>
+                string.Equals(notification.NotificationId, notificationId, StringComparison.Ordinal));
+            RefreshNotifications();
+        }
+
+        private void OnNotificationsClearRequested(IReadOnlyList<string> notificationIds)
+        {
+            if (notificationIds != null)
+            {
+                foreach (string notificationId in notificationIds)
+                {
+                    if (string.IsNullOrWhiteSpace(notificationId))
+                        continue;
+
+                    _dismissedNotificationIds.Add(notificationId);
+                    _readNotificationIds.Add(notificationId);
+                }
+            }
+
+            _chatNotifications.RemoveAll(notification =>
+                _dismissedNotificationIds.Contains(notification.NotificationId));
             RefreshNotifications();
         }
 
@@ -327,7 +450,17 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         () => CatalogPages.Products(
                             permissions.Contains(AppPermission.PRODUCT_EDIT) ||
                                 permissions.Contains(AppPermission.PRODUCT_MANAGE),
-                            permissions.Contains(AppPermission.PRODUCT_MANAGE)), IconChar.Box);
+                            permissions.Contains(AppPermission.PRODUCT_MANAGE),
+                            HasAnyPermission(permissions, AppPermission.STOCK_VIEW,
+                                AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW)
+                                ? (Action<int>)(productId =>
+                                {
+                                    layout.ShowPage("expiry-batches");
+                                    if (layout.TryGetPage<ucExpiryBatchManagement>(
+                                        "expiry-batches", out ucExpiryBatchManagement expiryPage))
+                                        expiryPage.FilterByProductId(productId);
+                                })
+                                : null), IconChar.Box);
                 if (HasAnyPermission(permissions,
                         AppPermission.CATEGORY_VIEW, AppPermission.CATEGORY_EDIT, AppPermission.CATEGORY_MANAGE))
                     layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"),
@@ -358,9 +491,38 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     if (dashboard != null)
                         dashboard.ExpiryBatchesRequested += (sender, args) => layout.ShowPage("expiry-batches");
                     layout.AddLazyPage("expiry-batches", Lang.Get("sidebar.page.expiryBatches"),
-                        () => new ucExpiryBatchManagement(
-                            HasAnyPermission(permissions, AppPermission.STOCK_DISPOSE)),
+                        () =>
+                        {
+                            var expiryPage = new ucExpiryBatchManagement(
+                                HasAnyPermission(permissions, AppPermission.STOCK_DISPOSE));
+                            if (permissions.Contains(AppPermission.STOCK_DISPOSE))
+                            {
+                                expiryPage.DisposeBatchRequested += batchId =>
+                                {
+                                    layout.ShowPage("expired-disposal");
+                                    if (layout.TryGetPage<ucExpiredBatchDisposal>(
+                                        "expired-disposal", out ucExpiredBatchDisposal disposalPage))
+                                        _ = disposalPage.LoadBatchAsync(batchId);
+                                };
+                            }
+                            return expiryPage;
+                        },
                         IconChar.HourglassHalf);
+                }
+                if (permissions.Contains(AppPermission.STOCK_DISPOSE))
+                {
+                    layout.AddLazyPage("expired-disposal", "Lập phiếu tiêu hủy",
+                        () =>
+                        {
+                            var disposalPage = new ucExpiredBatchDisposal(
+                                AppComposition.CreateExpiryBatchManagementService());
+                            disposalPage.ReturnRequested += (sender, args) => layout.ShowPage("expiry-batches");
+                            disposalPage.DisposalCompleted += (sender, args) =>
+                                layout.ShowPage("expiry-batches");
+                            return disposalPage;
+                        },
+                        IconChar.TrashCan,
+                        showInSidebar: false);
                 }
             }
 
@@ -583,9 +745,17 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             {
                 _layout.AiChatRequested -= OnAiChatRequested;
                 _layout.NotificationReadRequested -= OnNotificationReadRequested;
+                _layout.NotificationDeleteRequested -= OnNotificationDeleteRequested;
+                _layout.NotificationsClearRequested -= OnNotificationsClearRequested;
                 if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
                     _aiChatPopup.Close();
                 _aiChatPopup = null;
+            }
+            if (_chatClient != null)
+            {
+                _chatClient.MessageReceived -= OnChatMessageReceived;
+                _chatClient.Disconnect();
+                _chatClient = null;
             }
             if (_notificationTimer != null)
             {

@@ -25,6 +25,9 @@
     <Content Include="Resources\Logo\app_logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Media\doorbell.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\Auth\auth_brand_preview.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -709,6 +712,9 @@
       <DependentUpon>ucStockAlert.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Warehouse\ucExpiryBatchManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucExpiredBatchDisposal.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Warehouse\ucExpiryBatchManagement.Designer.cs">

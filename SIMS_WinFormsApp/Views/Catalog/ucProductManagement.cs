@@ -27,6 +27,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly bool _canManageProducts;
         private readonly Timer _searchTimer;
         private readonly ContextMenuStrip _optionsMenu;
+        private readonly Action<int> _showExpiredBatches;
         private readonly LocalProductImageStore _imageStore = new LocalProductImageStore();
         private readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
         private int _pageIndex;
@@ -40,15 +41,21 @@ namespace SIMS_WinFormsApp.Views.Catalog
         }
 
         public ucProductManagement(ICatalogAdminService service)
-            : this(service, true, true)
+            : this(service, true, true, null)
         {
         }
 
-        public ucProductManagement(ICatalogAdminService service, bool canEditProducts, bool canManageProducts)
+        public ucProductManagement(
+            ICatalogAdminService service,
+            bool canEditProducts,
+            bool canManageProducts,
+            Action<int> showExpiredBatches = null)
         {
             InitializeComponent();
             _canEditProducts = canEditProducts || canManageProducts;
             _canManageProducts = canManageProducts;
+            _showExpiredBatches = showExpiredBatches;
+            _expiredBatchesColumn.Visible = _showExpiredBatches != null;
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
@@ -151,8 +158,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
                         row.Name,
                         row.CategoryName,
                         CatalogFormat.Money(row.SellPrice),
-                        row.Stock,
-                        CatalogFormat.Status(row.IsActive),
+                        CatalogFormat.StockSummary(row),
+                        row.ExpiredStock > 0 ? "Xem lô (" + row.ExpiredStock.ToString("N0") + ")" : "—",
+                        CatalogFormat.ProductStatus(row),
                         _canEditProducts
                             ? IconBitmapCache.GetActionStrip(
                                 row.IsActive ? IconChar.CircleXmark : IconChar.CircleCheck,
@@ -161,6 +169,32 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     if (imageUnavailable)
                         _productsGrid.Rows[rowIndex].Cells[_imageColumn.Index].ToolTipText =
                             "Không tìm thấy hoặc không thể đọc ảnh sản phẩm.";
+                    if (row.ExpiredStock > 0)
+                    {
+                        _productsGrid.Rows[rowIndex].Cells[_expiredBatchesColumn.Index].Style.ForeColor =
+                            Color.FromArgb(185, 28, 28);
+                        _productsGrid.Rows[rowIndex].Cells[_expiredBatchesColumn.Index].ToolTipText =
+                            "Mở danh sách lô hết hạn của sản phẩm này.";
+                    }
+                    if (row.IsActive && row.SellableStock <= 0)
+                    {
+                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].Style.ForeColor =
+                            Color.FromArgb(185, 28, 28);
+                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].ToolTipText =
+                            "Sản phẩm đang hoạt động nhưng hiện không có lô nào đủ điều kiện bán.";
+                    }
+                    if (row.StockBatchDifference != 0)
+                    {
+                        _productsGrid.Rows[rowIndex].Cells[_stockColumn.Index].Style.ForeColor =
+                            Color.FromArgb(185, 28, 28);
+                        _productsGrid.Rows[rowIndex].Cells[_stockColumn.Index].ToolTipText =
+                            "Tồn kho sản phẩm và tổng số lượng còn lại trên các lô đang hoạt động đang lệch " +
+                            row.StockBatchDifference.ToString("+0;-0;0") +
+                            ". Kiểm kê hiện chỉ cập nhật tồn tổng, không tự điều chỉnh số lượng từng lô. " +
+                            "Cần đối chiếu thực tế và xử lý lô liên quan.";
+                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].Style.ForeColor =
+                            Color.FromArgb(185, 28, 28);
+                    }
                 }
 
                 UpdatePaging();
@@ -259,9 +293,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 e.RowIndex >= _presenter.CurrentRows.Count)
                 return;
 
+            ProductRowDto row = _presenter.CurrentRows[e.RowIndex];
+            if (e.ColumnIndex == _expiredBatchesColumn.Index)
+            {
+                if (row.ExpiredStock > 0)
+                    _showExpiredBatches?.Invoke(row.ProductId);
+                return;
+            }
             if (e.ColumnIndex != _actionsColumn.Index) return;
 
-            ProductRowDto row = _presenter.CurrentRows[e.RowIndex];
             if (!_canEditProducts)
             {
                 EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
@@ -345,7 +385,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void ExportProducts(ITableDataExporter exporter)
         {
-            string[] headers = { "Mã", "Tên sản phẩm", "Danh mục", "Giá bán", "Tồn kho", "Trạng thái" };
+            string[] headers =
+            {
+                "Mã", "Tên sản phẩm", "Danh mục", "Giá bán",
+                "Tồn kho và số lượng có thể bán", "Trạng thái"
+            };
             TableExportRunner.Run(
                 FindForm(), exporter, "Sản phẩm", () => headers, _presenter.ExportRows);
         }

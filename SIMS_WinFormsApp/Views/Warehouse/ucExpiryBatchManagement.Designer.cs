@@ -25,6 +25,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private TextBox _searchBox;
         private ComboBox _filterCombo;
         private Button _refreshButton;
+        private Button _clearProductFilterButton;
         private DataGridView _grid;
         private Label _footerLabel;
 
@@ -57,6 +58,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _searchBox = new TextBox();
             _filterCombo = new ComboBox();
             _refreshButton = new Button();
+            _clearProductFilterButton = new Button();
             _grid = new DataGridView();
             _footerLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)_grid).BeginInit();
@@ -105,7 +107,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
             _titleLabel.Location = new Point(0, 0);
             _titleLabel.Name = "_titleLabel";
-            _titleLabel.Text = "Hạn dùng & quản lý lô hàng";
+            _titleLabel.Text = "Quản lý sản phẩm hết hạn";
             //
             // _subtitleLabel
             //
@@ -114,7 +116,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
             _subtitleLabel.Location = new Point(3, 50);
             _subtitleLabel.Name = "_subtitleLabel";
-            _subtitleLabel.Text = "Theo dõi từng lô sắp hết hạn và xử lý hàng đã quá hạn.";
+            _subtitleLabel.Text = "Theo dõi hàng hết hạn, xem chi tiết theo lô và lập phiếu tiêu hủy.";
             //
             // _disposeButton
             //
@@ -127,7 +129,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _disposeButton.Location = new Point(940, 14);
             _disposeButton.Name = "_disposeButton";
             _disposeButton.Size = new Size(218, 42);
-            _disposeButton.Text = "Tiêu hủy lô đã hết hạn";
+            _disposeButton.Text = "Lập phiếu tiêu hủy";
             _disposeButton.UseVisualStyleBackColor = false;
             _disposeButton.Enabled = false;
             //
@@ -161,6 +163,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _filterPanel.BackColor = Color.White;
             _filterPanel.Controls.Add(_searchBox);
             _filterPanel.Controls.Add(_filterCombo);
+            _filterPanel.Controls.Add(_clearProductFilterButton);
             _filterPanel.Controls.Add(_refreshButton);
             _filterPanel.Dock = DockStyle.Fill;
             _filterPanel.Margin = new Padding(0, 4, 0, 8);
@@ -183,6 +186,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _filterCombo.Name = "_filterCombo";
             _filterCombo.Size = new Size(230, 25);
             _filterCombo.SelectedIndex = 0;
+            //
+            // _clearProductFilterButton
+            //
+            _clearProductFilterButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _clearProductFilterButton.FlatStyle = FlatStyle.Flat;
+            _clearProductFilterButton.Font = new Font("Segoe UI", 9F);
+            _clearProductFilterButton.Location = new Point(820, 12);
+            _clearProductFilterButton.Name = "_clearProductFilterButton";
+            _clearProductFilterButton.Size = new Size(160, 34);
+            _clearProductFilterButton.Text = "Bỏ lọc sản phẩm";
             //
             // _refreshButton
             //

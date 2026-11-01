@@ -43,6 +43,7 @@ namespace SIMS_WinFormsApp.Views.Shell
                 ThemeManager.Instance.ThemeChanged -= OnAppearanceChanged;
                 LanguageManager.Instance.LanguageChanged -= OnAppearanceChanged;
                 _settingsPopup?.Dispose();
+                _notificationSoundPlayer?.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);

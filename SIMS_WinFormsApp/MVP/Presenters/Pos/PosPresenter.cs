@@ -96,13 +96,18 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.BindPromotions(_promotionService.GetAvailablePromotions());
             _view.SetPaymentMethods(PaymentMethods);
             _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
-            ReloadProducts();
             RefreshCart();
         }
 
         private void ReloadProducts()
         {
-            _view.BindProducts(_catalogService.Search(_searchKeyword, _selectedCategoryId));
+            var products = _catalogService.Search(_searchKeyword, _selectedCategoryId);
+            foreach (ProductCatalogItemDto product in products)
+            {
+                product.AvailableToAddQuantity = Math.Max(
+                    0, product.SellableQuantity - _cart.GetQuantity(product.ProductId));
+            }
+            _view.BindProducts(products);
         }
         #endregion
 
@@ -158,6 +163,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 AppToast.Warning(owner as Control, "Hết hàng", "\"" + product.Name + "\" hiện đã hết hàng.");
                 return;
             }
+            int availableToAdd = product.SellableQuantity - _cart.GetQuantity(product.ProductId);
+            if (availableToAdd <= 0)
+            {
+                AppToast.Warning(owner as Control, "Không đủ tồn kho",
+                    "Đã có đủ số lượng \"" + product.Name + "\" trong giỏ.");
+                ReloadProducts();
+                return;
+            }
             _cart.AddOrIncrement(product.ProductId, product.Name, product.Price);
             RefreshCart();
         }
@@ -172,6 +185,18 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private void OnCartQuantityChanged(object sender, (int ProductId, int Quantity) e)
         {
+            ProductCatalogItemDto product = _catalogService.GetById(e.ProductId);
+            if (product == null || e.Quantity > product.SellableQuantity)
+            {
+                AppToast.Warning(_ownerWindowProvider() as Control, "Không đủ tồn kho",
+                    product == null
+                        ? "Sản phẩm không còn bán hoặc không tìm thấy."
+                        : "Số lượng \"" + product.Name + "\" vượt quá tồn kho (" +
+                          product.SellableQuantity + " sản phẩm còn hạn).");
+                RefreshCart();
+                return;
+            }
+
             _cart.SetQuantity(e.ProductId, e.Quantity);
             RefreshCart();
         }
@@ -185,6 +210,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void RefreshCart()
         {
             _view.BindCart(_cart.Lines);
+            ReloadProducts();
             RefreshTotals();
         }
 
@@ -285,6 +311,20 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             var picked = _view.PromptPickHeldCart(all);
             if (picked == null) return;
+
+            foreach (CartLineDto line in picked.Lines)
+            {
+                ProductCatalogItemDto product = _catalogService.GetById(line.ProductId);
+                if (product == null || line.Quantity > product.SellableQuantity)
+                {
+                    AppToast.Warning(owner as Control, "Không đủ tồn kho",
+                        product == null
+                            ? "Sản phẩm \"" + line.ProductName + "\" không còn bán hoặc không tìm thấy."
+                            : "Giỏ đã giữ có " + line.Quantity + " \"" + product.Name +
+                              "\" nhưng chỉ còn " + product.SellableQuantity + " sản phẩm có thể bán.");
+                    return;
+                }
+            }
 
             _cart.Restore(picked.Lines);
             _heldCartStore.Remove(picked.HeldCartId);

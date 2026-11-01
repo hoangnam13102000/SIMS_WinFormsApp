@@ -659,14 +659,32 @@ GO
    X. DOI CHIEU / KIEM KE KHO CUOI NGAY (StockReconciliation)
    ============================================================ */
 
+IF OBJECT_ID('dbo.StockReconciliationBatchAdjustments', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.StockReconciliationBatchAdjustments (
+        ReconciliationBatchAdjustmentID INT IDENTITY(1,1) PRIMARY KEY,
+        ReconciliationID INT NOT NULL
+            FOREIGN KEY REFERENCES dbo.StockReconciliation(ReconciliationID),
+        BatchID INT NOT NULL FOREIGN KEY REFERENCES dbo.InventoryBatch(BatchID),
+        Quantity INT NOT NULL CHECK (Quantity > 0),
+        BatchStockBefore INT NOT NULL CHECK (BatchStockBefore >= 0),
+        BatchStockAfter INT NOT NULL CHECK (BatchStockAfter >= 0),
+        CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+    );
+    CREATE INDEX IX_StockReconBatchAdjustments_Reconciliation
+        ON dbo.StockReconciliationBatchAdjustments(ReconciliationID);
+END;
+GO
+
 -- ---------------------------------------------------------------
 -- Ap dung 1 dong doi chieu kho: SystemStock LUON duoc tinh lai tu
 -- Products.Stock TAI THOI DIEM GHI (bo qua gia tri app gui len, neu
 -- co) de tranh sai lech do phien kiem ke keo dai (nhieu nguoi/nhieu
--- thoi diem doc cung 1 luc). Neu ActualStock khac SystemStock thi
--- cap nhat lai Products.Stock theo so dem thuc te VA ghi nhan 1 dong
--- InventoryTransactions (TransactionType='RECONCILE_ADJUST') de truy
--- vet - giong tinh than cac trigger IMPORT/SALE/RETURN o tren.
+-- thoi diem doc cung 1 luc). Products.Stock la so tong da kiem ke:
+-- neu tong ton lo cao hon thi giam cac lo da het han truoc, sau do
+-- FEFO; moi thay doi lo duoc ghi trong StockReconciliationBatchAdjustments.
+-- Khong tu tao lo khi ActualStock cao hon tong ton lo vi khong co thong tin
+-- nha cung cap/han su dung; truong hop nay phai nhap/doi soat theo lo.
 -- ---------------------------------------------------------------
 CREATE OR ALTER TRIGGER trg_StockReconciliation_Apply
 ON StockReconciliation
@@ -676,7 +694,9 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @ProductID INT, @ActualStock INT, @Note NVARCHAR(255), @CreatedBy INT;
-    DECLARE @SystemStock INT, @NewReconciliationID INT, @Diff INT;
+    DECLARE @SystemStock INT, @BatchStock INT, @NewReconciliationID INT;
+    DECLARE @Diff INT, @BatchDiff INT, @BatchID INT, @BatchRemain INT;
+    DECLARE @Take INT, @BatchStockBefore INT, @BatchStockAfter INT;
 
     DECLARE recon_cursor CURSOR LOCAL FAST_FORWARD FOR
         SELECT ProductID, ActualStock, Note, CreatedBy FROM inserted;
@@ -686,31 +706,88 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
+        SET @SystemStock = NULL;
         SELECT @SystemStock = Stock FROM Products WHERE ProductID = @ProductID;
 
         IF @SystemStock IS NULL
-        BEGIN
-            RAISERROR(N'San pham khong ton tai, khong the doi chieu kho.', 16, 1);
-        END
-        ELSE
-        BEGIN
-            INSERT INTO StockReconciliation (ProductID, SystemStock, ActualStock, Note, CreatedBy)
-            VALUES (@ProductID, @SystemStock, @ActualStock, @Note, @CreatedBy);
-            SET @NewReconciliationID = SCOPE_IDENTITY();
+            THROW 51001, N'San pham khong ton tai, khong the doi chieu kho.', 1;
+        IF @ActualStock < 0
+            THROW 51002, N'Ton kho kiem ke khong duoc am.', 1;
 
-            SET @Diff = @ActualStock - @SystemStock;
+        SELECT @BatchStock = ISNULL(SUM(RemainingQty), 0)
+        FROM InventoryBatch WITH (UPDLOCK, HOLDLOCK)
+        WHERE ProductID = @ProductID AND Status = 'ACTIVE';
 
-            IF @Diff <> 0
+        IF @ActualStock > @BatchStock
+            THROW 51003, N'Ton kiem ke cao hon tong ton cac lo. Hay tao phieu nhap/lo dieu chinh co du thong tin truoc khi doi chieu.', 1;
+
+        INSERT INTO StockReconciliation (ProductID, SystemStock, ActualStock, Note, CreatedBy)
+        VALUES (@ProductID, @SystemStock, @ActualStock, @Note, @CreatedBy);
+        SET @NewReconciliationID = CONVERT(INT, SCOPE_IDENTITY());
+
+        SET @BatchDiff = @BatchStock - @ActualStock;
+        IF @BatchDiff > 0
+        BEGIN
+            DECLARE batch_cursor CURSOR LOCAL FAST_FORWARD FOR
+                SELECT BatchID, RemainingQty
+                FROM InventoryBatch WITH (UPDLOCK, ROWLOCK)
+                WHERE ProductID = @ProductID
+                    AND Status = 'ACTIVE'
+                    AND RemainingQty > 0
+                ORDER BY
+                    CASE WHEN ExpiryDate < CONVERT(DATE, GETDATE()) THEN 0 ELSE 1 END,
+                    ISNULL(ExpiryDate, CONVERT(DATE, '99991231')),
+                    BatchID;
+
+            OPEN batch_cursor;
+            FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;
+
+            WHILE @@FETCH_STATUS = 0 AND @BatchDiff > 0
             BEGIN
-                UPDATE Products SET Stock = @ActualStock WHERE ProductID = @ProductID;
+                SET @Take = CASE WHEN @BatchRemain < @BatchDiff
+                                 THEN @BatchRemain ELSE @BatchDiff END;
+                SET @BatchStockBefore = @BatchRemain;
+                SET @BatchStockAfter = @BatchRemain - @Take;
 
-                INSERT INTO InventoryTransactions (ProductID, TransactionType, Direction, Quantity,
-                                                    StockBefore, StockAfter, RefTable, RefID, CreatedBy, Note)
-                VALUES (@ProductID, 'RECONCILE_ADJUST',
-                        CASE WHEN @Diff > 0 THEN 'IN' ELSE 'OUT' END,
-                        ABS(@Diff), @SystemStock, @ActualStock,
-                        'StockReconciliation', @NewReconciliationID, @CreatedBy, @Note);
+                UPDATE InventoryBatch
+                SET RemainingQty = @BatchStockAfter,
+                    Status = CASE WHEN @BatchStockAfter = 0 THEN 'DEPLETED' ELSE Status END
+                WHERE BatchID = @BatchID
+                    AND ProductID = @ProductID
+                    AND Status = 'ACTIVE'
+                    AND RemainingQty = @BatchStockBefore;
+
+                IF @@ROWCOUNT <> 1
+                    THROW 51004, N'So luong lo vua thay doi. Giao dich doi chieu da bi huy; hay tai lai va thu lai.', 1;
+
+                INSERT INTO StockReconciliationBatchAdjustments
+                    (ReconciliationID, BatchID, Quantity, BatchStockBefore, BatchStockAfter)
+                VALUES
+                    (@NewReconciliationID, @BatchID, @Take,
+                     @BatchStockBefore, @BatchStockAfter);
+
+                SET @BatchDiff -= @Take;
+                FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;
             END
+
+            CLOSE batch_cursor;
+            DEALLOCATE batch_cursor;
+
+            IF @BatchDiff > 0
+                THROW 51005, N'Khong the phan bo chenh lech vao cac lo dang hoat dong.', 1;
+        END
+
+        SET @Diff = @ActualStock - @SystemStock;
+        IF @Diff <> 0
+        BEGIN
+            UPDATE Products SET Stock = @ActualStock WHERE ProductID = @ProductID;
+
+            INSERT INTO InventoryTransactions (ProductID, TransactionType, Direction, Quantity,
+                                                StockBefore, StockAfter, RefTable, RefID, CreatedBy, Note)
+            VALUES (@ProductID, 'RECONCILE_ADJUST',
+                    CASE WHEN @Diff > 0 THEN 'IN' ELSE 'OUT' END,
+                    ABS(@Diff), @SystemStock, @ActualStock,
+                    'StockReconciliation', @NewReconciliationID, @CreatedBy, @Note);
         END
 
         FETCH NEXT FROM recon_cursor INTO @ProductID, @ActualStock, @Note, @CreatedBy;

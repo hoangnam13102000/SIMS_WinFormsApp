@@ -37,6 +37,10 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
         public string CategoryName { get; set; }
         public decimal SellPrice { get; set; }
         public int Stock { get; set; }
+        public int BatchStock { get; set; }
+        public int SellableStock { get; set; }
+        public int ExpiredStock { get; set; }
+        public int StockBatchDifference => Stock - BatchStock;
         public bool IsActive { get; set; }
         public string ImagePath { get; set; }
     }

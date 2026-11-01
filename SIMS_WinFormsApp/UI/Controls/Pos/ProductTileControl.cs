@@ -116,9 +116,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             var detailsLabel = new Label
             {
                 Location = new Point(ContentPadding, nameLabel.Bottom + 1),
-                Size = new Size(TileWidth - (ContentPadding * 2), 20),
+                Size = new Size(TileWidth - (ContentPadding * 2),
+                    product.StockBatchDifference != 0 ? 54 : product.ExpiredQuantity > 0 ? 38 : 20),
                 Text = (string.IsNullOrWhiteSpace(product.CategoryName) ? "Chưa phân loại" : product.CategoryName) +
-                    "  ·  Tồn: " + product.StockQuantity,
+                    Environment.NewLine + "Có thể bán: " + product.SellableQuantity +
+                    (product.ExpiredQuantity > 0 ? "  ·  Hết hạn theo lô: " + product.ExpiredQuantity : string.Empty) +
+                    (product.StockBatchDifference != 0
+                        ? Environment.NewLine + "Cần đối soát lô: " +
+                          product.StockBatchDifference.ToString("+0;-0;0")
+                        : string.Empty),
                 Font = new Font("Segoe UI", 9f, FontStyle.Regular, GraphicsUnit.Point),
                 ForeColor = product.IsOutOfStock ? AppColors.Error : AppColors.TextMuted,
                 AutoSize = false,
@@ -156,10 +162,24 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             };
             if (product.IsOutOfStock)
             {
-                actionButton.Text = "Báo hết hàng";
                 actionButton.IsPrimary = false;
                 actionButton.CustomAccentColor = AppColors.Warning;
-                actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
+                if (product.ExpiredQuantity > 0)
+                {
+                    actionButton.Text = "Hàng hết hạn";
+                    actionButton.Enabled = false;
+                }
+                else
+                {
+                    actionButton.Text = "Báo hết hàng";
+                    actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            else if (product.IsCartQuantityLimitReached)
+            {
+                actionButton.Text = "Đã đủ số lượng";
+                actionButton.IsPrimary = false;
+                actionButton.Enabled = false;
             }
             else
             {

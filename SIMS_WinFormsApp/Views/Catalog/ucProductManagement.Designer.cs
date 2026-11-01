@@ -23,6 +23,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private DataGridViewTextBoxColumn _categoryColumn;
         private DataGridViewTextBoxColumn _priceColumn;
         private DataGridViewTextBoxColumn _stockColumn;
+        private DataGridViewButtonColumn _expiredBatchesColumn;
         private DataGridViewTextBoxColumn _statusColumn;
         private DataGridViewImageColumn _actionsColumn;
         private TableLayoutPanel _paging;
@@ -60,6 +61,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _categoryColumn = new DataGridViewTextBoxColumn();
             _priceColumn = new DataGridViewTextBoxColumn();
             _stockColumn = new DataGridViewTextBoxColumn();
+            _expiredBatchesColumn = new DataGridViewButtonColumn();
             _statusColumn = new DataGridViewTextBoxColumn();
             _actionsColumn = new DataGridViewImageColumn();
             _paging = new TableLayoutPanel();
@@ -159,6 +161,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _productsGrid.Margin = new Padding(0, 4, 0, 0);
             _productsGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _imageColumn, _codeColumn, _nameColumn, _categoryColumn, _priceColumn, _stockColumn,
+                _expiredBatchesColumn,
                 _statusColumn, _actionsColumn
             });
             _productsGrid.Dock = DockStyle.Fill;
@@ -193,12 +196,21 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _priceColumn.FillWeight = 12F;
             _priceColumn.HeaderText = "Giá bán";
             _priceColumn.Name = "SellPrice";
-            _stockColumn.FillWeight = 8F;
+            _stockColumn.FillWeight = 19F;
             _stockColumn.HeaderText = "Tồn kho";
             _stockColumn.Name = "Stock";
+            _stockColumn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            _expiredBatchesColumn.FillWeight = 12F;
+            _expiredBatchesColumn.HeaderText = "Hàng hết hạn";
+            _expiredBatchesColumn.Name = "ExpiredBatches";
+            _expiredBatchesColumn.Text = "Xem lô";
+            _expiredBatchesColumn.UseColumnTextForButtonValue = false;
+            _expiredBatchesColumn.FlatStyle = FlatStyle.Flat;
+            _expiredBatchesColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _statusColumn.FillWeight = 12F;
             _statusColumn.HeaderText = "Trạng thái";
             _statusColumn.Name = "Status";
+            _statusColumn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             _actionsColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             _actionsColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _actionsColumn.HeaderText = "Thao tác";
@@ -206,7 +218,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _actionsColumn.Name = "Actions";
             _actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái sản phẩm";
             _actionsColumn.Width = 120;
-            _productsGrid.RowTemplate.Height = 52;
+            _productsGrid.RowTemplate.Height = 84;
 
             _paging.ColumnCount = 2;
             _paging.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58F));

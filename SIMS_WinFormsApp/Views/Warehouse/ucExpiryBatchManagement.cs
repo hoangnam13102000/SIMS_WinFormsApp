@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Inventory;
-using SIMS_WinFormsApp.Services.Session;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -19,6 +18,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly Timer _searchTimer;
         private bool _isLoading;
         private bool _reloadRequested;
+        private int? _filterProductId;
+
+        public event Action<int> DisposeBatchRequested;
 
         public ucExpiryBatchManagement() : this(false)
         {
@@ -47,7 +49,22 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _refreshButton.Click += async (sender, args) => await LoadBatchesAsync();
             _disposeButton.Enabled = false;
             _disposeButton.Visible = _canDispose;
-            _disposeButton.Click += async (sender, args) => await DisposeSelectedBatchAsync();
+            _disposeButton.Click += (sender, args) =>
+            {
+                ExpiryBatchDto selected = GetSelectedBatch();
+                if (selected != null && selected.IsExpired)
+                    DisposeBatchRequested?.Invoke(selected.BatchId);
+            };
+            _clearProductFilterButton.Visible = false;
+            _clearProductFilterButton.Click += async (sender, args) =>
+            {
+                _filterProductId = null;
+                _clearProductFilterButton.Visible = false;
+                _filterCombo.SelectedIndex = 0;
+                _searchBox.Clear();
+                _searchTimer.Stop();
+                await LoadBatchesAsync();
+            };
             _grid.SelectionChanged += (sender, args) => UpdateDisposeButton();
             Load += async (sender, args) => await LoadBatchesAsync();
             VisibleChanged += async (sender, args) =>
@@ -72,7 +89,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 ExpiryBatchFilter filter = _filterCombo.SelectedIndex == 1
                     ? ExpiryBatchFilter.NearExpiry
                     : _filterCombo.SelectedIndex == 2 ? ExpiryBatchFilter.Expired : ExpiryBatchFilter.All;
-                var rows = await Task.Run(() => _service.GetExpiryBatches(_searchBox.Text, filter));
+                var rows = await Task.Run(() =>
+                    _service.GetExpiryBatches(_searchBox.Text, filter, _filterProductId));
                 DisplayBatches(rows);
             }
             catch (Exception exception)
@@ -147,48 +165,28 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void UpdateDisposeButton()
         {
-            ExpiryBatchDto selected = _grid.CurrentRow == null
-                ? null
-                : _grid.CurrentRow.Tag as ExpiryBatchDto;
+            ExpiryBatchDto selected = GetSelectedBatch();
             _disposeButton.Enabled = _canDispose && selected != null && selected.IsExpired;
         }
 
-        private async Task DisposeSelectedBatchAsync()
+        public void FilterByProductId(int productId)
         {
-            ExpiryBatchDto selected = _grid.CurrentRow == null
+            if (productId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(productId));
+
+            _filterProductId = productId;
+            _clearProductFilterButton.Visible = true;
+            _searchBox.Clear();
+            _searchTimer.Stop();
+            _filterCombo.SelectedIndex = 2;
+            _ = LoadBatchesAsync();
+        }
+
+        private ExpiryBatchDto GetSelectedBatch()
+        {
+            return _grid.CurrentRow == null
                 ? null
                 : _grid.CurrentRow.Tag as ExpiryBatchDto;
-            if (!_canDispose || selected == null || !selected.IsExpired)
-                return;
-
-            DialogResult confirmation = MessageBox.Show(
-                this,
-                "Tiêu hủy toàn bộ " + selected.RemainingQuantity.ToString("N0", VietnameseCulture)
-                    + " sản phẩm còn lại của lô " + selected.BatchCode + "?\r\n"
-                    + "Giá trị thiệt hại dự kiến: " + selected.LossAmount.ToString("N0", VietnameseCulture)
-                    + " ₫.\r\nThao tác sẽ lập phiếu tiêu hủy và không thể hoàn tác.",
-                "Xác nhận tiêu hủy lô hết hạn",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
-            if (confirmation != DialogResult.Yes)
-                return;
-
-            _disposeButton.Enabled = false;
-            try
-            {
-                int userId = UserSession.Instance.CurrentUser?.UserId ?? 0;
-                string disposalCode = await Task.Run(
-                    () => _service.DisposeExpiredBatch(selected.BatchId, userId));
-                MessageBox.Show(this, "Đã ghi nhận phiếu tiêu hủy " + disposalCode + ".",
-                    "Đã xử lý lô hàng", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadBatchesAsync();
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(this, "Không thể tiêu hủy lô hàng.\r\n\r\n" + exception.Message,
-                    "Lỗi xử lý", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                UpdateDisposeButton();
-            }
         }
     }
 }
