@@ -36,16 +36,31 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
         public async Task LoadAsync(DateTime invoicePeriodStart, DateTime invoicePeriodEnd)
         {
+            await LoadAsync(
+                invoicePeriodStart,
+                invoicePeriodEnd,
+                DateTime.Today.AddDays(-6),
+                DateTime.Today.AddDays(1));
+        }
+
+        public async Task LoadAsync(
+            DateTime? invoicePeriodStart,
+            DateTime? invoicePeriodEnd,
+            DateTime revenuePeriodStart,
+            DateTime revenuePeriodEnd)
+        {
             _view.ShowDashboardUser(_displayName);
             DashboardDataDto data = await Task.Run(() =>
             {
                 if (!_salesStaffUserId.HasValue)
-                    return _dataService.GetDashboardData();
+                    return _dataService.GetDashboardData(revenuePeriodStart, revenuePeriodEnd);
 
                 return _dataService.GetSalesStaffDashboardData(
                     _salesStaffUserId.Value,
                     invoicePeriodStart,
-                    invoicePeriodEnd);
+                    invoicePeriodEnd,
+                    revenuePeriodStart,
+                    revenuePeriodEnd);
             });
             _view.ShowDashboardData(data);
         }

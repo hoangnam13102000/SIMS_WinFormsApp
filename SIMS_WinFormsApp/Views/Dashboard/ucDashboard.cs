@@ -21,8 +21,12 @@ namespace SIMS_WinFormsApp.Views.Dashboard
     {
         private readonly DashboardPresenter _presenter;
         private Panel _revenueSummaryPanel;
+        private TableLayoutPanel _revenueSummaryLayout;
         private Chart _revenueSummaryChart;
         private Label _revenueSummaryTitle;
+        private Panel _revenueFilterPanel;
+        private ComboBox _revenuePeriodFilter;
+        private DateTimePicker _revenueDatePicker;
         private Panel _invoiceFilterPanel;
         private ComboBox _invoicePeriodFilter;
         private DateTimePicker _invoiceDatePicker;
@@ -53,6 +57,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             InitializeComponent();
             BackColor = AppColors.PageBg;
             ConfigureRevenueSummaryChart();
+            ConfigureRevenuePeriodFilter();
             ConfigureRecentInvoiceFilter();
 
             bool isDesignTime = DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
@@ -90,11 +95,10 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 _titleLabel.Text = "Bảng điều khiển nhân viên";
                 _revenueCaption.Text = "Doanh thu cửa hàng hôm nay";
                 _ordersCaption.Text = "Hóa đơn hôm nay";
-                _stockCaption.Text = "Doanh thu cửa hàng 7 ngày";
+                _stockCaption.Text = "Doanh thu cửa hàng";
                 _customersCaption.Text = "Hóa đơn 7 ngày";
-                _stockValue.Text = data.RevenueLast7Days.ToString("N0", vietnamese) + " VNĐ";
+                _stockValue.Text = data.RevenueSelectedPeriod.ToString("N0", vietnamese) + " VNĐ";
                 _customersValue.Text = data.OrdersLast7Days.ToString("N0", vietnamese);
-                _revenueSummaryTitle.Text = "Doanh thu cửa hàng · 7 ngày gần nhất";
                 _activityTitle.Text = "Hóa đơn gần đây của bạn";
                 _loadedInvoiceCount = data.RecentActivities.Count;
                 _invoiceFilterPanel.Visible = true;
@@ -114,13 +118,16 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             revenueSeries.Points.Clear();
             foreach (DashboardRevenuePointDto point in data.RevenueTrend)
             {
-                string label = point.Date.ToString("dd/MM", vietnamese);
+                string label = _revenuePeriodFilter.SelectedIndex == 3
+                    ? point.Date.ToString("MM/yy", vietnamese)
+                    : point.Date.ToString("dd/MM", vietnamese);
                 int pointIndex = revenueSeries.Points.AddXY(label, point.Revenue);
                 revenueSeries.Points[pointIndex].ToolTip =
                     point.Date.ToString("dd/MM/yyyy", vietnamese) + ": "
                     + point.Revenue.ToString("N0", vietnamese) + " VNĐ";
             }
 
+            UpdateRevenuePeriodDisplay();
             _activityGrid.Rows.Clear();
             foreach (DashboardActivityDto activity in data.RecentActivities)
             {
@@ -218,11 +225,13 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             {
                 ColumnCount = 1,
                 Dock = DockStyle.Fill,
-                RowCount = 2
+                RowCount = 3
             };
             chartLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            _revenueSummaryLayout = chartLayout;
 
             _revenueSummaryTitle = new Label
             {
@@ -264,9 +273,73 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _revenueSummaryChart.Series["Doanh thu"]["PointWidth"] = "0.55";
 
             chartLayout.Controls.Add(_revenueSummaryTitle, 0, 0);
-            chartLayout.Controls.Add(_revenueSummaryChart, 0, 1);
+            chartLayout.Controls.Add(_revenueSummaryChart, 0, 2);
             _revenueSummaryPanel.Controls.Add(chartLayout);
             _contentLayout.Controls.Add(_revenueSummaryPanel, 0, 1);
+        }
+
+        private void ConfigureRevenuePeriodFilter()
+        {
+            _revenuePeriodFilter = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(0, 2),
+                Size = new Size(78, 26),
+                TabIndex = 0
+            };
+            _revenuePeriodFilter.Items.AddRange(new object[] { "Ngày", "Tuần", "Tháng", "Năm" });
+            _revenuePeriodFilter.SelectedIndex = 1;
+
+            _revenueDatePicker = new DateTimePicker
+            {
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "dd/MM/yyyy",
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(84, 2),
+                Size = new Size(112, 26),
+                TabIndex = 1,
+                Value = DateTime.Today
+            };
+
+            var applyRevenueFilterButton = new Button
+            {
+                Location = new Point(202, 1),
+                Name = "_applyRevenueFilterButton",
+                Size = new Size(54, 28),
+                TabIndex = 2,
+                Text = "Lọc",
+                UseVisualStyleBackColor = true
+            };
+
+            _revenueFilterPanel = new Panel
+            {
+                BackColor = Color.White,
+                Dock = DockStyle.Fill,
+                Name = "_revenueFilterPanel"
+            };
+            var filterLabel = new Label
+            {
+                AutoSize = false,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                Location = new Point(0, 3),
+                Name = "_revenueFilterLabel",
+                Size = new Size(42, 24),
+                Text = "Lọc:",
+                TextAlign = ContentAlignment.MiddleLeft,
+                UseMnemonic = false
+            };
+            _revenuePeriodFilter.Location = new Point(42, 2);
+            _revenueDatePicker.Location = new Point(126, 2);
+            applyRevenueFilterButton.Location = new Point(244, 1);
+            _revenueFilterPanel.Controls.Add(filterLabel);
+            _revenueFilterPanel.Controls.Add(_revenuePeriodFilter);
+            _revenueFilterPanel.Controls.Add(_revenueDatePicker);
+            _revenueFilterPanel.Controls.Add(applyRevenueFilterButton);
+            _revenueSummaryLayout.Controls.Add(_revenueFilterPanel, 0, 1);
+
+            applyRevenueFilterButton.Click += OnApplyRevenueFilterClick;
         }
 
         private void ConfigureRecentInvoiceFilter()
@@ -345,6 +418,65 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private async void OnApplyInvoiceFilterClick(object sender, EventArgs e)
         {
             await LoadDashboardDataAsync();
+        }
+
+        private async void OnApplyRevenueFilterClick(object sender, EventArgs e)
+        {
+            await LoadDashboardDataAsync();
+        }
+
+        private void GetSelectedRevenuePeriod(out DateTime periodStart, out DateTime periodEnd)
+        {
+            DateTime selectedDate = _revenueDatePicker.Value.Date;
+            switch (_revenuePeriodFilter.SelectedIndex)
+            {
+                case 0:
+                    periodStart = selectedDate;
+                    periodEnd = selectedDate.AddDays(1);
+                    break;
+                case 2:
+                    periodStart = new DateTime(selectedDate.Year, selectedDate.Month, 1);
+                    periodEnd = periodStart.AddMonths(1);
+                    break;
+                case 3:
+                    periodStart = new DateTime(selectedDate.Year, 1, 1);
+                    periodEnd = periodStart.AddYears(1);
+                    break;
+                default:
+                    int daysSinceMonday = ((int)selectedDate.DayOfWeek + 6) % 7;
+                    periodStart = selectedDate.AddDays(-daysSinceMonday);
+                    periodEnd = periodStart.AddDays(7);
+                    break;
+            }
+        }
+
+        private void UpdateRevenuePeriodDisplay()
+        {
+            if (_revenuePeriodFilter.SelectedItem == null)
+                return;
+
+            DateTime periodStart;
+            DateTime periodEnd;
+            GetSelectedRevenuePeriod(out periodStart, out periodEnd);
+            string periodText;
+            switch (_revenuePeriodFilter.SelectedIndex)
+            {
+                case 0:
+                    periodText = "ngày " + periodStart.ToString("dd/MM/yyyy");
+                    break;
+                case 2:
+                    periodText = "tháng " + periodStart.ToString("MM/yyyy");
+                    break;
+                case 3:
+                    periodText = "năm " + periodStart.ToString("yyyy");
+                    break;
+                default:
+                    periodText = "tuần " + periodStart.ToString("dd/MM")
+                        + " - " + periodEnd.AddDays(-1).ToString("dd/MM/yyyy");
+                    break;
+            }
+
+            _revenueSummaryTitle.Text = "Doanh thu cửa hàng · " + periodText;
         }
 
         private void GetSelectedInvoicePeriod(out DateTime? periodStart, out DateTime? periodEnd)
@@ -452,13 +584,18 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             {
                 DateTime? periodStart;
                 DateTime? periodEnd;
+                DateTime revenuePeriodStart;
+                DateTime revenuePeriodEnd;
                 GetSelectedInvoicePeriod(out periodStart, out periodEnd);
-                if (periodStart.HasValue && periodEnd.HasValue)
-                    await _presenter.LoadAsync(periodStart.Value, periodEnd.Value);
-                else
-                    await _presenter.LoadAsync();
+                GetSelectedRevenuePeriod(out revenuePeriodStart, out revenuePeriodEnd);
+                await _presenter.LoadAsync(
+                    periodStart,
+                    periodEnd,
+                    revenuePeriodStart,
+                    revenuePeriodEnd);
                 _hasLoaded = true;
                 UpdateInvoicePeriodSubtitle();
+                UpdateRevenuePeriodDisplay();
             }
             catch (SqlException ex)
             {
