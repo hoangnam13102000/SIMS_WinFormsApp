@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
@@ -21,6 +23,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly IProductCatalogService _catalogService;
         private readonly ICustomerLookupService _customerService;
         private readonly IInvoiceService _invoiceService;
+        private readonly IPosStockReservationService _stockReservationService;
         private readonly IPromotionService _promotionService;
         private readonly IBarcodeScannerLauncher _scannerLauncher;
         private readonly HeldCartStore _heldCartStore;
@@ -31,7 +34,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private readonly PosCart _cart = new PosCart();
         private readonly CartCalculator _calculator = new CartCalculator();
+        private readonly Dictionary<int, ProductCatalogItemDto> _catalogProducts =
+            new Dictionary<int, ProductCatalogItemDto>();
 
+        private int? _activeReservationId;
         private int? _selectedCategoryId;
         private string _searchKeyword = string.Empty;
         private CustomerLookupDto _selectedCustomer;
@@ -48,6 +54,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             IProductCatalogService catalogService,
             ICustomerLookupService customerService,
             IInvoiceService invoiceService,
+            IPosStockReservationService stockReservationService,
             IPromotionService promotionService,
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
@@ -60,6 +67,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _invoiceService = invoiceService ?? throw new ArgumentNullException(nameof(invoiceService));
+            _stockReservationService = stockReservationService ??
+                throw new ArgumentNullException(nameof(stockReservationService));
             _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _scannerLauncher = scannerLauncher ?? throw new ArgumentNullException(nameof(scannerLauncher));
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
@@ -95,6 +104,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.BindCategories(_catalogService.GetCategories());
             _view.BindPromotions(_promotionService.GetAvailablePromotions());
             _view.SetPaymentMethods(PaymentMethods);
+            _heldCartStore.Load(_userSession.IsLoggedIn
+                ? _stockReservationService.GetPendingReservations(_userSession.CurrentUser.UserId)
+                : Array.Empty<HeldCartDto>());
             _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             ReloadProducts();
             RefreshCart();
@@ -102,7 +114,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private void ReloadProducts()
         {
-            _view.BindProducts(_catalogService.Search(_searchKeyword, _selectedCategoryId));
+            IReadOnlyList<ProductCatalogItemDto> products =
+                _catalogService.Search(_searchKeyword, _selectedCategoryId);
+            _catalogProducts.Clear();
+            foreach (ProductCatalogItemDto product in products)
+                _catalogProducts[product.ProductId] = product;
+            _view.BindProducts(products);
         }
         #endregion
 
@@ -147,18 +164,45 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         #region Giỏ hàng
         private void OnAddToCartRequested(object sender, int productId)
         {
-            var product = _catalogService.GetById(productId);
+            _catalogProducts.TryGetValue(productId, out ProductCatalogItemDto product);
             if (product != null) AddProductToCart(product, _ownerWindowProvider());
         }
 
         private void AddProductToCart(ProductCatalogItemDto product, IWin32Window owner)
         {
-            if (product.IsOutOfStock)
+            if (!_userSession.IsLoggedIn)
             {
-                AppToast.Warning(owner as Control, "Hết hàng", "\"" + product.Name + "\" hiện đã hết hàng.");
+                AppToast.Error(owner as Control, "Không thể thêm sản phẩm", "Phiên đăng nhập đã hết hạn.");
                 return;
             }
+
+            try
+            {
+                _activeReservationId = _stockReservationService.ReserveStock(
+                    _activeReservationId,
+                    product.ProductId,
+                    product.Name,
+                    product.Price,
+                    1,
+                    _userSession.CurrentUser.UserId,
+                    _selectedCustomer?.DisplayText);
+            }
+            catch (InvalidOperationException exception)
+            {
+                AppToast.Warning(owner as Control, "Không đủ tồn kho", exception.Message);
+                ReloadProducts();
+                return;
+            }
+            catch (SqlException exception)
+            {
+                AppToast.Error(owner as Control, "Không thể giữ hàng",
+                    "Cơ sở dữ liệu không thể cập nhật tồn kho. Vui lòng thử lại.");
+                System.Diagnostics.Debug.WriteLine("[PosPresenter] Stock reservation failed: " + exception);
+                return;
+            }
+
             _cart.AddOrIncrement(product.ProductId, product.Name, product.Price);
+            UpdateProductStock(product.ProductId, -1);
             RefreshCart();
         }
 
@@ -172,14 +216,85 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private void OnCartQuantityChanged(object sender, (int ProductId, int Quantity) e)
         {
+            CartLineDto line = _cart.Lines.FirstOrDefault(item => item.ProductId == e.ProductId);
+            if (line == null || !_activeReservationId.HasValue)
+                return;
+
+            int difference = e.Quantity - line.Quantity;
+            try
+            {
+                if (difference > 0)
+                    _activeReservationId = _stockReservationService.ReserveStock(
+                        _activeReservationId,
+                        line.ProductId,
+                        line.ProductName,
+                        line.UnitPrice,
+                        difference,
+                        _userSession.CurrentUser.UserId,
+                        _selectedCustomer?.DisplayText);
+                else if (difference < 0)
+                    _stockReservationService.ReleaseReservedStock(
+                        _activeReservationId.Value, line.ProductId, -difference);
+            }
+            catch (InvalidOperationException exception)
+            {
+                AppToast.Warning(_ownerWindowProvider() as Control,
+                    difference > 0 ? "Không đủ tồn kho" : "Không thể hoàn tồn",
+                    exception.Message);
+                ReloadProducts();
+                return;
+            }
+            catch (SqlException exception)
+            {
+                AppToast.Error(_ownerWindowProvider() as Control, "Không thể cập nhật tồn kho",
+                    "Cơ sở dữ liệu không thể cập nhật tồn kho. Vui lòng thử lại.");
+                System.Diagnostics.Debug.WriteLine("[PosPresenter] Stock quantity update failed: " + exception);
+                return;
+            }
+
             _cart.SetQuantity(e.ProductId, e.Quantity);
+            UpdateProductStock(e.ProductId, -difference);
             RefreshCart();
         }
 
         private void OnCartLineRemoved(object sender, int productId)
         {
+            CartLineDto line = _cart.Lines.FirstOrDefault(item => item.ProductId == productId);
+            if (line == null || !_activeReservationId.HasValue)
+                return;
+
+            try
+            {
+                _stockReservationService.ReleaseReservedStock(
+                    _activeReservationId.Value, productId, line.Quantity);
+            }
+            catch (SqlException exception)
+            {
+                AppToast.Error(_ownerWindowProvider() as Control, "Không thể hoàn tồn",
+                    "Cơ sở dữ liệu không thể hoàn lại số hàng. Vui lòng thử lại.");
+                System.Diagnostics.Debug.WriteLine("[PosPresenter] Stock release failed: " + exception);
+                return;
+            }
+            catch (InvalidOperationException exception)
+            {
+                AppToast.Error(_ownerWindowProvider() as Control, "Không thể hoàn tồn", exception.Message);
+                return;
+            }
+
             _cart.Remove(productId);
+            if (_cart.IsEmpty)
+                _activeReservationId = null;
+            UpdateProductStock(productId, line.Quantity);
             RefreshCart();
+        }
+
+        private void UpdateProductStock(int productId, int quantityChange)
+        {
+            if (!_catalogProducts.TryGetValue(productId, out ProductCatalogItemDto product))
+                return;
+
+            product.StockQuantity = Math.Max(0, product.StockQuantity + quantityChange);
+            _view.UpdateProductStock(productId, product.StockQuantity);
         }
 
         private void RefreshCart()
@@ -267,7 +382,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 return;
             }
 
-            _heldCartStore.Add(_selectedCustomer?.DisplayText, _cart.Lines);
+            if (!_activeReservationId.HasValue)
+            {
+                AppToast.Error(owner as Control, "Không thể tạm giữ giỏ hàng",
+                    "Không tìm thấy mã giữ hàng trong cơ sở dữ liệu. Vui lòng tải lại trang POS.");
+                return;
+            }
+
+            _heldCartStore.Add(CreateHeldCart(_activeReservationId.Value));
             _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             ResetForNewSale();
             AppToast.Success(owner as Control, "Đã tạm giữ giỏ hàng.");
@@ -286,7 +408,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             var picked = _view.PromptPickHeldCart(all);
             if (picked == null) return;
 
+            if (!_cart.IsEmpty && _activeReservationId.HasValue)
+                _heldCartStore.Add(CreateHeldCart(_activeReservationId.Value));
+
+            ResetForNewSale();
             _cart.Restore(picked.Lines);
+            _activeReservationId = picked.ReservationId;
             _heldCartStore.Remove(picked.HeldCartId);
             _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             RefreshCart();
@@ -307,6 +434,12 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 AppToast.Error(owner as Control, "Không thể thanh toán", "Phiên đăng nhập đã hết hạn.");
                 return;
             }
+            if (!_activeReservationId.HasValue)
+            {
+                AppToast.Error(owner as Control, "Không thể thanh toán",
+                    "Không tìm thấy mã giữ hàng của giỏ. Vui lòng tải lại trang POS.");
+                return;
+            }
 
             InvoiceDetails receiptInvoice;
             string invoiceCode;
@@ -323,6 +456,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                     totals,
                     _promotionId,
                     _promotionCode,
+                    _activeReservationId.Value,
                     _cart.Lines);
                 receiptInvoice.InvoiceCode = invoiceCode;
             }
@@ -434,6 +568,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void ResetForNewSale()
         {
             _cart.Clear();
+            _activeReservationId = null;
             _promotionDiscount = 0m;
             _promotionId = null;
             _promotionCode = null;
@@ -444,6 +579,18 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.ClearCustomer();
             _view.SetPromoCode(string.Empty);
             RefreshCart();
+        }
+
+        private HeldCartDto CreateHeldCart(int reservationId)
+        {
+            return new HeldCartDto
+            {
+                HeldCartId = reservationId,
+                ReservationId = reservationId,
+                HeldAt = DateTime.Now,
+                CustomerLabel = _selectedCustomer?.DisplayText,
+                Lines = _cart.Lines
+            };
         }
         #endregion
 

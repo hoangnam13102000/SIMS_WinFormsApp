@@ -352,6 +352,39 @@ CREATE INDEX IX_InventoryBatch_FEFO ON InventoryBatch(ProductID, ExpiryDate)
     INCLUDE (RemainingQty, Status);
 GO
 
+CREATE TABLE PosCartReservations (
+    ReservationID   INT IDENTITY(1,1) PRIMARY KEY,
+    CreatedBy       INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
+    CustomerLabel   NVARCHAR(150) NULL,
+    CreatedAt       DATETIME NOT NULL DEFAULT GETDATE(),
+    InvoiceID       INT NULL FOREIGN KEY REFERENCES Invoices(InvoiceID)
+);
+GO
+
+CREATE TABLE PosCartReservationLines (
+    ReservationID   INT NOT NULL FOREIGN KEY REFERENCES PosCartReservations(ReservationID),
+    ProductID       INT NOT NULL FOREIGN KEY REFERENCES Products(ProductID),
+    ProductName     NVARCHAR(150) NOT NULL,
+    UnitPrice       DECIMAL(18,0) NOT NULL CHECK (UnitPrice >= 0),
+    Quantity        INT NOT NULL CHECK (Quantity > 0),
+    PRIMARY KEY (ReservationID, ProductID)
+);
+GO
+
+CREATE TABLE PosCartReservationBatches (
+    ReservationID   INT NOT NULL,
+    ProductID       INT NOT NULL,
+    BatchID         INT NOT NULL FOREIGN KEY REFERENCES InventoryBatch(BatchID),
+    Quantity        INT NOT NULL CHECK (Quantity > 0),
+    PRIMARY KEY (ReservationID, ProductID, BatchID),
+    FOREIGN KEY (ReservationID, ProductID)
+        REFERENCES PosCartReservationLines(ReservationID, ProductID)
+);
+GO
+
+CREATE INDEX IX_PosCartReservations_Invoice ON PosCartReservations(InvoiceID);
+GO
+
 CREATE TABLE InvoiceDetailBatches (
     InvoiceDetailID INT NOT NULL FOREIGN KEY REFERENCES InvoiceDetails(InvoiceDetailID),
     BatchID         INT NOT NULL FOREIGN KEY REFERENCES InventoryBatch(BatchID),

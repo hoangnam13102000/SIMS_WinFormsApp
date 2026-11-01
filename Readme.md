@@ -110,3 +110,9 @@ Dashboard lấy doanh thu và số hóa đơn trong ngày từ `Invoices`, tổn
 số khách hàng từ `Customers` và 10 hoạt động mới nhất từ `AuditLogs`. Truy vấn được thực hiện qua
 `DashboardDataService`; biểu đồ tóm tắt doanh thu hiển thị 7 ngày gần nhất. `DashboardPresenter`
 điều phối dữ liệu, không đưa SQL vào View.
+
+POS giữ tồn kho theo lô FEFO ngay khi thêm sản phẩm vào giỏ và hoàn tồn khi giảm/xóa sản phẩm.
+Giỏ đang giữ được lưu trong SQL Server để tiếp tục sau khi mở lại ứng dụng. Với database đã có,
+chạy `sql\Migration_PosCartReservations.sql`, sau đó chạy `sql\Trigger_SIMS.sql` để hỗ trợ
+thanh toán bằng đúng các lô đã giữ mà không trừ tồn lần thứ hai. Không chạy lại `sql\SIMS.sql`
+trên database đang sử dụng.

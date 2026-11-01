@@ -256,11 +256,13 @@
     <Compile Include="Services\Implementations\Pos\SqlProductCatalogService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlCustomerLookupService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlInvoiceService.cs" />
+    <Compile Include="Services\Implementations\Pos\SqlPosStockReservationService.cs" />
     <Compile Include="Services\Implementations\Pos\DemoPromotionService.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\Pos\ICustomerLookupService.cs" />
     <Compile Include="Services\Interfaces\Pos\IInvoiceService.cs" />
+    <Compile Include="Services\Interfaces\Pos\IPosStockReservationService.cs" />
     <Compile Include="Services\Interfaces\Pos\IProductCatalogService.cs" />
     <Compile Include="Services\Interfaces\Pos\IPromotionService.cs" />
     <Compile Include="Services\Validation\InputValidators.cs" />

@@ -30,6 +30,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
+        private bool _hasBeenVisible;
 
         public ucProductManagement() : this(null)
         {
@@ -86,6 +87,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
+            VisibleChanged += (sender, args) =>
+            {
+                if (!Visible) return;
+                if (_hasBeenVisible)
+                    LoadPage();
+                else
+                    _hasBeenVisible = true;
+            };
             Disposed += (sender, args) =>
             {
                 _searchTimer.Dispose();
