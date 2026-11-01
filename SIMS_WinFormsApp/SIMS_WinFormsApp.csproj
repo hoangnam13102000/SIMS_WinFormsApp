@@ -630,7 +630,10 @@
     <Compile Include="Views\Reports\frmChartDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Views\Reports\PdfReportPrinter.cs" />
+    <Compile Include="Views\Reports\FinancialReportPdfExporter.cs" />
     <Compile Include="Services\Implementations\Reports\RevenueReportService.cs" />
+    <Compile Include="Services\Implementations\Reports\InventoryReportService.cs" />
     <Compile Include="Services\Implementations\Reports\DashboardDataService.cs" />
     <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
@@ -870,6 +873,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceManagementPage.resx">
       <DependentUpon>InvoiceManagementPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.resx">
+      <DependentUpon>InvoiceReturnDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\PromotionDetailsDialog.resx">
       <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>

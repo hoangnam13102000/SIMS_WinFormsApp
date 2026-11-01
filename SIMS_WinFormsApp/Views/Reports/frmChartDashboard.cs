@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using SIMS_WinFormsApp.Infrastructure.Composition;
@@ -22,19 +23,99 @@ namespace SIMS_WinFormsApp.Views.Reports
             }
 
             _reportService = AppComposition.CreateRevenueReportService();
-            _subtitle.Text = "Doanh thu, đơn hàng và sản phẩm bán chạy từ hóa đơn trong cơ sở dữ liệu";
+            _subtitle.Text = "Doanh thu, đơn hàng và thiệt hại tiêu hủy trong cùng kỳ báo cáo";
             _periodFilter.Items.Clear();
-            _periodFilter.Items.AddRange(new object[] { "Theo tuần", "Theo tháng", "Theo quý" });
+            _periodFilter.Items.AddRange(new object[] { "Theo ngày", "Theo tháng", "Theo quý" });
             _periodFilter.SelectedIndex = (int)RevenueReportPeriod.Week;
             _fromDate.Value = DateTime.Today.AddDays(-6);
             _toDate.Value = DateTime.Today;
             _applyFilter.Click += ApplyFilter_Click;
+            _exportReportPdf.Click += ExportCombinedReportPdf_Click;
 
             ConfigureRevenueChart();
             ConfigureCategoryChart();
             if (!SetInitialDateRange())
                 return;
             UpdateReport();
+        }
+
+        private void ExportCombinedReportPdf_Click(object sender, EventArgs e)
+        {
+            if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
+                return;
+
+            try
+            {
+                RevenueReportPeriod period = (RevenueReportPeriod)_periodFilter.SelectedIndex;
+                RevenueReportData revenue = _reportService.GetReport(from, to, period);
+                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to);
+                FinancialReportSignatories signatories = _reportService.GetFinancialReportSignatories();
+                string path = FinancialReportPdfExporter.Save(
+                    this,
+                    revenue,
+                    disposal,
+                    signatories,
+                    GetCurrentUserName(),
+                    from,
+                    to,
+                    period);
+                ShowExportSuccess(path);
+            }
+            catch (SqlException exception)
+            {
+                ShowDatabaseError(exception.Message);
+            }
+            catch (InvalidOperationException exception)
+            {
+                ShowExportError(exception.Message);
+            }
+            catch (IOException exception)
+            {
+                ShowExportError(exception.Message);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                ShowExportError(exception.Message);
+            }
+            catch (System.Runtime.InteropServices.ExternalException exception)
+            {
+                ShowExportError(exception.Message);
+            }
+        }
+
+        private bool TryGetSelectedDateRange(out DateTime from, out DateTime to)
+        {
+            from = _fromDate.Value.Date;
+            to = _toDate.Value.Date;
+            if (from <= to)
+                return true;
+
+            MessageBox.Show(
+                "Ngày bắt đầu không được sau ngày kết thúc.",
+                "Khoảng thời gian không hợp lệ",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return false;
+        }
+
+        private static string GetCurrentUserName()
+        {
+            var user = SIMS_WinFormsApp.Services.Session.UserSession.Instance.CurrentUser;
+            return user == null ? "Hệ thống" : user.FullName;
+        }
+
+        private void ShowExportError(string details)
+        {
+            MessageBox.Show(this, "Không thể tạo báo cáo PDF.\r\n\r\n" + details,
+                "Lỗi tạo báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void ShowExportSuccess(string path)
+        {
+            if (path == null)
+                return;
+            MessageBox.Show(this, "Đã tạo báo cáo PDF tại:\r\n" + path,
+                "Xuất báo cáo thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ConfigureRevenueChart()
@@ -173,7 +254,9 @@ namespace SIMS_WinFormsApp.Views.Reports
                     _fromDate.Value.Date,
                     _toDate.Value.Date,
                     (RevenueReportPeriod)_periodFilter.SelectedIndex);
-                RenderReport(report);
+                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(
+                    _fromDate.Value.Date, _toDate.Value.Date);
+                RenderReport(report, disposal);
             }
             catch (SqlException exception)
             {
@@ -185,12 +268,15 @@ namespace SIMS_WinFormsApp.Views.Reports
             }
         }
 
-        private void RenderReport(RevenueReportData report)
+        private void RenderReport(RevenueReportData report, StockDisposalReportData disposal)
         {
             _revenueCard.Text = "TỔNG DOANH THU\r\n" + report.Revenue.ToString("N0") + " ₫";
             _orderCard.Text = "SỐ ĐƠN HÀNG\r\n" + report.OrderCount.ToString("N0") + " đơn";
             decimal average = report.OrderCount == 0 ? 0 : report.Revenue / report.OrderCount;
             _averageCard.Text = "GIÁ TRỊ TRUNG BÌNH\r\n" + average.ToString("N0") + " ₫ / đơn";
+            _disposalCard.Text = "THIỆT HẠI TIÊU HỦY\r\n"
+                + disposal.TotalLoss.ToString("N0") + " ₫ · "
+                + disposal.ProductQuantity.ToString("N0") + " sản phẩm";
 
             _revenueChartTitle.Text = GetTrendTitle((RevenueReportPeriod)_periodFilter.SelectedIndex);
             UpdateTrendChart(report);

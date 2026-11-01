@@ -114,7 +114,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnLogin.Icon = null;
             this.btnLogin.IconSize = 16;
             this.btnLogin.IsPrimary = true;
-            this.btnLogin.Location = new System.Drawing.Point(0, 432);
+            this.btnLogin.Location = new System.Drawing.Point(0, 474);
             this.btnLogin.MinimumSize = new System.Drawing.Size(120, 42);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(440, 58);
@@ -128,7 +128,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.lblError.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.lblError.Location = new System.Drawing.Point(0, 402);
             this.lblError.Name = "lblError";
-            this.lblError.Size = new System.Drawing.Size(440, 26);
+            this.lblError.Size = new System.Drawing.Size(440, 72);
             this.lblError.TabIndex = 1;
             // 
             // pnlOptionsRow

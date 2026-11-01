@@ -1,4 +1,5 @@
 using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Services;
@@ -45,39 +46,68 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 switch (result.Status)
                 {
                     case LoginStatus.Success:
-                        _auditLogWriter?.Record(result.User?.UserId, "LOGIN", "Users", result.User?.UserId,
-                            detail: (result.User?.FullName ?? username) + " đã đăng nhập thành công.");
+                        await RecordAuditAsync(result.User?.UserId, "LOGIN", "Users", result.User?.UserId,
+                            (result.User?.FullName ?? username) + " đã đăng nhập thành công.");
                         _view.SaveRememberedUsername(username, _view.RememberMe);
                         _view.CloseOnSuccess();
                         return;
 
                     case LoginStatus.AccountLocked:
-                        _auditLogWriter?.Record(null, "LOGIN_FAILED", "Users",
-                            detail: "Đăng nhập thất bại (tài khoản '" + username + "' đang bị khóa).");
+                        await RecordAuditAsync(null, "LOGIN_FAILED", "Users", null,
+                            "Đăng nhập thất bại (tài khoản '" + username + "' đang bị khóa).");
                         _view.ShowError(Lang.Get("login.error.locked"));
                         return;
 
                     case LoginStatus.AccountDisabled:
-                        _auditLogWriter?.Record(null, "LOGIN_FAILED", "Users",
-                            detail: "Đăng nhập thất bại (tài khoản '" + username + "' đã bị vô hiệu hóa).");
+                        await RecordAuditAsync(null, "LOGIN_FAILED", "Users", null,
+                            "Đăng nhập thất bại (tài khoản '" + username + "' đã bị vô hiệu hóa).");
                         _view.ShowError(Lang.Get("login.error.disabled"));
                         return;
 
                     default:
-                        _auditLogWriter?.Record(null, "LOGIN_FAILED", "Users",
-                            detail: "Đăng nhập thất bại (sai tên đăng nhập hoặc mật khẩu: '" + username + "').");
+                        await RecordAuditAsync(null, "LOGIN_FAILED", "Users", null,
+                            "Đăng nhập thất bại (sai tên đăng nhập hoặc mật khẩu: '" + username + "').");
                         _view.ShowError(Lang.Get("login.error.invalid"));
                         return;
                 }
             }
-            catch (Exception)
+            catch (SqlException exception)
             {
-                _view.ShowError(Lang.Get("login.error.configMissing"));
+                _view.ShowError(
+                    "Không thể kết nối đến cơ sở dữ liệu SIMS. Hãy kiểm tra dịch vụ SQL Server và cấu hình kết nối."
+                    + Environment.NewLine + exception.Message);
+            }
+            catch (InvalidOperationException exception)
+            {
+                _view.ShowError("Cấu hình đăng nhập không hợp lệ: " + exception.Message);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine("[LoginPresenter] Login failed: " + exception);
+                string detail = exception.GetBaseException().Message;
+                _view.ShowError(
+                    Lang.Get("login.error.configMissing") +
+                    Environment.NewLine +
+                    detail);
             }
             finally
             {
                 _view.SetLoading(false);
             }
+        }
+
+        private Task RecordAuditAsync(
+            int? userId, string action, string tableName, int? recordId, string detail)
+        {
+            if (_auditLogWriter == null)
+                return Task.FromResult(0);
+
+            return Task.Run(() => _auditLogWriter.Record(
+                userId,
+                action,
+                tableName,
+                recordId,
+                detail: detail));
         }
     }
 }

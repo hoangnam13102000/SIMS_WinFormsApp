@@ -17,6 +17,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         private readonly int _currentUserId;
         private readonly bool _canApprove;
         private readonly ReturnManagementDataService _dataService;
+        private readonly Label _emptyStateLabel;
 
         public ucReturnManagement()
             : this(null, 0, false)
@@ -35,6 +36,21 @@ namespace SIMS_WinFormsApp.Views.Sales
             _from.Value = DateTime.Today.AddDays(-30);
             _to.Value = DateTime.Today;
             _reason.SelectedIndex = 0;
+            _emptyStateLabel = new Label
+            {
+                BackColor = AppColors.White,
+                Dock = DockStyle.Fill,
+                Font = new System.Drawing.Font("Segoe UI", 10F),
+                ForeColor = AppColors.TextMuted,
+                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                Visible = false
+            };
+            _root.Controls.Remove(_grid);
+            var gridContainer = new Panel { Dock = DockStyle.Fill };
+            gridContainer.Controls.Add(_grid);
+            gridContainer.Controls.Add(_emptyStateLabel);
+            _root.Controls.Add(gridContainer, 0, 2);
+
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             _approve.Visible = canApprove;
             _reject.Visible = canApprove;
@@ -44,6 +60,11 @@ namespace SIMS_WinFormsApp.Views.Sales
             _to.ValueChanged += (sender, args) => LoadRequests();
             _reason.SelectedIndexChanged += (sender, args) => LoadRequests();
             Load += (sender, args) => LoadRequests();
+            VisibleChanged += (sender, args) =>
+            {
+                if (Visible)
+                    LoadRequests();
+            };
             Disposed += (sender, args) => LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
         }
 
@@ -52,7 +73,9 @@ namespace SIMS_WinFormsApp.Views.Sales
         private void ApplyLabels()
         {
             _title.Text = Lang.Get("placeholder.returns.title");
-            _subtitle.Text = Lang.Get("placeholder.returns.description");
+            _subtitle.Text = _canApprove
+                ? "Theo dõi và xử lý yêu cầu đổi trả trong khoảng thời gian đã chọn"
+                : "Chỉ hiển thị yêu cầu đổi trả do tài khoản của bạn tạo trong khoảng thời gian đã chọn";
         }
 
         private void Search_KeyDown(object sender, KeyEventArgs e)
@@ -90,9 +113,17 @@ namespace SIMS_WinFormsApp.Views.Sales
                         ? AppColors.Success : request.Status == "REJECTED" ? AppColors.Error : AppColors.Accent;
                     row.Tag = new ReturnRequest(request.ReturnId, request.Status);
                 }
+                _emptyStateLabel.Text = requests.Count == 0
+                    ? _canApprove
+                        ? "Không có yêu cầu đổi trả trong khoảng thời gian hoặc điều kiện lọc này.\r\nHãy thử mở rộng ngày lọc hoặc xóa nội dung tìm kiếm."
+                        : "Không có yêu cầu đổi trả của bạn trong khoảng thời gian hoặc điều kiện lọc này.\r\nNhân viên chỉ xem được yêu cầu do mình tạo. Hãy thử đổi ngày lọc hoặc tạo yêu cầu từ trang Đơn hàng."
+                    : string.Empty;
+                _emptyStateLabel.Visible = requests.Count == 0;
             }
             catch (Exception ex)
             {
+                _emptyStateLabel.Text = "Không tải được danh sách yêu cầu đổi trả. Vui lòng xem thông báo lỗi.";
+                _emptyStateLabel.Visible = true;
                 AppToast.Error(this, "Lỗi tải dữ liệu",
                     "Không thể tải danh sách yêu cầu trả hàng.\r\n" + ex.Message);
             }

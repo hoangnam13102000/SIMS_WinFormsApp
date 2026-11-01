@@ -15,18 +15,18 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this._videoHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._videoBox)).BeginInit();
             this.SuspendLayout();
-            // 
+            //
             // _instructionLabel
-            // 
+            //
             this._instructionLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this._instructionLabel.Location = new System.Drawing.Point(28, 20);
             this._instructionLabel.Name = "_instructionLabel";
             this._instructionLabel.Size = new System.Drawing.Size(500, 38);
             this._instructionLabel.TabIndex = 3;
             this._instructionLabel.Text = "Đưa mã vạch vào giữa khung hình";
-            // 
+            //
             // _videoHolder
-            // 
+            //
             this._videoHolder.Controls.Add(this._errorLabel);
             this._videoHolder.Controls.Add(this._videoBox);
             this._videoHolder.Dock = System.Windows.Forms.DockStyle.Top;
@@ -34,9 +34,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this._videoHolder.Name = "_videoHolder";
             this._videoHolder.Size = new System.Drawing.Size(500, 330);
             this._videoHolder.TabIndex = 2;
-            // 
+            //
             // _errorLabel
-            // 
+            //
             this._errorLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._errorLabel.Location = new System.Drawing.Point(0, 0);
             this._errorLabel.Name = "_errorLabel";
@@ -44,9 +44,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this._errorLabel.TabIndex = 0;
             this._errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this._errorLabel.Visible = false;
-            // 
+            //
             // _videoBox
-            // 
+            //
             this._videoBox.BackColor = System.Drawing.Color.Black;
             this._videoBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._videoBox.Location = new System.Drawing.Point(0, 0);
@@ -55,17 +55,22 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this._videoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this._videoBox.TabIndex = 1;
             this._videoBox.TabStop = false;
-            // 
+            //
             // _statusLabel
-            // 
+            //
             this._statusLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this._statusLabel.Location = new System.Drawing.Point(28, 388);
             this._statusLabel.Name = "_statusLabel";
             this._statusLabel.Size = new System.Drawing.Size(500, 22);
             this._statusLabel.TabIndex = 1;
-            // 
+            //
+            // Barcode scanner content
+            //
+            this._bodyScrollPanel.Controls.Add(this._statusLabel);
+            this._bodyScrollPanel.Controls.Add(this._videoHolder);
+            this._bodyScrollPanel.Controls.Add(this._instructionLabel);
             // frmBarcodeScannerDialog
-            // 
+            //
             this.ClientSize = new System.Drawing.Size(560, 560);
             this.MinimumSize = new System.Drawing.Size(560, 560);
             this.Name = "frmBarcodeScannerDialog";
