@@ -4,6 +4,9 @@
    ============================================================ */
 USE SIMS_DB;
 GO
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+GO
 
 
 CREATE OR ALTER FUNCTION dbo.fn_GetDefaultMargin()
@@ -29,7 +32,7 @@ GO
 -- het han som nhat duoc xuat truoc), tru trai nhieu lo neu can, loai
 -- han lo da qua han su dung khoi dien ban.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_InvoiceDetails_CheckStock
+CREATE OR ALTER TRIGGER trg_InvoiceDetails_CheckStock
 ON InvoiceDetails
 INSTEAD OF INSERT
 AS
@@ -125,7 +128,7 @@ GO
 -- R3: khong cho DELETE vat ly hoa don / phieu nhap - bat buoc dung
 -- UPDATE Status = 'CANCELLED' kem ly do.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_Invoices_BlockDelete
+CREATE OR ALTER TRIGGER trg_Invoices_BlockDelete
 ON Invoices
 INSTEAD OF DELETE
 AS
@@ -134,7 +137,7 @@ BEGIN
 END;
 GO
 
-CREATE TRIGGER trg_PurchaseReceipts_BlockDelete
+CREATE OR ALTER TRIGGER trg_PurchaseReceipts_BlockDelete
 ON PurchaseReceipts
 INSTEAD OF DELETE
 AS
@@ -150,7 +153,7 @@ GO
 -- TUNG LO da tru (qua InvoiceDetailBatches) thay vi cong thang vao
 -- Products.Stock chung chung, tranh sai lech du lieu lo hang.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_Invoices_CancelSameDayOnly
+CREATE OR ALTER TRIGGER trg_Invoices_CancelSameDayOnly
 ON Invoices
 AFTER UPDATE
 AS
@@ -243,7 +246,7 @@ GO
 -- ---------------------------------------------------------------
 -- R5: tu dong khoa tai khoan sau 5 lan dang nhap sai lien tiep
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_Users_AutoLock
+CREATE OR ALTER TRIGGER trg_Users_AutoLock
 ON Users
 AFTER UPDATE
 AS
@@ -270,7 +273,7 @@ GO
 -- tien). Trigger trg_Products_SyncSellPrice se tu chay tiep de tinh
 -- lai SellPrice ngay sau buoc UPDATE ImportPrice nay.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_PurchaseReceiptDetails_Insert
+CREATE OR ALTER TRIGGER trg_PurchaseReceiptDetails_Insert
 ON PurchaseReceiptDetails
 AFTER INSERT
 AS
@@ -358,7 +361,7 @@ GO
 -- luon khop du co nhieu thao tac xen ke (giong cach trg_Invoices_
 -- CancelSameDayOnly da lam khi hoan lo luc huy hoa don).
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_ReturnExchange_ApprovedStock
+CREATE OR ALTER TRIGGER trg_ReturnExchange_ApprovedStock
 ON ReturnExchanges
 AFTER UPDATE
 AS
@@ -665,7 +668,7 @@ GO
 -- InventoryTransactions (TransactionType='RECONCILE_ADJUST') de truy
 -- vet - giong tinh than cac trigger IMPORT/SALE/RETURN o tren.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_StockReconciliation_Apply
+CREATE OR ALTER TRIGGER trg_StockReconciliation_Apply
 ON StockReconciliation
 INSTEAD OF INSERT
 AS
@@ -723,7 +726,7 @@ GO
 -- R3: lich su doi chieu kho la chung tu doi soat/kiem toan - khong
 -- duoc xoa vinh vien, giong nguyen tac ap dung cho Invoices/PurchaseReceipts.
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_StockReconciliation_BlockDelete
+CREATE OR ALTER TRIGGER trg_StockReconciliation_BlockDelete
 ON StockReconciliation
 INSTEAD OF DELETE
 AS
@@ -738,7 +741,7 @@ GO
 DROP TRIGGER IF EXISTS trg_Products_AutoStockAlert;
 GO
 
-CREATE TRIGGER trg_Products_AutoStockAlert
+CREATE OR ALTER TRIGGER trg_Products_AutoStockAlert
 ON Products
 AFTER UPDATE
 AS
@@ -772,7 +775,7 @@ GO
 -- bo qua - khong bao gio bi trigger ghi de. (Ham fn_GetDefaultMargin
 -- da duoc dinh nghia o dau file.)
 -- ---------------------------------------------------------------
-CREATE TRIGGER trg_Products_SyncSellPrice
+CREATE OR ALTER TRIGGER trg_Products_SyncSellPrice
 ON Products
 AFTER INSERT, UPDATE
 AS
