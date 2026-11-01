@@ -16,12 +16,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private Button _loadButton;
         private DataGridView _stockGrid;
         private DataGridViewTextBoxColumn _productIdColumn;
-        private DataGridViewTextBoxColumn _skuColumn;
-        private DataGridViewTextBoxColumn _productColumn;
-        private DataGridViewTextBoxColumn _systemQtyColumn;
         private DataGridViewTextBoxColumn _statusColumn;
-        private DataGridViewTextBoxColumn _countQtyColumn;
-        private DataGridViewTextBoxColumn _differenceColumn;
         private DataGridViewTextBoxColumn _noteColumn;
         private Panel _actions;
         private Label _countLabel;

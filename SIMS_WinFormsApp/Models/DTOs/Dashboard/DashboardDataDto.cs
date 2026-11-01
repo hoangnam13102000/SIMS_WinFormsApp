@@ -5,18 +5,33 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
 {
     public sealed class DashboardDataDto
     {
-        public decimal RevenueToday { get; set; }
-        public long OrdersToday { get; set; }
-        public long StockQuantity { get; set; }
-        public long CustomerCount { get; set; }
-        public List<DashboardRevenuePointDto> RevenueTrend { get; } = new List<DashboardRevenuePointDto>();
+        public DashboardKind Kind { get; set; }
+        public string ChartTitle { get; set; }
+        public string SeriesTitle { get; set; }
+        public List<DashboardMetricDto> Metrics { get; } = new List<DashboardMetricDto>();
+        public List<DashboardChartPointDto> ChartPoints { get; } = new List<DashboardChartPointDto>();
         public List<DashboardActivityDto> RecentActivities { get; } = new List<DashboardActivityDto>();
     }
 
-    public sealed class DashboardRevenuePointDto
+    public enum DashboardKind
+    {
+        Overview,
+        Inventory,
+        Sales,
+        SalesManagement
+    }
+
+    public sealed class DashboardMetricDto
+    {
+        public string Caption { get; set; }
+        public decimal Value { get; set; }
+        public bool IsCurrency { get; set; }
+    }
+
+    public sealed class DashboardChartPointDto
     {
         public DateTime Date { get; set; }
-        public decimal Revenue { get; set; }
+        public decimal Value { get; set; }
     }
 
     public sealed class DashboardActivityDto

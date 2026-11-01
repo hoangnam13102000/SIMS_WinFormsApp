@@ -30,12 +30,15 @@ namespace SIMS_WinFormsApp.DAL.Linq
         public Table<ProductEntity> Products => GetTable<ProductEntity>();
         public Table<CustomerEntity> Customers => GetTable<CustomerEntity>();
         public Table<InventoryBatchEntity> InventoryBatches => GetTable<InventoryBatchEntity>();
+        public Table<StockDisposalEntity> StockDisposals => GetTable<StockDisposalEntity>();
+        public Table<StockDisposalDetailEntity> StockDisposalDetails => GetTable<StockDisposalDetailEntity>();
         public Table<SupplierEntity> Suppliers => GetTable<SupplierEntity>();
         public Table<SupplierProductEntity> SupplierProducts => GetTable<SupplierProductEntity>();
         public Table<InvoiceEntity> Invoices => GetTable<InvoiceEntity>();
         public Table<InvoiceDetailEntity> InvoiceDetails => GetTable<InvoiceDetailEntity>();
         public Table<ReturnExchangeEntity> ReturnExchanges => GetTable<ReturnExchangeEntity>();
         public Table<ReturnExchangeDetailEntity> ReturnExchangeDetails => GetTable<ReturnExchangeDetailEntity>();
+        public Table<InventoryTransactionEntity> InventoryTransactions => GetTable<InventoryTransactionEntity>();
         public Table<PromotionEntity> Promotions => GetTable<PromotionEntity>();
     }
 }

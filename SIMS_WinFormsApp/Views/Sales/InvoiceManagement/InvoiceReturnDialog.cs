@@ -56,11 +56,19 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             if (connectionFactory == null && !designPreview)
                 throw new ArgumentNullException(nameof(connectionFactory));
             InitializeComponent();
+            _designPreview = designPreview;
             _invoice = invoice ?? throw new ArgumentNullException(nameof(invoice));
             _currentUserId = currentUserId;
             _canApprove = canApprove;
-            _designPreview = designPreview;
             _dataService = designPreview ? null : new ReturnManagementDataService(connectionFactory);
+
+            if (designPreview)
+                return;
+
+            Control[] previewControls = Controls.Cast<Control>().ToArray();
+            Controls.Clear();
+            foreach (Control previewControl in previewControls)
+                previewControl.Dispose();
 
             Text = "Tạo yêu cầu trả hàng";
             StartPosition = FormStartPosition.CenterParent;
