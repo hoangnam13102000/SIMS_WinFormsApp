@@ -25,6 +25,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private int _editingCountRow = -1;
         private string _lastValidCountText = string.Empty;
         private bool _settingCountEditorText;
+        private bool _hasBeenVisible;
 
         public event EventHandler LoadRequested;
         public event EventHandler SaveRequested;
@@ -63,6 +64,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _stockGrid.SizeChanged += OnStockGridSizeChanged;
             _stockGrid.ColumnWidthChanged += OnStockGridColumnWidthChanged;
             _stockGrid.RowHeightChanged += OnStockGridRowHeightChanged;
+            VisibleChanged += OnStockReconciliationVisibleChanged;
             ShowSearchPlaceholder();
             _presenter.Initialize();
         }
@@ -182,6 +184,17 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void RaiseLoadRequested()
         {
             LoadRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnStockReconciliationVisibleChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+                return;
+
+            if (_hasBeenVisible)
+                RaiseLoadRequested();
+            else
+                _hasBeenVisible = true;
         }
 
         private void HideSearchPlaceholder()

@@ -28,6 +28,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 
         void BindCategories(IReadOnlyList<CategoryOptionDto> categories);
         void BindProducts(IReadOnlyList<ProductCatalogItemDto> products);
+        void UpdateProductStock(int productId, int stockQuantity);
         void BindCart(IReadOnlyList<CartLineDto> lines);
 
         void SetCustomer(CustomerLookupDto customer);

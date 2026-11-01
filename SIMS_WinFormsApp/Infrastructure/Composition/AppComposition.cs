@@ -193,6 +193,11 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new SqlInvoiceService(CreateConnectionFactory());
         }
 
+        public static IPosStockReservationService CreatePosStockReservationService()
+        {
+            return new SqlPosStockReservationService(CreateConnectionFactory());
+        }
+
         public static IPromotionService CreatePromotionService()
         {
             return new SqlPromotionService(new PromotionRepository(CreateConnectionFactory()));

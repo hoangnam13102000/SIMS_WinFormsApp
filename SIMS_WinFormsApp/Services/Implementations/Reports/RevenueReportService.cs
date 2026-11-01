@@ -410,6 +410,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             if (period == RevenueReportPeriod.Month)
                 return date.AddMonths(1);
             return date.AddMonths(3);
+
         }
     }
 }

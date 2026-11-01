@@ -52,7 +52,6 @@ namespace SIMS_WinFormsApp.DAL.Linq
         public Table<ReturnExchangeDetailEntity> ReturnExchangeDetails => GetTable<ReturnExchangeDetailEntity>();
         public Table<InventoryTransactionEntity> InventoryTransactions => GetTable<InventoryTransactionEntity>();
         public Table<PromotionEntity> Promotions => GetTable<PromotionEntity>();
-
         public override void SubmitChanges(ConflictMode failureMode)
         {
             if (_writingAuditLogs)
