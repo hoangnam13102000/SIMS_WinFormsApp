@@ -5,8 +5,11 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
 {
     public sealed class DashboardDataDto
     {
+        public bool IsSalesStaffDashboard { get; set; }
         public decimal RevenueToday { get; set; }
         public long OrdersToday { get; set; }
+        public decimal RevenueLast7Days { get; set; }
+        public long OrdersLast7Days { get; set; }
         public long StockQuantity { get; set; }
         public long CustomerCount { get; set; }
         public List<DashboardRevenuePointDto> RevenueTrend { get; } = new List<DashboardRevenuePointDto>();
@@ -25,6 +28,8 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
         public string TableName { get; set; }
         public string Detail { get; set; }
         public string Username { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string RecordStatus { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

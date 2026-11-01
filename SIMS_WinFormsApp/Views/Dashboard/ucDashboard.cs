@@ -21,6 +21,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
     {
         private readonly DashboardPresenter _presenter;
         private Chart _revenueSummaryChart;
+        private Label _revenueSummaryTitle;
         private bool _isLoading;
         private bool _hasLoaded;
 
@@ -33,6 +34,14 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         }
 
         public ucDashboard(string displayName, IDashboardDataService dataService)
+            : this(displayName, null, dataService)
+        {
+        }
+
+        public ucDashboard(
+            string displayName,
+            int? salesStaffUserId,
+            IDashboardDataService dataService)
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
@@ -49,7 +58,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _presenter = new DashboardPresenter(
                 this,
                 displayName,
-                dataService ?? AppComposition.CreateDashboardDataService());
+                dataService ?? AppComposition.CreateDashboardDataService(),
+                salesStaffUserId);
             Load += Dashboard_Load;
             VisibleChanged += Dashboard_VisibleChanged;
         }
@@ -67,8 +77,26 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             CultureInfo vietnamese = CultureInfo.GetCultureInfo("vi-VN");
             _revenueValue.Text = data.RevenueToday.ToString("N0", vietnamese) + " VNĐ";
             _ordersValue.Text = data.OrdersToday.ToString("N0", vietnamese);
-            _stockValue.Text = data.StockQuantity.ToString("N0", vietnamese);
-            _customersValue.Text = data.CustomerCount.ToString("N0", vietnamese);
+            if (data.IsSalesStaffDashboard)
+            {
+                _titleLabel.Text = "Bảng điều khiển nhân viên";
+                _revenueCaption.Text = "Doanh thu của bạn hôm nay";
+                _ordersCaption.Text = "Hóa đơn hôm nay";
+                _stockCaption.Text = "Doanh thu 7 ngày";
+                _customersCaption.Text = "Hóa đơn 7 ngày";
+                _stockValue.Text = data.RevenueLast7Days.ToString("N0", vietnamese) + " VNĐ";
+                _customersValue.Text = data.OrdersLast7Days.ToString("N0", vietnamese);
+                _revenueSummaryTitle.Text = "Doanh thu của bạn · 7 ngày gần nhất";
+                _activityTitle.Text = "Hóa đơn gần đây của bạn";
+                _activitySubtitle.Text = "10 hóa đơn mới nhất do bạn tạo";
+                Activity.HeaderText = "Mã hóa đơn";
+                User.HeaderText = "Tổng tiền";
+            }
+            else
+            {
+                _stockValue.Text = data.StockQuantity.ToString("N0", vietnamese);
+                _customersValue.Text = data.CustomerCount.ToString("N0", vietnamese);
+            }
 
             Series revenueSeries = _revenueSummaryChart.Series["Doanh thu"];
             revenueSeries.Points.Clear();
@@ -84,17 +112,26 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             _activityGrid.Rows.Clear();
             foreach (DashboardActivityDto activity in data.RecentActivities)
             {
-                string activityText = string.IsNullOrWhiteSpace(activity.Detail)
+                string activityText = data.IsSalesStaffDashboard
+                    ? activity.Detail
+                    : string.IsNullOrWhiteSpace(activity.Detail)
                     ? AuditLogDisplayMapper.GetActionLabel(activity.Action)
                         + " · " + AuditLogDisplayMapper.GetTableLabel(activity.TableName)
                     : activity.Detail;
-                string status = AuditLogDisplayMapper.IsIncident(activity.Action)
+                string amount = data.IsSalesStaffDashboard
+                    ? (activity.TotalAmount ?? 0m).ToString("N0", vietnamese) + " VNĐ"
+                    : activity.Username;
+                string status = data.IsSalesStaffDashboard
+                    ? (string.Equals(activity.RecordStatus, "ACTIVE", StringComparison.OrdinalIgnoreCase)
+                        ? "Hoàn tất"
+                        : "Đã hủy")
+                    : AuditLogDisplayMapper.IsIncident(activity.Action)
                     ? "Cảnh báo"
                     : "Đã ghi nhận";
 
                 _activityGrid.Rows.Add(
                     activityText,
-                    activity.Username,
+                    amount,
                     activity.CreatedAt.ToString("dd/MM/yyyy HH:mm", vietnamese),
                     status);
             }
@@ -127,7 +164,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             chartLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
-            var chartTitle = new Label
+            _revenueSummaryTitle = new Label
             {
                 AutoSize = true,
                 Dock = DockStyle.Fill,
@@ -166,7 +203,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             });
             _revenueSummaryChart.Series["Doanh thu"]["PointWidth"] = "0.55";
 
-            chartLayout.Controls.Add(chartTitle, 0, 0);
+            chartLayout.Controls.Add(_revenueSummaryTitle, 0, 0);
             chartLayout.Controls.Add(_revenueSummaryChart, 0, 1);
             chartPanel.Controls.Add(chartLayout);
             _contentLayout.Controls.Add(chartPanel, 0, 1);

@@ -30,9 +30,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             HeaderTitle = title;
             SetHeaderIcon(IconChar.List, AppColors.Accent);
 
+            _listBox.Dock = DockStyle.Fill;
             _listBox.Items.Clear();
             foreach (var item in items)
                 _listBox.Items.Add(new PickerItem(item, textSelector(item)));
+            ContentHost.Controls.Add(_listBox);
 
             _listBox.DoubleClick += ListBox_DoubleClick;
 

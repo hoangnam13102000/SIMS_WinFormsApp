@@ -6,6 +6,7 @@ using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
+using SIMS_WinFormsApp.Views.Dialogs;
 using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Sales.InvoiceManagement;
@@ -94,6 +95,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.BindCategories(_catalogService.GetCategories());
             _view.BindPromotions(_promotionService.GetAvailablePromotions());
             _view.SetPaymentMethods(PaymentMethods);
+            _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             ReloadProducts();
             RefreshCart();
         }
@@ -197,7 +199,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         #region Khách hàng
         private void OnCustomerSearchRequested(object sender, string keyword)
         {
-            var found = _customerService.FindByPhoneOrCode(keyword);
+            var found = _customerService.FindCustomer(keyword);
             if (found == null)
             {
                 AppToast.Warning(_ownerWindowProvider() as Control, "Không tìm thấy khách hàng",
@@ -266,6 +268,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             }
 
             _heldCartStore.Add(_selectedCustomer?.DisplayText, _cart.Lines);
+            _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             ResetForNewSale();
             AppToast.Success(owner as Control, "Đã tạm giữ giỏ hàng.");
         }
@@ -285,6 +288,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             _cart.Restore(picked.Lines);
             _heldCartStore.Remove(picked.HeldCartId);
+            _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             RefreshCart();
             AppToast.Success(owner as Control, "Đã mở lại giỏ hàng đã giữ.");
         }
@@ -324,20 +328,22 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             }
             catch (SqlException exception)
             {
-                _view.SetBusy(false);
-                AppToast.Error(owner as Control, "Không thể lưu hóa đơn", exception.Message);
+                ReportCheckoutFailure(owner, "Không thể lưu hóa đơn", exception, false);
                 return;
             }
             catch (InvalidOperationException exception)
             {
-                _view.SetBusy(false);
-                AppToast.Warning(owner as Control, "Chưa thể thanh toán", exception.Message);
+                ReportCheckoutFailure(owner, "Chưa thể thanh toán", exception, true);
                 return;
             }
             catch (ArgumentException exception)
             {
-                _view.SetBusy(false);
-                AppToast.Warning(owner as Control, "Thông tin thanh toán không hợp lệ", exception.Message);
+                ReportCheckoutFailure(owner, "Thông tin thanh toán không hợp lệ", exception, true);
+                return;
+            }
+            catch (Exception exception)
+            {
+                ReportCheckoutFailure(owner, "Không thể hoàn tất thanh toán", exception, false);
                 return;
             }
 
@@ -361,6 +367,30 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                 AppToast.Success(owner as Control, "Thanh toán thành công",
                     "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
             }
+        }
+
+        private void ReportCheckoutFailure(
+            IWin32Window owner,
+            string title,
+            Exception exception,
+            bool isWarning)
+        {
+            _view.SetBusy(false);
+            System.Diagnostics.Debug.WriteLine("[PosPresenter] Checkout failed: " + exception);
+
+            Exception root = exception.GetBaseException();
+            string detail = root.Message;
+            if (exception is SqlException sqlException)
+                detail = "Mã lỗi SQL: " + sqlException.Number + Environment.NewLine + detail;
+            if (string.IsNullOrWhiteSpace(detail))
+                detail = root.GetType().FullName;
+
+            string message = "Hóa đơn chưa được tạo." + Environment.NewLine +
+                Environment.NewLine + "Chi tiết lỗi:" + Environment.NewLine + detail;
+            if (isWarning)
+                DialogHelper.ShowWarning(owner, title, message);
+            else
+                DialogHelper.ShowError(owner, title, message);
         }
 
         private InvoiceDetails CreateReceiptInvoice(string paymentMethod, CartTotalsDto totals)

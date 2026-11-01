@@ -104,7 +104,7 @@ namespace SIMS_WinFormsApp.UI.Theme
                 {
                     int textWidth = Math.Max(80, width - paddingX * 2 - 16);
                     var taglineRect = new Rectangle(paddingX, cursorY, textWidth, 130);
-                    using (var format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.NoWrap))
+                    using (var format = new StringFormat())
                     {
                         format.LineAlignment = StringAlignment.Near;
                         format.Alignment = StringAlignment.Near;
