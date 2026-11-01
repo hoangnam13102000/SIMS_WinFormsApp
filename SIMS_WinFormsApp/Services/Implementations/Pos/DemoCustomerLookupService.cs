@@ -20,13 +20,14 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             new CustomerLookupDto { CustomerId = 3, FullName = "Lê Hoàng Nam", Phone = "0987654321", LoyaltyPoints = 300 },
         };
 
-        public CustomerLookupDto FindByPhoneOrCode(string keyword)
+        public CustomerLookupDto FindCustomer(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword)) return null;
             string k = keyword.Trim();
             return _customers.FirstOrDefault(c =>
                 string.Equals(c.Phone, k, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(c.CustomerId.ToString(), k, StringComparison.OrdinalIgnoreCase));
+                string.Equals(c.CustomerId.ToString(), k, StringComparison.OrdinalIgnoreCase) ||
+                (c.FullName ?? string.Empty).IndexOf(k, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         public IReadOnlyList<CustomerLookupDto> Search(string keyword)

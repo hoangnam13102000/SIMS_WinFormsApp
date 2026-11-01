@@ -16,10 +16,14 @@ namespace SIMS_WinFormsApp.Services.Barcode
                 Options =
                 {
                     TryHarder = true,
+                    TryInverted = true,
                     PossibleFormats = new List<BarcodeFormat>
                     {
                         BarcodeFormat.CODE_128,
                         BarcodeFormat.CODE_39,
+                        BarcodeFormat.CODE_93,
+                        BarcodeFormat.CODABAR,
+                        BarcodeFormat.ITF,
                         BarcodeFormat.EAN_13,
                         BarcodeFormat.EAN_8,
                         BarcodeFormat.UPC_A,

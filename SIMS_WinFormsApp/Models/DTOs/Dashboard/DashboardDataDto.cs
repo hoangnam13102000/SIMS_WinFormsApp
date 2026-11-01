@@ -5,6 +5,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
 {
     public sealed class DashboardDataDto
     {
+        public bool IsSalesStaffDashboard { get; set; }
         public DashboardKind Kind { get; set; }
         public string ChartTitle { get; set; }
         public string SeriesTitle { get; set; }
@@ -40,6 +41,8 @@ namespace SIMS_WinFormsApp.Models.DTOs.Dashboard
         public string TableName { get; set; }
         public string Detail { get; set; }
         public string Username { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string RecordStatus { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

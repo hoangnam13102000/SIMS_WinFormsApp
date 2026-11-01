@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Services.Barcode;
 
@@ -14,10 +15,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
         private readonly ISynchronizeInvoke _uiThread;
         private readonly IWebcamCaptureSession _capture;
         private readonly BarcodeScanEngine _engine;
-        private readonly Timer _decodeTimer;
+        private readonly System.Windows.Forms.Timer _decodeTimer;
 
         private Bitmap _latestFrame;
-        private bool _scanning;
+        private volatile bool _scanning;
+        private int _frameDispatchPending;
 
         /// <summary>Bắn ra ĐÚNG 1 LẦN khi đọc được 1 mã (luôn trên luồng UI).</summary>
         public event EventHandler<string> Scanned;
@@ -33,7 +35,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             _capture = captureSession ?? throw new ArgumentNullException(nameof(captureSession));
             _engine = engine ?? throw new ArgumentNullException(nameof(engine));
 
-            _decodeTimer = new Timer { Interval = DecodeIntervalMs };
+            _decodeTimer = new System.Windows.Forms.Timer { Interval = DecodeIntervalMs };
             _decodeTimer.Tick += (s, e) => TryDecodeLatestFrame();
         }
 
@@ -47,11 +49,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
 
             _capture.FrameCaptured += OnFrameCaptured;
             _capture.CaptureFailed += OnCaptureFailed;
-            _capture.Start();
-
             _scanning = true;
             _view.ShowStatus("Đang quét...");
-            _decodeTimer.Start();
+            _capture.Start();
+            if (_scanning) _decodeTimer.Start();
         }
 
         public void Stop()
@@ -68,25 +69,43 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
         private void OnFrameCaptured(object sender, Bitmap frame)
         {
             if (!_scanning) { frame.Dispose(); return; }
+            if (Interlocked.CompareExchange(ref _frameDispatchPending, 1, 0) != 0)
+            {
+                frame.Dispose();
+                return;
+            }
+
             try
             {
                 _uiThread.BeginInvoke(new Action(() => HandleFrameOnUiThread(frame)), null);
             }
             catch (ObjectDisposedException)
             {
-                // Dialog đã đóng đúng lúc khung hình cuối bay tới - bỏ qua khung hình này.
                 frame.Dispose();
+                Interlocked.Exchange(ref _frameDispatchPending, 0);
+            }
+            catch (InvalidOperationException)
+            {
+                frame.Dispose();
+                Interlocked.Exchange(ref _frameDispatchPending, 0);
             }
         }
 
         private void HandleFrameOnUiThread(Bitmap frame)
         {
-            if (!_scanning) { frame.Dispose(); return; }
+            try
+            {
+                if (!_scanning) { frame.Dispose(); return; }
 
-            var previous = _latestFrame;
-            _latestFrame = frame;
-            _view.RenderFrame(frame);
-            previous?.Dispose();
+                var previous = _latestFrame;
+                _latestFrame = frame;
+                _view.RenderFrame(frame);
+                previous?.Dispose();
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _frameDispatchPending, 0);
+            }
         }
 
         private void OnCaptureFailed(object sender, string message)
