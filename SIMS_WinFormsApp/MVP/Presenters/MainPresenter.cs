@@ -120,7 +120,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
                 StartNotificationPolling();
                 RefreshUnviewedInvoiceBadge(permissions);
-                _layout.ShowPage(permissions.Contains(AppPermission.DASHBOARD_VIEW) ? "dashboard" : "profile");
+                _layout.ShowPage(CanViewDashboard(permissions) ? "dashboard" : "profile");
 
                 StartDailyBackupScheduler();
             }
@@ -233,14 +233,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             var layout = new MainLayoutControl(Lang.Get("main.header.subtitle"));
             layout.AddLazyPage("profile", Lang.Get("header.dropdown.profile"),
                 () => new SIMS_WinFormsApp.Views.Profile.ucMyProfile(), IconChar.UserCircle, showInSidebar: false);
-            if (HasAnyPermission(permissions, AppPermission.DASHBOARD_VIEW))
+            if (CanViewDashboard(permissions))
             {
                 layout.AddSection(Lang.Get("sidebar.section.overview"));
                 layout.AddPage("dashboard", Lang.Get("sidebar.page.dashboard"),
                     new ucDashboard(
                         _getDisplayName(),
                         UserSession.Instance.CurrentUser?.RoleCode,
-                        UserSession.Instance.CurrentUser?.UserId ?? 0), IconChar.House);
+                        UserSession.Instance.CurrentUser?.UserId ?? 0,
+                        AppComposition.CreateDashboardDataService()), IconChar.House);
             }
 
             if (HasAnyPermission(permissions,
@@ -390,6 +391,16 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
 
             return layout;
+        }
+
+        private static bool CanViewDashboard(HashSet<AppPermission> permissions)
+        {
+            var user = UserSession.Instance.CurrentUser;
+            return HasAnyPermission(permissions, AppPermission.DASHBOARD_VIEW)
+                || (user != null && string.Equals(
+                    user.RoleCode,
+                    RoleCodes.SalesStaff,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         private static HashSet<AppPermission> GetCurrentUserPermissions()

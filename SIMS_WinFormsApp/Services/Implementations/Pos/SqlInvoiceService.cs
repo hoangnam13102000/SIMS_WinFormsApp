@@ -68,13 +68,13 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     ConsumePromotion(db, promotionId);
                     foreach (CartLineDto line in orderedLines)
                     {
-                        db.InvoiceDetails.InsertOnSubmit(new InvoiceDetailEntity
-                        {
-                            InvoiceID = invoice.InvoiceID,
-                            ProductID = line.ProductId,
-                            Quantity = line.Quantity,
-                            UnitPrice = line.UnitPrice
-                        });
+                        db.ExecuteCommand(
+                            "INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice) " +
+                            "VALUES ({0}, {1}, {2}, {3})",
+                            invoice.InvoiceID,
+                            line.ProductId,
+                            line.Quantity,
+                            line.UnitPrice);
                     }
                     DeductLoyaltyPoints(db, customerId, totals);
                     db.SubmitChanges();

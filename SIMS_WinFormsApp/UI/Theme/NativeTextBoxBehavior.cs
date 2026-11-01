@@ -22,7 +22,7 @@ namespace SIMS_WinFormsApp.UI.Theme
         {
             if (textBox == null) throw new ArgumentNullException(nameof(textBox));
             textBox.CreateControl();
-            SendMessage(textBox.Handle, EmSetCueBanner, new IntPtr(1), text ?? string.Empty);
+            SendMessage(textBox.Handle, EmSetCueBanner, IntPtr.Zero, text ?? string.Empty);
         }
 
         public static void SetTextMargins(TextBox textBox, int left, int right)

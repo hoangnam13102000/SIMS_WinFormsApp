@@ -17,26 +17,198 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
+        public DashboardDataDto GetDashboardData()
+        {
+            return GetDashboardData(string.Empty, 0);
+        }
+
         public DashboardDataDto GetDashboardData(string roleCode, int currentUserId)
         {
-            var data = new DashboardDataDto();
+            return GetDashboardData(roleCode, currentUserId, null, null, null, null);
+        }
+
+        public DashboardDataDto GetDashboardData(DateTime revenuePeriodStart, DateTime revenuePeriodEnd)
+        {
+            return GetDashboardData(string.Empty, 0, null, null, revenuePeriodStart, revenuePeriodEnd);
+        }
+
+        public DashboardDataDto GetDashboardData(
+            string roleCode,
+            int currentUserId,
+            DateTime? invoicePeriodStart,
+            DateTime? invoicePeriodEnd,
+            DateTime revenuePeriodStart,
+            DateTime revenuePeriodEnd)
+        {
+            if (invoicePeriodStart.HasValue != invoicePeriodEnd.HasValue)
+                throw new ArgumentException("Ngày bắt đầu và kết thúc lọc hóa đơn phải được cung cấp cùng nhau.");
+            if (invoicePeriodStart.HasValue)
+                ValidatePeriod(invoicePeriodStart.Value, invoicePeriodEnd.Value, nameof(invoicePeriodEnd));
+            ValidatePeriod(revenuePeriodStart, revenuePeriodEnd, nameof(revenuePeriodEnd));
+            return GetDashboardData(
+                roleCode, currentUserId, invoicePeriodStart, invoicePeriodEnd,
+                (DateTime?)revenuePeriodStart, revenuePeriodEnd);
+        }
+
+        public DashboardDataDto GetSalesStaffDashboardData(int userId)
+        {
+            return GetSalesStaffDashboardData(
+                userId, null, null, DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1));
+        }
+
+        public DashboardDataDto GetSalesStaffDashboardData(
+            int userId,
+            DateTime invoicePeriodStart,
+            DateTime invoicePeriodEnd)
+        {
+            return GetSalesStaffDashboardData(
+                userId, invoicePeriodStart, invoicePeriodEnd,
+                DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1));
+        }
+
+        public DashboardDataDto GetSalesStaffDashboardData(
+            int userId,
+            DateTime? invoicePeriodStart,
+            DateTime? invoicePeriodEnd,
+            DateTime revenuePeriodStart,
+            DateTime revenuePeriodEnd)
+        {
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            return GetDashboardData(
+                RoleCodes.SalesStaff, userId, invoicePeriodStart, invoicePeriodEnd,
+                revenuePeriodStart, revenuePeriodEnd);
+        }
+
+        private DashboardDataDto GetDashboardData(
+            string roleCode,
+            int currentUserId,
+            DateTime? invoicePeriodStart,
+            DateTime? invoicePeriodEnd,
+            DateTime? revenuePeriodStart,
+            DateTime? revenuePeriodEnd)
+        {
+            bool isSalesStaff = string.Equals(
+                roleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase);
+            var data = new DashboardDataDto { IsSalesStaffDashboard = isSalesStaff };
             DateTime today = DateTime.Today;
             DateTime firstTrendDate = today.AddDays(-6);
+            DateTime tomorrow = today.AddDays(1);
 
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                DateTime tomorrow = today.AddDays(1);
                 if (string.Equals(roleCode, RoleCodes.InventoryManager, StringComparison.OrdinalIgnoreCase))
                     LoadInventoryDashboard(db, data, today, firstTrendDate, tomorrow);
                 else if (string.Equals(roleCode, RoleCodes.SalesManager, StringComparison.OrdinalIgnoreCase))
                     LoadSalesManagementDashboard(db, data, today, firstTrendDate, tomorrow);
-                else if (string.Equals(roleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase))
+                else if (isSalesStaff && currentUserId > 0)
+                {
                     LoadSalesDashboard(db, data, currentUserId, today, firstTrendDate, tomorrow);
+                    LoadRecentInvoices(db, data, currentUserId, invoicePeriodStart, invoicePeriodEnd);
+                }
                 else
                     LoadOverviewDashboard(db, data, today, firstTrendDate, tomorrow);
+
+                if (revenuePeriodStart.HasValue && revenuePeriodEnd.HasValue
+                    && data.Kind != DashboardKind.Inventory)
+                {
+                    LoadRevenuePeriodTrend(
+                        db, data, revenuePeriodStart.Value, revenuePeriodEnd.Value);
+                }
             }
 
             return data;
+        }
+
+        private static void LoadRevenuePeriodTrend(
+            SimsDataContext db, DashboardDataDto data, DateTime periodStart, DateTime periodEnd)
+        {
+            ValidatePeriod(periodStart, periodEnd, nameof(periodEnd));
+            var invoices = db.Invoices.Where(invoice => invoice.Status == "ACTIVE"
+                && invoice.CreatedAt >= periodStart && invoice.CreatedAt < periodEnd);
+            data.ChartPoints.Clear();
+
+            if (periodEnd - periodStart > TimeSpan.FromDays(31))
+            {
+                var totals = invoices
+                    .GroupBy(invoice => new { invoice.CreatedAt.Year, invoice.CreatedAt.Month })
+                    .Select(group => new
+                    {
+                        group.Key.Year,
+                        group.Key.Month,
+                        Total = group.Sum(invoice => invoice.TotalAmount)
+                    })
+                    .ToList()
+                    .ToDictionary(item => new DateTime(item.Year, item.Month, 1), item => item.Total);
+                for (DateTime month = new DateTime(periodStart.Year, periodStart.Month, 1);
+                    month < periodEnd;
+                    month = month.AddMonths(1))
+                {
+                    data.ChartPoints.Add(new DashboardChartPointDto
+                    {
+                        Date = month,
+                        Value = totals.TryGetValue(month, out decimal total) ? total : 0m
+                    });
+                }
+            }
+            else
+            {
+                var totals = invoices
+                    .GroupBy(invoice => invoice.CreatedAt.Date)
+                    .Select(group => new { Date = group.Key, Total = group.Sum(invoice => invoice.TotalAmount) })
+                    .ToList()
+                    .ToDictionary(item => item.Date.Date, item => item.Total);
+                for (DateTime date = periodStart.Date; date < periodEnd.Date; date = date.AddDays(1))
+                {
+                    data.ChartPoints.Add(new DashboardChartPointDto
+                    {
+                        Date = date,
+                        Value = totals.TryGetValue(date, out decimal total) ? total : 0m
+                    });
+                }
+            }
+
+            data.ChartTitle = "Doanh thu " + periodStart.ToString("dd/MM/yyyy")
+                + " - " + periodEnd.AddDays(-1).ToString("dd/MM/yyyy");
+        }
+
+        private static void LoadRecentInvoices(
+            SimsDataContext db,
+            DashboardDataDto data,
+            int userId,
+            DateTime? periodStart,
+            DateTime? periodEnd)
+        {
+            var invoices = db.Invoices.Where(invoice => invoice.CreatedBy == userId);
+            if (periodStart.HasValue)
+                invoices = invoices.Where(invoice => invoice.CreatedAt >= periodStart.Value);
+            if (periodEnd.HasValue)
+                invoices = invoices.Where(invoice => invoice.CreatedAt < periodEnd.Value);
+
+            var recentInvoices = invoices
+                .OrderByDescending(invoice => invoice.CreatedAt)
+                .ThenByDescending(invoice => invoice.InvoiceID)
+                .Select(invoice => new
+                {
+                    invoice.InvoiceCode,
+                    invoice.TotalAmount,
+                    invoice.Status,
+                    invoice.CreatedAt
+                })
+                .Take(100)
+                .ToList();
+            foreach (var invoice in recentInvoices)
+            {
+                data.RecentActivities.Add(new DashboardActivityDto
+                {
+                    Action = "INVOICE",
+                    TableName = "Invoices",
+                    Detail = invoice.InvoiceCode,
+                    TotalAmount = invoice.TotalAmount,
+                    RecordStatus = invoice.Status,
+                    CreatedAt = invoice.CreatedAt
+                });
+            }
         }
 
         private static void LoadOverviewDashboard(
@@ -199,6 +371,12 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     Username = activity.Username ?? "(đã xóa)",
                     CreatedAt = activity.CreatedAt
                 });
+        }
+
+        private static void ValidatePeriod(DateTime periodStart, DateTime periodEnd, string endParameterName)
+        {
+            if (periodEnd <= periodStart)
+                throw new ArgumentOutOfRangeException(endParameterName, "Ngày kết thúc phải sau ngày bắt đầu.");
         }
     }
 }

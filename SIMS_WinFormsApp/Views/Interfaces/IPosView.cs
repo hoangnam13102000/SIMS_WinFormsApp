@@ -40,6 +40,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         string SelectedPaymentMethod { get; }
         void SetCheckoutEnabled(bool enabled);
         void SetBusy(bool isBusy);
+        void SetHeldCartCount(int count);
 
         /// <summary>Mở popup chọn 1 giỏ hàng đã tạm giữ, trả về lựa chọn hoặc null nếu hủy.</summary>
         HeldCartDto PromptPickHeldCart(IReadOnlyList<HeldCartDto> heldCarts);

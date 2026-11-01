@@ -84,7 +84,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             catch (Exception exception)
             {
                 System.Diagnostics.Debug.WriteLine("[LoginPresenter] Login failed: " + exception);
-                _view.ShowError("Không thể hoàn tất đăng nhập: " + exception.Message);
+                string detail = exception.GetBaseException().Message;
+                _view.ShowError(
+                    Lang.Get("login.error.configMissing") +
+                    Environment.NewLine +
+                    detail);
             }
             finally
             {
