@@ -23,7 +23,11 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             InitializeComponent();
             HeaderTitle = "Chi tiết nhật ký";
             SetHeaderIcon(IconChar.Eye, AppColors.Accent);
-            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                BuildDesignPreviewContent();
+                return;
+            }
         }
 
         private frmAuditLogDetail(IWin32Window owner, AuditLogDetailDto detail) : base(owner)
@@ -128,6 +132,119 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             ContentHost.Controls.Add(diffHost);
             ContentHost.Controls.Add(diffHeader);
             ContentHost.Controls.Add(infoGrid);
+        }
+
+        private void BuildDesignPreviewContent()
+        {
+            var root = new TableLayoutPanel
+            {
+                ColumnCount = 1,
+                Dock = DockStyle.Fill,
+                Name = "auditPreviewRoot",
+                RowCount = 3
+            };
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 228F));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32F));
+            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+            var infoGrid = new TableLayoutPanel
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 2,
+                Dock = DockStyle.Fill,
+                Name = "auditInfoGrid",
+                RowCount = 3
+            };
+            infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            for (int row = 0; row < 3; row++)
+                infoGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 72F));
+
+            AddPreviewField(infoGrid, 0, 0, "Thời gian", "01/01/2026 12:00:00");
+            AddPreviewField(infoGrid, 1, 0, "Người dùng", "Tên người dùng");
+            AddPreviewField(infoGrid, 0, 1, "Hành động", "Cập nhật");
+            AddPreviewField(infoGrid, 1, 1, "Đối tượng", "Bản ghi");
+            AddPreviewField(infoGrid, 0, 2, "Địa chỉ IP", "-");
+            AddPreviewField(infoGrid, 1, 2, "Mô tả", "Nội dung thay đổi");
+            root.Controls.Add(infoGrid, 0, 0);
+
+            root.Controls.Add(new Label
+            {
+                Dock = DockStyle.Fill,
+                Name = "diffTitle",
+                Text = "Thay đổi",
+                TextAlign = ContentAlignment.MiddleLeft
+            }, 0, 1);
+
+            var diffGrid = new TableLayoutPanel
+            {
+                ColumnCount = 2,
+                Dock = DockStyle.Fill,
+                Name = "diffPreview",
+                RowCount = 1
+            };
+            diffGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            diffGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            diffGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            diffGrid.Controls.Add(CreatePreviewDiffPanel("Giá trị trước", "Dữ liệu cũ"), 0, 0);
+            diffGrid.Controls.Add(CreatePreviewDiffPanel("Giá trị sau", "Dữ liệu mới"), 1, 0);
+            root.Controls.Add(diffGrid, 0, 2);
+
+            ContentHost.Controls.Add(root);
+            root.BringToFront();
+            ContentHost.PerformLayout();
+        }
+
+        private static void AddPreviewField(
+            TableLayoutPanel grid,
+            int column,
+            int row,
+            string labelText,
+            string valueText)
+        {
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8)
+            };
+            panel.Controls.Add(new Label
+            {
+                Dock = DockStyle.Top,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                Text = valueText
+            });
+            panel.Controls.Add(new Label
+            {
+                Dock = DockStyle.Top,
+                Text = labelText
+            });
+            grid.Controls.Add(panel, column, row);
+        }
+
+        private static Control CreatePreviewDiffPanel(string title, string value)
+        {
+            var panel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8)
+            };
+            panel.Controls.Add(new TextBox
+            {
+                Dock = DockStyle.Fill,
+                Multiline = true,
+                ReadOnly = true,
+                ScrollBars = ScrollBars.Vertical,
+                Text = value
+            });
+            panel.Controls.Add(new Label
+            {
+                Dock = DockStyle.Top,
+                Height = 28,
+                Text = title,
+                TextAlign = ContentAlignment.MiddleCenter
+            });
+            return panel;
         }
 
         private static void AddInfoField(TableLayoutPanel grid, string label, string value)

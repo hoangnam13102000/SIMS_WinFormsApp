@@ -19,7 +19,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 AppComposition.CreateProductCatalogService(),
                 AppComposition.CreateCustomerLookupService(),
                 AppComposition.CreateInvoiceService(),
-                AppComposition.CreatePosStockReservationService(),
                 AppComposition.CreatePromotionService(),
                 AppComposition.CreateBarcodeScannerLauncher(),
                 new HeldCartStore(),

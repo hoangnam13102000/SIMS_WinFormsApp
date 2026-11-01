@@ -62,14 +62,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _canApprove = canApprove;
             _dataService = designPreview ? null : new ReturnManagementDataService(connectionFactory);
 
-            if (designPreview)
-                return;
-
-            Control[] previewControls = Controls.Cast<Control>().ToArray();
-            Controls.Clear();
-            foreach (Control previewControl in previewControls)
-                previewControl.Dispose();
-
             Text = "Tạo yêu cầu trả hàng";
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;

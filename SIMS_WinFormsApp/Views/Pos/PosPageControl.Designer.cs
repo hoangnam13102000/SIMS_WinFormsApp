@@ -145,11 +145,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutScrollPanel.SuspendLayout();
             this._checkoutLayout.SuspendLayout();
             this._promoLayout.SuspendLayout();
+            this._applyPromoButtonBorder.SuspendLayout();
             this._totalsLayout.SuspendLayout();
             this._paymentLayout.SuspendLayout();
             this._actionsLayout.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // _root
             // 
             this._root.ColumnCount = 1;
@@ -586,7 +587,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
-            this._checkoutLayout.Size = new System.Drawing.Size(354, 314);
+            this._checkoutLayout.Size = new System.Drawing.Size(354, 322);
             this._checkoutLayout.TabIndex = 0;
             // 
             // _promoLayout
@@ -605,7 +606,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoLayout.Name = "_promoLayout";
             this._promoLayout.RowCount = 1;
             this._promoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._promoLayout.Size = new System.Drawing.Size(348, 36);
+            this._promoLayout.Size = new System.Drawing.Size(348, 44);
             this._promoLayout.TabIndex = 0;
             // 
             // _promoLabel
@@ -613,7 +614,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._promoLabel.Location = new System.Drawing.Point(3, 0);
             this._promoLabel.Name = "_promoLabel";
-            this._promoLabel.Size = new System.Drawing.Size(58, 36);
+            this._promoLabel.Size = new System.Drawing.Size(58, 44);
             this._promoLabel.TabIndex = 0;
             this._promoLabel.Text = "Mã KM";
             this._promoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -624,51 +625,50 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._promoTextBox.Location = new System.Drawing.Point(64, 4);
             this._promoTextBox.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this._promoTextBox.Name = "_promoTextBox";
-            this._promoTextBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
-            this._promoTextBox.Size = new System.Drawing.Size(190, 26);
+            this._promoTextBox.Size = new System.Drawing.Size(130, 28);
             this._promoTextBox.TabIndex = 1;
-            //
+            // 
             // _promoDropdownButton
-            //
+            // 
             this._promoDropdownButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._promoDropdownButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._promoDropdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._promoDropdownButton.IconChar = FontAwesome.Sharp.IconChar.ChevronDown;
             this._promoDropdownButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._promoDropdownButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._promoDropdownButton.IconSize = 14;
-            this._promoDropdownButton.Location = new System.Drawing.Point(254, 4);
+            this._promoDropdownButton.Location = new System.Drawing.Point(194, 4);
             this._promoDropdownButton.Margin = new System.Windows.Forms.Padding(0, 4, 6, 4);
             this._promoDropdownButton.Name = "_promoDropdownButton";
-            this._promoDropdownButton.Size = new System.Drawing.Size(28, 28);
+            this._promoDropdownButton.Size = new System.Drawing.Size(28, 36);
             this._promoDropdownButton.TabIndex = 2;
             this._promoDropdownButton.UseVisualStyleBackColor = true;
-            //
+            // 
             // _applyPromoButtonBorder
-            //
+            // 
             this._applyPromoButtonBorder.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._applyPromoButtonBorder.Controls.Add(this._applyPromoButton);
             this._applyPromoButtonBorder.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._applyPromoButtonBorder.Location = new System.Drawing.Point(288, 4);
+            this._applyPromoButtonBorder.Location = new System.Drawing.Point(228, 2);
             this._applyPromoButtonBorder.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this._applyPromoButtonBorder.Name = "_applyPromoButtonBorder";
             this._applyPromoButtonBorder.Padding = new System.Windows.Forms.Padding(1);
-            this._applyPromoButtonBorder.Size = new System.Drawing.Size(120, 32);
+            this._applyPromoButtonBorder.Size = new System.Drawing.Size(120, 40);
             this._applyPromoButtonBorder.TabIndex = 3;
-            //
+            // 
             // _applyPromoButton
             // 
-            this._applyPromoButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._applyPromoButton.BackColor = System.Drawing.Color.White;
+            this._applyPromoButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._applyPromoButton.FlatAppearance.BorderSize = 0;
             this._applyPromoButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._applyPromoButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._applyPromoButton.Location = new System.Drawing.Point(1, 1);
             this._applyPromoButton.Margin = new System.Windows.Forms.Padding(0);
             this._applyPromoButton.Name = "_applyPromoButton";
-            this._applyPromoButton.Size = new System.Drawing.Size(118, 30);
+            this._applyPromoButton.Size = new System.Drawing.Size(118, 38);
             this._applyPromoButton.TabIndex = 3;
             this._applyPromoButton.Text = "ÁP DỤNG";
-            this._applyPromoButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this._applyPromoButton.UseVisualStyleBackColor = false;
             // 
             // _totalsLayout
@@ -687,7 +687,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._totalsLayout.Controls.Add(this._grandTotalCaption, 0, 4);
             this._totalsLayout.Controls.Add(this._grandTotalValue, 1, 4);
             this._totalsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._totalsLayout.Location = new System.Drawing.Point(3, 45);
+            this._totalsLayout.Location = new System.Drawing.Point(3, 53);
             this._totalsLayout.Name = "_totalsLayout";
             this._totalsLayout.RowCount = 5;
             this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
@@ -809,7 +809,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._paymentLayout.Controls.Add(this._paymentCaption, 0, 0);
             this._paymentLayout.Controls.Add(this._paymentMethod, 1, 0);
             this._paymentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._paymentLayout.Location = new System.Drawing.Point(3, 173);
+            this._paymentLayout.Location = new System.Drawing.Point(3, 181);
             this._paymentLayout.Name = "_paymentLayout";
             this._paymentLayout.RowCount = 1;
             this._paymentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -845,7 +845,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._actionsLayout.Controls.Add(this._heldCartsButton, 1, 0);
             this._actionsLayout.Controls.Add(this._checkoutButton, 0, 1);
             this._actionsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._actionsLayout.Location = new System.Drawing.Point(3, 231);
+            this._actionsLayout.Location = new System.Drawing.Point(3, 239);
             this._actionsLayout.Name = "_actionsLayout";
             this._actionsLayout.RowCount = 2;
             this._actionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46F));
@@ -924,7 +924,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutScrollPanel.ResumeLayout(false);
             this._checkoutLayout.ResumeLayout(false);
             this._promoLayout.ResumeLayout(false);
-            this._promoLayout.PerformLayout();
+            this._applyPromoButtonBorder.ResumeLayout(false);
             this._totalsLayout.ResumeLayout(false);
             this._paymentLayout.ResumeLayout(false);
             this._actionsLayout.ResumeLayout(false);

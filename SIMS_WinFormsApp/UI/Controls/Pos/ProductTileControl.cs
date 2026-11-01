@@ -25,14 +25,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private const int ContentPadding = 12;
 
         private Image _productImage;
-        private readonly string _categoryName;
-        private readonly Label _detailsLabel;
-        private readonly PrimaryButton _actionButton;
-        private Panel _outOfStockBadge;
-        private int _stockQuantity;
-        private int _sellableQuantity;
-        private readonly int _expiredQuantity;
-        private readonly int _stockBatchDifference;
 
         public int ProductId { get; }
 
@@ -43,13 +35,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             if (product == null) throw new ArgumentNullException(nameof(product));
             ProductId = product.ProductId;
-            _categoryName = string.IsNullOrWhiteSpace(product.CategoryName)
-                ? "Chưa phân loại"
-                : product.CategoryName;
-            _stockQuantity = product.StockQuantity;
-            _sellableQuantity = product.SellableQuantity;
-            _expiredQuantity = product.ExpiredQuantity;
-            _stockBatchDifference = product.StockBatchDifference;
 
             Size = new Size(TileWidth, TileHeight);
             Margin = new Padding(0, 0, 14, 14);
@@ -89,7 +74,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             }
             Controls.Add(imagePanel);
 
-            UpdateOutOfStockAppearance();
+            if (product.IsOutOfStock)
+            {
+                Controls.Add(CreateBadge("Hết hàng", AppColors.Error));
+            }
 
             var wishlistIcon = new IconPictureBox
             {
@@ -125,24 +113,31 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             };
             Controls.Add(nameLabel);
 
-            _detailsLabel = new Label
+            var detailsLabel = new Label
             {
                 Location = new Point(ContentPadding, nameLabel.Bottom + 1),
-                Size = new Size(TileWidth - (ContentPadding * 2), 36),
-                Text = StockDetailsText,
+                Size = new Size(TileWidth - (ContentPadding * 2),
+                    product.StockBatchDifference != 0 ? 54 : product.ExpiredQuantity > 0 ? 38 : 20),
+                Text = (string.IsNullOrWhiteSpace(product.CategoryName) ? "Chưa phân loại" : product.CategoryName) +
+                    Environment.NewLine + "Có thể bán: " + product.SellableQuantity +
+                    (product.ExpiredQuantity > 0 ? "  ·  Hết hạn theo lô: " + product.ExpiredQuantity : string.Empty) +
+                    (product.StockBatchDifference != 0
+                        ? Environment.NewLine + "Cần đối soát lô: " +
+                          product.StockBatchDifference.ToString("+0;-0;0")
+                        : string.Empty),
                 Font = new Font("Segoe UI", 9f, FontStyle.Regular, GraphicsUnit.Point),
-                ForeColor = _sellableQuantity <= 0 ? AppColors.Error : AppColors.TextMuted,
+                ForeColor = product.IsOutOfStock ? AppColors.Error : AppColors.TextMuted,
                 AutoSize = false,
                 AutoEllipsis = true,
                 BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleLeft,
                 UseMnemonic = false
             };
-            Controls.Add(_detailsLabel);
+            Controls.Add(detailsLabel);
 
             var priceLabel = new Label
             {
-                Location = new Point(ContentPadding, _detailsLabel.Bottom + 2),
+                Location = new Point(ContentPadding, detailsLabel.Bottom + 2),
                 Size = new Size(TileWidth - (ContentPadding * 2), 30),
                 Text = PosFormat.Vnd(product.Price),
                 Font = new Font("Segoe UI", 18f, FontStyle.Bold, GraphicsUnit.Point),
@@ -155,7 +150,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             };
             Controls.Add(priceLabel);
 
-            _actionButton = new PrimaryButton
+            var actionButton = new PrimaryButton
             {
                 Location = new Point(ContentPadding, TileHeight - 48),
                 Size = new Size(TileWidth - (ContentPadding * 2), 38),
@@ -165,63 +160,34 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 Padding = new Padding(0),
                 FlatStyle = FlatStyle.Flat
             };
-            _actionButton.Click += OnActionButtonClick;
-            Controls.Add(_actionButton);
-            UpdateOutOfStockAppearance();
-        }
-
-        public void UpdateStockQuantity(int stockQuantity)
-        {
-            int updatedStockQuantity = Math.Max(0, stockQuantity);
-            _sellableQuantity = Math.Max(0, _sellableQuantity + updatedStockQuantity - _stockQuantity);
-            _stockQuantity = updatedStockQuantity;
-            _detailsLabel.Text = StockDetailsText;
-            _detailsLabel.ForeColor = _sellableQuantity <= 0 ? AppColors.Error : AppColors.TextMuted;
-            UpdateOutOfStockAppearance();
-        }
-
-        private string StockDetailsText =>
-            _categoryName + Environment.NewLine + "Có thể bán: " + _sellableQuantity +
-            (_expiredQuantity > 0 ? " · Hết hạn: " + _expiredQuantity : string.Empty) +
-            (_stockBatchDifference != 0
-                ? " · Đối soát lô: " + _stockBatchDifference.ToString("+0;-0;0")
-                : string.Empty);
-
-        private void UpdateOutOfStockAppearance()
-        {
-            bool isOutOfStock = _sellableQuantity <= 0;
-            if (isOutOfStock && _outOfStockBadge == null)
+            if (product.IsOutOfStock)
             {
-                _outOfStockBadge = CreateBadge(
-                    _expiredQuantity > 0 ? "Hàng hết hạn" : "Hết hàng",
-                    AppColors.Error);
-                Controls.Add(_outOfStockBadge);
-                _outOfStockBadge.BringToFront();
+                actionButton.IsPrimary = false;
+                actionButton.CustomAccentColor = AppColors.Warning;
+                if (product.ExpiredQuantity > 0)
+                {
+                    actionButton.Text = "Hàng hết hạn";
+                    actionButton.Enabled = false;
+                }
+                else
+                {
+                    actionButton.Text = "Báo hết hàng";
+                    actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
+                }
             }
-            else if (!isOutOfStock && _outOfStockBadge != null)
+            else if (product.IsCartQuantityLimitReached)
             {
-                Controls.Remove(_outOfStockBadge);
-                _outOfStockBadge.Dispose();
-                _outOfStockBadge = null;
+                actionButton.Text = "Đã đủ số lượng";
+                actionButton.IsPrimary = false;
+                actionButton.Enabled = false;
             }
-
-            if (_actionButton == null)
-                return;
-
-            _actionButton.Text = isOutOfStock
-                ? _expiredQuantity > 0 ? "Hàng hết hạn" : "Báo hết hàng"
-                : "Thêm vào giỏ";
-            _actionButton.Enabled = !isOutOfStock || _expiredQuantity <= 0;
-            _actionButton.IsPrimary = !isOutOfStock;
-            _actionButton.CustomAccentColor = isOutOfStock ? (Color?)AppColors.Warning : null;
-        }
-
-        private void OnActionButtonClick(object sender, EventArgs e)
-        {
-            if (_sellableQuantity <= 0)
-                NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
             else
-                AddToCartClicked?.Invoke(this, EventArgs.Empty);
+            {
+                actionButton.Text = "Thêm vào giỏ";
+                actionButton.IsPrimary = true;
+                actionButton.Click += (s, e) => AddToCartClicked?.Invoke(this, EventArgs.Empty);
+            }
+            Controls.Add(actionButton);
         }
 
         private static Panel CreateBadge(string text, Color accent)

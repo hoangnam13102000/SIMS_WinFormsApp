@@ -182,18 +182,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             }
         }
 
-        public void UpdateProductStock(int productId, int stockQuantity)
-        {
-            foreach (ProductTileControl tile in _productCardsPanel.Controls.OfType<ProductTileControl>())
-            {
-                if (tile.ProductId == productId)
-                {
-                    tile.UpdateStockQuantity(stockQuantity);
-                    return;
-                }
-            }
-        }
-
         public void BindCart(IReadOnlyList<CartLineDto> lines)
         {
             _bindingCart = true;

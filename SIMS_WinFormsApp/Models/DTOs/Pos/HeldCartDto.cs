@@ -6,7 +6,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Pos
     public sealed class HeldCartDto
     {
         public int HeldCartId { get; set; }
-        public int ReservationId { get; set; }
         public DateTime HeldAt { get; set; }
         public string CustomerLabel { get; set; }
         public IReadOnlyList<CartLineDto> Lines { get; set; }

@@ -30,11 +30,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             CartTotalsDto totals,
             int? promotionId,
             string promotionCode,
-            int reservationId,
             IReadOnlyList<CartLineDto> lines)
         {
-            if (reservationId <= 0)
-                throw new ArgumentOutOfRangeException(nameof(reservationId));
             ValidateRequest(createdBy, paymentMethod, totals, lines);
             List<CartLineDto> orderedLines = lines.OrderBy(line => line.ProductId).ToList();
             string invoiceCode = "HD-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" +
@@ -46,7 +43,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
                     db.Transaction = transaction;
-                    ValidateStockAndPrices(db, orderedLines, reservationId, createdBy);
+                    ValidateStockAndPrices(db, orderedLines);
 
                     decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
                     decimal vatRate = taxableAmount == 0
@@ -70,16 +67,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     };
                     db.Invoices.InsertOnSubmit(invoice);
                     db.SubmitChanges();
-
-                    int linkedReservation = db.ExecuteCommand(
-                        "UPDATE PosCartReservations SET InvoiceID = {0} " +
-                        "WHERE ReservationID = {1} AND CreatedBy = {2} AND InvoiceID IS NULL",
-                        invoice.InvoiceID,
-                        reservationId,
-                        createdBy);
-                    if (linkedReservation != 1)
-                        throw new InvalidOperationException(
-                            "Giỏ hàng đang giữ không còn hiệu lực. Vui lòng tải lại trang POS.");
 
                     ConsumePromotion(db, promotionId);
                     foreach (CartLineDto line in orderedLines)
@@ -108,18 +95,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                             CreatedAt = DateTime.Now
                         });
                     }
-                    int remainingReservationLines = db.ExecuteQuery<int>(
-                        "SELECT COUNT(*) FROM PosCartReservationLines WHERE ReservationID = {0}",
-                        reservationId).Single();
-                    if (remainingReservationLines != 0)
-                        throw new InvalidOperationException(
-                            "Số lượng giữ hàng không khớp với chi tiết hóa đơn.");
-
-                    db.ExecuteCommand(
-                        "DELETE FROM PosCartReservations WHERE ReservationID = {0} AND InvoiceID = {1}",
-                        reservationId,
-                        invoice.InvoiceID);
-
                     DeductLoyaltyPoints(db, customerId, totals);
                     db.SubmitChanges();
                     transaction.Commit();
@@ -129,27 +104,9 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             return invoiceCode;
         }
 
-        private static void ValidateStockAndPrices(
-            SimsDataContext db,
-            IReadOnlyList<CartLineDto> lines,
-            int reservationId,
-            int createdBy)
+        private static void ValidateStockAndPrices(SimsDataContext db, IReadOnlyList<CartLineDto> lines)
         {
-            bool reservationExists = db.ExecuteQuery<int>(
-                "SELECT COUNT(*) FROM PosCartReservations WITH (UPDLOCK, HOLDLOCK) " +
-                "WHERE ReservationID = {0} AND CreatedBy = {1} AND InvoiceID IS NULL",
-                reservationId,
-                createdBy).Single() == 1;
-            if (!reservationExists)
-                throw new InvalidOperationException("Giỏ hàng đang giữ không còn hiệu lực.");
-
-            int storedLineCount = db.ExecuteQuery<int>(
-                "SELECT COUNT(*) FROM PosCartReservationLines WITH (UPDLOCK, HOLDLOCK) WHERE ReservationID = {0}",
-                reservationId).Single();
-            if (storedLineCount != lines.Count)
-                throw new InvalidOperationException(
-                    "Số lượng giữ hàng không khớp với giỏ. Vui lòng tải lại giỏ hàng.");
-
+            DateTime today = DateTime.Today;
             foreach (CartLineDto line in lines)
             {
                 ProductEntity product = db.Products.SingleOrDefault(item =>
@@ -157,24 +114,17 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                 if (product == null)
                     throw new InvalidOperationException("Một sản phẩm trong giỏ không còn hoạt động.");
 
+                int available = db.InventoryBatches
+                    .Where(batch => batch.ProductID == line.ProductId && batch.Status == "ACTIVE"
+                        && (!batch.ExpiryDate.HasValue || batch.ExpiryDate.Value >= today))
+                    .Select(batch => (int?)batch.RemainingQty).Sum() ?? 0;
+                available = Math.Max(0, Math.Min(product.Stock, available));
                 if (product.SellPrice != line.UnitPrice)
                     throw new InvalidOperationException(
                         "Giá sản phẩm đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");
-
-                int reservedQuantity = db.ExecuteQuery<int>(
-                    "SELECT ISNULL((SELECT Quantity FROM PosCartReservationLines " +
-                    "WHERE ReservationID = {0} AND ProductID = {1} AND UnitPrice = {2}), 0)",
-                    reservationId,
-                    line.ProductId,
-                    line.UnitPrice).Single();
-                int allocatedQuantity = db.ExecuteQuery<int>(
-                    "SELECT ISNULL(SUM(Quantity), 0) FROM PosCartReservationBatches " +
-                    "WHERE ReservationID = {0} AND ProductID = {1}",
-                    reservationId,
-                    line.ProductId).Single();
-                if (reservedQuantity != line.Quantity || allocatedQuantity != line.Quantity)
+                if (available < line.Quantity)
                     throw new InvalidOperationException(
-                        "Số lượng giữ hàng không khớp với sản phẩm \"" + line.ProductName + "\".");
+                        "Tồn kho không đủ cho sản phẩm \"" + line.ProductName + "\".");
             }
         }
 

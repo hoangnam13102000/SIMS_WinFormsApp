@@ -8,25 +8,26 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
     public sealed class HeldCartStore
     {
         private readonly List<HeldCartDto> _held = new List<HeldCartDto>();
+        private int _nextId = 1;
+
         public IReadOnlyList<HeldCartDto> GetAll() => _held.OrderByDescending(c => c.HeldAt).ToList();
 
-        public void Load(IEnumerable<HeldCartDto> carts)
+        public HeldCartDto Add(string customerLabel, IReadOnlyList<CartLineDto> lines)
         {
-            _held.Clear();
-            if (carts != null)
-                _held.AddRange(carts);
-        }
-
-        public void Add(HeldCartDto cart)
-        {
-            if (cart == null) throw new ArgumentNullException(nameof(cart));
-            _held.RemoveAll(existing => existing.ReservationId == cart.ReservationId);
+            var cart = new HeldCartDto
+            {
+                HeldCartId = _nextId++,
+                HeldAt = DateTime.Now,
+                CustomerLabel = customerLabel,
+                Lines = lines
+            };
             _held.Add(cart);
+            return cart;
         }
 
         public void Remove(int heldCartId)
         {
-            _held.RemoveAll(c => c.HeldCartId == heldCartId || c.ReservationId == heldCartId);
+            _held.RemoveAll(c => c.HeldCartId == heldCartId);
         }
     }
 }

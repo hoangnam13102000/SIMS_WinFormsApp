@@ -42,10 +42,7 @@ BEGIN
     -- R1: chan neu san pham het hang (chi tinh cac lo con han, chua het han)
     IF EXISTS (
         SELECT 1 FROM inserted i
-        WHERE NOT EXISTS (
-                  SELECT 1 FROM PosCartReservations r WHERE r.InvoiceID = i.InvoiceID
-              )
-          AND ISNULL((SELECT SUM(b.RemainingQty) FROM InventoryBatch b
+        WHERE ISNULL((SELECT SUM(b.RemainingQty) FROM InventoryBatch b
                        WHERE b.ProductID = i.ProductID AND b.Status = 'ACTIVE'
                          AND (b.ExpiryDate IS NULL OR b.ExpiryDate >= CAST(GETDATE() AS DATE))), 0) = 0
     )
@@ -55,7 +52,7 @@ BEGIN
     END
 
     DECLARE @InvoiceID INT, @ProductID INT, @Quantity INT, @UnitPrice DECIMAL(18,0), @CreatedBy INT;
-    DECLARE @Available INT, @QtyToSell INT, @StockBefore INT, @NewDetailID INT, @ReservationID INT;
+    DECLARE @Available INT, @QtyToSell INT, @StockBefore INT, @NewDetailID INT;
     DECLARE @Remaining INT, @BatchID INT, @BatchRemain INT, @Take INT;
 
     DECLARE line_cursor CURSOR LOCAL FAST_FORWARD FOR
@@ -68,95 +65,50 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
-        SET @ReservationID = NULL;
-        SELECT @ReservationID = ReservationID
-        FROM PosCartReservations
-        WHERE InvoiceID = @InvoiceID;
+        -- Available phai khop dieu kien loc cua batch_cursor ben duoi (loai lo het han)
+        SELECT @Available = ISNULL(SUM(RemainingQty), 0) FROM InventoryBatch
+        WHERE ProductID = @ProductID AND Status = 'ACTIVE'
+          AND (ExpiryDate IS NULL OR ExpiryDate >= CAST(GETDATE() AS DATE));
 
+        SET @QtyToSell = CASE WHEN @Quantity > @Available THEN @Available ELSE @Quantity END;
         SELECT @StockBefore = Stock FROM Products WHERE ProductID = @ProductID;
 
-        IF @ReservationID IS NOT NULL
-        BEGIN
-            IF ISNULL((SELECT Quantity FROM PosCartReservationLines
-                       WHERE ReservationID = @ReservationID AND ProductID = @ProductID), 0) <> @Quantity
-               OR ISNULL((SELECT UnitPrice FROM PosCartReservationLines
-                          WHERE ReservationID = @ReservationID AND ProductID = @ProductID), -1) <> @UnitPrice
-               OR ISNULL((SELECT SUM(Quantity) FROM PosCartReservationBatches
-                          WHERE ReservationID = @ReservationID AND ProductID = @ProductID), 0) <> @Quantity
-               OR EXISTS (
-                    SELECT 1
-                    FROM PosCartReservationBatches rb
-                    INNER JOIN InventoryBatch b ON b.BatchID = rb.BatchID
-                    WHERE rb.ReservationID = @ReservationID
-                      AND rb.ProductID = @ProductID
-                      AND b.ExpiryDate < CAST(GETDATE() AS DATE)
-               )
-            BEGIN
-                RAISERROR(N'So luong giu hang khong khop voi chi tiet hoa don.', 16, 1);
-                RETURN;
-            END
+        INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice)
+        VALUES (@InvoiceID, @ProductID, @QtyToSell, @UnitPrice);
+        SET @NewDetailID = SCOPE_IDENTITY();
 
-            SET @QtyToSell = @Quantity;
-            SET @StockBefore = @StockBefore + @Quantity;
-            INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice)
-            VALUES (@InvoiceID, @ProductID, @QtyToSell, @UnitPrice);
-            SET @NewDetailID = SCOPE_IDENTITY();
+        -- FEFO: uu tien HSD gan nhat, hang khong HSD (NULL) ban sau cung, lo het han bi loai
+        SET @Remaining = @QtyToSell;
+
+        DECLARE batch_cursor CURSOR LOCAL FAST_FORWARD FOR
+            SELECT BatchID, RemainingQty FROM InventoryBatch
+            WHERE ProductID = @ProductID AND Status = 'ACTIVE' AND RemainingQty > 0
+              AND (ExpiryDate IS NULL OR ExpiryDate >= CAST(GETDATE() AS DATE))
+            ORDER BY ISNULL(ExpiryDate, '9999-12-31'), BatchID;
+
+        OPEN batch_cursor;
+        FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;
+
+        WHILE @@FETCH_STATUS = 0 AND @Remaining > 0
+        BEGIN
+            SET @Take = CASE WHEN @BatchRemain > @Remaining THEN @Remaining ELSE @BatchRemain END;
+
+            UPDATE InventoryBatch
+            SET RemainingQty = RemainingQty - @Take,
+                Status = CASE WHEN RemainingQty - @Take = 0 THEN 'DEPLETED' ELSE Status END
+            WHERE BatchID = @BatchID;
 
             INSERT INTO InvoiceDetailBatches (InvoiceDetailID, BatchID, Quantity)
-            SELECT @NewDetailID, BatchID, Quantity
-            FROM PosCartReservationBatches
-            WHERE ReservationID = @ReservationID AND ProductID = @ProductID;
+            VALUES (@NewDetailID, @BatchID, @Take);
 
-            DELETE FROM PosCartReservationBatches
-            WHERE ReservationID = @ReservationID AND ProductID = @ProductID;
-            DELETE FROM PosCartReservationLines
-            WHERE ReservationID = @ReservationID AND ProductID = @ProductID;
-        END
-        ELSE
-        BEGIN
-            -- Available phai khop dieu kien loc cua batch_cursor ben duoi (loai lo het han)
-            SELECT @Available = ISNULL(SUM(RemainingQty), 0) FROM InventoryBatch
-            WHERE ProductID = @ProductID AND Status = 'ACTIVE'
-              AND (ExpiryDate IS NULL OR ExpiryDate >= CAST(GETDATE() AS DATE));
-
-            SET @QtyToSell = CASE WHEN @Quantity > @Available THEN @Available ELSE @Quantity END;
-            INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice)
-            VALUES (@InvoiceID, @ProductID, @QtyToSell, @UnitPrice);
-            SET @NewDetailID = SCOPE_IDENTITY();
-
-            -- FEFO: uu tien HSD gan nhat, hang khong HSD (NULL) ban sau cung, lo het han bi loai
-            SET @Remaining = @QtyToSell;
-
-            DECLARE batch_cursor CURSOR LOCAL FAST_FORWARD FOR
-                SELECT BatchID, RemainingQty FROM InventoryBatch
-                WHERE ProductID = @ProductID AND Status = 'ACTIVE' AND RemainingQty > 0
-                  AND (ExpiryDate IS NULL OR ExpiryDate >= CAST(GETDATE() AS DATE))
-                ORDER BY ISNULL(ExpiryDate, '9999-12-31'), BatchID;
-
-            OPEN batch_cursor;
+            SET @Remaining -= @Take;
             FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;
-
-            WHILE @@FETCH_STATUS = 0 AND @Remaining > 0
-            BEGIN
-                SET @Take = CASE WHEN @BatchRemain > @Remaining THEN @Remaining ELSE @BatchRemain END;
-
-                UPDATE InventoryBatch
-                SET RemainingQty = RemainingQty - @Take,
-                    Status = CASE WHEN RemainingQty - @Take = 0 THEN 'DEPLETED' ELSE Status END
-                WHERE BatchID = @BatchID;
-
-                INSERT INTO InvoiceDetailBatches (InvoiceDetailID, BatchID, Quantity)
-                VALUES (@NewDetailID, @BatchID, @Take);
-
-                SET @Remaining -= @Take;
-                FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;
-            END
-
-            CLOSE batch_cursor;
-            DEALLOCATE batch_cursor;
-
-            UPDATE Products SET Stock = Stock - @QtyToSell WHERE ProductID = @ProductID;
         END
+
+        CLOSE batch_cursor;
+        DEALLOCATE batch_cursor;
+
+        UPDATE Products SET Stock = Stock - @QtyToSell WHERE ProductID = @ProductID;
 
         INSERT INTO InventoryTransactions (ProductID, TransactionType, Direction, Quantity,
                                             StockBefore, StockAfter, RefTable, RefID, CreatedBy)
