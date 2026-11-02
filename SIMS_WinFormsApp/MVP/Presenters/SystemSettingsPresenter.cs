@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.Views.Interfaces;
 
 namespace SIMS_WinFormsApp.MVP.Presenters
@@ -68,7 +69,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _view.ShowError("Chênh lệch giá bán phải là số không âm.");
                 return;
             }
-            if (!int.TryParse(_view.ReturnPolicyDaysText, out var returnDays) || returnDays < 0)
+            if (!int.TryParse(NumberInputFormatter.DigitsOnly(_view.ReturnPolicyDaysText), out var returnDays) || returnDays < 0)
             {
                 _view.ShowError("Số ngày đổi/trả phải là số nguyên không âm.");
                 return;

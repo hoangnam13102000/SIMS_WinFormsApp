@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Views.UserManager;
@@ -35,6 +36,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public ucCategoryManagement(ICatalogAdminService service)
         {
             InitializeComponent();
+            _header.SizeChanged += (sender, args) => LayoutHeader();
+            LayoutHeader();
+            _previousButton.Text = string.Empty;
+            _nextButton.Text = string.Empty;
+            _previousButton.Paint += (sender, args) =>
+                DrawPagingArrow(args.Graphics, _previousButton.ClientRectangle, false, _previousButton.Enabled);
+            _nextButton.Paint += (sender, args) =>
+                DrawPagingArrow(args.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
+            _refreshButton.Click += (sender, args) => LoadPage();
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportCategories(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportCategories(new ExcelTableExporter()));
@@ -85,6 +95,37 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _categoriesGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();
+        }
+
+        private void LayoutHeader()
+        {
+            int right = _header.ClientSize.Width - 16;
+            _refreshButton.Location = new Point(right - _refreshButton.Width, 29);
+            right = _refreshButton.Left - 8;
+            _optionsButton.Location = new Point(right - _optionsButton.Width, 29);
+            right = _optionsButton.Left - 8;
+            _addButton.Location = new Point(right - _addButton.Width, 29);
+            _titleLabel.Width = Math.Max(180, _addButton.Left - _titleLabel.Left - 16);
+            _addButton.BringToFront();
+            _optionsButton.BringToFront();
+            _refreshButton.BringToFront();
+        }
+
+        private static void DrawPagingArrow(Graphics graphics, Rectangle bounds, bool pointsRight, bool enabled)
+        {
+            int centerX = bounds.Width / 2;
+            int centerY = bounds.Height / 2;
+            int direction = pointsRight ? 1 : -1;
+            Color color = enabled ? Color.FromArgb(51, 65, 85) : Color.FromArgb(148, 163, 184);
+
+            SmoothingMode previousSmoothingMode = graphics.SmoothingMode;
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var pen = new Pen(color, 2F))
+            {
+                graphics.DrawLine(pen, centerX - direction * 3, centerY - 5, centerX + direction * 2, centerY);
+                graphics.DrawLine(pen, centerX + direction * 2, centerY, centerX - direction * 3, centerY + 5);
+            }
+            graphics.SmoothingMode = previousSmoothingMode;
         }
 
         private int PageCount => Math.Max(1, (int)Math.Ceiling(_totalCount / (double)_pageSize));

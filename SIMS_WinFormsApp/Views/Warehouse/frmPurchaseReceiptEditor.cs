@@ -175,7 +175,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void ConfigureEntryControls()
         {
             _quantityTextBox.MaxLength = 9;
-            _quantityTextBox.KeyPress += IntegerTextBox_KeyPress;
+            NumberInputFormatter.Attach(_quantityTextBox);
         }
 
         private void Editor_Load(object sender, EventArgs e)
@@ -193,7 +193,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
 
             int quantity;
-            if (!int.TryParse(_quantityTextBox.Text.Trim(), NumberStyles.Integer,
+            if (!int.TryParse(NumberInputFormatter.DigitsOnly(_quantityTextBox.Text), NumberStyles.Integer,
                 CultureInfo.InvariantCulture, out quantity) || quantity <= 0)
             {
                 ShowValidationError("Số lượng phải là số nguyên lớn hơn 0.", _quantityTextBox);
@@ -395,12 +395,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _lineCountLabel.Text = count.ToString(CultureInfo.InvariantCulture) + " dòng";
             _emptyLabel.Visible = count == 0;
             _emptyLabel.BringToFront();
-        }
-
-        private static void IntegerTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-                e.Handled = true;
         }
 
         private static DateTime? ReadDate(object value)

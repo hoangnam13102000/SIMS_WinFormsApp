@@ -8,11 +8,32 @@ namespace SIMS_WinFormsApp.UI.Controls
     {
         public static void Attach(TextBox textBox)
         {
+            Attach(textBox, false);
+        }
+
+        public static void AttachDecimal(TextBox textBox)
+        {
+            Attach(textBox, true);
+        }
+
+        public static void Detach(TextBox textBox)
+        {
+            if (textBox == null) throw new ArgumentNullException(nameof(textBox));
+            if (!(textBox.Tag is NumberInputFormatter formatter)) return;
+
+            textBox.KeyPress -= formatter.OnKeyPress;
+            textBox.TextChanged -= formatter.OnTextChanged;
+            textBox.MaxLength = formatter._originalMaxLength;
+            textBox.Tag = null;
+        }
+
+        private static void Attach(TextBox textBox, bool allowDecimal)
+        {
             if (textBox == null) throw new ArgumentNullException(nameof(textBox));
             if (textBox.Tag is NumberInputFormatter) return;
 
             int maxDigits = textBox.MaxLength;
-            var formatter = new NumberInputFormatter(maxDigits);
+            var formatter = new NumberInputFormatter(maxDigits, allowDecimal);
             textBox.Tag = formatter;
             textBox.MaxLength = 0;
             textBox.KeyPress += formatter.OnKeyPress;
@@ -71,15 +92,29 @@ namespace SIMS_WinFormsApp.UI.Controls
 
         private bool _formatting;
         private int _maximumDigits;
+        private readonly bool _allowDecimal;
+        private readonly int _originalMaxLength;
 
-        private NumberInputFormatter(int maximumDigits)
+        private NumberInputFormatter(int maximumDigits, bool allowDecimal)
         {
             _maximumDigits = Math.Max(0, maximumDigits);
+            _allowDecimal = allowDecimal;
+            _originalMaxLength = Math.Max(0, maximumDigits);
         }
 
         private void OnKeyPress(object sender, KeyPressEventArgs e)
         {
             if (char.IsControl(e.KeyChar)) return;
+
+            if (_allowDecimal && e.KeyChar == '.')
+            {
+                var decimalTextBox = (TextBox)sender;
+                string textWithoutSelection = decimalTextBox.Text.Remove(
+                    decimalTextBox.SelectionStart, decimalTextBox.SelectionLength);
+                if (textWithoutSelection.IndexOf('.') >= 0)
+                    e.Handled = true;
+                return;
+            }
 
             if (!char.IsDigit(e.KeyChar))
             {
@@ -107,23 +142,61 @@ namespace SIMS_WinFormsApp.UI.Controls
 
             string original = textBox.Text;
             int digitsBeforeCaret = CountDigits(original, Math.Min(textBox.SelectionStart, original.Length));
+            bool decimalBeforeCaret = _allowDecimal &&
+                original.IndexOf(".", StringComparison.Ordinal) >= 0 &&
+                original.IndexOf(".", StringComparison.Ordinal) < textBox.SelectionStart;
             string digits = DigitsOnly(original);
             if (_maximumDigits > 0 && digits.Length > _maximumDigits)
                 digits = digits.Substring(0, _maximumDigits);
-            string formatted = FormatInteger(digits);
+            string formatted = _allowDecimal
+                ? FormatDecimal(original, _maximumDigits)
+                : FormatInteger(digits);
             if (string.Equals(original, formatted, StringComparison.Ordinal)) return;
 
             _formatting = true;
             try
             {
                 textBox.Text = formatted;
-                textBox.SelectionStart = PositionAfterDigits(formatted, digitsBeforeCaret);
+                int caret = PositionAfterDigits(formatted, digitsBeforeCaret);
+                if (decimalBeforeCaret)
+                {
+                    int decimalPosition = formatted.IndexOf(".", StringComparison.Ordinal);
+                    if (decimalPosition >= 0)
+                        caret = Math.Max(caret, decimalPosition + 1);
+                }
+                textBox.SelectionStart = Math.Min(caret, formatted.Length);
                 textBox.SelectionLength = 0;
             }
             finally
             {
                 _formatting = false;
             }
+        }
+
+        private static string FormatDecimal(string value, int maximumDigits)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+
+            int decimalIndex = value.IndexOf(".", StringComparison.Ordinal);
+            var integerDigits = new StringBuilder(value.Length);
+            var fractionalDigits = new StringBuilder(value.Length);
+            int digitCount = 0;
+            for (int index = 0; index < value.Length; index++)
+            {
+                char character = value[index];
+                if (!char.IsDigit(character)) continue;
+                if (maximumDigits > 0 && digitCount >= maximumDigits) break;
+                digitCount++;
+                if (decimalIndex >= 0 && index > decimalIndex)
+                    fractionalDigits.Append(character);
+                else
+                    integerDigits.Append(character);
+            }
+
+            string integer = FormatInteger(integerDigits.ToString());
+            return decimalIndex >= 0
+                ? integer + "." + fractionalDigits
+                : integer;
         }
 
         private static int CountDigits(string value, int end)

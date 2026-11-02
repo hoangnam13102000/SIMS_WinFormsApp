@@ -8,6 +8,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 
@@ -77,6 +78,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _cartGrid.CellValidating += OnCartCellValidating;
             _cartGrid.CellEndEdit += OnCartCellEndEdit;
             _cartGrid.CellClick += OnCartCellClick;
+            _cartGrid.EditingControlShowing += OnCartEditingControlShowing;
             _applyPromoButton.Click += (sender, args) =>
             {
                 if (!string.IsNullOrWhiteSpace(_promoTextBox.Text))
@@ -344,7 +346,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
-            if (int.TryParse(Convert.ToString(e.FormattedValue), out int quantity) && quantity > 0)
+            if (int.TryParse(NumberInputFormatter.DigitsOnly(Convert.ToString(e.FormattedValue)), out int quantity) &&
+                quantity > 0)
             {
                 _cartGrid.Rows[e.RowIndex].ErrorText = string.Empty;
                 return;
@@ -354,13 +357,23 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _cartGrid.Rows[e.RowIndex].ErrorText = "Số lượng phải là số nguyên lớn hơn 0.";
         }
 
+        private void OnCartEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (_cartGrid.CurrentCell?.ColumnIndex == CartQuantity.Index && e.Control is TextBox textBox)
+            {
+                NumberInputFormatter.Attach(textBox);
+                NumberInputFormatter.SetMaximumDigits(textBox, 10);
+            }
+        }
+
         private void OnCartCellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
             _cartGrid.Rows[e.RowIndex].ErrorText = string.Empty;
             if (_cartGrid.Rows[e.RowIndex].Tag is CartLineDto line &&
-                int.TryParse(Convert.ToString(_cartGrid.Rows[e.RowIndex].Cells[CartQuantity.Index].Value), out int quantity) &&
+                int.TryParse(NumberInputFormatter.DigitsOnly(
+                    Convert.ToString(_cartGrid.Rows[e.RowIndex].Cells[CartQuantity.Index].Value)), out int quantity) &&
                 quantity > 0 && quantity != line.Quantity)
             {
                 CartQuantityChanged?.Invoke(this, (line.ProductId, quantity));

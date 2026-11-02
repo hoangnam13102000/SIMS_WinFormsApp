@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 
 namespace SIMS_WinFormsApp.Views.Catalog
 {
@@ -8,13 +9,19 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _header;
+        private Panel _headerIconPanel;
+        private IconPictureBox _headerIcon;
         private Label _titleLabel;
         private Label _subtitleLabel;
-        private FlowLayoutPanel _toolbar;
+        private Panel _toolbar;
+        private Label _searchLabel;
+        private Label _statusLabel;
         private TextBox _searchTextBox;
         private ComboBox _statusComboBox;
         private Button _addButton;
         private Button _optionsButton;
+        private Button _refreshButton;
+        private Panel _gridCard;
         private DataGridView _categoriesGrid;
         private DataGridViewTextBoxColumn _nameColumn;
         private DataGridViewTextBoxColumn _productCountColumn;
@@ -37,223 +44,463 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            _root = new TableLayoutPanel();
-            _header = new Panel();
-            _titleLabel = new Label();
-            _subtitleLabel = new Label();
-            _toolbar = new FlowLayoutPanel();
-            _searchTextBox = new TextBox();
-            _statusComboBox = new ComboBox();
-            _addButton = new Button();
-            _optionsButton = new Button();
-            _categoriesGrid = new DataGridView();
-            _nameColumn = new DataGridViewTextBoxColumn();
-            _productCountColumn = new DataGridViewTextBoxColumn();
-            _stateColumn = new DataGridViewTextBoxColumn();
-            _actionsColumn = new DataGridViewImageColumn();
-            _paging = new TableLayoutPanel();
-            _pagingInfo = new FlowLayoutPanel();
-            _pagingNavigation = new FlowLayoutPanel();
-            _resultsLabel = new Label();
-            _previousButton = new Button();
-            _pageLabel = new Label();
-            _nextButton = new Button();
-            _pageSizeComboBox = new ComboBox();
-            _root.SuspendLayout();
-            _header.SuspendLayout();
-            _toolbar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)_categoriesGrid).BeginInit();
-            _paging.SuspendLayout();
-            _pagingInfo.SuspendLayout();
-            _pagingNavigation.SuspendLayout();
-            SuspendLayout();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            this._root = new System.Windows.Forms.TableLayoutPanel();
+            this._header = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
+            this._subtitleLabel = new System.Windows.Forms.Label();
+            this._titleLabel = new System.Windows.Forms.Label();
+            this._addButton = new System.Windows.Forms.Button();
+            this._optionsButton = new System.Windows.Forms.Button();
+            this._refreshButton = new System.Windows.Forms.Button();
+            this._toolbar = new System.Windows.Forms.Panel();
+            this._searchLabel = new System.Windows.Forms.Label();
+            this._searchTextBox = new System.Windows.Forms.TextBox();
+            this._statusLabel = new System.Windows.Forms.Label();
+            this._statusComboBox = new System.Windows.Forms.ComboBox();
+            this._gridCard = new System.Windows.Forms.Panel();
+            this._categoriesGrid = new System.Windows.Forms.DataGridView();
+            this._nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._productCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._stateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this._paging = new System.Windows.Forms.TableLayoutPanel();
+            this._pagingInfo = new System.Windows.Forms.FlowLayoutPanel();
+            this._resultsLabel = new System.Windows.Forms.Label();
+            this._pageSizeComboBox = new System.Windows.Forms.ComboBox();
+            this._pagingNavigation = new System.Windows.Forms.FlowLayoutPanel();
+            this._nextButton = new System.Windows.Forms.Button();
+            this._pageLabel = new System.Windows.Forms.Label();
+            this._previousButton = new System.Windows.Forms.Button();
+            this._root.SuspendLayout();
+            this._header.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
+            this._toolbar.SuspendLayout();
+            this._gridCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._categoriesGrid)).BeginInit();
+            this._paging.SuspendLayout();
+            this._pagingInfo.SuspendLayout();
+            this._pagingNavigation.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // _root
+            // 
+            this._root.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this._root.ColumnCount = 1;
+            this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.Controls.Add(this._header, 0, 0);
+            this._root.Controls.Add(this._toolbar, 0, 1);
+            this._root.Controls.Add(this._gridCard, 0, 2);
+            this._root.Controls.Add(this._paging, 0, 3);
+            this._root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Name = "_root";
+            this._root.Padding = new System.Windows.Forms.Padding(24);
+            this._root.RowCount = 4;
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 82F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
+            this._root.Size = new System.Drawing.Size(1100, 720);
+            this._root.TabIndex = 0;
+            // 
+            // _header
+            // 
+            this._header.BackColor = System.Drawing.Color.White;
+            this._header.Controls.Add(this._headerIconPanel);
+            this._header.Controls.Add(this._subtitleLabel);
+            this._header.Controls.Add(this._titleLabel);
+            this._header.Controls.Add(this._addButton);
+            this._header.Controls.Add(this._optionsButton);
+            this._header.Controls.Add(this._refreshButton);
+            this._header.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._header.Location = new System.Drawing.Point(24, 24);
+            this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._header.Name = "_header";
+            this._header.Size = new System.Drawing.Size(1052, 96);
+            this._header.TabIndex = 0;
+            // 
+            // _headerIconPanel
+            // 
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
+            this._headerIconPanel.TabIndex = 0;
+            // 
+            // _headerIcon
+            // 
+            this._headerIcon.BackColor = System.Drawing.Color.Transparent;
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.List;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 28;
+            this._headerIcon.Location = new System.Drawing.Point(14, 14);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(28, 28);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabIndex = 0;
+            this._headerIcon.TabStop = false;
+            // 
+            // _subtitleLabel
+            // 
+            this._subtitleLabel.AutoSize = true;
+            this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._subtitleLabel.Location = new System.Drawing.Point(96, 56);
+            this._subtitleLabel.Name = "_subtitleLabel";
+            this._subtitleLabel.Size = new System.Drawing.Size(423, 25);
+            this._subtitleLabel.TabIndex = 1;
+            this._subtitleLabel.Text = "Nhóm sản phẩm dùng khi bán hàng và nhập kho";
+            // 
+            // _titleLabel
+            // 
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._titleLabel.Location = new System.Drawing.Point(93, 4);
+            this._titleLabel.Name = "_titleLabel";
+            this._titleLabel.Size = new System.Drawing.Size(460, 52);
+            this._titleLabel.TabIndex = 2;
+            this._titleLabel.Text = "Quản lý danh mục";
+            this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _addButton
+            // 
+            this._addButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._addButton.FlatAppearance.BorderSize = 0;
+            this._addButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(78)))), ((int)(((byte)(216)))));
+            this._addButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._addButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._addButton.ForeColor = System.Drawing.Color.White;
+            this._addButton.Location = new System.Drawing.Point(570, 34);
+            this._addButton.Name = "_addButton";
+            this._addButton.Size = new System.Drawing.Size(132, 38);
+            this._addButton.TabIndex = 3;
+            this._addButton.Text = "Thêm danh mục";
+            this._addButton.UseVisualStyleBackColor = false;
+            // 
+            // _optionsButton
+            // 
+            this._optionsButton.BackColor = System.Drawing.Color.White;
+            this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._optionsButton.Location = new System.Drawing.Point(710, 34);
+            this._optionsButton.Name = "_optionsButton";
+            this._optionsButton.Size = new System.Drawing.Size(110, 38);
+            this._optionsButton.TabIndex = 4;
+            this._optionsButton.Text = "Tùy chọn";
+            this._optionsButton.UseVisualStyleBackColor = false;
+            // 
+            // _refreshButton
+            // 
+            this._refreshButton.BackColor = System.Drawing.Color.White;
+            this._refreshButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._refreshButton.Location = new System.Drawing.Point(828, 34);
+            this._refreshButton.Name = "_refreshButton";
+            this._refreshButton.Size = new System.Drawing.Size(92, 38);
+            this._refreshButton.TabIndex = 5;
+            this._refreshButton.Text = "Làm mới";
+            this._refreshButton.UseVisualStyleBackColor = false;
+            // 
+            // _toolbar
+            // 
+            this._toolbar.BackColor = System.Drawing.Color.White;
+            this._toolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._toolbar.Controls.Add(this._searchLabel);
+            this._toolbar.Controls.Add(this._searchTextBox);
+            this._toolbar.Controls.Add(this._statusLabel);
+            this._toolbar.Controls.Add(this._statusComboBox);
+            this._toolbar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._toolbar.Location = new System.Drawing.Point(24, 132);
+            this._toolbar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._toolbar.Name = "_toolbar";
+            this._toolbar.Size = new System.Drawing.Size(1052, 70);
+            this._toolbar.TabIndex = 1;
+            // 
+            // _searchLabel
+            // 
+            this._searchLabel.AutoSize = true;
+            this._searchLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            this._searchLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this._searchLabel.Location = new System.Drawing.Point(16, 8);
+            this._searchLabel.Name = "_searchLabel";
+            this._searchLabel.Size = new System.Drawing.Size(125, 23);
+            this._searchLabel.TabIndex = 0;
+            this._searchLabel.Text = "Tìm danh mục";
+            // 
+            // _searchTextBox
+            // 
+            this._searchTextBox.AccessibleName = "Tìm theo tên danh mục";
+            this._searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this._searchTextBox.Location = new System.Drawing.Point(16, 31);
+            this._searchTextBox.Name = "_searchTextBox";
+            this._searchTextBox.Size = new System.Drawing.Size(500, 34);
+            this._searchTextBox.TabIndex = 1;
+            // 
+            // _statusLabel
+            // 
+            this._statusLabel.AutoSize = true;
+            this._statusLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            this._statusLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this._statusLabel.Location = new System.Drawing.Point(540, 8);
+            this._statusLabel.Name = "_statusLabel";
+            this._statusLabel.Size = new System.Drawing.Size(92, 23);
+            this._statusLabel.TabIndex = 2;
+            this._statusLabel.Text = "Trạng thái";
+            // 
+            // _statusComboBox
+            // 
+            this._statusComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._statusComboBox.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this._statusComboBox.Items.AddRange(new object[] {
+            "Tất cả trạng thái",
+            "Đang hoạt động",
+            "Vô hiệu hóa"});
+            this._statusComboBox.Location = new System.Drawing.Point(540, 31);
+            this._statusComboBox.Name = "_statusComboBox";
+            this._statusComboBox.Size = new System.Drawing.Size(300, 36);
+            this._statusComboBox.TabIndex = 3;
+            // 
+            // _gridCard
+            // 
+            this._gridCard.BackColor = System.Drawing.Color.White;
+            this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._gridCard.Controls.Add(this._categoriesGrid);
+            this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._gridCard.Location = new System.Drawing.Point(24, 214);
+            this._gridCard.Margin = new System.Windows.Forms.Padding(0);
+            this._gridCard.Name = "_gridCard";
+            this._gridCard.Size = new System.Drawing.Size(1052, 438);
+            this._gridCard.TabIndex = 2;
+            // 
+            // _categoriesGrid
+            // 
+            this._categoriesGrid.AllowUserToAddRows = false;
+            this._categoriesGrid.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._categoriesGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            this._categoriesGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._categoriesGrid.BackgroundColor = System.Drawing.Color.White;
+            this._categoriesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._categoriesGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            this._categoriesGrid.ColumnHeadersHeight = 40;
+            this._categoriesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this._nameColumn,
+            this._productCountColumn,
+            this._stateColumn,
+            this._actionsColumn});
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._categoriesGrid.DefaultCellStyle = dataGridViewCellStyle6;
+            this._categoriesGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._categoriesGrid.EnableHeadersVisualStyles = false;
+            this._categoriesGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._categoriesGrid.Location = new System.Drawing.Point(0, 0);
+            this._categoriesGrid.Margin = new System.Windows.Forms.Padding(1);
+            this._categoriesGrid.MultiSelect = false;
+            this._categoriesGrid.Name = "_categoriesGrid";
+            this._categoriesGrid.ReadOnly = true;
+            this._categoriesGrid.RowHeadersVisible = false;
+            this._categoriesGrid.RowHeadersWidth = 62;
+            this._categoriesGrid.RowTemplate.Height = 38;
+            this._categoriesGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._categoriesGrid.Size = new System.Drawing.Size(1050, 436);
+            this._categoriesGrid.TabIndex = 0;
+            // 
+            // _nameColumn
+            // 
+            this._nameColumn.FillWeight = 44F;
+            this._nameColumn.HeaderText = "Tên danh mục";
+            this._nameColumn.MinimumWidth = 8;
+            this._nameColumn.Name = "Name";
+            this._nameColumn.ReadOnly = true;
+            // 
+            // _productCountColumn
+            // 
+            this._productCountColumn.FillWeight = 18F;
+            this._productCountColumn.HeaderText = "Số sản phẩm";
+            this._productCountColumn.MinimumWidth = 8;
+            this._productCountColumn.Name = "ProductCount";
+            this._productCountColumn.ReadOnly = true;
+            // 
+            // _stateColumn
+            // 
+            this._stateColumn.FillWeight = 20F;
+            this._stateColumn.HeaderText = "Trạng thái";
+            this._stateColumn.MinimumWidth = 8;
+            this._stateColumn.Name = "Status";
+            this._stateColumn.ReadOnly = true;
+            // 
+            // _actionsColumn
+            // 
+            this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._actionsColumn.HeaderText = "Thao tác";
+            this._actionsColumn.MinimumWidth = 8;
+            this._actionsColumn.Name = "Actions";
+            this._actionsColumn.ReadOnly = true;
+            this._actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
+            this._actionsColumn.Width = 120;
+            // 
+            // _paging
+            // 
+            this._paging.BackColor = System.Drawing.Color.White;
+            this._paging.ColumnCount = 2;
+            this._paging.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58F));
+            this._paging.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42F));
+            this._paging.Controls.Add(this._pagingInfo, 0, 0);
+            this._paging.Controls.Add(this._pagingNavigation, 1, 0);
+            this._paging.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._paging.Location = new System.Drawing.Point(24, 652);
+            this._paging.Margin = new System.Windows.Forms.Padding(0);
+            this._paging.Name = "_paging";
+            this._paging.RowCount = 1;
+            this._paging.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._paging.Size = new System.Drawing.Size(1052, 44);
+            this._paging.TabIndex = 3;
+            // 
+            // _pagingInfo
+            // 
+            this._pagingInfo.Controls.Add(this._resultsLabel);
+            this._pagingInfo.Controls.Add(this._pageSizeComboBox);
+            this._pagingInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._pagingInfo.Location = new System.Drawing.Point(3, 3);
+            this._pagingInfo.Name = "_pagingInfo";
+            this._pagingInfo.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            this._pagingInfo.Size = new System.Drawing.Size(604, 38);
+            this._pagingInfo.TabIndex = 0;
+            this._pagingInfo.WrapContents = false;
+            // 
+            // _resultsLabel
+            // 
+            this._resultsLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._resultsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._resultsLabel.Location = new System.Drawing.Point(12, 0);
+            this._resultsLabel.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._resultsLabel.Name = "_resultsLabel";
+            this._resultsLabel.Size = new System.Drawing.Size(190, 44);
+            this._resultsLabel.TabIndex = 0;
+            this._resultsLabel.Text = "Hiển thị 0 danh mục";
+            this._resultsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _pageSizeComboBox
+            // 
+            this._pageSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._pageSizeComboBox.Items.AddRange(new object[] {
+            "10 dòng",
+            "20 dòng",
+            "50 dòng"});
+            this._pageSizeComboBox.SelectedIndex = 0;
+            this._pageSizeComboBox.Location = new System.Drawing.Point(212, 8);
+            this._pageSizeComboBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
+            this._pageSizeComboBox.Name = "_pageSizeComboBox";
+            this._pageSizeComboBox.Size = new System.Drawing.Size(94, 28);
+            this._pageSizeComboBox.TabIndex = 1;
+            // 
+            // _pagingNavigation
+            // 
+            this._pagingNavigation.Controls.Add(this._nextButton);
+            this._pagingNavigation.Controls.Add(this._pageLabel);
+            this._pagingNavigation.Controls.Add(this._previousButton);
+            this._pagingNavigation.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._pagingNavigation.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this._pagingNavigation.Location = new System.Drawing.Point(613, 3);
+            this._pagingNavigation.Name = "_pagingNavigation";
+            this._pagingNavigation.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this._pagingNavigation.Size = new System.Drawing.Size(436, 38);
+            this._pagingNavigation.TabIndex = 1;
+            this._pagingNavigation.WrapContents = false;
+            // 
+            // _nextButton
+            // 
+            this._nextButton.AccessibleName = "Trang sau";
+            this._nextButton.BackColor = System.Drawing.Color.White;
+            this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._nextButton.FlatAppearance.BorderSize = 1;
+            this._nextButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
+            this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._nextButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
+            this._nextButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this._nextButton.Location = new System.Drawing.Point(398, 5);
+            this._nextButton.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this._nextButton.Name = "_nextButton";
+            this._nextButton.Size = new System.Drawing.Size(36, 34);
+            this._nextButton.TabIndex = 0;
+            this._nextButton.Text = "";
+            this._nextButton.UseVisualStyleBackColor = false;
+            // 
+            // _pageLabel
+            // 
+            this._pageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._pageLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._pageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this._pageLabel.Location = new System.Drawing.Point(276, 5);
+            this._pageLabel.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            this._pageLabel.Name = "_pageLabel";
+            this._pageLabel.Size = new System.Drawing.Size(112, 34);
+            this._pageLabel.TabIndex = 1;
+            this._pageLabel.Text = "Trang 1 / 1";
+            this._pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _previousButton
+            // 
+            this._previousButton.AccessibleName = "Trang trước";
+            this._previousButton.BackColor = System.Drawing.Color.White;
+            this._previousButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._previousButton.FlatAppearance.BorderSize = 1;
+            this._previousButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
+            this._previousButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._previousButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
+            this._previousButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this._previousButton.Location = new System.Drawing.Point(230, 5);
+            this._previousButton.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this._previousButton.Name = "_previousButton";
+            this._previousButton.Size = new System.Drawing.Size(36, 34);
+            this._previousButton.TabIndex = 2;
+            this._previousButton.Text = "";
+            this._previousButton.UseVisualStyleBackColor = false;
+            // 
+            // ucCategoryManagement
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.Controls.Add(this._root);
+            this.Name = "ucCategoryManagement";
+            this.Size = new System.Drawing.Size(1100, 720);
+            this._root.ResumeLayout(false);
+            this._header.ResumeLayout(false);
+            this._header.PerformLayout();
+            this._headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
+            this._toolbar.ResumeLayout(false);
+            this._toolbar.PerformLayout();
+            this._gridCard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._categoriesGrid)).EndInit();
+            this._paging.ResumeLayout(false);
+            this._pagingInfo.ResumeLayout(false);
+            this._pagingNavigation.ResumeLayout(false);
+            this.ResumeLayout(false);
 
-            _root.ColumnCount = 1;
-            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            _root.Dock = DockStyle.Fill;
-            _root.BackColor = Color.FromArgb(244, 247, 250);
-            _root.Padding = new Padding(24);
-            _root.RowCount = 4;
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 102F));
-            _root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
-            _root.Controls.Add(_header, 0, 0);
-            _root.Controls.Add(_toolbar, 0, 1);
-            _root.Controls.Add(_categoriesGrid, 0, 2);
-            _root.Controls.Add(_paging, 0, 3);
-
-            _header.Controls.Add(_subtitleLabel);
-            _header.Controls.Add(_titleLabel);
-            _header.Dock = DockStyle.Fill;
-            _header.Margin = Padding.Empty;
-            _titleLabel.AutoSize = true;
-            _titleLabel.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
-            _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
-            _titleLabel.Location = new Point(0, 0);
-            _titleLabel.Text = "Quản lý danh mục";
-            _subtitleLabel.AutoSize = true;
-            _subtitleLabel.Font = new Font("Segoe UI", 10F);
-            _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _subtitleLabel.Location = new Point(2, 52);
-            _subtitleLabel.Text = "Nhóm sản phẩm dùng khi bán hàng và nhập kho";
-            _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _statusComboBox, _addButton, _optionsButton
-            });
-            _toolbar.AutoSize = true;
-            _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            _toolbar.Dock = DockStyle.Fill;
-            _toolbar.Margin = Padding.Empty;
-            _toolbar.Padding = new Padding(0, 5, 0, 5);
-            _toolbar.WrapContents = false;
-            _searchTextBox.Font = new Font("Segoe UI", 10F);
-            _searchTextBox.Margin = new Padding(0, 3, 0, 3);
-            _searchTextBox.Name = "_searchTextBox";
-            _searchTextBox.Size = new Size(230, 34);
-            _searchTextBox.AccessibleName = "Tìm theo tên danh mục";
-            _statusComboBox.Font = new Font("Segoe UI", 10F);
-            _statusComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _statusComboBox.Items.AddRange(new object[] { "Tất cả trạng thái", "Đang hoạt động", "Vô hiệu hóa" });
-            _statusComboBox.Margin = new Padding(8, 3, 0, 3);
-            _statusComboBox.Name = "_statusComboBox";
-            _statusComboBox.SelectedIndex = 0;
-            _statusComboBox.Size = new Size(170, 36);
-            _addButton.BackColor = Color.FromArgb(37, 99, 235);
-            _addButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _addButton.FlatAppearance.BorderSize = 0;
-            _addButton.FlatStyle = FlatStyle.Flat;
-            _addButton.ForeColor = Color.White;
-            _addButton.Margin = new Padding(4, 5, 4, 0);
-            _addButton.Size = new Size(132, 34);
-            _addButton.Text = "Thêm danh mục";
-            _optionsButton.Font = new Font("Segoe UI", 9F);
-            _optionsButton.Margin = new Padding(8, 0, 0, 0);
-            _optionsButton.Name = "_optionsButton";
-            _optionsButton.Size = new Size(110, 36);
-            _optionsButton.Text = "Tùy chọn";
-            _optionsButton.UseVisualStyleBackColor = true;
-
-            _categoriesGrid.AllowUserToAddRows = false;
-            _categoriesGrid.AllowUserToDeleteRows = false;
-            _categoriesGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            _categoriesGrid.BackgroundColor = Color.White;
-            _categoriesGrid.BorderStyle = BorderStyle.None;
-            _categoriesGrid.ColumnHeadersHeight = 40;
-            _categoriesGrid.Margin = new Padding(0, 4, 0, 0);
-            _categoriesGrid.Columns.AddRange(new DataGridViewColumn[] {
-                _nameColumn, _productCountColumn, _stateColumn, _actionsColumn
-            });
-            _categoriesGrid.Dock = DockStyle.Fill;
-            _categoriesGrid.MultiSelect = false;
-            _categoriesGrid.ReadOnly = true;
-            _categoriesGrid.RowHeadersVisible = false;
-            _categoriesGrid.RowTemplate.Height = 38;
-            _categoriesGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(51, 65, 85);
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            _categoriesGrid.EnableHeadersVisualStyles = false;
-            _categoriesGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
-            _categoriesGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
-            _categoriesGrid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
-            _categoriesGrid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            _nameColumn.FillWeight = 44F;
-            _nameColumn.HeaderText = "Tên danh mục";
-            _nameColumn.Name = "Name";
-            _productCountColumn.FillWeight = 18F;
-            _productCountColumn.HeaderText = "Số sản phẩm";
-            _productCountColumn.Name = "ProductCount";
-            _stateColumn.FillWeight = 20F;
-            _stateColumn.HeaderText = "Trạng thái";
-            _stateColumn.Name = "Status";
-            _actionsColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            _actionsColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _actionsColumn.HeaderText = "Thao tác";
-            _actionsColumn.ImageLayout = DataGridViewImageCellLayout.Normal;
-            _actionsColumn.Name = "Actions";
-            _actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
-            _actionsColumn.Width = 120;
-
-            _paging.ColumnCount = 2;
-            _paging.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 58F));
-            _paging.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 42F));
-            _paging.Dock = DockStyle.Fill;
-            _paging.Margin = new Padding(0);
-            _paging.RowCount = 1;
-            _paging.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _paging.BackColor = Color.White;
-            _paging.Controls.Add(_pagingInfo, 0, 0);
-            _paging.Controls.Add(_pagingNavigation, 1, 0);
-            _pagingInfo.Dock = DockStyle.Fill;
-            _pagingInfo.FlowDirection = FlowDirection.LeftToRight;
-            _pagingInfo.WrapContents = false;
-            _pagingInfo.Padding = new Padding(12, 0, 0, 0);
-            _pagingInfo.Controls.Add(_resultsLabel);
-            _pagingInfo.Controls.Add(_pageSizeComboBox);
-            _resultsLabel.AutoSize = false;
-            _resultsLabel.Size = new Size(190, 44);
-            _resultsLabel.Margin = new Padding(0, 0, 10, 0);
-            _resultsLabel.Text = "Hiển thị 0 danh mục";
-            _resultsLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _resultsLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _resultsLabel.Font = new Font("Segoe UI", 9F);
-            _pagingNavigation.Dock = DockStyle.Fill;
-            _pagingNavigation.FlowDirection = FlowDirection.RightToLeft;
-            _pagingNavigation.WrapContents = false;
-            _pagingNavigation.Padding = new Padding(0, 5, 0, 5);
-            _pagingNavigation.Controls.AddRange(new Control[] { _nextButton, _pageLabel, _previousButton });
-            _previousButton.FlatStyle = FlatStyle.Flat;
-            _previousButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _previousButton.FlatAppearance.BorderSize = 1;
-            _previousButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(239, 246, 255);
-            _previousButton.BackColor = Color.White;
-            _previousButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _previousButton.Font = new Font("Segoe UI Symbol", 16F);
-            _previousButton.Margin = new Padding(2, 0, 2, 0);
-            _previousButton.Size = new Size(36, 34);
-            _previousButton.Text = "‹";
-            _previousButton.AccessibleName = "Trang trước";
-            _nextButton.FlatStyle = FlatStyle.Flat;
-            _nextButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _nextButton.FlatAppearance.BorderSize = 1;
-            _nextButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(239, 246, 255);
-            _nextButton.BackColor = Color.White;
-            _nextButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _nextButton.Font = new Font("Segoe UI Symbol", 16F);
-            _nextButton.Margin = new Padding(2, 0, 2, 0);
-            _nextButton.Size = new Size(36, 34);
-            _nextButton.Text = "›";
-            _nextButton.AccessibleName = "Trang sau";
-            _pageLabel.AutoSize = false;
-            _pageLabel.Margin = new Padding(8, 0, 8, 0);
-            _pageLabel.Size = new Size(112, 34);
-            _pageLabel.Text = "Trang 1 / 1";
-            _pageLabel.TextAlign = ContentAlignment.MiddleCenter;
-            _pageLabel.ForeColor = Color.FromArgb(51, 65, 85);
-            _pageLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            _pageLabel.BackColor = Color.FromArgb(248, 250, 252);
-            _pageSizeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _pageSizeComboBox.Items.AddRange(new object[] { "10 dòng", "20 dòng", "50 dòng" });
-            _pageSizeComboBox.Margin = new Padding(0, 8, 0, 0);
-            _pageSizeComboBox.SelectedIndex = 0;
-            _pageSizeComboBox.Size = new Size(94, 28);
-
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(244, 247, 250);
-            Controls.Add(_root);
-            Name = "ucCategoryManagement";
-            Size = new Size(1100, 720);
-            _root.ResumeLayout(false);
-            _header.ResumeLayout(false);
-            _header.PerformLayout();
-            _toolbar.ResumeLayout(false);
-            _toolbar.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)_categoriesGrid).EndInit();
-            _pagingNavigation.ResumeLayout(false);
-            _pagingInfo.ResumeLayout(false);
-            _paging.ResumeLayout(false);
-            ResumeLayout(false);
         }
 
     }

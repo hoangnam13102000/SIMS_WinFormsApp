@@ -8,6 +8,7 @@ using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Dialogs;
 
@@ -190,6 +191,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 if (_linesGrid.IsCurrentCellDirty)
                     _linesGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
             };
+            _linesGrid.EditingControlShowing += OnLinesGridEditingControlShowing;
             _linesGrid.CellValueChanged += (sender, args) => UpdateSummary();
             _linesGrid.CellEndEdit += (sender, args) => UpdateSummary();
             _linesGrid.DataError += (sender, args) =>
@@ -304,6 +306,15 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             LoadReturnableLines();
         }
 
+        private void OnLinesGridEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (_linesGrid.CurrentCell?.OwningColumn?.Name == "Quantity" && e.Control is TextBox textBox)
+            {
+                NumberInputFormatter.Attach(textBox);
+                NumberInputFormatter.SetMaximumDigits(textBox, 10);
+            }
+        }
+
         private void LoadReturnableLines()
         {
             if (_designPreview)
@@ -356,7 +367,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     continue;
 
                 int quantity;
-                if (int.TryParse(Convert.ToString(row.Cells["Quantity"].Value), out quantity) && quantity > 0)
+                if (int.TryParse(NumberInputFormatter.DigitsOnly(
+                    Convert.ToString(row.Cells["Quantity"].Value)), out quantity) && quantity > 0)
                 {
                     ReturnableLine line = row.Tag as ReturnableLine;
                     total += quantity * line.UnitPrice;
@@ -390,7 +402,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     continue;
 
                 int quantity;
-                if (!int.TryParse(Convert.ToString(row.Cells["Quantity"].Value), out quantity) || quantity <= 0)
+                if (!int.TryParse(NumberInputFormatter.DigitsOnly(
+                    Convert.ToString(row.Cells["Quantity"].Value)), out quantity) || quantity <= 0)
                 {
                     DialogHelper.ShowWarning(this, "Thiếu số lượng",
                         "Nhập số lượng trả hợp lệ cho từng sản phẩm đã chọn.");

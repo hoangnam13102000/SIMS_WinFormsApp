@@ -34,6 +34,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public ucSupplierManagement(ICatalogAdminService service)
         {
             InitializeComponent();
+            _header.SizeChanged += (sender, args) => LayoutHeader();
+            LayoutHeader();
+            _refreshButton.Click += (sender, args) => LoadPage();
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportSuppliers(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportSuppliers(new ExcelTableExporter()));
@@ -78,6 +81,20 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _suppliersGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();
+        }
+
+        private void LayoutHeader()
+        {
+            int right = _header.ClientSize.Width - 16;
+            _refreshButton.Location = new Point(right - _refreshButton.Width, 29);
+            right = _refreshButton.Left - 8;
+            _optionsButton.Location = new Point(right - _optionsButton.Width, 29);
+            right = _optionsButton.Left - 8;
+            _addButton.Location = new Point(right - _addButton.Width, 29);
+            _titleLabel.Width = Math.Max(180, _addButton.Left - _titleLabel.Left - 16);
+            _addButton.BringToFront();
+            _optionsButton.BringToFront();
+            _refreshButton.BringToFront();
         }
 
         private int PageCount => Math.Max(1, (int)Math.Ceiling(_totalCount / (double)_pageSize));

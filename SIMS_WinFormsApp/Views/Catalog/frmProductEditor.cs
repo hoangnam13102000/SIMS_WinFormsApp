@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Catalog
@@ -19,6 +20,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public frmProductEditor()
         {
             InitializeComponent();
+            ConfigureNumericInputs();
+            MarkRequired(_nameLabel);
+            MarkRequired(_categoryLabel);
             Text = "Sản phẩm";
             PopulateLookups(Array.Empty<LookupItem>(), Array.Empty<LookupItem>());
             PopulatePreviewValues();
@@ -32,6 +36,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             bool readOnly)
         {
             InitializeComponent();
+            ConfigureNumericInputs();
+            MarkRequired(_nameLabel);
+            MarkRequired(_categoryLabel);
             _model = model ?? new ProductEditDto();
             _readOnly = readOnly;
             Text = readOnly
@@ -50,6 +57,43 @@ namespace SIMS_WinFormsApp.Views.Catalog
             {
                 DialogResult = DialogResult.Cancel;
                 Close();
+            };
+        }
+
+        private void ConfigureNumericInputs()
+        {
+            NumberInputFormatter.Attach(_importPriceTextBox);
+            NumberInputFormatter.SetMaximumDigits(_importPriceTextBox, 18);
+            NumberInputFormatter.Attach(_sellPriceTextBox);
+            NumberInputFormatter.SetMaximumDigits(_sellPriceTextBox, 18);
+            NumberInputFormatter.Attach(_stockTextBox);
+            NumberInputFormatter.SetMaximumDigits(_stockTextBox, 10);
+            NumberInputFormatter.Attach(_minStockTextBox);
+            NumberInputFormatter.SetMaximumDigits(_minStockTextBox, 10);
+        }
+
+        private static void MarkRequired(Label label)
+        {
+            label.Paint += (sender, args) =>
+            {
+                var requiredLabel = (Label)sender;
+                int textWidth = TextRenderer.MeasureText(
+                    requiredLabel.Text,
+                    requiredLabel.Font,
+                    Size.Empty,
+                    TextFormatFlags.NoPadding).Width;
+                var markerBounds = new Rectangle(
+                    textWidth + 3,
+                    0,
+                    TextRenderer.MeasureText("*", requiredLabel.Font, Size.Empty, TextFormatFlags.NoPadding).Width + 2,
+                    requiredLabel.ClientSize.Height);
+                TextRenderer.DrawText(
+                    args.Graphics,
+                    "*",
+                    requiredLabel.Font,
+                    markerBounds,
+                    Color.Red,
+                    TextFormatFlags.NoPadding | TextFormatFlags.VerticalCenter);
             };
         }
 
@@ -198,6 +242,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private void SaveAndClose()
         {
             if (_model == null || _readOnly) return;
+            if (_nameTextBox.Text.Trim().Length > 150)
+            {
+                DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ",
+                    "Tên sản phẩm tối đa 150 ký tự.");
+                _nameTextBox.Focus();
+                _nameTextBox.SelectAll();
+                return;
+            }
+
             if (!TryParseMoney(_importPriceTextBox.Text, out decimal importPrice) ||
                 !TryParseMoney(_sellPriceTextBox.Text, out decimal sellPrice) ||
                 importPrice < 0 || sellPrice < 0)
@@ -206,8 +259,16 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     "Giá nhập và giá bán phải là số không âm.");
                 return;
             }
-            if (!int.TryParse(_stockTextBox.Text, out int stock) || stock < 0 ||
-                !int.TryParse(_minStockTextBox.Text, out int minStock) || minStock < 0)
+            if (sellPrice < importPrice)
+            {
+                DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ",
+                    "Giá bán phải lớn hơn hoặc bằng giá nhập.");
+                _sellPriceTextBox.Focus();
+                _sellPriceTextBox.SelectAll();
+                return;
+            }
+            if (!int.TryParse(NumberInputFormatter.DigitsOnly(_stockTextBox.Text), out int stock) || stock < 0 ||
+                !int.TryParse(NumberInputFormatter.DigitsOnly(_minStockTextBox.Text), out int minStock) || minStock < 0)
             {
                 DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ",
                     "Tồn kho và tồn kho tối thiểu phải là số nguyên không âm.");

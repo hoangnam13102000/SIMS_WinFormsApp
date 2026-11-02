@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
@@ -53,6 +54,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
             Action<int> showExpiredBatches = null)
         {
             InitializeComponent();
+            _header.SizeChanged += (sender, args) => LayoutHeader();
+            LayoutHeader();
+            _previousButton.Text = string.Empty;
+            _nextButton.Text = string.Empty;
+            _previousButton.Paint += (sender, args) =>
+                DrawPagingArrow(args.Graphics, _previousButton.ClientRectangle, false, _previousButton.Enabled);
+            _nextButton.Paint += (sender, args) =>
+                DrawPagingArrow(args.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
+            _refreshButton.Click += (sender, args) => LoadPage();
             _canEditProducts = canEditProducts || canManageProducts;
             _canManageProducts = canManageProducts;
             _showExpiredBatches = showExpiredBatches;
@@ -63,7 +73,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (_canManageProducts)
                 _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
-            _addButton.Visible = _canManageProducts;
+            _addButton.Enabled = _canManageProducts;
             if (service == null) return;
 
             _service = service;
@@ -110,7 +120,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 _pageIndex++;
                 LoadPage();
             };
-            _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
+            if (_canManageProducts)
+                _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             VisibleChanged += (sender, args) =>
@@ -138,6 +149,37 @@ namespace SIMS_WinFormsApp.Views.Catalog
         }
 
         private int PageCount => Math.Max(1, (int)Math.Ceiling(_totalCount / (double)_pageSize));
+
+        private static void DrawPagingArrow(Graphics graphics, Rectangle bounds, bool pointsRight, bool enabled)
+        {
+            int centerX = bounds.Width / 2;
+            int centerY = bounds.Height / 2;
+            int direction = pointsRight ? 1 : -1;
+            Color color = enabled ? Color.FromArgb(51, 65, 85) : Color.FromArgb(148, 163, 184);
+
+            SmoothingMode previousSmoothingMode = graphics.SmoothingMode;
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var pen = new Pen(color, 2F))
+            {
+                graphics.DrawLine(pen, centerX - direction * 3, centerY - 5, centerX + direction * 2, centerY);
+                graphics.DrawLine(pen, centerX + direction * 2, centerY, centerX - direction * 3, centerY + 5);
+            }
+            graphics.SmoothingMode = previousSmoothingMode;
+        }
+
+        private void LayoutHeader()
+        {
+            int right = _header.ClientSize.Width - 16;
+            _refreshButton.Location = new Point(right - _refreshButton.Width, 29);
+            right = _refreshButton.Left - 8;
+            _optionsButton.Location = new Point(right - _optionsButton.Width, 29);
+            right = _optionsButton.Left - 8;
+            _addButton.Location = new Point(right - _addButton.Width, 29);
+            _titleLabel.Width = Math.Max(180, _addButton.Left - _titleLabel.Left - 16);
+            _addButton.BringToFront();
+            _optionsButton.BringToFront();
+            _refreshButton.BringToFront();
+        }
 
         private void LoadPage()
         {

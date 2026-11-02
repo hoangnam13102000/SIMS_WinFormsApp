@@ -320,7 +320,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         private static bool TryOptionalInt(string text, out int value)
         {
             if (string.IsNullOrWhiteSpace(text)) { value = 0; return true; }
-            return int.TryParse(text, out value);
+            return int.TryParse(NumberInputFormatter.DigitsOnly(text), out value);
         }
         private void ShowInfo(string message) => AppToast.Info(this, message);
         private void ShowError(string message) => AppToast.Error(this, "Mã giảm giá", message);

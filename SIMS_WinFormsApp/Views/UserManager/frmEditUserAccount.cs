@@ -75,8 +75,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _designerBirthDate.MaxDate = DateTime.Today;
             _designerBirthDate.Checked = false;
             _designerHireDate.MaxDate = DateTime.Today.AddYears(1);
-            _designerSalary.KeyPress += Salary_KeyPress;
-            _designerSalary.Leave += Salary_Leave;
+            NumberInputFormatter.Attach(_designerSalary);
             _designerChooseAvatarButton.Click += ChooseAvatarButton_Click;
             _designerCancelButton.Click += (s, e) => RaiseCloseRequested();
             _designerSaveButton.Click += (s, e) => RaiseSaveRequested();
@@ -185,17 +184,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         }
 
         private void AvatarCircle_Resize(object sender, EventArgs e) => ApplyAvatarCircleRegion();
-
-        private static void Salary_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-                e.Handled = true;
-        }
-
-        private void Salary_Leave(object sender, EventArgs e)
-        {
-            _designerSalary.Text = NumberInputFormatter.FormatInteger(_designerSalary.Text);
-        }
 
         private void ApplyAvatarCircleRegion()
         {

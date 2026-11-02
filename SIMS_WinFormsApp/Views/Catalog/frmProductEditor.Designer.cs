@@ -114,7 +114,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 74F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this._root.Size = new System.Drawing.Size(1020, 760);
             this._root.TabIndex = 0;
@@ -161,7 +161,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._body.Dock = System.Windows.Forms.DockStyle.Fill;
             this._body.Location = new System.Drawing.Point(27, 101);
             this._body.Name = "_body";
-            this._body.Size = new System.Drawing.Size(966, 516);
+            this._body.Size = new System.Drawing.Size(966, 504);
             this._body.TabIndex = 2;
             // 
             // _detailsGroup
@@ -553,10 +553,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._detailSummaryLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
             this._detailSummaryLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._detailSummaryLabel.Location = new System.Drawing.Point(27, 620);
+            this._detailSummaryLabel.Location = new System.Drawing.Point(27, 608);
             this._detailSummaryLabel.Name = "_detailSummaryLabel";
             this._detailSummaryLabel.Padding = new System.Windows.Forms.Padding(10);
-            this._detailSummaryLabel.Size = new System.Drawing.Size(966, 74);
+            this._detailSummaryLabel.Size = new System.Drawing.Size(966, 86);
             this._detailSummaryLabel.TabIndex = 3;
             this._detailSummaryLabel.Text = "Thông tin tồn kho và trạng thái";
             this._detailSummaryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

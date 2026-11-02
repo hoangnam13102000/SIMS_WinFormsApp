@@ -818,6 +818,12 @@
     <EmbeddedResource Include="Views\Catalog\frmSupplierEditor.resx">
       <DependentUpon>frmSupplierEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Catalog\ucCategoryManagement.resx">
+      <DependentUpon>ucCategoryManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Catalog\ucProductManagement.resx">
+      <DependentUpon>ucProductManagement.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Chat\ucChat.resx">
       <DependentUpon>ucChat.cs</DependentUpon>
     </EmbeddedResource>

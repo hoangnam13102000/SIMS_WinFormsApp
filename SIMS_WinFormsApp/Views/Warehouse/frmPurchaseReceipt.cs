@@ -9,6 +9,7 @@ using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.MVP.Presenters.Inventory;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Toast;
 
@@ -41,6 +42,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
             _cancelButton.Click += (sender, args) => ResetLines();
             _itemsGrid.CellEndEdit += OnItemsGridCellEndEdit;
+            _itemsGrid.EditingControlShowing += OnItemsGridEditingControlShowing;
             _presenter.Initialize();
         }
 
@@ -75,16 +77,17 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 }
 
                 int quantity;
-                if (!int.TryParse(Convert.ToString(row.Cells["Quantity"].Value, culture),
-                    NumberStyles.Integer, culture, out quantity))
+                if (!int.TryParse(NumberInputFormatter.DigitsOnly(
+                    Convert.ToString(row.Cells["Quantity"].Value, culture)), out quantity))
                 {
                     quantity = 0;
                     invalid = true;
                 }
 
                 decimal importPrice;
-                if (!decimal.TryParse(Convert.ToString(row.Cells["UnitPrice"].Value, culture),
-                    NumberStyles.Number, culture, out importPrice))
+                if (!decimal.TryParse(NumberInputFormatter.DigitsOnly(
+                    Convert.ToString(row.Cells["UnitPrice"].Value, culture)),
+                    NumberStyles.None, CultureInfo.InvariantCulture, out importPrice))
                 {
                     importPrice = 0m;
                     invalid = true;
@@ -169,15 +172,31 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             CultureInfo culture = CultureInfo.GetCultureInfo("vi-VN");
             int quantity;
             decimal importPrice;
-            bool validQuantity = int.TryParse(Convert.ToString(row.Cells["Quantity"].Value, culture),
-                NumberStyles.Integer, culture, out quantity);
-            bool validPrice = decimal.TryParse(Convert.ToString(row.Cells["UnitPrice"].Value, culture),
-                NumberStyles.Number, culture, out importPrice);
+            bool validQuantity = int.TryParse(NumberInputFormatter.DigitsOnly(
+                Convert.ToString(row.Cells["Quantity"].Value, culture)), out quantity);
+            bool validPrice = decimal.TryParse(NumberInputFormatter.DigitsOnly(
+                Convert.ToString(row.Cells["UnitPrice"].Value, culture)),
+                NumberStyles.None, CultureInfo.InvariantCulture, out importPrice);
 
             row.Cells["Amount"].Value = validQuantity && validPrice
                 ? (quantity * importPrice).ToString("N0", culture)
                 : "0";
             LinesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnItemsGridEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (!(e.Control is TextBox textBox))
+                return;
+
+            string columnName = _itemsGrid.CurrentCell?.OwningColumn?.Name;
+            if (columnName == "Quantity" || columnName == "UnitPrice")
+            {
+                NumberInputFormatter.Attach(textBox);
+                NumberInputFormatter.SetMaximumDigits(textBox, columnName == "Quantity" ? 9 : 18);
+            }
+            else
+                NumberInputFormatter.Detach(textBox);
         }
     }
 }

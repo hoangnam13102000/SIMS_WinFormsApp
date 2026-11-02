@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.Views.Toast;
 using SIMS_WinFormsApp.Views.Interfaces;
 
@@ -23,6 +24,10 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         public ucSystemSettings(IStoreConfigRepository repository)
         {
             InitializeComponent();
+            NumberInputFormatter.AttachDecimal(_vatRate);
+            NumberInputFormatter.AttachDecimal(_defaultMargin);
+            NumberInputFormatter.Attach(_returnDays);
+            NumberInputFormatter.AttachDecimal(_approvalThreshold);
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
 
             _header.SizeChanged += (sender, args) => PositionSaveButton();

@@ -26,9 +26,12 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             InitializeComponent();
             _pager = new UserManagementPager();
-            _contentLayout.RowCount = 4;
-            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             _contentLayout.Controls.Add(_pager, 0, 3);
+            _headerPanel.SizeChanged += (sender, args) => LayoutHeader();
+            _toolbar.SizeChanged += (sender, args) => LayoutFilters();
+            _refreshButton.Click += (sender, args) => ReloadUsers(true);
+            LayoutHeader();
+            LayoutFilters();
             _pager.PageChanged += (sender, args) => ReloadUsers();
             _rowMenu = new ContextMenuStrip(components);
             AddUserRow("admin", "Quản trị hệ thống", "admin@example.com", "Quản trị viên", "Đang hoạt động", false);
@@ -49,6 +52,21 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _rowMenu.Items.Add("Sửa tài khoản", null, (sender, args) => EditSelectedUser());
             _rowMenu.Items.Add("Khóa / mở khóa", null, (sender, args) => ToggleSelectedUserLock());
             _usersGrid.ContextMenuStrip = _rowMenu;
+        }
+
+        private void LayoutHeader()
+        {
+            _refreshButton.Location = new Point(_headerPanel.ClientSize.Width - 146, 28);
+            _titleLabel.Width = Math.Max(180, _refreshButton.Left - _titleLabel.Left - 16);
+        }
+
+        private void LayoutFilters()
+        {
+            int statusLeft = Math.Max(252, _toolbar.ClientSize.Width - 340);
+            _searchBox.Width = Math.Max(140, statusLeft - 32);
+            _statusLabel.Location = new Point(statusLeft, 8);
+            _statusFilter.Location = new Point(statusLeft, 31);
+            _statusFilter.Width = Math.Max(180, _toolbar.ClientSize.Width - statusLeft - 32);
         }
 
         public frmUserManagement(IUserManagementService service) : this()

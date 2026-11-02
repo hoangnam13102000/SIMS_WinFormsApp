@@ -1,5 +1,6 @@
 using System.Windows.Forms;
 using System.Drawing;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Sales
@@ -9,6 +10,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         public PromotionEditorDialog()
         {
             InitializeComponent();
+            ConfigureNumericInputs();
             _codeInput.Text = "SUMMER10";
             _nameInput.Text = "Ưu đãi mùa hè";
             _valueInput.Text = "10";
@@ -22,6 +24,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         public PromotionEditorDialog(bool isNew)
         {
             InitializeComponent();
+            ConfigureNumericInputs();
             Text = isNew ? "Tạo mã giảm giá" : "Cập nhật mã giảm giá";
             _title.Text = isNew ? "Tạo mã giảm giá mới" : "Cập nhật mã giảm giá";
             _saveButton.Text = isNew ? "Tạo mã" : "Lưu thay đổi";
@@ -42,6 +45,14 @@ namespace SIMS_WinFormsApp.Views.Sales
         public CheckBox ActiveInput { get { return _activeInput; } }
         public CheckBox BannerInput { get { return _bannerInput; } }
         public Button SaveButton { get { return _saveButton; } }
+
+        private void ConfigureNumericInputs()
+        {
+            NumberInputFormatter.AttachDecimal(_valueInput);
+            NumberInputFormatter.AttachDecimal(_maximumInput);
+            NumberInputFormatter.AttachDecimal(_minimumInput);
+            NumberInputFormatter.Attach(_limitInput);
+        }
 
         private void ApplyThemeColors()
         {

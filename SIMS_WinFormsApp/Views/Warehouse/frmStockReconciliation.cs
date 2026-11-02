@@ -11,6 +11,7 @@ using SIMS_WinFormsApp.MVP.Presenters.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Toast;
 
@@ -54,6 +55,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _countEditor.BorderStyle = BorderStyle.FixedSingle;
             _countEditor.MaxLength = 10;
             _countEditor.TextAlign = HorizontalAlignment.Right;
+            NumberInputFormatter.Attach(_countEditor);
+            NumberInputFormatter.SetMaximumDigits(_countEditor, 10);
             _countEditor.Visible = false;
             _countEditor.KeyPress += OnCountEditorKeyPress;
             _countEditor.KeyDown += OnCountEditorKeyDown;
@@ -137,7 +140,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 string actualText = Convert.ToString(row.Cells["CountQuantity"].Value, CultureInfo.CurrentCulture);
                 int actualStock;
                 if (string.IsNullOrWhiteSpace(actualText) ||
-                    !int.TryParse(actualText, NumberStyles.Integer, CultureInfo.CurrentCulture, out actualStock))
+                    !int.TryParse(NumberInputFormatter.DigitsOnly(actualText), out actualStock))
                     continue;
 
                 int productId;
@@ -353,7 +356,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             string value = _countEditor.Text;
             int parsedValue;
             if (value.Length > 0 &&
-                !int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out parsedValue))
+                !int.TryParse(NumberInputFormatter.DigitsOnly(value), NumberStyles.None,
+                    CultureInfo.InvariantCulture, out parsedValue))
             {
                 int selectionStart = Math.Min(_countEditor.SelectionStart, _lastValidCountText.Length);
                 _settingCountEditorText = true;
@@ -384,7 +388,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         {
             int actualStock;
             string actualText = Convert.ToString(row.Cells["CountQuantity"].Value, CultureInfo.CurrentCulture);
-            if (!int.TryParse(actualText, NumberStyles.Integer, CultureInfo.CurrentCulture, out actualStock))
+            if (!int.TryParse(NumberInputFormatter.DigitsOnly(actualText), out actualStock))
             {
                 row.Cells["Difference"].Value = null;
                 row.Cells["Difference"].Style.ForeColor = Color.Empty;
