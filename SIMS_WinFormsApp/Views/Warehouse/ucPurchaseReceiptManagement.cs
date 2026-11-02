@@ -240,9 +240,17 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         public void OpenCreateForm()
         {
-            using (var form = new frmPurchaseReceiptEditor(_service, UserSession.Instance))
+            using (var form = new frmPurchaseReceipt(_service, UserSession.Instance))
+            {
                 if (form.ShowDialog(FindForm()) == DialogResult.OK)
+                {
                     _presenter.RefreshAfterCreate();
+                    string message = string.IsNullOrEmpty(form.CreatedReceiptCode)
+                        ? "Đã lập phiếu nhập mới. Tồn kho đã được cộng thêm."
+                        : "Đã lập phiếu nhập " + form.CreatedReceiptCode + ". Tồn kho đã được cộng thêm.";
+                    AppToast.Success(this, "Nhập hàng thành công", message);
+                }
+            }
         }
 
         private void ImportReceipts()

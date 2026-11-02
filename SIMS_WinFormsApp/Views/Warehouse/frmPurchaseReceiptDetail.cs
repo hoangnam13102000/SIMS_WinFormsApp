@@ -107,6 +107,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                     line.Quantity,
                     line.ImportPrice,
                     line.Amount);
+                _grid.Rows[rowIndex].Cells["ProductName"].ToolTipText = line.ProductName;
 
                 if (!line.ExpiryDate.HasValue)
                     continue;

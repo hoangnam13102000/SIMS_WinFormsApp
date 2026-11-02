@@ -157,7 +157,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                     alert.ProductName,
                     GetAlertTypeText(alert.AlertType),
                     string.IsNullOrWhiteSpace(alert.ReportedByName) ? "Hệ thống" : alert.ReportedByName,
-                    alert.CreatedAt.ToString("dd/MM/yy HH:mm", VietnameseCulture),
+                    alert.CreatedAt.ToString("dd/MM/yyyy HH:mm", VietnameseCulture),
                     GetStatusText(alert.Status),
                     null,
                     null);

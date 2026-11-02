@@ -119,9 +119,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _titleLabel
             // 
-            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._titleLabel.AutoEllipsis = true;
-            this._titleLabel.AutoSize = false;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this._titleLabel.Location = new System.Drawing.Point(80, 12);
@@ -134,16 +134,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _subtitleLabel
             // 
-            this._subtitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this._subtitleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._subtitleLabel.AutoEllipsis = true;
-            this._subtitleLabel.AutoSize = false;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._subtitleLabel.Location = new System.Drawing.Point(80, 52);
             this._subtitleLabel.Name = "_subtitleLabel";
             this._subtitleLabel.Size = new System.Drawing.Size(822, 20);
             this._subtitleLabel.TabIndex = 2;
-                this._subtitleLabel.Text = "Sản phẩm hết hoặc sắp hết hàng cần nhập thêm";
+            this._subtitleLabel.Text = "Sản phẩm hết hoặc sắp hết hàng cần nhập thêm";
             this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._subtitleLabel.UseMnemonic = false;
             // 
@@ -198,7 +198,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._filterCard.Controls.Add(this._clearFilterLink);
             this._filterCard.Controls.Add(this._totalLabel);
             this._filterCard.Dock = System.Windows.Forms.DockStyle.Top;
-            this._filterCard.Location = new System.Drawing.Point(16, 112);
+            this._filterCard.Location = new System.Drawing.Point(16, 116);
             this._filterCard.Name = "_filterCard";
             this._filterCard.Size = new System.Drawing.Size(1068, 60);
             this._filterCard.TabIndex = 1;
@@ -237,7 +237,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._fromDatePicker.Location = new System.Drawing.Point(510, 18);
             this._fromDatePicker.Name = "_fromDatePicker";
-            this._fromDatePicker.ShowCheckBox = false;
             this._fromDatePicker.Size = new System.Drawing.Size(140, 27);
             this._fromDatePicker.TabIndex = 3;
             // 
@@ -258,7 +257,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._toDatePicker.Location = new System.Drawing.Point(710, 18);
             this._toDatePicker.Name = "_toDatePicker";
-            this._toDatePicker.ShowCheckBox = false;
             this._toDatePicker.Size = new System.Drawing.Size(140, 27);
             this._toDatePicker.TabIndex = 5;
             // 
@@ -294,9 +292,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._gridCard.Controls.Add(this._grid);
             this._gridCard.Controls.Add(this._emptyLabel);
             this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._gridCard.Location = new System.Drawing.Point(16, 184);
+            this._gridCard.Location = new System.Drawing.Point(16, 188);
             this._gridCard.Name = "_gridCard";
-            this._gridCard.Size = new System.Drawing.Size(1068, 416);
+            this._gridCard.Size = new System.Drawing.Size(1068, 412);
             this._gridCard.TabIndex = 2;
             // 
             // _grid
@@ -352,7 +350,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.RowHeadersWidth = 51;
             this._grid.RowTemplate.Height = 36;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._grid.Size = new System.Drawing.Size(1066, 414);
+            this._grid.Size = new System.Drawing.Size(1066, 410);
             this._grid.TabIndex = 0;
             // 
             // colAlertId
@@ -460,7 +458,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._emptyLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._emptyLabel.Location = new System.Drawing.Point(0, 0);
             this._emptyLabel.Name = "_emptyLabel";
-            this._emptyLabel.Size = new System.Drawing.Size(1066, 414);
+            this._emptyLabel.Size = new System.Drawing.Size(1066, 410);
             this._emptyLabel.TabIndex = 1;
             this._emptyLabel.Text = "Chưa có cảnh báo nào";
             this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -470,7 +468,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._gapHeader.BackColor = System.Drawing.Color.Transparent;
             this._gapHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this._gapHeader.Location = new System.Drawing.Point(16, 100);
+            this._gapHeader.Location = new System.Drawing.Point(16, 104);
             this._gapHeader.Name = "_gapHeader";
             this._gapHeader.Size = new System.Drawing.Size(1068, 12);
             this._gapHeader.TabIndex = 3;
@@ -479,7 +477,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._gapFilter.BackColor = System.Drawing.Color.Transparent;
             this._gapFilter.Dock = System.Windows.Forms.DockStyle.Top;
-            this._gapFilter.Location = new System.Drawing.Point(16, 172);
+            this._gapFilter.Location = new System.Drawing.Point(16, 176);
             this._gapFilter.Name = "_gapFilter";
             this._gapFilter.Size = new System.Drawing.Size(1068, 12);
             this._gapFilter.TabIndex = 4;

@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private Label _titleLabel;
         private Label _subtitleLabel;
         private FlowLayoutPanel _toolbar;
+        private TableLayoutPanel _toolbarLayout;
         private TextBox _searchTextBox;
         private ComboBox _statusComboBox;
         private Button _addButton;
@@ -47,6 +48,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _titleLabel = new Label();
             _subtitleLabel = new Label();
             _toolbar = new FlowLayoutPanel();
+            _toolbarLayout = new TableLayoutPanel();
             _searchTextBox = new TextBox();
             _statusComboBox = new ComboBox();
             _addButton = new Button();
@@ -71,6 +73,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.SuspendLayout();
             _header.SuspendLayout();
             _toolbar.SuspendLayout();
+            _toolbarLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)_productsGrid).BeginInit();
             _paging.SuspendLayout();
             _pagingInfo.SuspendLayout();
@@ -88,9 +91,22 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             _root.Controls.Add(_header, 0, 0);
-            _root.Controls.Add(_toolbar, 0, 1);
+            _root.Controls.Add(_toolbarLayout, 0, 1);
             _root.Controls.Add(_productsGrid, 0, 2);
             _root.Controls.Add(_paging, 0, 3);
+
+            _toolbarLayout.ColumnCount = 2;
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            _toolbarLayout.Controls.Add(_toolbar, 0, 0);
+            _toolbarLayout.Controls.Add(_optionsButton, 1, 0);
+            _toolbarLayout.RowCount = 1;
+            _toolbarLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            _toolbarLayout.Dock = DockStyle.Fill;
+            _toolbarLayout.AutoSize = true;
+            _toolbarLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            _toolbarLayout.Margin = Padding.Empty;
+            _toolbarLayout.Padding = Padding.Empty;
 
             _header.Controls.Add(_subtitleLabel);
             _header.Controls.Add(_titleLabel);
@@ -107,7 +123,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _subtitleLabel.Location = new Point(2, 52);
             _subtitleLabel.Text = "Danh sách sản phẩm, giá bán, tồn kho và trạng thái";
             _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _statusComboBox, _addButton, _optionsButton
+                _searchTextBox, _statusComboBox, _addButton
             });
             _toolbar.AutoSize = true;
             _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -136,7 +152,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _addButton.Size = new Size(132, 34);
             _addButton.Text = "Thêm sản phẩm";
             _optionsButton.Font = new Font("Segoe UI", 9F);
-            _optionsButton.Margin = new Padding(8, 0, 0, 0);
+            _optionsButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _optionsButton.Margin = new Padding(8, 4, 0, 0);
             _optionsButton.Name = "_optionsButton";
             _optionsButton.Size = new Size(110, 36);
             _optionsButton.Text = "Tùy chọn";
@@ -147,7 +164,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _productsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _productsGrid.BackgroundColor = Color.White;
             _productsGrid.BorderStyle = BorderStyle.None;
-            _productsGrid.ColumnHeadersHeight = 40;
+            _productsGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            _productsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _productsGrid.ColumnHeadersHeight = 44;
             _productsGrid.Margin = new Padding(0, 4, 0, 0);
             _productsGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _imageColumn, _codeColumn, _nameColumn, _categoryColumn, _priceColumn, _stockColumn,
@@ -158,9 +177,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _productsGrid.ReadOnly = true;
             _productsGrid.RowHeadersVisible = false;
             _productsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            _productsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            _productsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(51, 65, 85);
-            _productsGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            _productsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 41, 59);
+            _productsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            _productsGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(30, 41, 59);
+            _productsGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            _productsGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            _productsGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            _productsGrid.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
             _productsGrid.EnableHeadersVisualStyles = false;
             _productsGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
             _productsGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
@@ -277,6 +300,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _pagingNavigation.ResumeLayout(false);
             _pagingInfo.ResumeLayout(false);
             _paging.ResumeLayout(false);
+            _toolbarLayout.ResumeLayout(false);
+            _toolbarLayout.PerformLayout();
             _toolbar.ResumeLayout(false);
             _toolbar.PerformLayout();
             _header.ResumeLayout(false);

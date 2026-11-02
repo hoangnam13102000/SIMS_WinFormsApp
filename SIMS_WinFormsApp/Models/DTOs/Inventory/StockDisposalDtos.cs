@@ -69,13 +69,27 @@ namespace SIMS_WinFormsApp.Models.DTOs.Inventory
         public int RemainingQty { get; set; }
         public decimal ImportPrice { get; set; }
 
-        /// <summary>Giống Java: "LOT_000019  ·  Bánh quy bơ 200g  ·  còn 10  ·  HSD 2026-10-27".</summary>
+        /// <summary>Ví dụ: "[HẾT HẠN] HSD 27/10/2026  ·  LOT_000019  ·  Bánh quy bơ 200g  ·  còn 10".</summary>
         public override string ToString()
         {
-            string expiry = ExpiryDate.HasValue
-                ? ExpiryDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
-                : "—";
-            return BatchCode + "  ·  " + ProductName + "  ·  còn " + RemainingQty + "  ·  HSD " + expiry;
+            string statusLabel = string.Empty;
+            string expiry = "—";
+            if (ExpiryDate.HasValue)
+            {
+                DateTime expiryDate = ExpiryDate.Value.Date;
+                int daysUntilExpiry = (expiryDate - DateTime.Today).Days;
+                expiry = expiryDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+                if (daysUntilExpiry < 0)
+                    statusLabel = "[HẾT HẠN] ";
+                else if (daysUntilExpiry == 0)
+                    statusLabel = "[HẾT HẠN HÔM NAY] ";
+                else if (daysUntilExpiry <= 30)
+                    statusLabel = "[Còn " + daysUntilExpiry + " ngày] ";
+            }
+
+            return statusLabel + "HSD " + expiry + "  ·  " + BatchCode + "  ·  " + ProductName
+                + "  ·  còn " + RemainingQty;
         }
     }
 

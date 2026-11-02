@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private Label _titleLabel;
         private Label _subtitleLabel;
         private FlowLayoutPanel _toolbar;
+        private TableLayoutPanel _toolbarLayout;
         private TextBox _searchTextBox;
         private Button _addButton;
         private Button _optionsButton;
@@ -44,6 +45,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _titleLabel = new Label();
             _subtitleLabel = new Label();
             _toolbar = new FlowLayoutPanel();
+            _toolbarLayout = new TableLayoutPanel();
             _searchTextBox = new TextBox();
             _addButton = new Button();
             _optionsButton = new Button();
@@ -65,6 +67,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.SuspendLayout();
             _header.SuspendLayout();
             _toolbar.SuspendLayout();
+            _toolbarLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)_suppliersGrid).BeginInit();
             _paging.SuspendLayout();
             _pagingInfo.SuspendLayout();
@@ -82,9 +85,22 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             _root.Controls.Add(_header, 0, 0);
-            _root.Controls.Add(_toolbar, 0, 1);
+            _root.Controls.Add(_toolbarLayout, 0, 1);
             _root.Controls.Add(_suppliersGrid, 0, 2);
             _root.Controls.Add(_paging, 0, 3);
+
+            _toolbarLayout.ColumnCount = 2;
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            _toolbarLayout.Controls.Add(_toolbar, 0, 0);
+            _toolbarLayout.Controls.Add(_optionsButton, 1, 0);
+            _toolbarLayout.RowCount = 1;
+            _toolbarLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            _toolbarLayout.Dock = DockStyle.Fill;
+            _toolbarLayout.AutoSize = true;
+            _toolbarLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            _toolbarLayout.Margin = Padding.Empty;
+            _toolbarLayout.Padding = Padding.Empty;
 
             _header.Controls.Add(_subtitleLabel);
             _header.Controls.Add(_titleLabel);
@@ -101,7 +117,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _subtitleLabel.Location = new Point(2, 52);
             _subtitleLabel.Text = "Đối tác nhập hàng và thông tin liên hệ";
             _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _addButton, _optionsButton
+                _searchTextBox, _addButton
             });
             _toolbar.AutoSize = true;
             _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -122,7 +138,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _addButton.Size = new Size(150, 34);
             _addButton.Text = "Thêm nhà cung cấp";
             _optionsButton.Font = new Font("Segoe UI", 9F);
-            _optionsButton.Margin = new Padding(8, 0, 0, 0);
+            _optionsButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _optionsButton.Margin = new Padding(8, 4, 0, 0);
             _optionsButton.Name = "_optionsButton";
             _optionsButton.Size = new Size(110, 36);
             _optionsButton.Text = "Tùy chọn";
@@ -133,7 +150,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _suppliersGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _suppliersGrid.BackgroundColor = Color.White;
             _suppliersGrid.BorderStyle = BorderStyle.None;
-            _suppliersGrid.ColumnHeadersHeight = 40;
+            _suppliersGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            _suppliersGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _suppliersGrid.ColumnHeadersHeight = 44;
             _suppliersGrid.Margin = new Padding(0, 4, 0, 0);
             _suppliersGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _nameColumn, _phoneColumn, _emailColumn, _addressColumn, _itemsColumn, _actionsColumn
@@ -144,9 +163,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _suppliersGrid.RowHeadersVisible = false;
             _suppliersGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             _suppliersGrid.RowTemplate.Height = 38;
-            _suppliersGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            _suppliersGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(51, 65, 85);
-            _suppliersGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 41, 59);
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(30, 41, 59);
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            _suppliersGrid.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
             _suppliersGrid.EnableHeadersVisualStyles = false;
             _suppliersGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
             _suppliersGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
@@ -247,6 +270,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _pagingNavigation.ResumeLayout(false);
             _pagingInfo.ResumeLayout(false);
             _paging.ResumeLayout(false);
+            _toolbarLayout.ResumeLayout(false);
+            _toolbarLayout.PerformLayout();
             _toolbar.ResumeLayout(false);
             _toolbar.PerformLayout();
             _header.ResumeLayout(false);

@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private Label _titleLabel;
         private Label _subtitleLabel;
         private FlowLayoutPanel _toolbar;
+        private TableLayoutPanel _toolbarLayout;
         private TextBox _searchTextBox;
         private ComboBox _statusComboBox;
         private Button _addButton;
@@ -43,6 +44,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _titleLabel = new Label();
             _subtitleLabel = new Label();
             _toolbar = new FlowLayoutPanel();
+            _toolbarLayout = new TableLayoutPanel();
             _searchTextBox = new TextBox();
             _statusComboBox = new ComboBox();
             _addButton = new Button();
@@ -63,6 +65,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.SuspendLayout();
             _header.SuspendLayout();
             _toolbar.SuspendLayout();
+            _toolbarLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)_categoriesGrid).BeginInit();
             _paging.SuspendLayout();
             _pagingInfo.SuspendLayout();
@@ -80,9 +83,22 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
             _root.Controls.Add(_header, 0, 0);
-            _root.Controls.Add(_toolbar, 0, 1);
+            _root.Controls.Add(_toolbarLayout, 0, 1);
             _root.Controls.Add(_categoriesGrid, 0, 2);
             _root.Controls.Add(_paging, 0, 3);
+
+            _toolbarLayout.ColumnCount = 2;
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            _toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            _toolbarLayout.Controls.Add(_toolbar, 0, 0);
+            _toolbarLayout.Controls.Add(_optionsButton, 1, 0);
+            _toolbarLayout.RowCount = 1;
+            _toolbarLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            _toolbarLayout.Dock = DockStyle.Fill;
+            _toolbarLayout.AutoSize = true;
+            _toolbarLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            _toolbarLayout.Margin = Padding.Empty;
+            _toolbarLayout.Padding = Padding.Empty;
 
             _header.Controls.Add(_subtitleLabel);
             _header.Controls.Add(_titleLabel);
@@ -99,7 +115,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _subtitleLabel.Location = new Point(2, 52);
             _subtitleLabel.Text = "Nhóm sản phẩm dùng khi bán hàng và nhập kho";
             _toolbar.Controls.AddRange(new Control[] {
-                _searchTextBox, _statusComboBox, _addButton, _optionsButton
+                _searchTextBox, _statusComboBox, _addButton
             });
             _toolbar.AutoSize = true;
             _toolbar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -128,7 +144,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _addButton.Size = new Size(132, 34);
             _addButton.Text = "Thêm danh mục";
             _optionsButton.Font = new Font("Segoe UI", 9F);
-            _optionsButton.Margin = new Padding(8, 0, 0, 0);
+            _optionsButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _optionsButton.Margin = new Padding(8, 4, 0, 0);
             _optionsButton.Name = "_optionsButton";
             _optionsButton.Size = new Size(110, 36);
             _optionsButton.Text = "Tùy chọn";
@@ -139,7 +156,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _categoriesGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _categoriesGrid.BackgroundColor = Color.White;
             _categoriesGrid.BorderStyle = BorderStyle.None;
-            _categoriesGrid.ColumnHeadersHeight = 40;
+            _categoriesGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            _categoriesGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _categoriesGrid.ColumnHeadersHeight = 44;
             _categoriesGrid.Margin = new Padding(0, 4, 0, 0);
             _categoriesGrid.Columns.AddRange(new DataGridViewColumn[] {
                 _nameColumn, _productCountColumn, _stateColumn, _actionsColumn
@@ -150,9 +169,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _categoriesGrid.RowHeadersVisible = false;
             _categoriesGrid.RowTemplate.Height = 38;
             _categoriesGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(51, 65, 85);
-            _categoriesGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 41, 59);
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(30, 41, 59);
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            _categoriesGrid.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
             _categoriesGrid.EnableHeadersVisualStyles = false;
             _categoriesGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
             _categoriesGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 234, 254);
@@ -247,6 +270,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _root.ResumeLayout(false);
             _header.ResumeLayout(false);
             _header.PerformLayout();
+            _toolbarLayout.ResumeLayout(false);
+            _toolbarLayout.PerformLayout();
             _toolbar.ResumeLayout(false);
             _toolbar.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)_categoriesGrid).EndInit();

@@ -734,12 +734,6 @@
     <Compile Include="Views\Warehouse\ucStockDisposalManagement.Designer.cs">
       <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.Designer.cs">
-      <DependentUpon>frmPurchaseReceiptEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\Warehouse\ucPurchaseReceiptManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -942,9 +936,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Pos\frmListPickerDialog.resx">
       <DependentUpon>frmListPickerDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
-      <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceiptDetail.resx">
       <DependentUpon>frmPurchaseReceiptDetail.cs</DependentUpon>
