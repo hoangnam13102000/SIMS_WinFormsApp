@@ -34,7 +34,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
-        private bool _hasBeenVisible;
+        private bool _loadedOnce;
         private bool _isBindingCategoryFilter;
         private bool _categoryFilterLoaded;
 
@@ -72,6 +72,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
             if (_canManageProducts)
                 _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
+            _optionsMenu.Items.Add("Làm mới", null, (sender, args) => LoadPage());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             _addButton.Enabled = _canManageProducts;
             if (service == null) return;
@@ -123,22 +124,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (_canManageProducts)
                 _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
-            Load += (sender, args) => LoadPage();
-            VisibleChanged += (sender, args) =>
+            Load += (sender, args) =>
             {
-                if (!Visible) return;
-                if (_hasBeenVisible)
-                    LoadPage();
-                else
-                    _hasBeenVisible = true;
+                LoadPage();
+                _loadedOnce = true;
             };
             VisibleChanged += (sender, args) =>
             {
-                if (!Visible) return;
-                if (_hasBeenVisible)
+                if (Visible && _loadedOnce)
                     LoadPage();
-                else
-                    _hasBeenVisible = true;
             };
             Disposed += (sender, args) =>
             {

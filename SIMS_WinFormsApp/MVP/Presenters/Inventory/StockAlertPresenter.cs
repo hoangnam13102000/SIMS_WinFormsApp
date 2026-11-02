@@ -272,7 +272,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
                 alert.ProductName,
                 GetAlertTypeLabel(alert.AlertType),
                 alert.ReportedByName,
-                alert.CreatedAt.ToString("dd/MM/yy HH:mm", VietnameseCulture),
+                alert.CreatedAt.ToString("dd/MM/yyyy HH:mm", VietnameseCulture),
                 GetStatusLabel(alert.Status)
             }).ToList();
 

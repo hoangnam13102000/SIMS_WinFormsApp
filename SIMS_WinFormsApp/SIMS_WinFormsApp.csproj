@@ -17,11 +17,31 @@
     <ApplicationIcon>Resources\Logo\app_logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Models\DTOs\Inventory\StockReconciliationDtos.cs" />
     <Compile Include="Models\DTOs\Sales\InvoiceDetailsDto.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockReconciliationListPresenter.cs" />
+    <Compile Include="Repositories\Implementations\StockReconciliationRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IStockReconciliationRepository.cs" />
+    <Compile Include="Services\Implementations\Inventory\StockReconciliationService.cs" />
     <Compile Include="Services\Implementations\Sales\InvoiceManagementDataService.cs" />
     <Compile Include="Services\Implementations\Sales\ReturnManagementDataService.cs" />
     <Compile Include="DAL\Linq\Entities\Business\CatalogEntities.cs" />
     <Compile Include="DAL\Linq\Entities\Business\SalesEntities.cs" />
+    <Compile Include="Views\Warehouse\ucStockReconciliation.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucStockReconciliation.Designer.cs">
+      <DependentUpon>ucStockReconciliation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmStockReconciliationDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmStockReconciliationDetail.Designer.cs">
+      <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
+      <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
+    </EmbeddedResource>
     <Content Include="Resources\Logo\app_logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -54,6 +74,7 @@
     <Compile Include="DAL\Linq\Entities\Identity\AuditLogEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\EmployeeEntity.cs" />
     <Compile Include="DAL\Linq\Entities\Identity\StoreConfigEntity.cs" />
+    <Compile Include="Services\Interfaces\IStockReconciliationService.cs" />
     <Compile Include="Views\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -72,6 +93,7 @@
     <Compile Include="Views\Chat\AiChatPopupForm.Designer.cs">
       <DependentUpon>AiChatPopupForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Interfaces\IStockReconciliationListView.cs" />
     <Compile Include="Views\Profile\ucMyProfile.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -292,14 +314,26 @@
     <Compile Include="Services\Implementations\Catalog\CatalogAdminService.cs" />
     <Compile Include="Services\Implementations\Inventory\InventoryService.cs" />
     <Compile Include="Services\Implementations\Inventory\ExpiryBatchManagementService.cs" />
+    <Compile Include="Models\DTOs\Inventory\StockDisposalDtos.cs" />
+    <Compile Include="Repositories\Interfaces\IStockDisposalRepository.cs" />
+    <Compile Include="Repositories\Implementations\StockDisposalRepository.cs" />
+    <Compile Include="Services\Interfaces\IStockDisposalService.cs" />
+    <Compile Include="Services\Implementations\Inventory\StockDisposalService.cs" />
     <Compile Include="Services\Implementations\Catalog\LocalProductImageStore.cs" />
     <Compile Include="Services\Implementations\Import\CatalogImportRowHandlers.cs" />
+    <Compile Include="Services\Implementations\Import\PurchaseReceiptImportRowHandler.cs" />
+    <Compile Include="Services\Implementations\Import\StockReconciliationImportRowHandler.cs" />
+    <Compile Include="Services\Implementations\Import\StockDisposalImportRowHandler.cs" />
     <Compile Include="MVP\Presenters\Catalog\CatalogManagementPresenters.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockDisposalEditorPresenter.cs" />
+    <Compile Include="MVP\Presenters\Inventory\StockDisposalListPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptListPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\StockAlertPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\StockReconciliationPresenter.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptView.cs" />
+    <Compile Include="Views\Interfaces\IStockDisposalEditorView.cs" />
+    <Compile Include="Views\Interfaces\IStockDisposalListView.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptListView.cs" />
     <Compile Include="Views\Interfaces\IStockAlertView.cs" />
     <Compile Include="Views\Interfaces\IStockReconciliationView.cs" />
@@ -687,11 +721,23 @@
     <Compile Include="Views\Warehouse\frmPurchaseReceiptDetail.Designer.cs">
       <DependentUpon>frmPurchaseReceiptDetail.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.cs">
+    <Compile Include="Views\Warehouse\frmStockDisposalDetail.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Warehouse\frmPurchaseReceiptEditor.Designer.cs">
-      <DependentUpon>frmPurchaseReceiptEditor.cs</DependentUpon>
+    <Compile Include="Views\Warehouse\frmStockDisposalDetail.Designer.cs">
+      <DependentUpon>frmStockDisposalDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmStockDisposalEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\frmStockDisposalEditor.Designer.cs">
+      <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucStockDisposalManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Warehouse\ucStockDisposalManagement.Designer.cs">
+      <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Warehouse\ucPurchaseReceiptManagement.cs">
       <SubType>UserControl</SubType>
@@ -911,11 +957,17 @@
     <EmbeddedResource Include="Views\Pos\frmListPickerDialog.resx">
       <DependentUpon>frmListPickerDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
-      <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceiptDetail.resx">
       <DependentUpon>frmPurchaseReceiptDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmStockDisposalDetail.resx">
+      <DependentUpon>frmStockDisposalDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmStockDisposalEditor.resx">
+      <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucStockDisposalManagement.resx">
+      <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliation.resx">
       <DependentUpon>frmStockReconciliation.cs</DependentUpon>
@@ -925,6 +977,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockAlert.resx">
       <DependentUpon>ucStockAlert.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucStockReconciliation.resx">
+      <DependentUpon>ucStockReconciliation.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

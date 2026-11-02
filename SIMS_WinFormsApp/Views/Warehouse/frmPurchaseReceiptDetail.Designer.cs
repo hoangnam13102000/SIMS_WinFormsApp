@@ -484,6 +484,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.RowHeadersWidth = 51;
             this._grid.RowTemplate.Height = 40;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._grid.ShowCellToolTips = true;
             this._grid.Size = new System.Drawing.Size(952, 232);
             this._grid.TabIndex = 0;
             // 

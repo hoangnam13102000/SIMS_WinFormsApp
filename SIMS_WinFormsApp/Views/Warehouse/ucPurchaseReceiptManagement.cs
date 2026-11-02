@@ -11,11 +11,13 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.MVP.Presenters.Inventory;
+using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
+using SIMS_WinFormsApp.Views.SystemManagement;
 using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
@@ -30,6 +32,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly ContextMenuStrip _optionsMenu;
         private bool _initialized;
         private bool _suppressDateEvents;
+        private int _lastVisibleRowCapacity;
 
         public ucPurchaseReceiptManagement() : this(null)
         {
@@ -41,8 +44,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
+            if (_pageSizeCombo.SelectedIndex < 0)
+                _pageSizeCombo.SelectedIndex = 0;
+            _lastVisibleRowCapacity = GetVisibleRowCapacity();
+
             _service = service ?? AppComposition.CreateInventoryService();
             _presenter = new PurchaseReceiptListPresenter(this, _service);
+            _grid.Resize += Grid_Resize;
             _searchTimer = new Timer(components) { Interval = 300 };
             _searchTimer.Tick += (sender, args) =>
             {
@@ -79,6 +87,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất Excel",
                 IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new Size(18, 18)),
                 (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty)));
+            _optionsMenu.Items.Add(new ToolStripSeparator());
+            _optionsMenu.Items.Add(new ToolStripMenuItem("Nhập dữ liệu",
+                IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new Size(18, 18)),
+                (sender, args) => ImportReceipts()));
             _optionsButton.Click += (sender, args) =>
                 _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
 
@@ -108,10 +120,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public string Keyword => _searchBox.Text;
         public DateTime? FromDate => _fromDate.Value;
         public DateTime? ToDate => _toDate.Value;
-        public int PageSize => _pageSizeCombo.SelectedItem == null
-            ? 10
-            : Convert.ToInt32(_pageSizeCombo.SelectedItem, CultureInfo.InvariantCulture);
+        public int PageSize => Math.Min(
+            _pageSizeCombo.SelectedItem == null
+                ? 10
+                : Convert.ToInt32(_pageSizeCombo.SelectedItem, CultureInfo.InvariantCulture),
+            GetVisibleRowCapacity());
         public IWin32Window Owner => FindForm();
+
+        private int GetVisibleRowCapacity()
+        {
+            return Math.Max(1, (_grid.ClientSize.Height - _grid.ColumnHeadersHeight) / _grid.RowTemplate.Height);
+        }
+
+        private void Grid_Resize(object sender, EventArgs e)
+        {
+            int visibleRowCapacity = GetVisibleRowCapacity();
+            if (visibleRowCapacity == _lastVisibleRowCapacity)
+                return;
+
+            _lastVisibleRowCapacity = visibleRowCapacity;
+            PageSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
 
         public void DisplayPage(
             IReadOnlyList<PurchaseReceiptListItemDto> rows,
@@ -211,9 +240,30 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         public void OpenCreateForm()
         {
-            using (var form = new frmPurchaseReceiptEditor(_service, UserSession.Instance))
+            using (var form = new frmPurchaseReceipt(_service, UserSession.Instance))
+            {
                 if (form.ShowDialog(FindForm()) == DialogResult.OK)
+                {
                     _presenter.RefreshAfterCreate();
+                    string message = string.IsNullOrEmpty(form.CreatedReceiptCode)
+                        ? "Đã lập phiếu nhập mới. Tồn kho đã được cộng thêm."
+                        : "Đã lập phiếu nhập " + form.CreatedReceiptCode + ". Tồn kho đã được cộng thêm.";
+                    AppToast.Success(this, "Nhập hàng thành công", message);
+                }
+            }
+        }
+
+        private void ImportReceipts()
+        {
+            var importer = new PurchaseReceiptImportRowHandler(_service, UserSession.Instance);
+            DialogResult result = frmImportData.Show(
+                FindForm(),
+                "Phiếu nhập kho",
+                PurchaseReceiptImportRowHandler.ExpectedColumns,
+                "Mỗi dòng tạo 1 phiếu nhập. Nhà cung cấp ghi đúng tên đã có. Sản phẩm ghi mã (VD SP_0001) hoặc đúng tên. Số lượng > 0, giá nhập là số. Ngày sản xuất/Hạn sử dụng dạng dd/MM/yyyy, có thể để trống; hạn sử dụng phải sau hôm nay và sau ngày sản xuất.",
+                DefaultSpreadsheetImporters.All,
+                importer.Handle);
+            if (result == DialogResult.OK) _presenter.RefreshAfterCreate();
         }
 
         public void OpenDetail(PurchaseReceiptListItemDto receipt)

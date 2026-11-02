@@ -806,6 +806,33 @@ GO
 -- Trigger trg_StockReconciliation_Apply se tu cap nhat Products.Stock ve ActualStock
 -- + ghi InventoryTransactions (TransactionType='RECONCILE_ADJUST')
 
+
+-- ---- 16b. Phien kiem ke ton kho mau ngay hom qua ----
+-- Giu nguyen ton kho hien tai; chi tao du lieu mau de xem lich su theo ngay.
+DECLARE @Yesterday DATETIME = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
+DECLARE @Today DATETIME = CAST(CAST(GETDATE() AS DATE) AS DATETIME);
+DECLARE @InventoryCountNote NVARCHAR(255) = N'Mẫu kiểm kê tồn kho ngày hôm trước';
+DECLARE @InventoryCountUser INT = (SELECT UserID FROM Users WHERE Username='invmgr');
+
+INSERT INTO StockReconciliation (ProductID, SystemStock, ActualStock, Note, CreatedBy)
+SELECT p.ProductID, p.Stock, p.Stock, @InventoryCountNote, @InventoryCountUser
+FROM Products p
+INNER JOIN Categories c ON c.CategoryID = p.CategoryID
+WHERE p.Status = 'ACTIVE' AND c.Status = 'ACTIVE' AND p.Stock > 0
+   AND NOT EXISTS (
+         SELECT 1
+         FROM StockReconciliation r
+         WHERE r.ProductID = p.ProductID
+            AND r.CreatedAt >= @Yesterday AND r.CreatedAt < @Today);
+
+-- Trigger tu tao CreatedAt bang thoi diem hien tai, nen backdate sau khi insert.
+UPDATE r
+SET CreatedAt = @Yesterday
+FROM StockReconciliation r
+WHERE r.Note = @InventoryCountNote
+   AND r.CreatedBy = @InventoryCountUser
+   AND r.CreatedAt >= @Today AND r.CreatedAt < DATEADD(DAY, 1, @Today);
+GO
 -- ---- 17. Bao cao ngoai le mau (1 PENDING, 1 da HANDLED) ----
 INSERT INTO ExceptionReports (CreatedBy, Content) VALUES
 ((SELECT UserID FROM Users WHERE Username='staff02'),

@@ -56,18 +56,22 @@ namespace SIMS_WinFormsApp.Views.Toast
         private static Form ResolveOwner(Control anchor)
         {
             if (anchor == null) return null;
+            Form topLevel = anchor.TopLevelControl as Form;
+            if (topLevel != null) return topLevel;
             return anchor as Form ?? anchor.FindForm();
         }
 
         private static Point NextLocation(
             Form owner, List<ToastNotification> siblings, int toastWidth)
         {
-            int y = owner.Top + MarginTop;
+            Rectangle area = Screen.FromControl(owner).WorkingArea;
+            int y = Math.Max(area.Top + 8, owner.Top + MarginTop);
             foreach (ToastNotification sibling in siblings)
             {
                 y += sibling.Height + Spacing;
             }
             int x = owner.Left + owner.Width - toastWidth - MarginRight;
+            x = Math.Max(area.Left + 8, Math.Min(x, area.Right - toastWidth - 8));
             return new Point(x, y);
         }
 
@@ -75,7 +79,7 @@ namespace SIMS_WinFormsApp.Views.Toast
         {
             if (owner.IsDisposed) return;
 
-            int y = owner.Top + MarginTop;
+            int y = Math.Max(Screen.FromControl(owner).WorkingArea.Top + 8, owner.Top + MarginTop);
             foreach (ToastNotification toast in siblings)
             {
                 toast.Reposition(new Point(toast.Left, y));
