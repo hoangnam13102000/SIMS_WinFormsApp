@@ -59,6 +59,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             InitializeComponent();
             _designTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+            _header.SizeChanged += (sender, args) => LayoutHeader();
+            LayoutHeader();
             ConfigurePromoApplyButton();
             _cashierNameLabel.Text = string.IsNullOrWhiteSpace(cashierDisplayName)
                 ? "Nhân viên:"
@@ -105,6 +107,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 }
             };
             _cartCheckoutSplit.SplitterMoving += OnCartCheckoutSplitterMoving;
+        }
+
+        private void LayoutHeader()
+        {
+            _cashierNameLabel.Location = new Point(
+                _header.ClientSize.Width - _cashierNameLabel.Width - 20,
+                38);
+            _pageTitle.Width = Math.Max(180, _cashierNameLabel.Left - _pageTitle.Left - 24);
         }
 
         private void ConfigurePromoApplyButton()

@@ -24,15 +24,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private Button _refreshButton;
         private Panel _gridCard;
         private DataGridView _usersGrid;
-        private DataGridViewTextBoxColumn _usernameColumn;
-        private DataGridViewTextBoxColumn _fullNameColumn;
-        private DataGridViewTextBoxColumn _employeeIdColumn;
-        private DataGridViewTextBoxColumn _emailColumn;
-        private DataGridViewTextBoxColumn _roleColumn;
-        private DataGridViewTextBoxColumn _statusColumn;
-        private DataGridViewTextBoxColumn _lockColumn;
-        private DataGridViewImageColumn _actionsColumn;
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && components != null)

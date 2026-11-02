@@ -534,5 +534,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 Name = name;
             }
         }
+
+        private void _clearFilterLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+
+        }
     }
 }

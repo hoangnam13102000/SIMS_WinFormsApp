@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
@@ -9,6 +10,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _header;
+        private Panel _headerIconPanel;
+        private IconPictureBox _headerIcon;
         private Label _title;
         private Label _subtitle;
         private FlowLayoutPanel _filters;
@@ -17,6 +20,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private TextBox _searchBox;
         private ComboBox _statusFilter;
         private Button _exportButton;
+        private Button _refreshButton;
+        private Panel _gridCard;
         private DataGridView _invoicesGrid;
         protected override void Dispose(bool disposing)
         {
@@ -37,6 +42,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitle = new System.Windows.Forms.Label();
             this._title = new System.Windows.Forms.Label();
             this._filters = new System.Windows.Forms.FlowLayoutPanel();
@@ -45,6 +52,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._toDate = new System.Windows.Forms.DateTimePicker();
             this._statusFilter = new System.Windows.Forms.ComboBox();
             this._exportButton = new System.Windows.Forms.Button();
+            this._refreshButton = new System.Windows.Forms.Button();
+            this._gridCard = new System.Windows.Forms.Panel();
             this._invoicesGrid = new System.Windows.Forms.DataGridView();
             this.InvoiceId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Invoice = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,7 +66,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this.Print = new System.Windows.Forms.DataGridViewImageColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._filters.SuspendLayout();
+            this._gridCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._invoicesGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,34 +79,60 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Controls.Add(this._header, 0, 0);
             this._root.Controls.Add(this._filters, 0, 1);
-            this._root.Controls.Add(this._invoicesGrid, 0, 2);
+            this._root.Controls.Add(this._gridCard, 0, 2);
             this._root.Dock = System.Windows.Forms.DockStyle.Fill;
             this._root.Location = new System.Drawing.Point(0, 0);
             this._root.Name = "_root";
             this._root.Padding = new System.Windows.Forms.Padding(24);
             this._root.RowCount = 3;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 88F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 82F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Size = new System.Drawing.Size(1180, 760);
             this._root.TabIndex = 0;
             // 
             // _header
             // 
+            this._header.BackColor = System.Drawing.Color.White;
+            this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
+            this._header.Controls.Add(this._refreshButton);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._header.Location = new System.Drawing.Point(27, 27);
+            this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._header.Location = new System.Drawing.Point(24, 24);
             this._header.Name = "_header";
-            this._header.Size = new System.Drawing.Size(1126, 82);
+            this._header.Size = new System.Drawing.Size(1132, 96);
             this._header.TabIndex = 0;
+            //
+            // _headerIconPanel
+            //
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(232, 240, 254);
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
+            //
+            // _headerIcon
+            //
+            this._headerIcon.BackColor = System.Drawing.Color.Transparent;
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.Receipt;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 28;
+            this._headerIcon.Location = new System.Drawing.Point(14, 14);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(28, 28);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabStop = false;
             // 
             // _subtitle
             // 
             this._subtitle.AutoSize = true;
             this._subtitle.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitle.Location = new System.Drawing.Point(-5, 57);
+            this._subtitle.Location = new System.Drawing.Point(96, 56);
             this._subtitle.Name = "_subtitle";
             this._subtitle.Size = new System.Drawing.Size(427, 25);
             this._subtitle.TabIndex = 0;
@@ -103,14 +141,15 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             // 
             // _title
             // 
-            this._title.AutoSize = true;
-            this._title.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
-            this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._title.Location = new System.Drawing.Point(0, 0);
+            this._title.AutoSize = false;
+            this._title.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._title.Location = new System.Drawing.Point(96, 18);
             this._title.Name = "_title";
-            this._title.Size = new System.Drawing.Size(369, 60);
+            this._title.Size = new System.Drawing.Size(600, 34);
             this._title.TabIndex = 1;
             this._title.Text = "Quản lý hóa đơn";
+            this._title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _filters
             // 
@@ -120,9 +159,13 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._filters.Controls.Add(this._statusFilter);
             this._filters.Controls.Add(this._exportButton);
             this._filters.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._filters.Location = new System.Drawing.Point(27, 115);
+            this._filters.BackColor = System.Drawing.Color.White;
+            this._filters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._filters.Location = new System.Drawing.Point(24, 132);
+            this._filters.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._filters.Padding = new System.Windows.Forms.Padding(12, 8, 12, 8);
             this._filters.Name = "_filters";
-            this._filters.Size = new System.Drawing.Size(1126, 46);
+            this._filters.Size = new System.Drawing.Size(1132, 70);
             this._filters.TabIndex = 1;
             this._filters.WrapContents = false;
             // 
@@ -175,7 +218,31 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._exportButton.TabIndex = 4;
             this._exportButton.Text = "Lọc hóa đơn";
             this._exportButton.UseVisualStyleBackColor = true;
-            // 
+            //
+            // _refreshButton
+            //
+            this._refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._refreshButton.BackColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._refreshButton.FlatAppearance.BorderSize = 0;
+            this._refreshButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(29, 78, 216);
+            this._refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._refreshButton.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this._refreshButton.ForeColor = System.Drawing.Color.White;
+            this._refreshButton.Location = new System.Drawing.Point(990, 29);
+            this._refreshButton.Name = "_refreshButton";
+            this._refreshButton.Size = new System.Drawing.Size(126, 38);
+            this._refreshButton.Text = "Làm mới";
+            this._refreshButton.UseVisualStyleBackColor = false;
+            //
+            // _gridCard
+            //
+            this._gridCard.BackColor = System.Drawing.Color.White;
+            this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._gridCard.Controls.Add(this._invoicesGrid);
+            this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._gridCard.Margin = System.Windows.Forms.Padding.Empty;
+            this._gridCard.Name = "_gridCard";
+            //
             // _invoicesGrid
             // 
             this._invoicesGrid.AllowUserToAddRows = false;
@@ -195,7 +262,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this.Actions,
             this.Print});
             this._invoicesGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._invoicesGrid.Location = new System.Drawing.Point(27, 167);
+            this._invoicesGrid.Location = new System.Drawing.Point(0, 0);
+            this._invoicesGrid.Margin = new System.Windows.Forms.Padding(1);
             this._invoicesGrid.Name = "_invoicesGrid";
             this._invoicesGrid.ReadOnly = true;
             this._invoicesGrid.RowHeadersVisible = false;
@@ -295,6 +363,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._header.PerformLayout();
             this._filters.ResumeLayout(false);
             this._filters.PerformLayout();
+            this._gridCard.ResumeLayout(false);
+            this._headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._invoicesGrid)).EndInit();
             this.ResumeLayout(false);
 

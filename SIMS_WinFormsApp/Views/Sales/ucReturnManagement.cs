@@ -33,6 +33,8 @@ namespace SIMS_WinFormsApp.Views.Sales
 
             InitializeComponent();
             ApplyLabels();
+            _header.SizeChanged += (sender, args) => LayoutHeader();
+            LayoutHeader();
             _from.Value = DateTime.Today.AddDays(-30);
             _to.Value = DateTime.Today;
             _reason.SelectedIndex = 0;
@@ -45,17 +47,18 @@ namespace SIMS_WinFormsApp.Views.Sales
                 TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
                 Visible = false
             };
-            _root.Controls.Remove(_grid);
+            _gridCard.Controls.Remove(_grid);
             var gridContainer = new Panel { Dock = DockStyle.Fill };
             gridContainer.Controls.Add(_grid);
             gridContainer.Controls.Add(_emptyStateLabel);
-            _root.Controls.Add(gridContainer, 0, 2);
+            _gridCard.Controls.Add(gridContainer);
 
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             _approve.Visible = canApprove;
             _reject.Visible = canApprove;
             _grid.CellClick += Grid_CellClick;
             _search.KeyDown += Search_KeyDown;
+            _refreshButton.Click += (sender, args) => LoadRequests();
             _from.ValueChanged += (sender, args) => LoadRequests();
             _to.ValueChanged += (sender, args) => LoadRequests();
             _reason.SelectedIndexChanged += (sender, args) => LoadRequests();
@@ -66,6 +69,12 @@ namespace SIMS_WinFormsApp.Views.Sales
                     LoadRequests();
             };
             Disposed += (sender, args) => LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
+        }
+
+        private void LayoutHeader()
+        {
+            _refreshButton.Location = new System.Drawing.Point(_header.ClientSize.Width - _refreshButton.Width - 16, 29);
+            _title.Width = Math.Max(180, _refreshButton.Left - _title.Left - 16);
         }
 
         private void OnLanguageChanged(object sender, EventArgs e) => ApplyLabels();

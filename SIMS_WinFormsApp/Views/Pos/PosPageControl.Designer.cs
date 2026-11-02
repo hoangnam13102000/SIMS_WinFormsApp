@@ -9,7 +9,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _header;
+        private Panel _headerIconPanel;
+        private IconPictureBox _headerIcon;
         private Label _pageTitle;
+        private Label _pageSubtitle;
         private Label _cashierNameLabel;
         private SplitContainer _body;
         private Panel _catalogCard;
@@ -70,8 +73,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._cashierNameLabel = new System.Windows.Forms.Label();
             this._pageTitle = new System.Windows.Forms.Label();
+            this._pageSubtitle = new System.Windows.Forms.Label();
             this._body = new System.Windows.Forms.SplitContainer();
             this._catalogCard = new System.Windows.Forms.Panel();
             this._catalogLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -126,6 +132,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutButton = new System.Windows.Forms.Button();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._body)).BeginInit();
             this._body.Panel1.SuspendLayout();
             this._body.Panel2.SuspendLayout();
@@ -160,9 +168,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._root.Dock = System.Windows.Forms.DockStyle.Fill;
             this._root.Location = new System.Drawing.Point(0, 0);
             this._root.Name = "_root";
-            this._root.Padding = new System.Windows.Forms.Padding(20);
+            this._root.Padding = new System.Windows.Forms.Padding(24);
             this._root.RowCount = 2;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 76F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Size = new System.Drawing.Size(1180, 760);
             this._root.TabIndex = 0;
@@ -170,20 +178,45 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.White;
+            this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._cashierNameLabel);
             this._header.Controls.Add(this._pageTitle);
+            this._header.Controls.Add(this._pageSubtitle);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._header.Location = new System.Drawing.Point(23, 23);
+            this._header.Location = new System.Drawing.Point(24, 24);
+            this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
             this._header.Name = "_header";
-            this._header.Size = new System.Drawing.Size(1134, 70);
+            this._header.Size = new System.Drawing.Size(1132, 96);
             this._header.TabIndex = 0;
+            //
+            // _headerIconPanel
+            //
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(232, 240, 254);
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
+            //
+            // _headerIcon
+            //
+            this._headerIcon.BackColor = System.Drawing.Color.Transparent;
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.CartShopping;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 28;
+            this._headerIcon.Location = new System.Drawing.Point(14, 14);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(28, 28);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabStop = false;
             // 
             // _cashierNameLabel
             // 
             this._cashierNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._cashierNameLabel.AutoSize = true;
             this._cashierNameLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._cashierNameLabel.Location = new System.Drawing.Point(1584, 28);
+            this._cashierNameLabel.Location = new System.Drawing.Point(980, 38);
             this._cashierNameLabel.Name = "_cashierNameLabel";
             this._cashierNameLabel.Size = new System.Drawing.Size(83, 20);
             this._cashierNameLabel.TabIndex = 0;
@@ -191,21 +224,32 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // _pageTitle
             // 
-            this._pageTitle.AutoSize = true;
-            this._pageTitle.Font = new System.Drawing.Font("Segoe UI", 21F, System.Drawing.FontStyle.Bold);
-            this._pageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._pageTitle.Location = new System.Drawing.Point(8, 4);
+            this._pageTitle.AutoSize = false;
+            this._pageTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._pageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._pageTitle.Location = new System.Drawing.Point(96, 18);
             this._pageTitle.Name = "_pageTitle";
-            this._pageTitle.Size = new System.Drawing.Size(383, 57);
+            this._pageTitle.Size = new System.Drawing.Size(600, 34);
             this._pageTitle.TabIndex = 1;
             this._pageTitle.Text = "Bán hàng tại quầy";
+            this._pageTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // _pageSubtitle
+            //
+            this._pageSubtitle.AutoSize = true;
+            this._pageSubtitle.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this._pageSubtitle.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
+            this._pageSubtitle.Location = new System.Drawing.Point(96, 56);
+            this._pageSubtitle.Name = "_pageSubtitle";
+            this._pageSubtitle.Size = new System.Drawing.Size(333, 25);
+            this._pageSubtitle.Text = "Quét sản phẩm, quản lý giỏ hàng và thanh toán";
             // 
             // _body
             // 
             this._body.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this._body.Dock = System.Windows.Forms.DockStyle.Fill;
             this._body.Location = new System.Drawing.Point(20, 110);
-            this._body.Margin = new System.Windows.Forms.Padding(0, 14, 0, 0);
+            this._body.Margin = new System.Windows.Forms.Padding(0);
             this._body.Name = "_body";
             // 
             // _body.Panel1
@@ -902,6 +946,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._header.PerformLayout();
+            this._headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             this._body.Panel1.ResumeLayout(false);
             this._body.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._body)).EndInit();

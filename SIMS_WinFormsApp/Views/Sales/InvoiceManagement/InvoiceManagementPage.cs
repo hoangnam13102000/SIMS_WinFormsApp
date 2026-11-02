@@ -62,6 +62,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 };
                 _searchBox.KeyDown += SearchBox_KeyDown;
                 _exportButton.Click += (sender, args) => ReloadInvoices();
+                _refreshButton.Click += (sender, args) => ReloadInvoices();
                 _invoicesGrid.CellClick += InvoicesGrid_CellClick;
                 _invoicesGrid.CellMouseMove += InvoicesGrid_CellMouseMove;
                 _invoicesGrid.CellDoubleClick += (sender, args) =>
@@ -86,9 +87,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         private void ConfigurePage()
         {
-            _title.Text = "Quản lý đơn hàng";
+            _title.Text = "Quản lý hóa đơn";
             _subtitle.Text = "Tra cứu đơn hàng, xem chi tiết và in hóa đơn";
-            _exportButton.Text = "Lọc đơn hàng";
+            _exportButton.Text = "Lọc hóa đơn";
             _searchBox.Text = string.Empty;
             _fromDate.Value = DateTime.Today.AddDays(-30);
             _toDate.Value = DateTime.Today;
@@ -109,6 +110,12 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         {
             BackColor = AppColors.PageBg;
             _root.BackColor = AppColors.PageBg;
+            _header.BackColor = AppColors.White;
+            _headerIconPanel.BackColor = Color.FromArgb(232, 240, 254);
+            _headerIcon.IconColor = AppColors.Accent;
+            _headerIcon.ForeColor = AppColors.Accent;
+            _filters.BackColor = AppColors.White;
+            _gridCard.BackColor = AppColors.White;
             _title.ForeColor = AppColors.TextTitle;
             _subtitle.ForeColor = AppColors.TextMuted;
             _invoicesGrid.BackgroundColor = AppColors.White;
@@ -126,6 +133,11 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _exportButton.BackColor = AppColors.CancelBg;
             _exportButton.ForeColor = AppColors.TextPrimary;
             _exportButton.FlatAppearance.MouseOverBackColor = AppColors.CancelHover;
+            _refreshButton.FlatStyle = FlatStyle.Flat;
+            _refreshButton.FlatAppearance.BorderSize = 0;
+            _refreshButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(29, 78, 216);
+            _refreshButton.BackColor = AppColors.Accent;
+            _refreshButton.ForeColor = AppColors.White;
             _invoicesGrid.Columns["Actions"].DefaultCellStyle.BackColor = AppColors.White;
             _invoicesGrid.Columns["Actions"].DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
             _invoicesGrid.Columns["Print"].DefaultCellStyle.BackColor = AppColors.White;
