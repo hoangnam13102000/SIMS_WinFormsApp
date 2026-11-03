@@ -96,7 +96,7 @@ namespace SIMS_WinFormsApp.UI.Theme
             CurrentMode = mode;
             bool dark = mode == ThemeMode.Dark;
 
-            White = dark ? Color.FromArgb(28, 31, 38) : Color.White;
+            White = dark ? Color.FromArgb(30, 34, 42) : Color.White;
             BgLight = dark ? Color.FromArgb(15, 17, 21) : Color.FromArgb(248, 250, 252);
             BgLighter = dark ? Color.FromArgb(38, 42, 53) : Color.FromArgb(241, 245, 249);
             PageBg = dark ? Color.FromArgb(18, 20, 25) : Color.FromArgb(244, 247, 250);

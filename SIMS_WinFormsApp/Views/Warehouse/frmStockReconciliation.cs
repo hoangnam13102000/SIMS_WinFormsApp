@@ -12,6 +12,7 @@ using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Toast;
 
@@ -44,6 +45,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
 
             _presenter = new StockReconciliationPresenter(this, service, session);
+            DataGridViewCodeCopy.Attach(_stockGrid, "Sku");
             _loadButton.Click += (sender, args) => RaiseLoadRequested();
             _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
             _exportButton.Click += (sender, args) => ExportStock();

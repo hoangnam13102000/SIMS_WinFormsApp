@@ -71,6 +71,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.CellMouseLeave += new DataGridViewCellEventHandler(this.Grid_CellMouseLeave);
             _grid.CellFormatting += new DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
             _grid.CellToolTipTextNeeded += new DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
+            DataGridViewCodeCopy.Attach(_grid, false, "colProductCode");
             VisibleChanged += new EventHandler(this.OnVisibleChanged);
         }
 

@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         event EventHandler<string> ProductSearchChanged;
         event EventHandler<int?> CategoryChanged;
         event EventHandler ScanBarcodeRequested;
+        event EventHandler CustomerBarcodeScanRequested;
 
         event EventHandler<int> AddToCartRequested;
         event EventHandler<int> NotifyWhenRestockRequested;
@@ -32,6 +33,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 
         void SetCustomer(CustomerLookupDto customer);
         void ClearCustomer();
+        void SetPointRedemptionLimit(int points);
 
         void BindPromotions(IReadOnlyList<PromotionDto> promotions);
         void SetTotals(CartTotalsDto totals);

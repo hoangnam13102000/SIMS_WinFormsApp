@@ -25,6 +25,8 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
         // có hiện 2 ô này hay không dựa trên RoleCode, không dựa trên 2 field này).
         public string GenderText { get; }
         public string SalaryText { get; }
+        public string CustomerCodeText { get; }
+        public string LoyaltyPointsText { get; }
 
         public UserAccountDetailViewModel(
             string avatarInitial,
@@ -42,7 +44,9 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
             AccountStatusDisplay lockStatus,
             string failedLoginCountText,
             string genderText,
-            string salaryText)
+            string salaryText,
+            string customerCodeText,
+            string loyaltyPointsText)
         {
             AvatarInitial = avatarInitial;
             AvatarColor = avatarColor;
@@ -60,6 +64,8 @@ namespace SIMS_WinFormsApp.MVP.ViewModels
             FailedLoginCountText = failedLoginCountText;
             GenderText = genderText;
             SalaryText = salaryText;
+            CustomerCodeText = customerCodeText;
+            LoyaltyPointsText = loyaltyPointsText;
         }
     }
 }

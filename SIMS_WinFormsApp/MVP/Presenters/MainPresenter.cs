@@ -186,6 +186,30 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (_currentPermissions != null &&
                     _currentPermissions.Contains(AppPermission.RETURN_EXCHANGE_APPROVE))
                     notifications.AddRange(_notificationService.GetPendingReturnNotifications(user.UserId));
+                if (_currentPermissions != null &&
+                    _currentPermissions.Contains(AppPermission.STOCK_ALERT_VIEW))
+                    notifications.AddRange(_notificationService.GetStockAlertNotifications());
+                if (string.Equals(
+                        user.RoleCode,
+                        RoleCodes.InventoryManager,
+                        StringComparison.OrdinalIgnoreCase))
+                    notifications.AddRange(_notificationService.GetLowStockNotifications());
+
+                var activeLowStockIds = new HashSet<string>(
+                    notifications
+                        .Where(notification => notification.Kind == "LOW_STOCK")
+                        .Select(notification => notification.NotificationId),
+                    StringComparer.Ordinal);
+                foreach (string notificationId in _seenNotificationIds
+                    .Where(id => id.StartsWith("low-stock:", StringComparison.Ordinal) &&
+                        !activeLowStockIds.Contains(id))
+                    .ToList())
+                {
+                    _seenNotificationIds.Remove(notificationId);
+                    _readNotificationIds.Remove(notificationId);
+                    _dismissedNotificationIds.Remove(notificationId);
+                }
+
                 notifications.RemoveAll(notification =>
                     _dismissedNotificationIds.Contains(notification.NotificationId));
 
@@ -193,19 +217,23 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 {
                     if (_seenNotificationIds.Add(notification.NotificationId))
                     {
-                        if (_notificationBaselineLoaded)
+                        if (_notificationBaselineLoaded &&
+                            (notification.Kind != "STOCK_ALERT" || !notification.IsRead))
                             _layout.NotifyNewNotification(notification.Title, notification.Message);
-                        else if (notification.Kind != "RETURN_PENDING")
+                        else if (notification.Kind != "RETURN_PENDING" &&
+                            (notification.Kind != "STOCK_ALERT" || notification.IsRead))
                             _readNotificationIds.Add(notification.NotificationId);
                     }
-                    notification.IsRead = _readNotificationIds.Contains(notification.NotificationId);
+                    notification.IsRead = notification.IsRead ||
+                        _readNotificationIds.Contains(notification.NotificationId);
                 }
 
                 _notificationBaselineLoaded = true;
                 notifications.AddRange(_chatNotifications.Where(notification =>
                     !_dismissedNotificationIds.Contains(notification.NotificationId)));
                 foreach (NotificationDto notification in notifications)
-                    notification.IsRead = _readNotificationIds.Contains(notification.NotificationId);
+                    notification.IsRead = notification.IsRead ||
+                        _readNotificationIds.Contains(notification.NotificationId);
                 notifications = notifications
                     .OrderByDescending(notification => notification.CreatedAt)
                     .Take(20)
@@ -232,7 +260,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             var user = UserSession.Instance.CurrentUser;
             if (message == null || user == null || !message.IsStaffChat ||
                 message.ToUserId != user.UserId || message.UserId == user.UserId ||
-                !string.Equals(message.RoleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase))
+                !IsInternalStaffRole(message.RoleCode))
                 return;
 
             string notificationId = "chat:" + (message.MessageId > 0
@@ -270,6 +298,14 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _layout.BeginInvoke(showNotification);
             else
                 showNotification();
+        }
+
+        private static bool IsInternalStaffRole(string roleCode)
+        {
+            return string.Equals(roleCode, RoleCodes.Admin, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(roleCode, RoleCodes.SalesManager, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(roleCode, RoleCodes.InventoryManager, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(roleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase);
         }
 
         private void OnNotificationReadRequested(NotificationDto notification)
@@ -465,7 +501,10 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (HasAnyPermission(permissions,
                         AppPermission.CATEGORY_VIEW, AppPermission.CATEGORY_EDIT, AppPermission.CATEGORY_MANAGE))
                     layout.AddLazyPage("categories", Lang.Get("sidebar.page.categories"),
-                        CatalogPages.Categories, IconChar.Tags);
+                        () => CatalogPages.Categories(
+                            permissions.Contains(AppPermission.CATEGORY_EDIT) ||
+                                permissions.Contains(AppPermission.CATEGORY_MANAGE),
+                            permissions.Contains(AppPermission.CATEGORY_MANAGE)), IconChar.Tags);
                 if (HasAnyPermission(permissions,
                         AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE,
                         AppPermission.SUPPLIER_RETURN_CREATE, AppPermission.SUPPLIER_RETURN_VIEW))
@@ -477,7 +516,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     layout.AddLazyPage("inventory", Lang.Get("sidebar.page.inventory"),
                         () => new ucStockReconciliation(
                             AppComposition.CreateStockReconciliationService(),
-                            UserSession.Instance),
+                            UserSession.Instance,
+                            permissions.Contains(AppPermission.STOCK_RECONCILE)),
                         IconChar.ScaleBalanced);
                 if (HasAnyPermission(permissions, AppPermission.STOCK_IMPORT))
                     layout.AddLazyPage("purchase", Lang.Get("sidebar.page.purchase"),

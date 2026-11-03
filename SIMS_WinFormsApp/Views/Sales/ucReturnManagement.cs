@@ -57,6 +57,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             _approve.Visible = canApprove;
             _reject.Visible = canApprove;
             _grid.CellClick += Grid_CellClick;
+            DataGridViewCodeCopy.Attach(_grid, "ReturnCode", "OrderCode");
             _search.KeyDown += Search_KeyDown;
             _refreshButton.Click += (sender, args) => LoadRequests();
             _from.ValueChanged += (sender, args) => LoadRequests();

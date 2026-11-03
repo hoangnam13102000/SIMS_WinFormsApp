@@ -57,6 +57,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
+            _revenueCard.Paint += DrawCardBorder;
+            _ordersCard.Paint += DrawCardBorder;
+            _stockCard.Paint += DrawCardBorder;
+            _customersCard.Paint += DrawCardBorder;
+            _activityCard.Paint += DrawCardBorder;
             ConfigureExpiryBatchesLink();
             ConfigureRevenueSummaryChart();
             ConfigureRevenuePeriodFilter();
@@ -79,6 +84,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             Load += Dashboard_Load;
             VisibleChanged += Dashboard_VisibleChanged;
         }
+
+        public DataGridViewTextBoxColumn Activity => _activity_column;
+        public DataGridViewTextBoxColumn User => _user_column;
+        public DataGridViewTextBoxColumn Time => _time_column;
+        public DataGridViewTextBoxColumn Status => _status_column;
 
         public void ShowDashboardUser(string displayName)
         {
@@ -260,6 +270,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 Padding = new Padding(18),
                 Name = "_revenueSummaryPanel"
             };
+            _revenueSummaryPanel.Paint += DrawCardBorder;
             var chartLayout = new TableLayoutPanel
             {
                 ColumnCount = 1,
@@ -597,6 +608,17 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 DateTime date = DateTime.Today.AddDays(day - sampleRevenue.Length + 1);
                 revenueSeries.Points.AddXY(date.ToString("dd/MM"), sampleRevenue[day]);
             }
+        }
+
+        private static void DrawCardBorder(object sender, PaintEventArgs e)
+        {
+            var panel = sender as Panel;
+            if (panel == null || panel.Width < 2 || panel.Height < 2)
+                return;
+
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            using (var pen = new Pen(AppColors.FieldBorder))
+                e.Graphics.DrawRectangle(pen, 0, 0, panel.Width - 1, panel.Height - 1);
         }
 
         private async void Dashboard_Load(object sender, System.EventArgs e)

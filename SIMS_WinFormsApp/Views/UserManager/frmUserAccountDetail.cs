@@ -31,6 +31,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             InitializeComponent();
             ConfigureDialog(null);
             _user = CreateDesignSampleUser();
+            ConfigureAccountFields();
             Render(new UserAccountDetailViewModelBuilder().Build(_user));
         }
 
@@ -146,7 +147,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 StringComparison.OrdinalIgnoreCase);
             _itemGender.Visible = isEmployeeAccount;
             _itemSalary.Visible = isEmployeeAccount;
-            _designerAccountGrid.RowStyles[3].Height = isEmployeeAccount ? 96F : 0F;
+            _itemLoyaltyPoints.Visible = !isEmployeeAccount;
+            _itemCustomerCode.Visible = !isEmployeeAccount;
+            _designerAccountGrid.RowStyles[3].Height = 96F;
         }
 
         private void SelectDetailTab(bool showAccount)
@@ -195,6 +198,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _itemFailedLogin.ValueText = viewModel.FailedLoginCountText;
             _itemGender.ValueText = viewModel.GenderText;
             _itemSalary.ValueText = viewModel.SalaryText;
+            _itemLoyaltyPoints.ValueText = viewModel.LoyaltyPointsText;
+            _itemCustomerCode.ValueText = viewModel.CustomerCodeText;
         }
 
         private void LoadAvatar(string avatarPath)

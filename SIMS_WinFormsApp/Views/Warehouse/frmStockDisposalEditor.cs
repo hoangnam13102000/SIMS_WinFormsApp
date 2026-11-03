@@ -47,6 +47,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _linesGrid.CellClick += new DataGridViewCellEventHandler(this.LinesGrid_CellClick);
             _linesGrid.CellMouseMove += new DataGridViewCellMouseEventHandler(this.LinesGrid_CellMouseMove);
             _linesGrid.MouseLeave += new EventHandler(this.LinesGrid_MouseLeave);
+            DataGridViewCodeCopy.Attach(_linesGrid, "colBatchCode");
             _saveButton.Click += new EventHandler(this.SaveButton_Click);
             _cancelButton.Click += new EventHandler(this.CancelButton_Click);
         }

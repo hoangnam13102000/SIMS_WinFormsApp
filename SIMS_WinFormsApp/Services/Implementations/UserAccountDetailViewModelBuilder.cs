@@ -42,7 +42,9 @@ namespace SIMS_WinFormsApp.Services.Implementations
                 genderText: DescribeGender(employeeProfile?.Gender),
                 salaryText: employeeProfile?.Salary.HasValue == true
                     ? employeeProfile.Salary.Value.ToString("0.##")
-                    : "Chưa cập nhật");
+                    : "Chưa cập nhật",
+                customerCodeText: string.IsNullOrWhiteSpace(user.CustomerCode) ? "Chưa cập nhật" : user.CustomerCode,
+                loyaltyPointsText: user.LoyaltyPoints.ToString("N0") + " điểm");
         }
 
         private static string DescribeGender(Gender? gender)

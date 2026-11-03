@@ -124,6 +124,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (_canManageProducts)
                 _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
+            DataGridViewCodeCopy.Attach(_productsGrid, "Code");
             Load += (sender, args) =>
             {
                 LoadPage();

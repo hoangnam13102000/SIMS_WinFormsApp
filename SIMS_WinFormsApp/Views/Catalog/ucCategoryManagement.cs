@@ -25,17 +25,28 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
         private readonly ContextMenuStrip _optionsMenu;
+        private readonly bool _canEditCategories;
+        private readonly bool _canManageCategories;
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
 
-        public ucCategoryManagement() : this(null)
+        public ucCategoryManagement() : this(null, true, true)
         {
         }
 
-        public ucCategoryManagement(ICatalogAdminService service)
+        public ucCategoryManagement(ICatalogAdminService service) : this(service, true, true)
+        {
+        }
+
+        public ucCategoryManagement(
+            ICatalogAdminService service,
+            bool canEditCategories,
+            bool canManageCategories)
         {
             InitializeComponent();
+            _canEditCategories = canEditCategories || canManageCategories;
+            _canManageCategories = canManageCategories;
             _header.SizeChanged += (sender, args) => LayoutHeader();
             LayoutHeader();
             _previousButton.Text = string.Empty;
@@ -48,8 +59,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportCategories(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportCategories(new ExcelTableExporter()));
-            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportCategories());
+            if (_canManageCategories)
+                _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportCategories());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+            _addButton.Visible = _canManageCategories;
             if (service == null) return;
 
             _service = service;
@@ -149,6 +162,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                         row.ProductCount,
                         CatalogFormat.Status(row.IsActive),
                         IconBitmapCache.GetActionStrip(
+                            _canEditCategories,
                             row.IsActive ? IconChar.CircleXmark : IconChar.CircleCheck,
                             row.IsActive ? AppColors.Error : AppColors.Success));
                 }
@@ -201,9 +215,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
                 if (actionIndex == 0)
                     EditCategory(_presenter.Get(row.CategoryId), true);
-                else if (actionIndex == 1)
+            else if (_canEditCategories && actionIndex == 1)
                     EditCategory(_presenter.Get(row.CategoryId), false);
-                else
+            else if (_canEditCategories && actionIndex == 2)
             {
                 bool enable = !row.IsActive;
                 string verb = enable ? "mở lại" : "vô hiệu hóa";
@@ -219,6 +233,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void EditCategory(CategoryEditDto draft, bool readOnly = false)
         {
+            if (!readOnly && !_canEditCategories)
+                return;
+
             if (draft == null)
             {
                 AppToast.Warning(this, "Không tìm thấy danh mục.");
@@ -248,6 +265,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void ImportCategories()
         {
+            if (!_canManageCategories)
+                return;
+
             var importer = new CategoryImportRowHandler(_service);
             var result = frmImportData.Show(
                 FindForm(),

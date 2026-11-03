@@ -55,15 +55,15 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._refreshButton = new System.Windows.Forms.Button();
             this._gridCard = new System.Windows.Forms.Panel();
             this._invoicesGrid = new System.Windows.Forms.DataGridView();
-            this.InvoiceId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Invoice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Customer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Cashier = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Actions = new System.Windows.Forms.DataGridViewImageColumn();
-            this.Print = new System.Windows.Forms.DataGridViewImageColumn();
+            this._invoice_id_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._invoice_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._date_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._customer_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._cashier_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._total_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._status_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._actions_column = new System.Windows.Forms.DataGridViewImageColumn();
+            this._print_column = new System.Windows.Forms.DataGridViewImageColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -252,15 +252,15 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._invoicesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._invoicesGrid.ColumnHeadersHeight = 40;
             this._invoicesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.InvoiceId,
-            this.Invoice,
-            this.Date,
-            this.Customer,
-            this.Cashier,
-            this.Total,
-            this.Status,
-            this.Actions,
-            this.Print});
+            this._invoice_id_column,
+            this._invoice_column,
+            this._date_column,
+            this._customer_column,
+            this._cashier_column,
+            this._total_column,
+            this._status_column,
+            this._actions_column,
+            this._print_column});
             this._invoicesGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._invoicesGrid.Location = new System.Drawing.Point(0, 0);
             this._invoicesGrid.Margin = new System.Windows.Forms.Padding(1);
@@ -273,80 +273,80 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             // 
             // InvoiceId
             // 
-            this.InvoiceId.MinimumWidth = 8;
-            this.InvoiceId.Name = "InvoiceId";
-            this.InvoiceId.ReadOnly = true;
-            this.InvoiceId.Visible = false;
+            this._invoice_id_column.MinimumWidth = 8;
+            this._invoice_id_column.Name = "InvoiceId";
+            this._invoice_id_column.ReadOnly = true;
+            this._invoice_id_column.Visible = false;
             // 
             // Invoice
             // 
-            this.Invoice.HeaderText = "Mã hóa đơn";
-            this.Invoice.MinimumWidth = 8;
-            this.Invoice.Name = "Invoice";
-            this.Invoice.ReadOnly = true;
+            this._invoice_column.HeaderText = "Mã hóa đơn";
+            this._invoice_column.MinimumWidth = 8;
+            this._invoice_column.Name = "Invoice";
+            this._invoice_column.ReadOnly = true;
             // 
             // Date
             // 
-            this.Date.HeaderText = "Ngày tạo";
-            this.Date.MinimumWidth = 8;
-            this.Date.Name = "Date";
-            this.Date.ReadOnly = true;
+            this._date_column.HeaderText = "Ngày tạo";
+            this._date_column.MinimumWidth = 8;
+            this._date_column.Name = "Date";
+            this._date_column.ReadOnly = true;
             // 
             // Customer
             // 
-            this.Customer.HeaderText = "Khách hàng";
-            this.Customer.MinimumWidth = 8;
-            this.Customer.Name = "Customer";
-            this.Customer.ReadOnly = true;
+            this._customer_column.HeaderText = "Khách hàng";
+            this._customer_column.MinimumWidth = 8;
+            this._customer_column.Name = "Customer";
+            this._customer_column.ReadOnly = true;
             // 
             // Cashier
             // 
-            this.Cashier.HeaderText = "Nhân viên";
-            this.Cashier.MinimumWidth = 8;
-            this.Cashier.Name = "Cashier";
-            this.Cashier.ReadOnly = true;
+            this._cashier_column.HeaderText = "Nhân viên";
+            this._cashier_column.MinimumWidth = 8;
+            this._cashier_column.Name = "Cashier";
+            this._cashier_column.ReadOnly = true;
             // 
             // Total
             // 
-            this.Total.HeaderText = "Tổng tiền";
-            this.Total.MinimumWidth = 8;
-            this.Total.Name = "Total";
-            this.Total.ReadOnly = true;
+            this._total_column.HeaderText = "Tổng tiền";
+            this._total_column.MinimumWidth = 8;
+            this._total_column.Name = "Total";
+            this._total_column.ReadOnly = true;
             // 
             // Status
             // 
-            this.Status.HeaderText = "Trạng thái";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this._status_column.HeaderText = "Trạng thái";
+            this._status_column.MinimumWidth = 8;
+            this._status_column.Name = "Status";
+            this._status_column.ReadOnly = true;
             // 
             // Actions
             // 
-            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._actions_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle3.NullValue")));
             dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
-            this.Actions.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Actions.HeaderText = "Thao tác";
-            this.Actions.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.Actions.MinimumWidth = 78;
-            this.Actions.Name = "Actions";
-            this.Actions.ReadOnly = true;
-            this.Actions.Width = 78;
+            this._actions_column.DefaultCellStyle = dataGridViewCellStyle3;
+            this._actions_column.HeaderText = "Thao tác";
+            this._actions_column.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this._actions_column.MinimumWidth = 78;
+            this._actions_column.Name = "Actions";
+            this._actions_column.ReadOnly = true;
+            this._actions_column.Width = 78;
             // 
             // Print
             // 
-            this.Print.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._print_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle4.NullValue")));
             dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
-            this.Print.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Print.HeaderText = "In";
-            this.Print.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.Print.MinimumWidth = 52;
-            this.Print.Name = "Print";
-            this.Print.ReadOnly = true;
-            this.Print.Width = 52;
+            this._print_column.DefaultCellStyle = dataGridViewCellStyle4;
+            this._print_column.HeaderText = "In";
+            this._print_column.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this._print_column.MinimumWidth = 52;
+            this._print_column.Name = "Print";
+            this._print_column.ReadOnly = true;
+            this._print_column.Width = 52;
             // 
             // InvoiceManagementPage
             // 
@@ -371,14 +371,14 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         }
 
-        private DataGridViewTextBoxColumn InvoiceId;
-        private DataGridViewTextBoxColumn Invoice;
-        private DataGridViewTextBoxColumn Date;
-        private DataGridViewTextBoxColumn Customer;
-        private DataGridViewTextBoxColumn Cashier;
-        private DataGridViewTextBoxColumn Total;
-        private DataGridViewTextBoxColumn Status;
-        private DataGridViewImageColumn Actions;
-        private DataGridViewImageColumn Print;
+        private DataGridViewTextBoxColumn _invoice_id_column;
+        private DataGridViewTextBoxColumn _invoice_column;
+        private DataGridViewTextBoxColumn _date_column;
+        private DataGridViewTextBoxColumn _customer_column;
+        private DataGridViewTextBoxColumn _cashier_column;
+        private DataGridViewTextBoxColumn _total_column;
+        private DataGridViewTextBoxColumn _status_column;
+        private DataGridViewImageColumn _actions_column;
+        private DataGridViewImageColumn _print_column;
     }
 }

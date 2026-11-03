@@ -23,6 +23,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private Panel _gridCard;
         private DataGridView _usersGrid;
         private DataGridViewImageColumn _actionsColumn;
+        private DataGridViewTextBoxColumn _username_column;
+        private DataGridViewTextBoxColumn _full_name_column;
+        private DataGridViewTextBoxColumn _email_column;
+        private DataGridViewTextBoxColumn _role_column;
+        private DataGridViewTextBoxColumn _status_column;
         protected override void Dispose(bool disposing)
         {
             if (disposing && components != null)
@@ -42,11 +47,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._refreshButton = new System.Windows.Forms.Button();
             this._gridCard = new System.Windows.Forms.Panel();
             this._usersGrid = new System.Windows.Forms.DataGridView();
-            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FullName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Email = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Role = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._username_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._full_name_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._email_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._role_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._status_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this._statusFilter = new System.Windows.Forms.ComboBox();
             this._searchBox = new System.Windows.Forms.TextBox();
@@ -177,11 +182,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._usersGrid.MultiSelect = false;
             this._usersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Username,
-            this.FullName,
-            this.Email,
-            this.Role,
-            this.Status,
+            this._username_column,
+            this._full_name_column,
+            this._email_column,
+            this._role_column,
+            this._status_column,
             this._actionsColumn});
             this._usersGrid.Name = "_usersGrid";
             this._usersGrid.ReadOnly = true;
@@ -193,48 +198,48 @@ namespace SIMS_WinFormsApp.Views.UserManager
             //
             // Username
             //
-            this.Username.HeaderText = "Tên đăng nhập";
-            this.Username.MinimumWidth = 8;
-            this.Username.Name = "Username";
-            this.Username.ReadOnly = true;
-            this.Username.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Username.FillWeight = 100F;
+            this._username_column.HeaderText = "Tên đăng nhập";
+            this._username_column.MinimumWidth = 8;
+            this._username_column.Name = "Username";
+            this._username_column.ReadOnly = true;
+            this._username_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._username_column.FillWeight = 100F;
             //
             // FullName
             //
-            this.FullName.HeaderText = "Họ và tên";
-            this.FullName.MinimumWidth = 8;
-            this.FullName.Name = "FullName";
-            this.FullName.ReadOnly = true;
-            this.FullName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.FullName.FillWeight = 110F;
+            this._full_name_column.HeaderText = "Họ và tên";
+            this._full_name_column.MinimumWidth = 8;
+            this._full_name_column.Name = "FullName";
+            this._full_name_column.ReadOnly = true;
+            this._full_name_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._full_name_column.FillWeight = 110F;
             //
             // Email
             //
-            this.Email.HeaderText = "Email";
-            this.Email.MinimumWidth = 8;
-            this.Email.Name = "Email";
-            this.Email.ReadOnly = true;
-            this.Email.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Email.FillWeight = 140F;
+            this._email_column.HeaderText = "Email";
+            this._email_column.MinimumWidth = 8;
+            this._email_column.Name = "Email";
+            this._email_column.ReadOnly = true;
+            this._email_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._email_column.FillWeight = 140F;
             //
             // Role
             //
-            this.Role.HeaderText = "Vai trò";
-            this.Role.MinimumWidth = 8;
-            this.Role.Name = "Role";
-            this.Role.ReadOnly = true;
-            this.Role.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Role.FillWeight = 110F;
+            this._role_column.HeaderText = "Vai trò";
+            this._role_column.MinimumWidth = 8;
+            this._role_column.Name = "Role";
+            this._role_column.ReadOnly = true;
+            this._role_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._role_column.FillWeight = 110F;
             //
             // Status
             //
-            this.Status.HeaderText = "Trạng thái";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Status.FillWeight = 95F;
+            this._status_column.HeaderText = "Trạng thái";
+            this._status_column.MinimumWidth = 8;
+            this._status_column.Name = "Status";
+            this._status_column.ReadOnly = true;
+            this._status_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._status_column.FillWeight = 95F;
             //
             // Actions
             //
@@ -366,10 +371,5 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         }
 
-        private DataGridViewTextBoxColumn Username;
-        private DataGridViewTextBoxColumn FullName;
-        private DataGridViewTextBoxColumn Email;
-        private DataGridViewTextBoxColumn Role;
-        private DataGridViewTextBoxColumn Status;
     }
 }

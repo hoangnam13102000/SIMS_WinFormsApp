@@ -520,9 +520,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._clearImageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._clearImageButton.Location = new System.Drawing.Point(16, 798);
+            this._clearImageButton.Location = new System.Drawing.Point(16, 438);
             this._clearImageButton.Name = "_clearImageButton";
-            this._clearImageButton.Size = new System.Drawing.Size(283, 34);
+            this._clearImageButton.Size = new System.Drawing.Size(215, 34);
             this._clearImageButton.TabIndex = 0;
             this._clearImageButton.Text = "Xóa ảnh";
             // 
@@ -530,9 +530,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._uploadImageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._uploadImageButton.Location = new System.Drawing.Point(16, 754);
+            this._uploadImageButton.Location = new System.Drawing.Point(16, 394);
             this._uploadImageButton.Name = "_uploadImageButton";
-            this._uploadImageButton.Size = new System.Drawing.Size(283, 36);
+            this._uploadImageButton.Size = new System.Drawing.Size(215, 36);
             this._uploadImageButton.TabIndex = 1;
             this._uploadImageButton.Text = "Chọn ảnh...";
             // 
@@ -544,7 +544,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._preview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._preview.Location = new System.Drawing.Point(16, 40);
             this._preview.Name = "_preview";
-            this._preview.Size = new System.Drawing.Size(283, 704);
+            this._preview.Size = new System.Drawing.Size(215, 344);
             this._preview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this._preview.TabIndex = 2;
             this._preview.TabStop = false;

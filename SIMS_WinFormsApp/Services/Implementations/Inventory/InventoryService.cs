@@ -40,6 +40,18 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
             string keyword, int? categoryId, DateTime? from, DateTime? to) =>
             _repository.SearchStockAlerts(keyword, categoryId, from, to);
 
+        public int ReportOutOfStock(int productId, int stockAtReport, int reportedBy)
+        {
+            if (productId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(productId));
+            if (stockAtReport < 0)
+                throw new ArgumentOutOfRangeException(nameof(stockAtReport));
+            if (reportedBy <= 0)
+                throw new ArgumentOutOfRangeException(nameof(reportedBy));
+
+            return _repository.ReportOutOfStock(productId, stockAtReport, reportedBy);
+        }
+
         public int MarkAlertPlanned(int alertId) => _repository.MarkAlertPlanned(alertId);
 
         public int ResolveAlert(int alertId, int userId) => _repository.ResolveAlert(alertId, userId);

@@ -17,6 +17,7 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         IReadOnlyList<StockRowDto> GetStock(string keyword, int? categoryId);
         IReadOnlyList<StockAlertListItemDto> SearchStockAlerts(
             string keyword, int? categoryId, DateTime? from, DateTime? to);
+        int ReportOutOfStock(int productId, int stockAtReport, int reportedBy);
         int MarkAlertPlanned(int alertId);
         int ResolveAlert(int alertId, int userId);
         int MarkAllAlertsSeen();

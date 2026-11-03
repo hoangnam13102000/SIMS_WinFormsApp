@@ -76,7 +76,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._root.Name = "_root";
             this._root.Padding = new System.Windows.Forms.Padding(24);
             this._root.RowCount = 4;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 92F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
@@ -85,35 +85,35 @@ namespace SIMS_WinFormsApp.Views.Sales
             // 
             // _header
             // 
-            this._header.BackColor = System.Drawing.Color.Transparent;
+            this._header.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this._header.Controls.Add(this._title);
             this._header.Controls.Add(this._subtitle);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
             this._header.Location = new System.Drawing.Point(24, 24);
             this._header.Margin = new System.Windows.Forms.Padding(0);
             this._header.Name = "_header";
-            this._header.Size = new System.Drawing.Size(1246, 92);
+            this._header.Size = new System.Drawing.Size(1246, 120);
             this._header.TabIndex = 0;
             // 
             // _title
             // 
             this._title.AutoSize = true;
-            this._title.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
+            this._title.Font = new System.Drawing.Font("Segoe UI", 26F, System.Drawing.FontStyle.Bold);
             this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._title.Location = new System.Drawing.Point(0, 0);
+            this._title.Location = new System.Drawing.Point(12, 12);
             this._title.Name = "_title";
-            this._title.Size = new System.Drawing.Size(494, 65);
+            this._title.Size = new System.Drawing.Size(540, 70);
             this._title.TabIndex = 0;
             this._title.Text = "Quản lý mã giảm giá";
             // 
             // _subtitle
             // 
             this._subtitle.AutoSize = true;
-            this._subtitle.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this._subtitle.Font = new System.Drawing.Font("Segoe UI", 11F);
             this._subtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitle.Location = new System.Drawing.Point(2, 54);
+            this._subtitle.Location = new System.Drawing.Point(14, 78);
             this._subtitle.Name = "_subtitle";
-            this._subtitle.Size = new System.Drawing.Size(488, 28);
+            this._subtitle.Size = new System.Drawing.Size(560, 30);
             this._subtitle.TabIndex = 1;
             this._subtitle.Text = "Tạo, cập nhật và theo dõi các chương trình khuyến mãi";
             // 
@@ -125,7 +125,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._toolbar.Controls.Add(this._reloadButton);
             this._toolbar.Controls.Add(this._newPromotionButton);
             this._toolbar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._toolbar.Location = new System.Drawing.Point(24, 116);
+            this._toolbar.Location = new System.Drawing.Point(24, 144);
             this._toolbar.Margin = new System.Windows.Forms.Padding(0);
             this._toolbar.Name = "_toolbar";
             this._toolbar.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
@@ -189,7 +189,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._gridPanel.BackColor = System.Drawing.Color.White;
             this._gridPanel.Controls.Add(this._grid);
             this._gridPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._gridPanel.Location = new System.Drawing.Point(24, 168);
+            this._gridPanel.Location = new System.Drawing.Point(24, 196);
             this._gridPanel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 10);
             this._gridPanel.Name = "_gridPanel";
             this._gridPanel.Padding = new System.Windows.Forms.Padding(1);

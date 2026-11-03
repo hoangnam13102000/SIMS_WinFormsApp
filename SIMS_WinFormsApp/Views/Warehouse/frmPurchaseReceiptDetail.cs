@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
+using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -29,6 +30,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _lines = lines ?? new List<PurchaseReceiptDetailLineDto>();
             _grid.Columns["ImportPrice"].DefaultCellStyle.FormatProvider = VietnameseCulture;
             _grid.Columns["Amount"].DefaultCellStyle.FormatProvider = VietnameseCulture;
+            DataGridViewCodeCopy.Attach(_grid, "ProductCode", "BatchCode");
             UpdateReceiptData();
             _headerIconCircle.Paint += new PaintEventHandler(HeaderIconCircle_Paint);
             _closeButton.Click += new EventHandler(_closeButton_Click);

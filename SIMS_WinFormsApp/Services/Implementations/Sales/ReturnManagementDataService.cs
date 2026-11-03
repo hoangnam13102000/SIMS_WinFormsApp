@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
@@ -384,6 +385,102 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                     TargetPageKey = "returns"
                 }).ToList();
             }
+        }
+
+        public List<NotificationDto> GetStockAlertNotifications()
+        {
+            const string sql = @"
+                SELECT TOP (20)
+                    sa.AlertID,
+                    sa.AlertType,
+                    sa.StockAtReport,
+                    sa.CreatedAt,
+                    sa.SeenByInventoryManager,
+                    p.ProductName,
+                    COALESCE(NULLIF(u.FullName, N''), u.Username, N'Hệ thống') AS ReporterName
+                FROM StockAlerts sa
+                INNER JOIN Products p ON sa.ProductID = p.ProductID
+                LEFT JOIN Users u ON sa.ReportedBy = u.UserID
+                WHERE sa.Status <> 'RESOLVED'
+                ORDER BY sa.CreatedAt DESC, sa.AlertID DESC";
+
+            var notifications = new List<NotificationDto>();
+            using (SqlConnection connection = _connections.CreateConnection())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int alertId = reader.GetInt32(0);
+                        string productName = reader.IsDBNull(5) ? "sản phẩm" : reader.GetString(5);
+                        string reporterName = reader.IsDBNull(6) ? "Hệ thống" : reader.GetString(6);
+                        int stockAtReport = reader.GetInt32(2);
+                        notifications.Add(new NotificationDto
+                        {
+                            NotificationId = "stock-alert:" +
+                                alertId.ToString(CultureInfo.InvariantCulture),
+                            Kind = "STOCK_ALERT",
+                            Title = reader.GetString(1) == "OUT_OF_STOCK"
+                                ? "Báo cáo hết hàng"
+                                : "Báo cáo sắp hết hàng",
+                            Message = reporterName + " báo \"" + productName +
+                                "\" hết hàng. Tồn tại thời điểm báo: " +
+                                stockAtReport.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) + ".",
+                            CreatedAt = reader.GetDateTime(3),
+                            IsRead = reader.GetBoolean(4),
+                            TargetPageKey = "stock-alert"
+                        });
+                    }
+                }
+            }
+            return notifications;
+        }
+
+        public List<NotificationDto> GetLowStockNotifications()
+        {
+            const int minimumStock = 10;
+            const string sql = @"
+                SELECT TOP (20) ProductID, ProductCode, ProductName, Stock
+                FROM Products
+                WHERE Status = 'ACTIVE' AND Stock < @MinimumStock
+                ORDER BY Stock, ProductName";
+
+            var notifications = new List<NotificationDto>();
+            using (SqlConnection connection = _connections.CreateConnection())
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.Add("@MinimumStock", SqlDbType.Int).Value = minimumStock;
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int productId = reader.GetInt32(0);
+                        string productCode = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                        string productName = reader.IsDBNull(2) ? "sản phẩm" : reader.GetString(2);
+                        int stock = reader.GetInt32(3);
+                        notifications.Add(new NotificationDto
+                        {
+                            NotificationId = "low-stock:" +
+                                productId.ToString(CultureInfo.InvariantCulture),
+                            Kind = "LOW_STOCK",
+                            Title = "Tồn kho dưới mức tối thiểu",
+                            Message = (string.IsNullOrWhiteSpace(productCode)
+                                    ? productName
+                                    : productCode + " - " + productName) +
+                                " hiện còn " +
+                                stock.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) +
+                                " (mức tối thiểu: " +
+                                minimumStock.ToString(CultureInfo.InvariantCulture) + ").",
+                            CreatedAt = DateTime.Now,
+                            TargetPageKey = "inventory"
+                        });
+                    }
+                }
+            }
+            return notifications;
         }
 
         private static void RestoreLoyaltyPoints(

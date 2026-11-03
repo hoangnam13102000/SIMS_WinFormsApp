@@ -46,12 +46,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._loadButton = new System.Windows.Forms.Button();
             this._stockGrid = new System.Windows.Forms.DataGridView();
             this._productIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Sku = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SystemQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._sku_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._product_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._system_quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CountQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Difference = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._count_quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._difference_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._noteColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._actions = new System.Windows.Forms.Panel();
             this._saveButton = new System.Windows.Forms.Button();
@@ -166,12 +166,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._stockGrid.ColumnHeadersHeight = 40;
             this._stockGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._productIdColumn,
-            this.Sku,
-            this.Product,
-            this.SystemQuantity,
+            this._sku_column,
+            this._product_column,
+            this._system_quantity_column,
             this._statusColumn,
-            this.CountQuantity,
-            this.Difference,
+            this._count_quantity_column,
+            this._difference_column,
             this._noteColumn});
             this._stockGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._stockGrid.Location = new System.Drawing.Point(27, 153);
@@ -192,26 +192,26 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // Sku
             // 
-            this.Sku.HeaderText = "Mã sản phẩm";
-            this.Sku.MinimumWidth = 6;
-            this.Sku.Name = "Sku";
-            this.Sku.ReadOnly = true;
+            this._sku_column.HeaderText = "Mã sản phẩm";
+            this._sku_column.MinimumWidth = 6;
+            this._sku_column.Name = "Sku";
+            this._sku_column.ReadOnly = true;
             // 
             // Product
             // 
-            this.Product.HeaderText = "Tên sản phẩm";
-            this.Product.MinimumWidth = 6;
-            this.Product.Name = "Product";
-            this.Product.ReadOnly = true;
+            this._product_column.HeaderText = "Tên sản phẩm";
+            this._product_column.MinimumWidth = 6;
+            this._product_column.Name = "Product";
+            this._product_column.ReadOnly = true;
             // 
             // SystemQuantity
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SystemQuantity.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SystemQuantity.HeaderText = "Tồn hệ thống";
-            this.SystemQuantity.MinimumWidth = 6;
-            this.SystemQuantity.Name = "SystemQuantity";
-            this.SystemQuantity.ReadOnly = true;
+            this._system_quantity_column.DefaultCellStyle = dataGridViewCellStyle2;
+            this._system_quantity_column.HeaderText = "Tồn hệ thống";
+            this._system_quantity_column.MinimumWidth = 6;
+            this._system_quantity_column.Name = "SystemQuantity";
+            this._system_quantity_column.ReadOnly = true;
             // 
             // _statusColumn
             // 
@@ -223,19 +223,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // CountQuantity
             // 
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.CountQuantity.DefaultCellStyle = dataGridViewCellStyle3;
-            this.CountQuantity.HeaderText = "Số lượng thực tế";
-            this.CountQuantity.MinimumWidth = 6;
-            this.CountQuantity.Name = "CountQuantity";
+            this._count_quantity_column.DefaultCellStyle = dataGridViewCellStyle3;
+            this._count_quantity_column.HeaderText = "Số lượng thực tế";
+            this._count_quantity_column.MinimumWidth = 6;
+            this._count_quantity_column.Name = "CountQuantity";
             // 
             // Difference
             // 
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Difference.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Difference.HeaderText = "Chênh lệch";
-            this.Difference.MinimumWidth = 6;
-            this.Difference.Name = "Difference";
-            this.Difference.ReadOnly = true;
+            this._difference_column.DefaultCellStyle = dataGridViewCellStyle4;
+            this._difference_column.HeaderText = "Chênh lệch";
+            this._difference_column.MinimumWidth = 6;
+            this._difference_column.Name = "Difference";
+            this._difference_column.ReadOnly = true;
             // 
             // _noteColumn
             // 
@@ -310,10 +310,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         }
 
-        private DataGridViewTextBoxColumn Sku;
-        private DataGridViewTextBoxColumn Product;
-        private DataGridViewTextBoxColumn SystemQuantity;
-        private DataGridViewTextBoxColumn CountQuantity;
-        private DataGridViewTextBoxColumn Difference;
+        private DataGridViewTextBoxColumn _sku_column;
+        private DataGridViewTextBoxColumn _product_column;
+        private DataGridViewTextBoxColumn _system_quantity_column;
+        private DataGridViewTextBoxColumn _count_quantity_column;
+        private DataGridViewTextBoxColumn _difference_column;
     }
 }

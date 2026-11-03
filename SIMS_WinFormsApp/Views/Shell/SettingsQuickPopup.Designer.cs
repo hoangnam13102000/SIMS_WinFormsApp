@@ -25,6 +25,11 @@ namespace SIMS_WinFormsApp.Views.Shell
         private Label _notificationsLabel;
         private Label _notificationsHint;
         private SettingsToggleSwitch _notificationsToggle;
+        private Panel _themeRow;
+        private IconPictureBox _themeIcon;
+        private Label _themeLabel;
+        private Label _themeHint;
+        private SettingsToggleSwitch _themeToggle;
         private Label _footerLabel;
 
         private void InitializeComponent()
@@ -43,6 +48,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsLabel = new System.Windows.Forms.Label();
             this._notificationsHint = new System.Windows.Forms.Label();
             this._notificationsToggle = new SIMS_WinFormsApp.Views.Shell.SettingsToggleSwitch();
+            this._themeRow = new System.Windows.Forms.Panel();
+            this._themeIcon = new FontAwesome.Sharp.IconPictureBox();
+            this._themeLabel = new System.Windows.Forms.Label();
+            this._themeHint = new System.Windows.Forms.Label();
+            this._themeToggle = new SIMS_WinFormsApp.Views.Shell.SettingsToggleSwitch();
             this._languageRow = new System.Windows.Forms.Panel();
             this._languageIcon = new FontAwesome.Sharp.IconPictureBox();
             this._languageLabel = new System.Windows.Forms.Label();
@@ -57,6 +67,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._rowsPanel.SuspendLayout();
             this._notificationsRow.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._notificationsIcon)).BeginInit();
+            this._themeRow.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._themeIcon)).BeginInit();
             this._languageRow.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._languageIcon)).BeginInit();
             this._contentPanel.SuspendLayout();
@@ -79,7 +91,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this.layout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.layout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.layout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.layout.Size = new System.Drawing.Size(338, 287);
+            this.layout.Size = new System.Drawing.Size(338, 359);
             this.layout.TabIndex = 0;
             // 
             // header
@@ -152,12 +164,13 @@ namespace SIMS_WinFormsApp.Views.Shell
             // 
             this._rowsPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._rowsPanel.Controls.Add(this._notificationsRow);
+            this._rowsPanel.Controls.Add(this._themeRow);
             this._rowsPanel.Controls.Add(this._languageRow);
             this._rowsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._rowsPanel.Location = new System.Drawing.Point(0, 78);
             this._rowsPanel.Margin = new System.Windows.Forms.Padding(0);
             this._rowsPanel.Name = "_rowsPanel";
-            this._rowsPanel.Size = new System.Drawing.Size(338, 178);
+            this._rowsPanel.Size = new System.Drawing.Size(338, 250);
             this._rowsPanel.TabIndex = 2;
             // 
             // _notificationsRow
@@ -169,7 +182,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsRow.Controls.Add(this._notificationsHint);
             this._notificationsRow.Controls.Add(this._notificationsToggle);
             this._notificationsRow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._notificationsRow.Location = new System.Drawing.Point(0, 72);
+            this._notificationsRow.Location = new System.Drawing.Point(0, 144);
             this._notificationsRow.Name = "_notificationsRow";
             this._notificationsRow.Size = new System.Drawing.Size(338, 106);
             this._notificationsRow.TabIndex = 0;
@@ -227,6 +240,64 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsToggle.Name = "_notificationsToggle";
             this._notificationsToggle.Size = new System.Drawing.Size(42, 24);
             this._notificationsToggle.TabIndex = 4;
+            // 
+            // _themeRow
+            // 
+            this._themeRow.BackColor = System.Drawing.Color.Transparent;
+            this._themeRow.Controls.Add(this._themeIcon);
+            this._themeRow.Controls.Add(this._themeLabel);
+            this._themeRow.Controls.Add(this._themeHint);
+            this._themeRow.Controls.Add(this._themeToggle);
+            this._themeRow.Dock = System.Windows.Forms.DockStyle.Top;
+            this._themeRow.Location = new System.Drawing.Point(0, 72);
+            this._themeRow.Name = "_themeRow";
+            this._themeRow.Size = new System.Drawing.Size(338, 72);
+            this._themeRow.TabIndex = 2;
+            // 
+            // _themeIcon
+            // 
+            this._themeIcon.BackColor = System.Drawing.Color.Transparent;
+            this._themeIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this._themeIcon.IconChar = FontAwesome.Sharp.IconChar.Moon;
+            this._themeIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this._themeIcon.IconFont = FontAwesome.Sharp.IconFont.Solid;
+            this._themeIcon.IconSize = 18;
+            this._themeIcon.Location = new System.Drawing.Point(10, 23);
+            this._themeIcon.Name = "_themeIcon";
+            this._themeIcon.Size = new System.Drawing.Size(18, 18);
+            this._themeIcon.TabIndex = 0;
+            this._themeIcon.TabStop = false;
+            // 
+            // _themeLabel
+            // 
+            this._themeLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._themeLabel.Location = new System.Drawing.Point(39, 12);
+            this._themeLabel.Name = "_themeLabel";
+            this._themeLabel.Size = new System.Drawing.Size(180, 20);
+            this._themeLabel.TabIndex = 1;
+            this._themeLabel.Text = "Giao diện";
+            this._themeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _themeHint
+            // 
+            this._themeHint.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this._themeHint.Location = new System.Drawing.Point(39, 33);
+            this._themeHint.Name = "_themeHint";
+            this._themeHint.Size = new System.Drawing.Size(200, 18);
+            this._themeHint.TabIndex = 2;
+            this._themeHint.Text = "Chế độ sáng";
+            this._themeHint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // _themeToggle
+            // 
+            this._themeToggle.AccessibleName = "Giao diện tối";
+            this._themeToggle.AccessibleRole = System.Windows.Forms.AccessibleRole.CheckButton;
+            this._themeToggle.Checked = false;
+            this._themeToggle.Cursor = System.Windows.Forms.Cursors.Hand;
+            this._themeToggle.Location = new System.Drawing.Point(278, 25);
+            this._themeToggle.Name = "_themeToggle";
+            this._themeToggle.Size = new System.Drawing.Size(42, 24);
+            this._themeToggle.TabIndex = 3;
             // 
             // _languageRow
             // 
@@ -292,7 +363,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             // 
             this._footerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._footerLabel.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this._footerLabel.Location = new System.Drawing.Point(3, 256);
+            this._footerLabel.Location = new System.Drawing.Point(3, 328);
             this._footerLabel.Name = "_footerLabel";
             this._footerLabel.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this._footerLabel.Size = new System.Drawing.Size(332, 31);
@@ -308,14 +379,14 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._contentPanel.Location = new System.Drawing.Point(1, 1);
             this._contentPanel.Name = "_contentPanel";
             this._contentPanel.Padding = new System.Windows.Forms.Padding(20, 17, 20, 14);
-            this._contentPanel.Size = new System.Drawing.Size(378, 318);
+            this._contentPanel.Size = new System.Drawing.Size(378, 390);
             this._contentPanel.TabIndex = 0;
             // 
             // SettingsQuickPopup
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(380, 320);
+            this.ClientSize = new System.Drawing.Size(380, 392);
             this.Controls.Add(this._contentPanel);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -333,6 +404,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._rowsPanel.ResumeLayout(false);
             this._notificationsRow.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._notificationsIcon)).EndInit();
+            this._themeRow.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._themeIcon)).EndInit();
             this._languageRow.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._languageIcon)).EndInit();
             this._contentPanel.ResumeLayout(false);

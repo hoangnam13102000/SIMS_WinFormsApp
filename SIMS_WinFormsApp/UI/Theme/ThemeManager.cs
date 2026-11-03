@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using SIMS_WinFormsApp.Infrastructure;
 
 
@@ -81,6 +82,10 @@ namespace SIMS_WinFormsApp.UI.Theme
                     form.BackColor = AppColors.PageBg;
                     form.ForeColor = AppColors.TextPrimary;
                     break;
+                case UserControl userControl:
+                    userControl.BackColor = AppColors.PageBg;
+                    userControl.ForeColor = AppColors.TextPrimary;
+                    break;
                 case Panel panel:
                     panel.BackColor = AppColors.White;
                     panel.ForeColor = AppColors.TextPrimary;
@@ -108,8 +113,32 @@ namespace SIMS_WinFormsApp.UI.Theme
                     comboBox.BackColor = AppColors.White;
                     comboBox.ForeColor = AppColors.TextPrimary;
                     break;
+                case DateTimePicker dateTimePicker:
+                    dateTimePicker.CalendarMonthBackground = AppColors.White;
+                    dateTimePicker.CalendarForeColor = AppColors.TextPrimary;
+                    dateTimePicker.CalendarTitleBackColor = AppColors.TableHeaderBg;
+                    dateTimePicker.CalendarTitleForeColor = Color.White;
+                    dateTimePicker.CalendarTrailingForeColor = AppColors.TextMuted;
+                    dateTimePicker.BackColor = AppColors.White;
+                    dateTimePicker.ForeColor = AppColors.TextPrimary;
+                    break;
+                case NumericUpDown numericUpDown:
+                    numericUpDown.BackColor = AppColors.White;
+                    numericUpDown.ForeColor = AppColors.TextPrimary;
+                    break;
+                case RichTextBox richTextBox:
+                    richTextBox.BackColor = AppColors.White;
+                    richTextBox.ForeColor = AppColors.TextPrimary;
+                    break;
+                case ListControl listControl:
+                    listControl.BackColor = AppColors.White;
+                    listControl.ForeColor = AppColors.TextPrimary;
+                    break;
                 case DataGridView grid:
                     ApplyGridTheme(grid);
+                    break;
+                case Chart chart:
+                    ApplyChartTheme(chart);
                     break;
             }
 
@@ -123,17 +152,42 @@ namespace SIMS_WinFormsApp.UI.Theme
         private static void ApplyButtonTheme(Button button)
         {
             bool isPrimary = string.Equals(button.Tag as string, "primary", StringComparison.OrdinalIgnoreCase);
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderColor = isPrimary ? AppColors.Accent : AppColors.Border;
+            if (button.BackColor == Color.Transparent)
+                return;
 
-            if (isPrimary)
+            float hue = button.BackColor.GetHue();
+            float saturation = button.BackColor.GetSaturation();
+            bool isRed = saturation >= 0.3f && (hue <= 15f || hue >= 345f);
+            bool isBlue = saturation >= 0.3f && hue >= 190f && hue <= 250f;
+            bool isGreen = saturation >= 0.3f && hue >= 80f && hue <= 170f;
+            button.FlatStyle = FlatStyle.Flat;
+
+            if (isPrimary || isBlue)
             {
+                button.FlatAppearance.BorderColor = AppColors.Accent;
                 button.BackColor = AppColors.Accent;
                 button.ForeColor = Color.White;
                 button.FlatAppearance.MouseOverBackColor = AppColors.AccentHover;
             }
+            else if (isRed)
+            {
+                button.FlatAppearance.BorderColor = AppColors.Error;
+                button.BackColor = AppColors.Error;
+                button.ForeColor = Color.White;
+                button.FlatAppearance.MouseOverBackColor = AppColors.ErrorHover;
+            }
+            else if (isGreen)
+            {
+                button.FlatAppearance.BorderColor = AppColors.Success;
+                button.BackColor = AppColors.Success;
+                button.ForeColor = AppColors.CurrentMode == ThemeMode.Dark
+                    ? Color.FromArgb(15, 23, 42)
+                    : Color.White;
+                button.FlatAppearance.MouseOverBackColor = AppColors.Success;
+            }
             else
             {
+                button.FlatAppearance.BorderColor = AppColors.Border;
                 button.BackColor = AppColors.CancelBg;
                 button.ForeColor = AppColors.TextPrimary;
                 button.FlatAppearance.MouseOverBackColor = AppColors.CancelHover;
@@ -152,6 +206,35 @@ namespace SIMS_WinFormsApp.UI.Theme
             grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             grid.EnableHeadersVisualStyles = false;
+        }
+
+        private static void ApplyChartTheme(Chart chart)
+        {
+            chart.BackColor = AppColors.White;
+            chart.BorderlineColor = AppColors.Border;
+            foreach (ChartArea area in chart.ChartAreas)
+            {
+                area.BackColor = AppColors.White;
+                area.AxisX.LabelStyle.ForeColor = AppColors.TextMuted;
+                area.AxisX.LineColor = AppColors.Border;
+                area.AxisX.MajorGrid.LineColor = AppColors.TableGrid;
+                area.AxisY.LabelStyle.ForeColor = AppColors.TextMuted;
+                area.AxisY.TitleForeColor = AppColors.TextMuted;
+                area.AxisY.LineColor = AppColors.Border;
+                area.AxisY.MajorGrid.LineColor = AppColors.TableGrid;
+            }
+
+            foreach (Legend legend in chart.Legends)
+            {
+                legend.BackColor = AppColors.White;
+                legend.ForeColor = AppColors.TextPrimary;
+            }
+
+            foreach (Title title in chart.Titles)
+            {
+                title.BackColor = AppColors.White;
+                title.ForeColor = AppColors.TextTitle;
+            }
         }
     }
 }

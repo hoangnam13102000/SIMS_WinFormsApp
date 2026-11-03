@@ -427,6 +427,57 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             return alerts;
         }
 
+        public int ReportOutOfStock(int productId, int stockAtReport, int reportedBy)
+        {
+            const string sql = @"
+                INSERT INTO StockAlerts
+                    (ProductID, AlertType, StockAtReport, Note, ReportedBy)
+                VALUES
+                    (@ProductID, 'OUT_OF_STOCK', @StockAtReport, N'Báo hết hàng từ POS', @ReportedBy);
+                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            using (var connection = Open())
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    int alertId;
+                    using (var command = new SqlCommand(sql, connection, transaction))
+                    {
+                        command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
+                        command.Parameters.Add("@StockAtReport", SqlDbType.Int).Value = stockAtReport;
+                        command.Parameters.Add("@ReportedBy", SqlDbType.Int).Value = reportedBy;
+                        alertId = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                    }
+
+                    WriteAuditLog(
+                        connection,
+                        transaction,
+                        reportedBy,
+                        "DATA_CREATE",
+                        "StockAlerts",
+                        alertId,
+                        null,
+                        JsonConvert.SerializeObject(new
+                        {
+                            ProductID = productId,
+                            AlertType = "OUT_OF_STOCK",
+                            StockAtReport = stockAtReport,
+                            ReportedBy = reportedBy,
+                            Status = "NEW"
+                        }),
+                        "Nhân viên báo hết hàng từ POS.");
+                    transaction.Commit();
+                    return alertId;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
         public int MarkAlertPlanned(int alertId)
         {
             const string sql = @"

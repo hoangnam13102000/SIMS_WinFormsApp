@@ -48,6 +48,8 @@ namespace SIMS_WinFormsApp.Models.Mapping
                     ? UserStatus.Active
                     : UserStatus.Disabled,
                 IsLocked = row.IsLocked,
+                CustomerCode = row.CustomerCode,
+                LoyaltyPoints = row.LoyaltyPoints,
                 CreatedAt = null
             };
         }

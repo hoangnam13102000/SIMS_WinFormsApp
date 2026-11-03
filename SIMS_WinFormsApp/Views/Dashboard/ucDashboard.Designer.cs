@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 
 namespace SIMS_WinFormsApp.Views.Dashboard
 {
@@ -8,6 +9,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _headerPanel;
+        private Panel _headerIconPanel;
+        private IconPictureBox _headerIcon;
         private Label _titleLabel;
         private Label _welcomeLabel;
         private TableLayoutPanel _contentLayout;
@@ -39,6 +42,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._welcomeLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
             this._contentLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -57,14 +62,16 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._customersValue = new System.Windows.Forms.Label();
             this._activityCard = new System.Windows.Forms.Panel();
             this._activityGrid = new System.Windows.Forms.DataGridView();
-            this.Activity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._activity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._user_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._time_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._status_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._activitySubtitle = new System.Windows.Forms.Label();
             this._activityTitle = new System.Windows.Forms.Label();
             this._root.SuspendLayout();
             this._headerPanel.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._contentLayout.SuspendLayout();
             this._statsLayout.SuspendLayout();
             this._revenueCard.SuspendLayout();
@@ -86,42 +93,76 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._root.Name = "_root";
             this._root.Padding = new System.Windows.Forms.Padding(20, 16, 20, 20);
             this._root.RowCount = 2;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 92F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 94F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Size = new System.Drawing.Size(1251, 857);
             this._root.TabIndex = 0;
-            // 
+            //
             // _headerPanel
-            // 
+            //
+            this._headerPanel.BackColor = System.Drawing.Color.White;
+            this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._headerPanel.Controls.Add(this._welcomeLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
+            this._headerPanel.Controls.Add(this._headerIconPanel);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerPanel.Location = new System.Drawing.Point(23, 19);
             this._headerPanel.Name = "_headerPanel";
-            this._headerPanel.Size = new System.Drawing.Size(1205, 86);
+            this._headerPanel.Size = new System.Drawing.Size(1205, 88);
             this._headerPanel.TabIndex = 0;
-            // 
+            //
+            // _headerIconPanel
+            //
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(24, 21);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(44, 44);
+            this._headerIconPanel.TabIndex = 0;
+            //
+            // _headerIcon
+            //
+            this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.ChartLine;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 20;
+            this._headerIcon.Location = new System.Drawing.Point(12, 12);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(20, 20);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabIndex = 0;
+            this._headerIcon.TabStop = false;
+            //
             // _welcomeLabel
-            // 
-            this._welcomeLabel.AutoSize = true;
+            //
+            this._welcomeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._welcomeLabel.AutoEllipsis = true;
             this._welcomeLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._welcomeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._welcomeLabel.Location = new System.Drawing.Point(2, 60);
+            this._welcomeLabel.Location = new System.Drawing.Point(80, 52);
             this._welcomeLabel.Name = "_welcomeLabel";
-            this._welcomeLabel.Size = new System.Drawing.Size(235, 25);
-            this._welcomeLabel.TabIndex = 0;
+            this._welcomeLabel.Size = new System.Drawing.Size(1098, 20);
+            this._welcomeLabel.TabIndex = 2;
             this._welcomeLabel.Text = "Chào mừng bạn quay trở lại";
-            // 
+            this._welcomeLabel.UseMnemonic = false;
+            //
             // _titleLabel
-            // 
-            this._titleLabel.AutoSize = true;
-            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
+            //
+            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._titleLabel.AutoEllipsis = true;
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._titleLabel.Location = new System.Drawing.Point(-3, 0);
+            this._titleLabel.Location = new System.Drawing.Point(80, 12);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(249, 60);
+            this._titleLabel.Size = new System.Drawing.Size(1098, 36);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Tổng quan";
+            this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._titleLabel.UseMnemonic = false;
             this._titleLabel.Click += new System.EventHandler(this._titleLabel_Click);
             // 
             // _contentLayout
@@ -318,10 +359,10 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._activityGrid.ColumnHeadersHeight = 36;
             this._activityGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Activity,
-            this.User,
-            this.Time,
-            this.Status});
+            this._activity_column,
+            this._user_column,
+            this._time_column,
+            this._status_column});
             this._activityGrid.Location = new System.Drawing.Point(18, 80);
             this._activityGrid.Name = "_activityGrid";
             this._activityGrid.ReadOnly = true;
@@ -333,31 +374,31 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             // 
             // Activity
             // 
-            this.Activity.HeaderText = "Hoạt động";
-            this.Activity.MinimumWidth = 8;
-            this.Activity.Name = "Activity";
-            this.Activity.ReadOnly = true;
+            this._activity_column.HeaderText = "Hoạt động";
+            this._activity_column.MinimumWidth = 8;
+            this._activity_column.Name = "Activity";
+            this._activity_column.ReadOnly = true;
             // 
             // User
             // 
-            this.User.HeaderText = "Người thực hiện";
-            this.User.MinimumWidth = 8;
-            this.User.Name = "User";
-            this.User.ReadOnly = true;
+            this._user_column.HeaderText = "Người thực hiện";
+            this._user_column.MinimumWidth = 8;
+            this._user_column.Name = "User";
+            this._user_column.ReadOnly = true;
             // 
             // Time
             // 
-            this.Time.HeaderText = "Thời gian";
-            this.Time.MinimumWidth = 8;
-            this.Time.Name = "Time";
-            this.Time.ReadOnly = true;
+            this._time_column.HeaderText = "Thời gian";
+            this._time_column.MinimumWidth = 8;
+            this._time_column.Name = "Time";
+            this._time_column.ReadOnly = true;
             // 
             // Status
             // 
-            this.Status.HeaderText = "Trạng thái";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this._status_column.HeaderText = "Trạng thái";
+            this._status_column.MinimumWidth = 8;
+            this._status_column.Name = "Status";
+            this._status_column.ReadOnly = true;
             // 
             // _activitySubtitle
             // 
@@ -393,7 +434,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this.Size = new System.Drawing.Size(1251, 857);
             this._root.ResumeLayout(false);
             this._headerPanel.ResumeLayout(false);
-            this._headerPanel.PerformLayout();
+            this._headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             this._contentLayout.ResumeLayout(false);
             this._statsLayout.ResumeLayout(false);
             this._revenueCard.ResumeLayout(false);
@@ -411,9 +453,9 @@ namespace SIMS_WinFormsApp.Views.Dashboard
 
         }
 
-        private DataGridViewTextBoxColumn Activity;
-        private DataGridViewTextBoxColumn User;
-        private DataGridViewTextBoxColumn Time;
-        private DataGridViewTextBoxColumn Status;
+        private DataGridViewTextBoxColumn _activity_column;
+        private DataGridViewTextBoxColumn _user_column;
+        private DataGridViewTextBoxColumn _time_column;
+        private DataGridViewTextBoxColumn _status_column;
     }
 }

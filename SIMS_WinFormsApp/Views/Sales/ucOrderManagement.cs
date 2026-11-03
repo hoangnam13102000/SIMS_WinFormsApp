@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.UI.I18n;
 
 namespace SIMS_WinFormsApp.Views.Sales
@@ -8,6 +9,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         public ucOrderManagement()
         {
             InitializeComponent();
+            DataGridViewCodeCopy.Attach(_grid, "Code");
             ApplyLabels();
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
         }

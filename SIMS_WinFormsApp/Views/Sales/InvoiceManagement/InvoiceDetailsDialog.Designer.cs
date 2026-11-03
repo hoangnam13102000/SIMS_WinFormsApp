@@ -89,10 +89,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._pointsCaption = new System.Windows.Forms.Label();
             this._pointsValue = new System.Windows.Forms.Label();
             this._linesGrid = new System.Windows.Forms.DataGridView();
-            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LineTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._product_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._price_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._line_total_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._summaryPanel = new System.Windows.Forms.Panel();
             this._statusValue = new System.Windows.Forms.Label();
             this._totalValue = new System.Windows.Forms.Label();
@@ -478,10 +478,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._linesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._linesGrid.ColumnHeadersHeight = 36;
             this._linesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Product,
-            this.Quantity,
-            this.Price,
-            this.LineTotal});
+            this._product_column,
+            this._quantity_column,
+            this._price_column,
+            this._line_total_column});
             this._linesGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._linesGrid.EnableHeadersVisualStyles = false;
             this._linesGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -497,39 +497,39 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             // 
             // Product
             // 
-            this.Product.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Product.HeaderText = "Sản phẩm";
-            this.Product.MinimumWidth = 8;
-            this.Product.Name = "Product";
-            this.Product.ReadOnly = true;
+            this._product_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._product_column.HeaderText = "Sản phẩm";
+            this._product_column.MinimumWidth = 8;
+            this._product_column.Name = "Product";
+            this._product_column.ReadOnly = true;
             // 
             // Quantity
             // 
-            this.Quantity.FillWeight = 35F;
-            this.Quantity.HeaderText = "SL";
-            this.Quantity.MinimumWidth = 8;
-            this.Quantity.Name = "Quantity";
-            this.Quantity.ReadOnly = true;
+            this._quantity_column.FillWeight = 35F;
+            this._quantity_column.HeaderText = "SL";
+            this._quantity_column.MinimumWidth = 8;
+            this._quantity_column.Name = "Quantity";
+            this._quantity_column.ReadOnly = true;
             // 
             // Price
             // 
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.Price.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Price.FillWeight = 75F;
-            this.Price.HeaderText = "Đơn giá";
-            this.Price.MinimumWidth = 8;
-            this.Price.Name = "Price";
-            this.Price.ReadOnly = true;
+            this._price_column.DefaultCellStyle = dataGridViewCellStyle1;
+            this._price_column.FillWeight = 75F;
+            this._price_column.HeaderText = "Đơn giá";
+            this._price_column.MinimumWidth = 8;
+            this._price_column.Name = "Price";
+            this._price_column.ReadOnly = true;
             // 
             // LineTotal
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.LineTotal.DefaultCellStyle = dataGridViewCellStyle2;
-            this.LineTotal.FillWeight = 85F;
-            this.LineTotal.HeaderText = "Thành tiền";
-            this.LineTotal.MinimumWidth = 8;
-            this.LineTotal.Name = "LineTotal";
-            this.LineTotal.ReadOnly = true;
+            this._line_total_column.DefaultCellStyle = dataGridViewCellStyle2;
+            this._line_total_column.FillWeight = 85F;
+            this._line_total_column.HeaderText = "Thành tiền";
+            this._line_total_column.MinimumWidth = 8;
+            this._line_total_column.Name = "LineTotal";
+            this._line_total_column.ReadOnly = true;
             // 
             // _summaryPanel
             // 
@@ -878,9 +878,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         }
 
-        private DataGridViewTextBoxColumn Product;
-        private DataGridViewTextBoxColumn Quantity;
-        private DataGridViewTextBoxColumn Price;
-        private DataGridViewTextBoxColumn LineTotal;
+        private DataGridViewTextBoxColumn _product_column;
+        private DataGridViewTextBoxColumn _quantity_column;
+        private DataGridViewTextBoxColumn _price_column;
+        private DataGridViewTextBoxColumn _line_total_column;
     }
 }

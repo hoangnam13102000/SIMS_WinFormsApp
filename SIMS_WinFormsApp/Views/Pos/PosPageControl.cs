@@ -17,15 +17,22 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
     public sealed partial class PosPageControl : UserControl, IPosView
     {
         private readonly bool _designTime;
+        private NumericUpDown _pointsToRedeemInput;
+        private FlowLayoutPanel _pointsRedemptionPanel;
+        private Label _pointsBalanceLabel;
         private int _customerPoints;
         private bool _checkoutAllowedByCart;
         private bool _isBusy;
         private bool _bindingCart;
 
+        public DataGridViewTextBoxColumn CartQuantity => _cart_quantity_column;
+        public DataGridViewImageColumn CartRemove => _cart_remove_column;
+
         public event EventHandler ViewReady;
         public event EventHandler<string> ProductSearchChanged;
         public event EventHandler<int?> CategoryChanged;
         public event EventHandler ScanBarcodeRequested;
+        public event EventHandler CustomerBarcodeScanRequested;
         public event EventHandler<int> AddToCartRequested;
         public event EventHandler<int> NotifyWhenRestockRequested;
         public event EventHandler<(int ProductId, int Quantity)> CartQuantityChanged;
@@ -58,6 +65,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public PosPageControl(string cashierDisplayName)
         {
             InitializeComponent();
+            ConfigurePointsRedemptionControls();
             _designTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
             _header.SizeChanged += (sender, args) => LayoutHeader();
             LayoutHeader();
@@ -72,11 +80,15 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _scanBarcodeButton.Click += (sender, args) =>
                 ScanBarcodeRequested?.Invoke(this, EventArgs.Empty);
             _customerSearchButton.Click += (sender, args) => RequestCustomerSearch();
+            _customerScanButton.Click += (sender, args) =>
+                CustomerBarcodeScanRequested?.Invoke(this, EventArgs.Empty);
             _customerTextBox.KeyDown += OnCustomerTextBoxKeyDown;
             _clearCustomerButton.Click += (sender, args) =>
                 CustomerCleared?.Invoke(this, EventArgs.Empty);
-            _usePointsCheckBox.CheckedChanged += (sender, args) =>
-                PointsRedemptionChanged?.Invoke(this, (_usePointsCheckBox.Checked, _customerPoints));
+            _usePointsCheckBox.CheckedChanged += OnUsePointsCheckedChanged;
+            _pointsToRedeemInput.ValueChanged += (sender, args) =>
+                PointsRedemptionChanged?.Invoke(
+                    this, (_usePointsCheckBox.Checked, decimal.ToInt32(_pointsToRedeemInput.Value)));
             _cartGrid.CellValidating += OnCartCellValidating;
             _cartGrid.CellEndEdit += OnCartCellEndEdit;
             _cartGrid.CellClick += OnCartCellClick;
@@ -142,6 +154,62 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _applyPromoButton.TextAlign = ContentAlignment.MiddleCenter;
             _applyPromoButton.UseVisualStyleBackColor = false;
             _promoLayout.PerformLayout();
+        }
+
+        private void ConfigurePointsRedemptionControls()
+        {
+            _customerLayout.Controls.Remove(_usePointsCheckBox);
+            _usePointsCheckBox.AutoSize = true;
+            _usePointsCheckBox.Visible = true;
+            _usePointsCheckBox.Text = "Dùng điểm";
+            _usePointsCheckBox.Margin = new Padding(0, 3, 8, 0);
+
+            _pointsToRedeemInput = new NumericUpDown
+            {
+                Minimum = 0,
+                Maximum = 0,
+                ThousandsSeparator = true,
+                Width = 90,
+                Enabled = false,
+                Margin = new Padding(0, 0, 6, 0)
+            };
+
+            _pointsRedemptionPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                Visible = false,
+                Margin = Padding.Empty
+            };
+            _pointsBalanceLabel = new Label
+            {
+                AutoSize = true,
+                Margin = new Padding(4, 4, 0, 0)
+            };
+            _pointsRedemptionPanel.Controls.Add(_usePointsCheckBox);
+            _pointsRedemptionPanel.Controls.Add(_pointsToRedeemInput);
+            _pointsRedemptionPanel.Controls.Add(new Label
+            {
+                AutoSize = true,
+                Text = "điểm",
+                Margin = new Padding(0, 4, 0, 0)
+            });
+            _pointsRedemptionPanel.Controls.Add(_pointsBalanceLabel);
+
+            _customerLayout.Controls.Add(_pointsRedemptionPanel, 0, 2);
+            _customerLayout.SetColumnSpan(_pointsRedemptionPanel, 4);
+        }
+
+        private void OnUsePointsCheckedChanged(object sender, EventArgs e)
+        {
+            if (_usePointsCheckBox.Checked && _pointsToRedeemInput.Value == 0)
+                _pointsToRedeemInput.Value = _pointsToRedeemInput.Maximum;
+
+            _pointsToRedeemInput.Enabled =
+                _usePointsCheckBox.Checked && _pointsToRedeemInput.Maximum > 0;
+            PointsRedemptionChanged?.Invoke(
+                this, (_usePointsCheckBox.Checked, decimal.ToInt32(_pointsToRedeemInput.Value)));
         }
 
         public void BindCategories(IReadOnlyList<CategoryOptionDto> categories)
@@ -232,13 +300,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public void SetCustomer(CustomerLookupDto customer)
         {
             _customerTextBox.Text = customer?.DisplayText ?? string.Empty;
-            _customerPoints = customer?.LoyaltyPoints ?? 0;
+            _customerPoints = Math.Max(0, customer?.LoyaltyPoints ?? 0);
             _usePointsCheckBox.Checked = false;
-            _usePointsCheckBox.Text = _customerPoints > 0
-                ? "Dùng " + _customerPoints + " điểm (" +
-                  PosFormat.Vnd(_customerPoints * CartCalculator.PointRedeemRateVnd) + ")"
-                : "Dùng điểm thưởng";
-            _usePointsCheckBox.Visible = _customerPoints > 0;
+            _pointsToRedeemInput.Value = 0;
+            _pointsToRedeemInput.Maximum = _customerPoints;
+            _usePointsCheckBox.Enabled = _customerPoints > 0;
+            _pointsToRedeemInput.Enabled = false;
+            _pointsBalanceLabel.Text = "(có " + _customerPoints.ToString("N0") + ")";
+            _pointsRedemptionPanel.Visible = customer != null;
         }
 
         public void ClearCustomer()
@@ -246,7 +315,21 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _customerTextBox.Clear();
             _customerPoints = 0;
             _usePointsCheckBox.Checked = false;
-            _usePointsCheckBox.Visible = false;
+            _pointsToRedeemInput.Value = 0;
+            _pointsToRedeemInput.Maximum = 0;
+            _pointsToRedeemInput.Enabled = false;
+            _usePointsCheckBox.Enabled = false;
+            _pointsBalanceLabel.Text = "(có 0)";
+            _pointsRedemptionPanel.Visible = false;
+        }
+
+        public void SetPointRedemptionLimit(int points)
+        {
+            int limit = Math.Min(_customerPoints, Math.Max(0, points));
+            _pointsToRedeemInput.Maximum = limit;
+            _usePointsCheckBox.Enabled = limit > 0;
+            _pointsToRedeemInput.Enabled = _usePointsCheckBox.Checked && limit > 0;
+            _pointsBalanceLabel.Text = "(có " + _customerPoints.ToString("N0") + ")";
         }
 
         public void BindPromotions(IReadOnlyList<PromotionDto> promotions)

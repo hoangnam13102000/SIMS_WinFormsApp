@@ -58,6 +58,17 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 - SQL Server 2022+ hoặc SQL Server Express LocalDB (đính kèm file .mdf)
 - Quyền đọc/ghi thư mục dự án và quyền kết nối CSDL
 
+### Kết nối chat nội bộ qua ngrok
+
+Trên máy host, mở ứng dụng và chạy `ngrok http 8890`. Lấy địa chỉ HTTPS trong dòng
+`Forwarding` của ngrok, rồi đặt `WS_CHAT_URL` trong `SIMS_WinFormsApp.exe.config`
+(hoặc `SIMS.exe.config` nếu dùng gói đóng gói) thành địa chỉ đó với giao thức `wss://`,
+ví dụ `wss://<ten-mien-ngrok-cua-ban>`. Có thể dùng URL `https://` tương ứng; ứng dụng
+sẽ tự đổi sang WebSocket bảo mật. Cấu hình cùng địa chỉ này trên mỗi máy tham gia chat.
+
+Chat server chỉ chạy khi mở màn hình chat trên máy host. Địa chỉ ngrok có thể truy cập
+công khai; chỉ chia sẻ với người được phép và tắt tunnel khi không sử dụng.
+
 ---
 
 ## PHÂN CÔNG CÔNG VIỆC

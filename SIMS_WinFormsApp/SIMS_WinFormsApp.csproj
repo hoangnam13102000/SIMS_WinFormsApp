@@ -39,6 +39,12 @@
     <Compile Include="Views\Warehouse\frmStockReconciliationDetail.Designer.cs">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Views\Catalog\ucSupplierManagement.resx">
+      <DependentUpon>ucSupplierManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\ucInventoryReport.resx">
+      <DependentUpon>ucInventoryReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </EmbeddedResource>

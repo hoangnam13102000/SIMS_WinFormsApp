@@ -50,6 +50,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             InitializeComponent();
             ConfigurePage();
             ApplyThemeColors();
+            DataGridViewCodeCopy.Attach(_invoicesGrid, "Invoice");
 
             if (_connectionFactory != null)
             {

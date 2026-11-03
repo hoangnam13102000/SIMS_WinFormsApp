@@ -33,6 +33,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private TableLayoutPanel _customerLayout;
         private TextBox _customerTextBox;
         private IconButton _customerSearchButton;
+        private IconButton _customerScanButton;
         private IconButton _clearCustomerButton;
         private CheckBox _usePointsCheckBox;
         private Label _cartLabel;
@@ -93,17 +94,18 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerLabel = new System.Windows.Forms.Label();
             this._customerTextBox = new System.Windows.Forms.TextBox();
             this._customerSearchButton = new FontAwesome.Sharp.IconButton();
+            this._customerScanButton = new FontAwesome.Sharp.IconButton();
             this._clearCustomerButton = new FontAwesome.Sharp.IconButton();
             this._usePointsCheckBox = new System.Windows.Forms.CheckBox();
             this._cartCheckoutSplit = new System.Windows.Forms.SplitContainer();
             this._cartAreaLayout = new System.Windows.Forms.TableLayoutPanel();
             this._cartLabel = new System.Windows.Forms.Label();
             this._cartGrid = new System.Windows.Forms.DataGridView();
-            this.CartProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CartUnitPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CartQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CartLineTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CartRemove = new System.Windows.Forms.DataGridViewImageColumn();
+            this._cart_product_name_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._cart_unit_price_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._cart_quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._cart_line_total_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._cart_remove_column = new System.Windows.Forms.DataGridViewImageColumn();
             this._checkoutScrollPanel = new System.Windows.Forms.Panel();
             this._checkoutLayout = new System.Windows.Forms.TableLayoutPanel();
             this._promoLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -158,9 +160,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._paymentLayout.SuspendLayout();
             this._actionsLayout.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // _root
-            // 
+            //
             this._root.ColumnCount = 1;
             this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Controls.Add(this._header, 0, 0);
@@ -402,14 +404,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // _customerLayout
             // 
-            this._customerLayout.ColumnCount = 3;
+            this._customerLayout.ColumnCount = 4;
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this._customerLayout.Controls.Add(this._customerLabel, 0, 0);
             this._customerLayout.Controls.Add(this._customerTextBox, 0, 1);
             this._customerLayout.Controls.Add(this._customerSearchButton, 1, 1);
-            this._customerLayout.Controls.Add(this._clearCustomerButton, 2, 1);
+            this._customerLayout.Controls.Add(this._customerScanButton, 2, 1);
+            this._customerLayout.Controls.Add(this._clearCustomerButton, 3, 1);
             this._customerLayout.Controls.Add(this._usePointsCheckBox, 0, 2);
             this._customerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._customerLayout.Location = new System.Drawing.Point(3, 3);
@@ -458,8 +462,25 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerSearchButton.TabIndex = 2;
             this._customerSearchButton.UseVisualStyleBackColor = false;
             // 
-            // _clearCustomerButton
+            // _customerScanButton
+            //
+            this._customerScanButton.AccessibleName = "Quét mã khách hàng";
+            this._customerScanButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._customerScanButton.FlatAppearance.BorderSize = 0;
+            this._customerScanButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._customerScanButton.IconChar = FontAwesome.Sharp.IconChar.Barcode;
+            this._customerScanButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._customerScanButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
+            this._customerScanButton.IconSize = 16;
+            this._customerScanButton.Location = new System.Drawing.Point(338, 24);
+            this._customerScanButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 2);
+            this._customerScanButton.Name = "_customerScanButton";
+            this._customerScanButton.Size = new System.Drawing.Size(38, 26);
+            this._customerScanButton.TabIndex = 3;
+            this._customerScanButton.UseVisualStyleBackColor = false;
             // 
+            // _clearCustomerButton
+            //
             this._clearCustomerButton.AccessibleName = "Xóa khách hàng đang chọn";
             this._clearCustomerButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._clearCustomerButton.FlatAppearance.BorderSize = 0;
@@ -468,7 +489,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._clearCustomerButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._clearCustomerButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
             this._clearCustomerButton.IconSize = 16;
-            this._clearCustomerButton.Location = new System.Drawing.Point(338, 24);
+            this._clearCustomerButton.Location = new System.Drawing.Point(380, 24);
             this._clearCustomerButton.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this._clearCustomerButton.Name = "_clearCustomerButton";
             this._clearCustomerButton.Size = new System.Drawing.Size(42, 26);
@@ -546,11 +567,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._cartGrid.ColumnHeadersHeight = 34;
             this._cartGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.CartProductName,
-            this.CartUnitPrice,
-            this.CartQuantity,
-            this.CartLineTotal,
-            this.CartRemove});
+            this._cart_product_name_column,
+            this._cart_unit_price_column,
+            this._cart_quantity_column,
+            this._cart_line_total_column,
+            this._cart_remove_column});
             this._cartGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._cartGrid.Location = new System.Drawing.Point(0, 30);
             this._cartGrid.Margin = new System.Windows.Forms.Padding(0);
@@ -564,42 +585,42 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // CartProductName
             // 
-            this.CartProductName.FillWeight = 30F;
-            this.CartProductName.HeaderText = "Sản phẩm";
-            this.CartProductName.MinimumWidth = 8;
-            this.CartProductName.Name = "CartProductName";
-            this.CartProductName.ReadOnly = true;
+            this._cart_product_name_column.FillWeight = 30F;
+            this._cart_product_name_column.HeaderText = "Sản phẩm";
+            this._cart_product_name_column.MinimumWidth = 8;
+            this._cart_product_name_column.Name = "CartProductName";
+            this._cart_product_name_column.ReadOnly = true;
             // 
             // CartUnitPrice
             // 
-            this.CartUnitPrice.FillWeight = 20F;
-            this.CartUnitPrice.HeaderText = "Đơn giá";
-            this.CartUnitPrice.MinimumWidth = 8;
-            this.CartUnitPrice.Name = "CartUnitPrice";
-            this.CartUnitPrice.ReadOnly = true;
+            this._cart_unit_price_column.FillWeight = 20F;
+            this._cart_unit_price_column.HeaderText = "Đơn giá";
+            this._cart_unit_price_column.MinimumWidth = 8;
+            this._cart_unit_price_column.Name = "CartUnitPrice";
+            this._cart_unit_price_column.ReadOnly = true;
             // 
             // CartQuantity
             // 
-            this.CartQuantity.FillWeight = 12F;
-            this.CartQuantity.HeaderText = "SL";
-            this.CartQuantity.MinimumWidth = 8;
-            this.CartQuantity.Name = "CartQuantity";
+            this._cart_quantity_column.FillWeight = 12F;
+            this._cart_quantity_column.HeaderText = "SL";
+            this._cart_quantity_column.MinimumWidth = 8;
+            this._cart_quantity_column.Name = "CartQuantity";
             // 
             // CartLineTotal
             // 
-            this.CartLineTotal.FillWeight = 22F;
-            this.CartLineTotal.HeaderText = "Thành tiền";
-            this.CartLineTotal.MinimumWidth = 8;
-            this.CartLineTotal.Name = "CartLineTotal";
-            this.CartLineTotal.ReadOnly = true;
+            this._cart_line_total_column.FillWeight = 22F;
+            this._cart_line_total_column.HeaderText = "Thành tiền";
+            this._cart_line_total_column.MinimumWidth = 8;
+            this._cart_line_total_column.Name = "CartLineTotal";
+            this._cart_line_total_column.ReadOnly = true;
             // 
             // CartRemove
             // 
-            this.CartRemove.FillWeight = 10F;
-            this.CartRemove.HeaderText = "";
-            this.CartRemove.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.CartRemove.MinimumWidth = 32;
-            this.CartRemove.Name = "CartRemove";
+            this._cart_remove_column.FillWeight = 10F;
+            this._cart_remove_column.HeaderText = "";
+            this._cart_remove_column.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this._cart_remove_column.MinimumWidth = 32;
+            this._cart_remove_column.Name = "CartRemove";
             // 
             // _checkoutScrollPanel
             // 
@@ -978,10 +999,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         }
 
-        private DataGridViewTextBoxColumn CartProductName;
-        private DataGridViewTextBoxColumn CartUnitPrice;
-        private DataGridViewTextBoxColumn CartQuantity;
-        private DataGridViewTextBoxColumn CartLineTotal;
-        private DataGridViewImageColumn CartRemove;
+        private DataGridViewTextBoxColumn _cart_product_name_column;
+        private DataGridViewTextBoxColumn _cart_unit_price_column;
+        private DataGridViewTextBoxColumn _cart_quantity_column;
+        private DataGridViewTextBoxColumn _cart_line_total_column;
+        private DataGridViewImageColumn _cart_remove_column;
     }
 }

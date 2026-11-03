@@ -13,6 +13,7 @@ using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Implementations.Reports;
 using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.Reports
@@ -42,8 +43,10 @@ namespace SIMS_WinFormsApp.Views.Reports
             _category.DataSource = CreateCategoryOptions();
             _category.DisplayMember = nameof(InventoryReportCategory.Name);
             _category.ValueMember = nameof(InventoryReportCategory.CategoryId);
+            _header.SizeChanged += (s, e) => LayoutReportHeader();
             _apply.Click += Apply_Click;
             _exportPdf.Click += ExportPdf_Click;
+            LayoutReportHeader();
             ConfigureImportChart();
             ConfigureCategoryChart();
             ConfigureDisposalChart();
@@ -52,6 +55,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             _exportCategoryExcel.Click += (s, e) => ExportCategoryBreakdown(new ExcelTableExporter());
             _categoryBreakdownGrid.CellPainting += RatioCell_Painting;
             _priceBreakdownGrid.CellPainting += RatioCell_Painting;
+            DataGridViewCodeCopy.Attach(_grid, "Code");
+            DataGridViewCodeCopy.Attach(_historyGrid, "_hBatch", "_hDocument", "_hProductCode");
             _trendPreset.SelectedIndex = 1;
             ApplyTrendPreset();
             _trendPreset.SelectedIndexChanged += TrendPreset_Changed;
@@ -67,6 +72,18 @@ namespace SIMS_WinFormsApp.Views.Reports
             LoadReport();
             LoadTrend();
             LoadHistory();
+        }
+
+        private void LayoutReportHeader()
+        {
+            int right = _header.ClientSize.Width - 16;
+            _exportOptions.Location = new Point(right - _exportOptions.Width, 25);
+            _exportPdf.Location = new Point(_exportOptions.Left - 8 - _exportPdf.Width, 25);
+            int textWidth = Math.Max(160, _exportPdf.Left - _title.Left - 16);
+            _title.Width = textWidth;
+            _subtitle.Width = textWidth;
+            _exportPdf.BringToFront();
+            _exportOptions.BringToFront();
         }
 
         private static List<InventoryReportCategory> CreateCategoryOptions()

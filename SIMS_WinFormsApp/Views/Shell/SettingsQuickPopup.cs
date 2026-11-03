@@ -11,6 +11,7 @@ namespace SIMS_WinFormsApp.Views.Shell
     {
         public event EventHandler LanguageToggleRequested;
         public event Action<bool> NotificationsEnabledChanged;
+        public event Action<bool> DarkModeEnabledChanged;
 
         public SettingsQuickPopup()
         {
@@ -29,6 +30,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             _languageButton.Click += (sender, args) => LanguageToggleRequested?.Invoke(this, EventArgs.Empty);
             _notificationsToggle.CheckedChanged += enabled =>
                 NotificationsEnabledChanged?.Invoke(enabled);
+            _themeToggle.CheckedChanged += enabled =>
+                DarkModeEnabledChanged?.Invoke(enabled);
             ApplyAppearance();
         }
 
@@ -41,6 +44,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             bool isVietnamese,
             string notifications,
             string notificationsHint,
+            string theme,
+            string themeHint,
             string footer)
         {
             _titleLabel.Text = title;
@@ -51,10 +56,14 @@ namespace SIMS_WinFormsApp.Views.Shell
             _languageButton.Text = isVietnamese ? "VI" : "EN";
             _notificationsLabel.Text = notifications;
             _notificationsHint.Text = notificationsHint;
+            _themeLabel.Text = theme;
+            _themeHint.Text = themeHint;
             _languageButton.AccessibleName = language;
             _languageButton.AccessibleDescription = languageValue;
             _notificationsToggle.AccessibleName = notifications;
             _notificationsToggle.AccessibleDescription = notificationsHint;
+            _themeToggle.AccessibleName = theme;
+            _themeToggle.AccessibleDescription = themeHint;
             _footerLabel.Text = footer;
         }
 
@@ -62,6 +71,12 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             get => _notificationsToggle.Checked;
             set => _notificationsToggle.Checked = value;
+        }
+
+        public bool DarkModeEnabled
+        {
+            get => _themeToggle.Checked;
+            set => _themeToggle.Checked = value;
         }
 
         public void ApplyAppearance()
@@ -74,6 +89,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _headerIcon.IconColor = AppColors.Accent;
             _languageIcon.IconColor = AppColors.Accent;
             _notificationsIcon.IconColor = AppColors.Accent;
+            _themeIcon.IconColor = AppColors.Accent;
 
             _titleLabel.ForeColor = AppColors.TextTitle;
             _subtitleLabel.ForeColor = AppColors.TextMuted;
@@ -82,11 +98,14 @@ namespace SIMS_WinFormsApp.Views.Shell
             _languageValue.ForeColor = AppColors.TextMuted;
             _notificationsLabel.ForeColor = AppColors.TextPrimary;
             _notificationsHint.ForeColor = AppColors.TextMuted;
+            _themeLabel.ForeColor = AppColors.TextPrimary;
+            _themeHint.ForeColor = AppColors.TextMuted;
             _footerLabel.ForeColor = AppColors.TextMuted;
             _languageButton.BackColor = AppColors.White;
             _languageButton.ForeColor = AppColors.Accent;
             _languageButton.FlatAppearance.BorderColor = AppColors.Border;
             _notificationsToggle.ApplyAppearance();
+            _themeToggle.ApplyAppearance();
             Invalidate();
         }
 
@@ -155,7 +174,9 @@ namespace SIMS_WinFormsApp.Views.Shell
                      ControlStyles.UserPaint |
                      ControlStyles.OptimizedDoubleBuffer |
                      ControlStyles.ResizeRedraw |
+                     ControlStyles.SupportsTransparentBackColor |
                      ControlStyles.Selectable, true);
+            BackColor = Color.Transparent;
             TabStop = true;
             AccessibleRole = AccessibleRole.CheckButton;
         }
@@ -202,14 +223,26 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             base.OnPaint(e);
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            Color trackColor = Checked ? AppColors.Accent : AppColors.Border;
+            Color trackColor = Checked ? AppColors.Accent : AppColors.FieldBorder;
+            var trackBounds = new Rectangle(0, 3, Width - 1, Height - 7);
+            using (var path = CreateTrackPath(trackBounds))
             using (var brush = new SolidBrush(trackColor))
-                e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
+                e.Graphics.FillPath(brush, path);
 
-            int diameter = Height - 6;
-            int left = Checked ? Width - diameter - 3 : 3;
+            int diameter = Height - 10;
+            int left = Checked ? Width - diameter - 5 : 5;
             using (var brush = new SolidBrush(Color.White))
-                e.Graphics.FillEllipse(brush, left, 3, diameter, diameter);
+                e.Graphics.FillEllipse(brush, left, 5, diameter, diameter);
+        }
+
+        private static GraphicsPath CreateTrackPath(Rectangle bounds)
+        {
+            int diameter = bounds.Height;
+            var path = new GraphicsPath();
+            path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 90, 180);
+            path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270, 180);
+            path.CloseFigure();
+            return path;
         }
     }
 }

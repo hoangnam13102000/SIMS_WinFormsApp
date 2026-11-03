@@ -368,18 +368,18 @@ namespace SIMS_WinFormsApp.Views.Shell
             // _settingsButton
             // 
             this._settingsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._settingsButton.Location = new System.Drawing.Point(1216, 726);
+            this._settingsButton.Location = new System.Drawing.Point(1208, 718);
             this._settingsButton.Name = "_settingsButton";
-            this._settingsButton.Size = new System.Drawing.Size(40, 40);
+            this._settingsButton.Size = new System.Drawing.Size(48, 48);
             this._settingsButton.TabIndex = 2;
             this._settingsButton.UseVisualStyleBackColor = false;
             // 
             // _chatbotButton
             // 
             this._chatbotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._chatbotButton.Location = new System.Drawing.Point(1170, 726);
+            this._chatbotButton.Location = new System.Drawing.Point(1152, 718);
             this._chatbotButton.Name = "_chatbotButton";
-            this._chatbotButton.Size = new System.Drawing.Size(40, 40);
+            this._chatbotButton.Size = new System.Drawing.Size(48, 48);
             this._chatbotButton.TabIndex = 1;
             this._chatbotButton.UseVisualStyleBackColor = false;
             // 
