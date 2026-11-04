@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.Repositories.Interfaces;

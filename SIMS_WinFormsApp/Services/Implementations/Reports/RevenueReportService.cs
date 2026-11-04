@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Reports
@@ -230,7 +230,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                     orderby revenue descending
                                     select new { Name = categoryDetails.Key, Revenue = revenue }).ToList();
                 foreach (var row in categoryRows)
-                    report.Categories.Add(new RevenueCategoryTotal { Name = row.Name, Revenue = row.Revenue });
+                    report.Categories.Add(new RevenueCategoryTotal
+                    {
+                        Name = row.Name,
+                        Revenue = row.Revenue ?? 0m
+                    });
 
                 var productRows = (from invoice in invoices
                                    join detail in db.InvoiceDetails on invoice.InvoiceID equals detail.InvoiceID
@@ -248,7 +252,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     {
                         Name = row.Name,
                         Quantity = row.Quantity,
-                        Revenue = row.Revenue
+                        Revenue = row.Revenue ?? 0m
                     });
                 return report;
             }
@@ -327,7 +331,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                     {
                         Name = row.Name,
                         Quantity = row.Quantity,
-                        LossAmount = row.LossAmount
+                        LossAmount = row.LossAmount ?? 0m
                     });
 
                 return report;

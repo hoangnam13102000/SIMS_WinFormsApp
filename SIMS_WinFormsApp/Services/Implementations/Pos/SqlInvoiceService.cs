@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
-using SIMS_WinFormsApp.Services.Session;
-using Newtonsoft.Json;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Pos
 {
@@ -71,28 +68,12 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     ConsumePromotion(db, promotionId);
                     foreach (CartLineDto line in orderedLines)
                     {
-                        db.ExecuteCommand(
-                            "INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice) " +
-                            "VALUES ({0}, {1}, {2}, {3})",
-                            invoice.InvoiceID,
-                            line.ProductId,
-                            line.Quantity,
-                            line.UnitPrice);
-                        db.AuditLogs.InsertOnSubmit(new AuditLogEntity
+                        db.InvoiceDetails.InsertOnSubmit(new InvoiceDetailEntity
                         {
-                            UserID = UserSession.Instance.CurrentUser?.UserId ?? createdBy,
-                            Action = "DATA_CREATE",
-                            TableName = "InvoiceDetails",
-                            RecordID = null,
-                            NewValue = JsonConvert.SerializeObject(new
-                            {
-                                invoice.InvoiceID,
-                                line.ProductId,
-                                line.Quantity,
-                                line.UnitPrice
-                            }),
-                            Detail = "Đã thêm dòng hàng vào hóa đơn " + invoiceCode + ".",
-                            CreatedAt = DateTime.Now
+                            InvoiceID = invoice.InvoiceID,
+                            ProductID = line.ProductId,
+                            Quantity = line.Quantity,
+                            UnitPrice = line.UnitPrice
                         });
                     }
                     DeductLoyaltyPoints(db, customerId, totals);

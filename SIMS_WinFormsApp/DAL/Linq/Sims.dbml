@@ -1,0 +1,544 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="SIMS_DB" EntityNamespace="SIMS_WinFormsApp.DAL.Linq.Entities" ContextNamespace="SIMS_WinFormsApp.DAL.Linq" Class="SimsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="AuditLogs">
+    <Type Name="AuditLogEntity">
+      <Column Name="LogID" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Action" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="TableName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="RecordID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OldValue" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="NewValue" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Detail" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="IPAddress" Type="System.String" DbType="VarChar(45)" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_AuditLogEntity" Member="Users" ThisKey="UserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Categories">
+    <Type Name="CategoryEntity">
+      <Column Name="CategoryID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CategoryName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Association Name="CategoryEntity_ProductEntity" Member="Products" ThisKey="CategoryID" OtherKey="CategoryID" Type="ProductEntity" />
+    </Type>
+  </Table>
+  <Table Name="ChatConversations">
+    <Type Name="ChatConversationEntity">
+      <Column Name="ConversationID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ConversationType" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="CustomerUserID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StaffUserIdA" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StaffUserIdB" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastMessageAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="IsClosed" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="ChatConversationEntity_ChatMessageEntity" Member="ChatMessages" ThisKey="ConversationID" OtherKey="ConversationID" Type="ChatMessageEntity" />
+      <Association Name="UserEntity_ChatConversationEntity" Member="Users" ThisKey="CustomerUserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_ChatConversationEntity1" Member="StaffUserIdAUsers" ThisKey="StaffUserIdA" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_ChatConversationEntity2" Member="StaffUserIdBUsers" ThisKey="StaffUserIdB" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="ChatMessages">
+    <Type Name="ChatMessageEntity">
+      <Column Name="MessageID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ConversationID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SenderUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SenderName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="FromStaff" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="BodyText" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="ImagePath" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="ImageMime" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FilePath" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="FileName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="IsReadByPeer" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="ChatConversationEntity_ChatMessageEntity" Member="ChatConversations" ThisKey="ConversationID" OtherKey="ConversationID" Type="ChatConversationEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_ChatMessageEntity" Member="Users" ThisKey="SenderUserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Customers">
+    <Type Name="CustomerEntity">
+      <Column Name="CustomerID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="CustomerCode" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="MemberPoint" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="CustomerEntity_InvoiceEntity" Member="Invoices" ThisKey="CustomerID" OtherKey="CustomerID" Type="InvoiceEntity" />
+      <Association Name="UserEntity_CustomerEntity" Member="Users" ThisKey="CustomerID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="Employees">
+    <Type Name="EmployeeEntity">
+      <Column Name="UserID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="EmployeeID" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="DateOfBirth" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="Gender" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="Salary" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="HireDate" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_EmployeeEntity" Member="Users" ThisKey="UserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="ExceptionReports">
+    <Type Name="ExceptionReportEntity">
+      <Column Name="ReportID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Content" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="HandledBy" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="HandledAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_ExceptionReportEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_ExceptionReportEntity1" Member="HandledByUsers" ThisKey="HandledBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="InventoryBatch" Member="InventoryBatches">
+    <Type Name="InventoryBatchEntity">
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="BatchCode" Type="System.String" DbType="VarChar(10)" CanBeNull="true" UpdateCheck="Never" Expression="('LOT_'+right('000000'+CONVERT([varchar](10),[BatchID]),(6)))" />
+      <Column Name="LotNumber" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SupplierID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ReceiptDetailID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ManufactureDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="ExpiryDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="ImportDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="ImportPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RemainingQty" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="InventoryBatchEntity_InvoiceDetailBatchEntity" Member="InvoiceDetailBatches" ThisKey="BatchID" OtherKey="BatchID" Type="InvoiceDetailBatchEntity" />
+      <Association Name="InventoryBatchEntity_ReturnExchangeDetailBatchEntity" Member="ReturnExchangeDetailBatches" ThisKey="BatchID" OtherKey="BatchID" Type="ReturnExchangeDetailBatchEntity" />
+      <Association Name="InventoryBatchEntity_StockDisposalDetailEntity" Member="StockDisposalDetails" ThisKey="BatchID" OtherKey="BatchID" Type="StockDisposalDetailEntity" />
+      <Association Name="InventoryBatchEntity_StockReconciliationBatchAdjustmentEntity" Member="StockReconciliationBatchAdjustments" ThisKey="BatchID" OtherKey="BatchID" Type="StockReconciliationBatchAdjustmentEntity" />
+      <Association Name="InventoryBatchEntity_SupplierReturnDetailEntity" Member="SupplierReturnDetails" ThisKey="BatchID" OtherKey="BatchID" Type="SupplierReturnDetailEntity" />
+      <Association Name="ProductEntity_InventoryBatchEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="PurchaseReceiptDetailEntity_InventoryBatchEntity" Member="PurchaseReceiptDetails" ThisKey="ReceiptDetailID" OtherKey="ReceiptDetailID" Type="PurchaseReceiptDetailEntity" IsForeignKey="true" />
+      <Association Name="SupplierEntity_InventoryBatchEntity" Member="Suppliers" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="InventoryTransactions">
+    <Type Name="InventoryTransactionEntity">
+      <Column Name="TransactionID" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TransactionType" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Direction" Type="System.String" DbType="VarChar(3) NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="StockBefore" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="StockAfter" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RefTable" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="RefID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Note" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Association Name="UserEntity_InventoryTransactionEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="ProductEntity_InventoryTransactionEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="InvoiceDetailBatches">
+    <Type Name="InvoiceDetailBatchEntity">
+      <Column Name="InvoiceDetailID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="InventoryBatchEntity_InvoiceDetailBatchEntity" Member="InventoryBatch" ThisKey="BatchID" OtherKey="BatchID" Type="InventoryBatchEntity" IsForeignKey="true" />
+      <Association Name="InvoiceDetailEntity_InvoiceDetailBatchEntity" Member="InvoiceDetails" ThisKey="InvoiceDetailID" OtherKey="InvoiceDetailID" Type="InvoiceDetailEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="InvoiceDetails">
+    <Type Name="InvoiceDetailEntity">
+      <Column Name="InvoiceDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="InvoiceID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UnitPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="LineTotal" Type="System.Decimal" DbType="Decimal(29,0)" CanBeNull="true" UpdateCheck="Never" Expression="([Quantity]*[UnitPrice])" />
+      <Association Name="InvoiceDetailEntity_InvoiceDetailBatchEntity" Member="InvoiceDetailBatches" ThisKey="InvoiceDetailID" OtherKey="InvoiceDetailID" Type="InvoiceDetailBatchEntity" />
+      <Association Name="InvoiceEntity_InvoiceDetailEntity" Member="Invoices" ThisKey="InvoiceID" OtherKey="InvoiceID" Type="InvoiceEntity" IsForeignKey="true" />
+      <Association Name="ProductEntity_InvoiceDetailEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Invoices">
+    <Type Name="InvoiceEntity">
+      <Column Name="InvoiceID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="InvoiceCode" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CustomerID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="SubTotal" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="DiscountAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="PromotionID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PromotionCode" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
+      <Column Name="VATRate" Type="System.Decimal" DbType="Decimal(5,2) NOT NULL" CanBeNull="false" />
+      <Column Name="VATAmount" Type="System.Decimal" DbType="Decimal(29,6)" CanBeNull="true" UpdateCheck="Never" Expression="(case when ([SubTotal]-[DiscountAmount])&lt;(0) then (0) else (([SubTotal]-[DiscountAmount])*[VATRate])/(100) end)" />
+      <Column Name="TotalAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="PaymentMethod" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="PayPalOrderID" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="PayPalCaptureID" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="CancelReason" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="CancelledAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="PointsUsed" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="PointsDiscountAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Association Name="InvoiceEntity_InvoiceDetailEntity" Member="InvoiceDetails" ThisKey="InvoiceID" OtherKey="InvoiceID" Type="InvoiceDetailEntity" />
+      <Association Name="InvoiceEntity_ReturnExchangeEntity" Member="ReturnExchanges" ThisKey="InvoiceID" OtherKey="InvoiceID" Type="ReturnExchangeEntity" />
+      <Association Name="UserEntity_InvoiceEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="CustomerEntity_InvoiceEntity" Member="Customers" ThisKey="CustomerID" OtherKey="CustomerID" Type="CustomerEntity" IsForeignKey="true" />
+      <Association Name="PromotionEntity_InvoiceEntity" Member="Promotions" ThisKey="PromotionID" OtherKey="PromotionID" Type="PromotionEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Permissions">
+    <Type Name="PermissionEntity">
+      <Column Name="PermissionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="PermissionCode" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Association Name="PermissionEntity_RolePermissionEntity" Member="RolePermissions" ThisKey="PermissionID" OtherKey="PermissionID" Type="RolePermissionEntity" />
+    </Type>
+  </Table>
+  <Table Name="Products">
+    <Type Name="ProductEntity">
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProductCode" Type="System.String" DbType="VarChar(7)" CanBeNull="true" UpdateCheck="Never" Expression="('SP_'+right('0000'+CONVERT([varchar](10),[ProductID]),(4)))" />
+      <Column Name="ProductName" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="CategoryID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Brand" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="Unit" Type="System.String" DbType="NVarChar(30)" CanBeNull="true" />
+      <Column Name="WeightVolume" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(1000)" CanBeNull="true" />
+      <Column Name="ImportPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="SellPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="Margin" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="AutoPrice" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ImageUrl" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="Stock" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MinStock" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="UpdatedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="ProductEntity_InventoryBatchEntity" Member="InventoryBatch" ThisKey="ProductID" OtherKey="ProductID" Type="InventoryBatchEntity" />
+      <Association Name="ProductEntity_InventoryTransactionEntity" Member="InventoryTransactions" ThisKey="ProductID" OtherKey="ProductID" Type="InventoryTransactionEntity" />
+      <Association Name="ProductEntity_InvoiceDetailEntity" Member="InvoiceDetails" ThisKey="ProductID" OtherKey="ProductID" Type="InvoiceDetailEntity" />
+      <Association Name="ProductEntity_PurchaseReceiptDetailEntity" Member="PurchaseReceiptDetails" ThisKey="ProductID" OtherKey="ProductID" Type="PurchaseReceiptDetailEntity" />
+      <Association Name="ProductEntity_ReturnExchangeDetailEntity" Member="ReturnExchangeDetails" ThisKey="ProductID" OtherKey="ProductID" Type="ReturnExchangeDetailEntity" />
+      <Association Name="ProductEntity_StockAlertEntity" Member="StockAlerts" ThisKey="ProductID" OtherKey="ProductID" Type="StockAlertEntity" />
+      <Association Name="ProductEntity_StockDisposalDetailEntity" Member="StockDisposalDetails" ThisKey="ProductID" OtherKey="ProductID" Type="StockDisposalDetailEntity" />
+      <Association Name="ProductEntity_StockReconciliationEntity" Member="StockReconciliation" ThisKey="ProductID" OtherKey="ProductID" Type="StockReconciliationEntity" />
+      <Association Name="ProductEntity_SupplierProductEntity" Member="SupplierProducts" ThisKey="ProductID" OtherKey="ProductID" Type="SupplierProductEntity" />
+      <Association Name="ProductEntity_SupplierReturnDetailEntity" Member="SupplierReturnDetails" ThisKey="ProductID" OtherKey="ProductID" Type="SupplierReturnDetailEntity" />
+      <Association Name="CategoryEntity_ProductEntity" Member="Categories" ThisKey="CategoryID" OtherKey="CategoryID" Type="CategoryEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Promotions">
+    <Type Name="PromotionEntity">
+      <Column Name="PromotionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Code" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="DiscountType" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="DiscountValue" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="MaxDiscountAmount" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="MinOrderAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="StartDate" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="EndDate" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="UsageLimit" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="UsedCount" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsActive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ShowOnBanner" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="BannerSortOrder" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="DeletedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="PromotionEntity_InvoiceEntity" Member="Invoices" ThisKey="PromotionID" OtherKey="PromotionID" Type="InvoiceEntity" />
+      <Association Name="UserEntity_PromotionEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="PurchaseReceiptDetails">
+    <Type Name="PurchaseReceiptDetailEntity">
+      <Column Name="ReceiptDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ReceiptID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ImportPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="LotNumber" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ManufactureDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="ExpiryDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Association Name="PurchaseReceiptDetailEntity_InventoryBatchEntity" Member="InventoryBatch" ThisKey="ReceiptDetailID" OtherKey="ReceiptDetailID" Type="InventoryBatchEntity" Cardinality="One" />
+      <Association Name="ProductEntity_PurchaseReceiptDetailEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="PurchaseReceiptEntity_PurchaseReceiptDetailEntity" Member="PurchaseReceipts" ThisKey="ReceiptID" OtherKey="ReceiptID" Type="PurchaseReceiptEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="PurchaseReceipts">
+    <Type Name="PurchaseReceiptEntity">
+      <Column Name="ReceiptID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ReceiptCode" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="SupplierID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="TotalAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Association Name="PurchaseReceiptEntity_PurchaseReceiptDetailEntity" Member="PurchaseReceiptDetails" ThisKey="ReceiptID" OtherKey="ReceiptID" Type="PurchaseReceiptDetailEntity" />
+      <Association Name="UserEntity_PurchaseReceiptEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="SupplierEntity_PurchaseReceiptEntity" Member="Suppliers" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="ReturnExchangeDetailBatches">
+    <Type Name="ReturnExchangeDetailBatchEntity">
+      <Column Name="ReturnDetailID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="InventoryBatchEntity_ReturnExchangeDetailBatchEntity" Member="InventoryBatch" ThisKey="BatchID" OtherKey="BatchID" Type="InventoryBatchEntity" IsForeignKey="true" />
+      <Association Name="ReturnExchangeDetailEntity_ReturnExchangeDetailBatchEntity" Member="ReturnExchangeDetails" ThisKey="ReturnDetailID" OtherKey="ReturnDetailID" Type="ReturnExchangeDetailEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="ReturnExchangeDetails">
+    <Type Name="ReturnExchangeDetailEntity">
+      <Column Name="ReturnDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ReturnID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Direction" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="UnitPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Association Name="ReturnExchangeDetailEntity_ReturnExchangeDetailBatchEntity" Member="ReturnExchangeDetailBatches" ThisKey="ReturnDetailID" OtherKey="ReturnDetailID" Type="ReturnExchangeDetailBatchEntity" />
+      <Association Name="ProductEntity_ReturnExchangeDetailEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="ReturnExchangeEntity_ReturnExchangeDetailEntity" Member="ReturnExchanges" ThisKey="ReturnID" OtherKey="ReturnID" Type="ReturnExchangeEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="ReturnExchanges">
+    <Type Name="ReturnExchangeEntity">
+      <Column Name="ReturnID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="InvoiceID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Type" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Reason" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="RejectionReason" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="TotalValue" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="DiscountShare" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="PointsShare" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="RequiresApproval" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="ApprovedBy" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ApprovedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="ReturnExchangeEntity_ReturnExchangeDetailEntity" Member="ReturnExchangeDetails" ThisKey="ReturnID" OtherKey="ReturnID" Type="ReturnExchangeDetailEntity" />
+      <Association Name="UserEntity_ReturnExchangeEntity" Member="Users" ThisKey="ApprovedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_ReturnExchangeEntity1" Member="CreatedByUsers" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="InvoiceEntity_ReturnExchangeEntity" Member="Invoices" ThisKey="InvoiceID" OtherKey="InvoiceID" Type="InvoiceEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="RolePermissions">
+    <Type Name="RolePermissionEntity">
+      <Column Name="RoleID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="PermissionID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="PermissionEntity_RolePermissionEntity" Member="Permissions" ThisKey="PermissionID" OtherKey="PermissionID" Type="PermissionEntity" IsForeignKey="true" />
+      <Association Name="RoleEntity_RolePermissionEntity" Member="Roles" ThisKey="RoleID" OtherKey="RoleID" Type="RoleEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Roles">
+    <Type Name="RoleEntity">
+      <Column Name="RoleID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="RoleCode" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="RoleName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Association Name="RoleEntity_RolePermissionEntity" Member="RolePermissions" ThisKey="RoleID" OtherKey="RoleID" Type="RolePermissionEntity" />
+      <Association Name="RoleEntity_UserEntity" Member="Users" ThisKey="RoleID" OtherKey="RoleID" Type="UserEntity" />
+    </Type>
+  </Table>
+  <Table Name="StockAlerts">
+    <Type Name="StockAlertEntity">
+      <Column Name="AlertID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="AlertType" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="StockAtReport" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Note" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="ReportedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="SeenByInventoryManager" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ResolvedBy" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ResolvedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="ProductEntity_StockAlertEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_StockAlertEntity" Member="Users" ThisKey="ReportedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="UserEntity_StockAlertEntity1" Member="ResolvedByUsers" ThisKey="ResolvedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="StockDisposalDetails">
+    <Type Name="StockDisposalDetailEntity">
+      <Column Name="DisposalDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="DisposalID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UnitCost" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="LineLossAmount" Type="System.Decimal" DbType="Decimal(29,0)" CanBeNull="true" UpdateCheck="Never" Expression="([Quantity]*[UnitCost])" />
+      <Association Name="InventoryBatchEntity_StockDisposalDetailEntity" Member="InventoryBatch" ThisKey="BatchID" OtherKey="BatchID" Type="InventoryBatchEntity" IsForeignKey="true" />
+      <Association Name="StockDisposalEntity_StockDisposalDetailEntity" Member="StockDisposals" ThisKey="DisposalID" OtherKey="DisposalID" Type="StockDisposalEntity" IsForeignKey="true" />
+      <Association Name="ProductEntity_StockDisposalDetailEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="StockDisposals">
+    <Type Name="StockDisposalEntity">
+      <Column Name="DisposalID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="DisposalCode" Type="System.String" DbType="VarChar(9)" CanBeNull="true" UpdateCheck="Never" Expression="('TH_'+right('000000'+CONVERT([varchar](10),[DisposalID]),(6)))" />
+      <Column Name="Reason" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="TotalLossAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="Note" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="StockDisposalEntity_StockDisposalDetailEntity" Member="StockDisposalDetails" ThisKey="DisposalID" OtherKey="DisposalID" Type="StockDisposalDetailEntity" />
+      <Association Name="UserEntity_StockDisposalEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="StockReconciliation">
+    <Type Name="StockReconciliationEntity">
+      <Column Name="ReconciliationID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SystemStock" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ActualStock" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Discrepancy" Type="System.Int32" DbType="Int" CanBeNull="true" UpdateCheck="Never" Expression="([ActualStock]-[SystemStock])" />
+      <Column Name="Note" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="StockReconciliationEntity_StockReconciliationBatchAdjustmentEntity" Member="StockReconciliationBatchAdjustments" ThisKey="ReconciliationID" OtherKey="ReconciliationID" Type="StockReconciliationBatchAdjustmentEntity" />
+      <Association Name="UserEntity_StockReconciliationEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="ProductEntity_StockReconciliationEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="StockReconciliationBatchAdjustments">
+    <Type Name="StockReconciliationBatchAdjustmentEntity">
+      <Column Name="ReconciliationBatchAdjustmentID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ReconciliationID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BatchStockBefore" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BatchStockAfter" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="InventoryBatchEntity_StockReconciliationBatchAdjustmentEntity" Member="InventoryBatch" ThisKey="BatchID" OtherKey="BatchID" Type="InventoryBatchEntity" IsForeignKey="true" />
+      <Association Name="StockReconciliationEntity_StockReconciliationBatchAdjustmentEntity" Member="StockReconciliation" ThisKey="ReconciliationID" OtherKey="ReconciliationID" Type="StockReconciliationEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="StoreConfig" Member="StoreConfigs">
+    <Type Name="StoreConfigEntity">
+      <Column Name="ConfigKey" Type="System.String" DbType="VarChar(50) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ConfigValue" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="SupplierProducts">
+    <Type Name="SupplierProductEntity">
+      <Column Name="SupplierID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="SupplyPrice" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="IsPreferred" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="ProductEntity_SupplierProductEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="SupplierEntity_SupplierProductEntity" Member="Suppliers" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="SupplierReturnDetails">
+    <Type Name="SupplierReturnDetailEntity">
+      <Column Name="SupplierReturnDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="SupplierReturnID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ProductID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BatchID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UnitRefundPrice" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="LineRefundAmount" Type="System.Decimal" DbType="Decimal(29,0)" CanBeNull="true" UpdateCheck="Never" Expression="([Quantity]*[UnitRefundPrice])" />
+      <Association Name="InventoryBatchEntity_SupplierReturnDetailEntity" Member="InventoryBatch" ThisKey="BatchID" OtherKey="BatchID" Type="InventoryBatchEntity" IsForeignKey="true" />
+      <Association Name="ProductEntity_SupplierReturnDetailEntity" Member="Products" ThisKey="ProductID" OtherKey="ProductID" Type="ProductEntity" IsForeignKey="true" />
+      <Association Name="SupplierReturnEntity_SupplierReturnDetailEntity" Member="SupplierReturns" ThisKey="SupplierReturnID" OtherKey="SupplierReturnID" Type="SupplierReturnEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="SupplierReturns">
+    <Type Name="SupplierReturnEntity">
+      <Column Name="SupplierReturnID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="SupplierReturnCode" Type="System.String" DbType="VarChar(11)" CanBeNull="true" UpdateCheck="Never" Expression="('TRNC_'+right('000000'+CONVERT([varchar](10),[SupplierReturnID]),(6)))" />
+      <Column Name="SupplierID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Reason" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="TotalRefundAmount" Type="System.Decimal" DbType="Decimal(18,0) NOT NULL" CanBeNull="false" />
+      <Column Name="Note" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="CreatedBy" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="SupplierReturnEntity_SupplierReturnDetailEntity" Member="SupplierReturnDetails" ThisKey="SupplierReturnID" OtherKey="SupplierReturnID" Type="SupplierReturnDetailEntity" />
+      <Association Name="UserEntity_SupplierReturnEntity" Member="Users" ThisKey="CreatedBy" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+      <Association Name="SupplierEntity_SupplierReturnEntity" Member="Suppliers" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="Suppliers">
+    <Type Name="SupplierEntity">
+      <Column Name="SupplierID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="SupplierName" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="Address" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="Phone" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="SuppliedItems" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="DeletedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="SupplierEntity_InventoryBatchEntity" Member="InventoryBatch" ThisKey="SupplierID" OtherKey="SupplierID" Type="InventoryBatchEntity" />
+      <Association Name="SupplierEntity_PurchaseReceiptEntity" Member="PurchaseReceipts" ThisKey="SupplierID" OtherKey="SupplierID" Type="PurchaseReceiptEntity" />
+      <Association Name="SupplierEntity_SupplierProductEntity" Member="SupplierProducts" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierProductEntity" />
+      <Association Name="SupplierEntity_SupplierReturnEntity" Member="SupplierReturns" ThisKey="SupplierID" OtherKey="SupplierID" Type="SupplierReturnEntity" />
+    </Type>
+  </Table>
+  <Table Name="Users">
+    <Type Name="UserEntity">
+      <Column Name="UserID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Username" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="PasswordHash" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="FullName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="Phone" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="AvatarUrl" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="RoleID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsLocked" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="FailedLoginCount" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="DeletedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_AuditLogEntity" Member="AuditLogs" ThisKey="UserID" OtherKey="UserID" Type="AuditLogEntity" />
+      <Association Name="UserEntity_ChatConversationEntity" Member="ChatConversations" ThisKey="UserID" OtherKey="CustomerUserID" Type="ChatConversationEntity" Cardinality="One" />
+      <Association Name="UserEntity_ChatConversationEntity1" Member="User" ThisKey="UserID" OtherKey="StaffUserIdA" Type="ChatConversationEntity" />
+      <Association Name="UserEntity_ChatConversationEntity2" Member="_ChatConve__Staff__2704CA5F" ThisKey="UserID" OtherKey="StaffUserIdB" Type="ChatConversationEntity" />
+      <Association Name="UserEntity_ChatMessageEntity" Member="ChatMessages" ThisKey="UserID" OtherKey="SenderUserID" Type="ChatMessageEntity" />
+      <Association Name="UserEntity_CustomerEntity" Member="Customers" ThisKey="UserID" OtherKey="CustomerID" Type="CustomerEntity" Cardinality="One" />
+      <Association Name="UserEntity_EmployeeEntity" Member="Employees" ThisKey="UserID" OtherKey="UserID" Type="EmployeeEntity" Cardinality="One" />
+      <Association Name="UserEntity_ExceptionReportEntity" Member="ExceptionReports" ThisKey="UserID" OtherKey="CreatedBy" Type="ExceptionReportEntity" />
+      <Association Name="UserEntity_ExceptionReportEntity1" Member="_Exception__Handl__40F9A68C" ThisKey="UserID" OtherKey="HandledBy" Type="ExceptionReportEntity" />
+      <Association Name="UserEntity_InventoryTransactionEntity" Member="InventoryTransactions" ThisKey="UserID" OtherKey="CreatedBy" Type="InventoryTransactionEntity" />
+      <Association Name="UserEntity_InvoiceEntity" Member="Invoices" ThisKey="UserID" OtherKey="CreatedBy" Type="InvoiceEntity" />
+      <Association Name="UserEntity_PromotionEntity" Member="Promotions" ThisKey="UserID" OtherKey="CreatedBy" Type="PromotionEntity" />
+      <Association Name="UserEntity_PurchaseReceiptEntity" Member="PurchaseReceipts" ThisKey="UserID" OtherKey="CreatedBy" Type="PurchaseReceiptEntity" />
+      <Association Name="UserEntity_ReturnExchangeEntity" Member="ReturnExchanges" ThisKey="UserID" OtherKey="ApprovedBy" Type="ReturnExchangeEntity" />
+      <Association Name="UserEntity_ReturnExchangeEntity1" Member="_ReturnExc__Creat__2645B050" ThisKey="UserID" OtherKey="CreatedBy" Type="ReturnExchangeEntity" />
+      <Association Name="UserEntity_StockAlertEntity" Member="StockAlerts" ThisKey="UserID" OtherKey="ReportedBy" Type="StockAlertEntity" />
+      <Association Name="UserEntity_StockAlertEntity1" Member="_StockAler__Resol__4B7734FF" ThisKey="UserID" OtherKey="ResolvedBy" Type="StockAlertEntity" />
+      <Association Name="UserEntity_StockDisposalEntity" Member="StockDisposals" ThisKey="UserID" OtherKey="CreatedBy" Type="StockDisposalEntity" />
+      <Association Name="UserEntity_StockReconciliationEntity" Member="StockReconciliation" ThisKey="UserID" OtherKey="CreatedBy" Type="StockReconciliationEntity" />
+      <Association Name="UserEntity_SupplierReturnEntity" Member="SupplierReturns" ThisKey="UserID" OtherKey="CreatedBy" Type="SupplierReturnEntity" />
+      <Association Name="UserEntity_UserTwoFactorEntity" Member="UserTwoFactor" ThisKey="UserID" OtherKey="UserID" Type="UserTwoFactorEntity" Cardinality="One" />
+      <Association Name="UserEntity_UserTwoFactorBackupCodeEntity" Member="UserTwoFactorBackupCodes" ThisKey="UserID" OtherKey="UserID" Type="UserTwoFactorBackupCodeEntity" />
+      <Association Name="RoleEntity_UserEntity" Member="Roles" ThisKey="RoleID" OtherKey="RoleID" Type="RoleEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="UserTwoFactor">
+    <Type Name="UserTwoFactorEntity">
+      <Column Name="UserID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Method" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="TotpSecretEnc" Type="System.String" DbType="VarChar(255)" CanBeNull="true" />
+      <Column Name="Enabled" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="EnrolledAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="UpdatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_UserTwoFactorEntity" Member="Users" ThisKey="UserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="UserTwoFactorBackupCodes">
+    <Type Name="UserTwoFactorBackupCodeEntity">
+      <Column Name="BackupCodeID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CodeHash" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="UsedAt" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="UserEntity_UserTwoFactorBackupCodeEntity" Member="Users" ThisKey="UserID" OtherKey="UserID" Type="UserEntity" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

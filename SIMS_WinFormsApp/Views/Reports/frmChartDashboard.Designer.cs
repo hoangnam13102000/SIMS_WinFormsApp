@@ -74,7 +74,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._categoryChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this._salesChartTitle = new System.Windows.Forms.Label();
             this._topProductsGrid = new System.Windows.Forms.DataGridView();
-            this.ProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._topProductNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._root.SuspendLayout();
@@ -445,7 +445,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._topProductsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this._topProductsGrid.ColumnHeadersHeight = 32;
             this._topProductsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ProductName,
+            this._topProductNameColumn,
             this.Quantity,
             this.Amount});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -467,12 +467,12 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._topProductsGrid.Size = new System.Drawing.Size(1126, 164);
             this._topProductsGrid.TabIndex = 4;
             // 
-            // ProductName
+            // _topProductNameColumn
             // 
-            this.ProductName.HeaderText = "Sản phẩm bán chạy";
-            this.ProductName.MinimumWidth = 8;
-            this.ProductName.Name = "ProductName";
-            this.ProductName.ReadOnly = true;
+            this._topProductNameColumn.HeaderText = "Sản phẩm bán chạy";
+            this._topProductNameColumn.MinimumWidth = 8;
+            this._topProductNameColumn.Name = "ProductName";
+            this._topProductNameColumn.ReadOnly = true;
             // 
             // Quantity
             // 
@@ -517,10 +517,7 @@ namespace SIMS_WinFormsApp.Views.Reports
 
         }
 
-        private DataGridViewTextBoxColumn _quantityColumn;
-        private DataGridViewTextBoxColumn _amountColumn;
-        private DataGridViewTextBoxColumn _productNameColumn;
-        private DataGridViewTextBoxColumn ProductName;
+        private DataGridViewTextBoxColumn _topProductNameColumn;
         private DataGridViewTextBoxColumn Quantity;
         private DataGridViewTextBoxColumn Amount;
     }

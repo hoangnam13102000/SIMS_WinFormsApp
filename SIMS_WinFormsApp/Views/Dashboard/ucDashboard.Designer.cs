@@ -42,10 +42,10 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
-            this._headerIconPanel = new System.Windows.Forms.Panel();
-            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._welcomeLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._contentLayout = new System.Windows.Forms.TableLayoutPanel();
             this._statsLayout = new System.Windows.Forms.TableLayoutPanel();
             this._revenueCard = new System.Windows.Forms.Panel();
@@ -97,9 +97,9 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Size = new System.Drawing.Size(1251, 857);
             this._root.TabIndex = 0;
-            //
+            // 
             // _headerPanel
-            //
+            // 
             this._headerPanel.BackColor = System.Drawing.Color.White;
             this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._headerPanel.Controls.Add(this._welcomeLabel);
@@ -110,48 +110,24 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._headerPanel.Name = "_headerPanel";
             this._headerPanel.Size = new System.Drawing.Size(1205, 88);
             this._headerPanel.TabIndex = 0;
-            //
-            // _headerIconPanel
-            //
-            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            this._headerIconPanel.Controls.Add(this._headerIcon);
-            this._headerIconPanel.Location = new System.Drawing.Point(24, 21);
-            this._headerIconPanel.Name = "_headerIconPanel";
-            this._headerIconPanel.Size = new System.Drawing.Size(44, 44);
-            this._headerIconPanel.TabIndex = 0;
-            //
-            // _headerIcon
-            //
-            this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.ChartLine;
-            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._headerIcon.IconSize = 20;
-            this._headerIcon.Location = new System.Drawing.Point(12, 12);
-            this._headerIcon.Name = "_headerIcon";
-            this._headerIcon.Size = new System.Drawing.Size(20, 20);
-            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this._headerIcon.TabIndex = 0;
-            this._headerIcon.TabStop = false;
-            //
+            // 
             // _welcomeLabel
-            //
-            this._welcomeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this._welcomeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._welcomeLabel.AutoEllipsis = true;
             this._welcomeLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._welcomeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._welcomeLabel.Location = new System.Drawing.Point(80, 52);
             this._welcomeLabel.Name = "_welcomeLabel";
-            this._welcomeLabel.Size = new System.Drawing.Size(1098, 20);
+            this._welcomeLabel.Size = new System.Drawing.Size(1098, 34);
             this._welcomeLabel.TabIndex = 2;
             this._welcomeLabel.Text = "Chào mừng bạn quay trở lại";
             this._welcomeLabel.UseMnemonic = false;
-            //
+            // 
             // _titleLabel
-            //
-            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this._titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._titleLabel.AutoEllipsis = true;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
@@ -165,6 +141,30 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._titleLabel.UseMnemonic = false;
             this._titleLabel.Click += new System.EventHandler(this._titleLabel_Click);
             // 
+            // _headerIconPanel
+            // 
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(24, 21);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(44, 44);
+            this._headerIconPanel.TabIndex = 0;
+            // 
+            // _headerIcon
+            // 
+            this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.ChartLine;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 20;
+            this._headerIcon.Location = new System.Drawing.Point(12, 12);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(20, 20);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabIndex = 0;
+            this._headerIcon.TabStop = false;
+            // 
             // _contentLayout
             // 
             this._contentLayout.ColumnCount = 1;
@@ -172,12 +172,12 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._contentLayout.Controls.Add(this._statsLayout, 0, 0);
             this._contentLayout.Controls.Add(this._activityCard, 0, 1);
             this._contentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._contentLayout.Location = new System.Drawing.Point(23, 111);
+            this._contentLayout.Location = new System.Drawing.Point(23, 113);
             this._contentLayout.Name = "_contentLayout";
             this._contentLayout.RowCount = 2;
             this._contentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 128F));
             this._contentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._contentLayout.Size = new System.Drawing.Size(1205, 723);
+            this._contentLayout.Size = new System.Drawing.Size(1205, 721);
             this._contentLayout.TabIndex = 1;
             // 
             // _statsLayout
@@ -227,7 +227,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._revenueValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._revenueValue.Location = new System.Drawing.Point(16, 20);
             this._revenueValue.Name = "_revenueValue";
-            this._revenueValue.Size = new System.Drawing.Size(241, 48);
+            this._revenueValue.Size = new System.Drawing.Size(56, 48);
             this._revenueValue.TabIndex = 1;
             this._revenueValue.Text = "—";
             // 
@@ -250,7 +250,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._ordersCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._ordersCaption.Location = new System.Drawing.Point(18, 66);
             this._ordersCaption.Name = "_ordersCaption";
-            this._ordersCaption.Size = new System.Drawing.Size(127, 25);
+            this._ordersCaption.Size = new System.Drawing.Size(166, 25);
             this._ordersCaption.TabIndex = 0;
             this._ordersCaption.Text = "Đơn hàng hôm nay";
             // 
@@ -261,7 +261,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._ordersValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(185)))), ((int)(((byte)(129)))));
             this._ordersValue.Location = new System.Drawing.Point(16, 20);
             this._ordersValue.Name = "_ordersValue";
-            this._ordersValue.Size = new System.Drawing.Size(62, 48);
+            this._ordersValue.Size = new System.Drawing.Size(56, 48);
             this._ordersValue.TabIndex = 1;
             this._ordersValue.Text = "—";
             // 
@@ -284,7 +284,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._stockCaption.Location = new System.Drawing.Point(18, 66);
             this._stockCaption.Name = "_stockCaption";
-            this._stockCaption.Size = new System.Drawing.Size(124, 25);
+            this._stockCaption.Size = new System.Drawing.Size(120, 25);
             this._stockCaption.TabIndex = 0;
             this._stockCaption.Text = "Tổng tồn kho";
             // 
@@ -295,7 +295,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(158)))), ((int)(((byte)(11)))));
             this._stockValue.Location = new System.Drawing.Point(16, 20);
             this._stockValue.Name = "_stockValue";
-            this._stockValue.Size = new System.Drawing.Size(114, 48);
+            this._stockValue.Size = new System.Drawing.Size(56, 48);
             this._stockValue.TabIndex = 1;
             this._stockValue.Text = "—";
             // 
@@ -329,7 +329,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._customersValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(92)))), ((int)(((byte)(246)))));
             this._customersValue.Location = new System.Drawing.Point(16, 20);
             this._customersValue.Name = "_customersValue";
-            this._customersValue.Size = new System.Drawing.Size(83, 48);
+            this._customersValue.Size = new System.Drawing.Size(56, 48);
             this._customersValue.TabIndex = 1;
             this._customersValue.Text = "—";
             // 
@@ -344,7 +344,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityCard.Margin = new System.Windows.Forms.Padding(0, 14, 0, 0);
             this._activityCard.Name = "_activityCard";
             this._activityCard.Padding = new System.Windows.Forms.Padding(18);
-            this._activityCard.Size = new System.Drawing.Size(1205, 581);
+            this._activityCard.Size = new System.Drawing.Size(1205, 579);
             this._activityCard.TabIndex = 1;
             // 
             // _activityGrid
@@ -369,7 +369,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityGrid.RowHeadersVisible = false;
             this._activityGrid.RowHeadersWidth = 62;
             this._activityGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this._activityGrid.Size = new System.Drawing.Size(1905, 781);
+            this._activityGrid.Size = new System.Drawing.Size(1169, 481);
             this._activityGrid.TabIndex = 0;
             // 
             // Activity

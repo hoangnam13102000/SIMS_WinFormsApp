@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Linq;
+using System.Data.Linq.SqlClient;
 using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
+using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
@@ -24,31 +27,43 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
         public IReadOnlyList<LookupItem> GetActiveSuppliers()
         {
-            const string sql = @"
-                SELECT SupplierID, SupplierName
-                FROM Suppliers
-                WHERE IsDeleted = 0
-                ORDER BY SupplierName";
-            return ReadLookup(sql);
+            using (SimsDataContext db = _connections.CreateDataContext())
+                return db.Suppliers
+                    .Where(supplier => !supplier.IsDeleted)
+                    .OrderBy(supplier => supplier.SupplierName)
+                    .Select(supplier => new LookupItem
+                    {
+                        Id = supplier.SupplierID,
+                        Name = supplier.SupplierName
+                    })
+                    .ToList();
         }
 
         public IReadOnlyList<LookupItem> GetActiveProducts()
         {
-            const string sql = @"
-                SELECT ProductID, ProductCode + N' - ' + ProductName
-                FROM Products
-                WHERE Status = 'ACTIVE'
-                ORDER BY ProductName";
-            return ReadLookup(sql);
+            using (SimsDataContext db = _connections.CreateDataContext())
+                return db.Products
+                    .Where(product => product.Status == "ACTIVE")
+                    .OrderBy(product => product.ProductName)
+                    .Select(product => new LookupItem
+                    {
+                        Id = product.ProductID,
+                        Name = product.ProductCode + " - " + product.ProductName
+                    })
+                    .ToList();
         }
 
         public IReadOnlyList<LookupItem> GetCategories()
         {
-            const string sql = @"
-                SELECT CategoryID, CategoryName
-                FROM Categories
-                ORDER BY CategoryName";
-            return ReadLookup(sql);
+            using (SimsDataContext db = _connections.CreateDataContext())
+                return db.Categories
+                    .OrderBy(category => category.CategoryName)
+                    .Select(category => new LookupItem
+                    {
+                        Id = category.CategoryID,
+                        Name = category.CategoryName
+                    })
+                    .ToList();
         }
 
         public int CreatePurchaseReceipt(PurchaseReceiptDto receipt, out string receiptCode)
@@ -57,120 +72,104 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             if (receipt.Lines == null) throw new ArgumentException("Danh sách dòng nhập không được null.", nameof(receipt));
 
             receiptCode = null;
-            using (var connection = Open())
-            using (var transaction = connection.BeginTransaction())
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                try
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    string codePrefix = "PN-" + DateTime.Today.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + "-";
-                    const string sequenceSql = @"
-                        SELECT ISNULL(MAX(CAST(RIGHT(ReceiptCode, 3) AS INT)), 0)
-                        FROM PurchaseReceipts WITH (UPDLOCK, HOLDLOCK)
-                        WHERE ReceiptCode LIKE @Pattern";
-
-                    int sequence;
-                    using (var command = new SqlCommand(sequenceSql, connection, transaction))
+                    db.Transaction = transaction;
+                    try
                     {
-                        command.Parameters.Add("@Pattern", SqlDbType.VarChar, 30).Value =
-                            codePrefix + "[0-9][0-9][0-9]";
-                        sequence = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) + 1;
-                    }
+                        string codePrefix = "PN-" + DateTime.Today.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + "-";
+                        int sequence = db.PurchaseReceipts
+                            .Where(item => item.ReceiptCode.StartsWith(codePrefix))
+                            .Select(item => item.ReceiptCode)
+                            .ToList()
+                            .Select(code =>
+                            {
+                                string suffix = code.Substring(codePrefix.Length);
+                                int parsed;
+                                return suffix.Length == 3 && int.TryParse(
+                                    suffix, NumberStyles.None, CultureInfo.InvariantCulture, out parsed)
+                                    ? parsed
+                                    : 0;
+                            })
+                            .DefaultIfEmpty(0)
+                            .Max() + 1;
 
-                    if (sequence > 999)
-                        throw new InvalidOperationException("Mã phiếu nhập trong ngày đã vượt quá 999.");
+                        if (sequence > 999)
+                            throw new InvalidOperationException("Mã phiếu nhập trong ngày đã vượt quá 999.");
 
-                    receiptCode = codePrefix + sequence.ToString("D3", CultureInfo.InvariantCulture);
-
-                    const string insertReceiptSql = @"
-                        INSERT INTO PurchaseReceipts (ReceiptCode, SupplierID, CreatedBy, TotalAmount)
-                        VALUES (@ReceiptCode, @SupplierID, @CreatedBy, 0);
-                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                    int receiptId;
-                    using (var command = new SqlCommand(insertReceiptSql, connection, transaction))
-                    {
-                        command.Parameters.Add("@ReceiptCode", SqlDbType.VarChar, 30).Value = receiptCode;
-                        command.Parameters.Add("@SupplierID", SqlDbType.Int).Value = receipt.SupplierId;
-                        command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = receipt.CreatedBy;
-                        receiptId = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-                    }
-
-                    const string insertDetailSql = @"
-                        INSERT INTO PurchaseReceiptDetails
-                            (ReceiptID, ProductID, Quantity, ImportPrice, LotNumber, ManufactureDate, ExpiryDate)
-                        VALUES
-                            (@ReceiptID, @ProductID, @Quantity, @ImportPrice, @LotNumber, @ManufactureDate, @ExpiryDate)";
-
-                    foreach (PurchaseLineDto line in receipt.Lines)
-                    {
-                        if (line == null)
-                            throw new ArgumentException("Dòng nhập không được null.", nameof(receipt));
-
-                        using (var command = new SqlCommand(insertDetailSql, connection, transaction))
-                        {
-                            command.Parameters.Add("@ReceiptID", SqlDbType.Int).Value = receiptId;
-                            command.Parameters.Add("@ProductID", SqlDbType.Int).Value = line.ProductId;
-                            command.Parameters.Add("@Quantity", SqlDbType.Int).Value = line.Quantity;
-                            SqlParameter importPrice = command.Parameters.Add("@ImportPrice", SqlDbType.Decimal);
-                            importPrice.Precision = 18;
-                            importPrice.Scale = 0;
-                            importPrice.Value = line.ImportPrice;
-                            command.Parameters.Add("@LotNumber", SqlDbType.NVarChar, 50).Value =
-                                (object)line.LotNumber ?? DBNull.Value;
-                            command.Parameters.Add("@ManufactureDate", SqlDbType.Date).Value =
-                                (object)line.ManufactureDate ?? DBNull.Value;
-                            command.Parameters.Add("@ExpiryDate", SqlDbType.Date).Value =
-                                (object)line.ExpiryDate ?? DBNull.Value;
-                            command.ExecuteNonQuery();
-                        }
-                    }
-
-                    const string updateTotalSql = @"
-                        UPDATE PurchaseReceipts
-                        SET TotalAmount = (
-                            SELECT ISNULL(SUM(Quantity * ImportPrice), 0)
-                            FROM PurchaseReceiptDetails
-                            WHERE ReceiptID = @ReceiptID)
-                        WHERE ReceiptID = @ReceiptID";
-
-                    using (var command = new SqlCommand(updateTotalSql, connection, transaction))
-                    {
-                        command.Parameters.Add("@ReceiptID", SqlDbType.Int).Value = receiptId;
-                        command.ExecuteNonQuery();
-                    }
-
-                    WriteAuditLog(
-                        connection,
-                        transaction,
-                        receipt.CreatedBy,
-                        "DATA_CREATE",
-                        "PurchaseReceipts",
-                        receiptId,
-                        null,
-                        JsonConvert.SerializeObject(new
+                        receiptCode = codePrefix + sequence.ToString("D3", CultureInfo.InvariantCulture);
+                        var receiptEntity = new PurchaseReceiptEntity
                         {
                             ReceiptCode = receiptCode,
-                            receipt.SupplierId,
-                            TotalAmount = receipt.Lines.Sum(line => line.Quantity * line.ImportPrice),
-                            Lines = receipt.Lines.Select(line => new
-                            {
-                                line.ProductId,
-                                line.Quantity,
-                                line.ImportPrice,
-                                line.LotNumber,
-                                line.ManufactureDate,
-                                line.ExpiryDate
-                            }).ToList()
-                        }),
-                        "Đã tạo phiếu nhập " + receiptCode + ".");
+                            SupplierID = receipt.SupplierId,
+                            CreatedBy = receipt.CreatedBy,
+                            CreatedAt = DateTime.Now,
+                            TotalAmount = 0m,
+                            Status = "COMPLETED"
+                        };
+                        db.PurchaseReceipts.InsertOnSubmit(receiptEntity);
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
 
-                    transaction.Commit();
-                    return receiptId;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
+                        decimal totalAmount = 0m;
+                        foreach (PurchaseLineDto line in receipt.Lines)
+                        {
+                            if (line == null)
+                                throw new ArgumentException("Dòng nhập không được null.", nameof(receipt));
+
+                            totalAmount += line.Quantity * line.ImportPrice;
+                            db.PurchaseReceiptDetails.InsertOnSubmit(new PurchaseReceiptDetailEntity
+                            {
+                                ReceiptID = receiptEntity.ReceiptID,
+                                ProductID = line.ProductId,
+                                Quantity = line.Quantity,
+                                ImportPrice = line.ImportPrice,
+                                LotNumber = line.LotNumber,
+                                ManufactureDate = line.ManufactureDate,
+                                ExpiryDate = line.ExpiryDate
+                            });
+                        }
+                        receiptEntity.TotalAmount = totalAmount;
+                        db.AuditLogs.InsertOnSubmit(new AuditLogEntity
+                        {
+                            UserID = receipt.CreatedBy,
+                            Action = "DATA_CREATE",
+                            TableName = "PurchaseReceipts",
+                            RecordID = receiptEntity.ReceiptID,
+                            NewValue = JsonConvert.SerializeObject(new
+                            {
+                                ReceiptCode = receiptCode,
+                                receipt.SupplierId,
+                                TotalAmount = totalAmount,
+                                Lines = receipt.Lines.Select(line => new
+                                {
+                                    line.ProductId,
+                                    line.Quantity,
+                                    line.ImportPrice,
+                                    line.LotNumber,
+                                    line.ManufactureDate,
+                                    line.ExpiryDate
+                                }).ToList()
+                            }),
+                            Detail = "Đã tạo phiếu nhập " + receiptCode + ".",
+                            CreatedAt = DateTime.Now
+                        });
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
+
+                        transaction.Commit();
+                        return receiptEntity.ReceiptID;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        db.Transaction = null;
+                    }
                 }
             }
         }
@@ -178,416 +177,376 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
         public IReadOnlyList<PurchaseReceiptListItemDto> SearchPurchaseReceipts(
             string keyword, DateTime? fromDate, DateTime? toDate)
         {
-            const string sql = @"
-                SELECT r.ReceiptID, r.ReceiptCode, s.SupplierName, u.FullName AS CreatedByName,
-                       r.CreatedAt, r.TotalAmount, r.Status,
-                       (SELECT COUNT(*)
-                        FROM PurchaseReceiptDetails d
-                        WHERE d.ReceiptID = r.ReceiptID) AS ItemCount
-                FROM PurchaseReceipts r
-                INNER JOIN Suppliers s ON s.SupplierID = r.SupplierID
-                INNER JOIN Users u ON u.UserID = r.CreatedBy
-                WHERE (@HasKeyword = 0
-                       OR r.ReceiptCode LIKE @Pattern
-                       OR s.SupplierName LIKE @Pattern
-                       OR u.FullName LIKE @Pattern
-                       OR EXISTS (
-                           SELECT 1
-                           FROM PurchaseReceiptDetails d
-                           INNER JOIN Products p ON p.ProductID = d.ProductID
-                           LEFT JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
-                           WHERE d.ReceiptID = r.ReceiptID
-                             AND (p.ProductCode LIKE @Pattern
-                                  OR p.ProductName LIKE @Pattern
-                                  OR d.LotNumber LIKE @Pattern
-                                  OR b.BatchCode LIKE @Pattern)))
-                  AND (@FromDate IS NULL OR r.CreatedAt >= @FromDate)
-                  AND (@ToExclusive IS NULL OR r.CreatedAt < @ToExclusive)
-                ORDER BY r.CreatedAt DESC, r.ReceiptID DESC";
-
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
             string pattern = "%" + normalizedKeyword + "%";
-            DateTime? from = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
+            DateTime? fromDateTime = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
             DateTime? toExclusive = toDate.HasValue
                 ? toDate.Value.Date.AddDays(1)
                 : (DateTime?)null;
-            var rows = new List<PurchaseReceiptListItemDto>();
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@HasKeyword", SqlDbType.Bit).Value = normalizedKeyword.Length > 0;
-                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 4000).Value = pattern;
-                command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = (object)from ?? DBNull.Value;
-                command.Parameters.Add("@ToExclusive", SqlDbType.DateTime).Value =
-                    (object)toExclusive ?? DBNull.Value;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        rows.Add(new PurchaseReceiptListItemDto
+                return (from receipt in db.PurchaseReceipts
+                        join supplier in db.Suppliers on receipt.SupplierID equals supplier.SupplierID
+                        join user in db.Users on receipt.CreatedBy equals user.UserID
+                        where (!fromDateTime.HasValue || receipt.CreatedAt >= fromDateTime.Value)
+                            && (!toExclusive.HasValue || receipt.CreatedAt < toExclusive.Value)
+                            && (normalizedKeyword.Length == 0
+                                || SqlMethods.Like(receipt.ReceiptCode, pattern)
+                                || SqlMethods.Like(supplier.SupplierName, pattern)
+                                || SqlMethods.Like(user.FullName, pattern)
+                                || db.PurchaseReceiptDetails.Any(detail =>
+                                    detail.ReceiptID == receipt.ReceiptID
+                                    && db.Products.Any(product =>
+                                        product.ProductID == detail.ProductID
+                                        && (SqlMethods.Like(product.ProductCode, pattern)
+                                            || SqlMethods.Like(product.ProductName, pattern)
+                                            || SqlMethods.Like(detail.LotNumber, pattern)
+                                            || db.InventoryBatches.Any(batch =>
+                                                batch.ReceiptDetailID == detail.ReceiptDetailID
+                                                && SqlMethods.Like(batch.BatchCode, pattern))))))
+                        orderby receipt.CreatedAt descending, receipt.ReceiptID descending
+                        select new PurchaseReceiptListItemDto
                         {
-                            ReceiptId = reader.GetInt32(0),
-                            ReceiptCode = ReadString(reader, 1),
-                            SupplierName = ReadString(reader, 2),
-                            CreatedByName = ReadString(reader, 3),
-                            CreatedAt = reader.GetDateTime(4),
-                            TotalAmount = Convert.ToDecimal(reader.GetValue(5), CultureInfo.InvariantCulture),
-                            Status = ReadString(reader, 6),
-                            ItemCount = ReadInt(reader, 7)
-                        });
-                    }
-                }
+                            ReceiptId = receipt.ReceiptID,
+                            ReceiptCode = receipt.ReceiptCode,
+                            SupplierName = supplier.SupplierName,
+                            CreatedByName = user.FullName,
+                            CreatedAt = receipt.CreatedAt,
+                            TotalAmount = receipt.TotalAmount,
+                            Status = receipt.Status,
+                            ItemCount = db.PurchaseReceiptDetails.Count(
+                                detail => detail.ReceiptID == receipt.ReceiptID)
+                        }).ToList();
             }
-            return rows;
         }
 
         public IReadOnlyList<PurchaseReceiptDetailLineDto> GetPurchaseReceiptDetails(int receiptId)
         {
-            const string sql = @"
-                SELECT p.ProductCode, p.ProductName, b.BatchCode, d.LotNumber,
-                       d.ManufactureDate, d.ExpiryDate, d.Quantity, d.ImportPrice
-                FROM PurchaseReceiptDetails d
-                INNER JOIN Products p ON p.ProductID = d.ProductID
-                LEFT JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
-                WHERE d.ReceiptID = @id
-                ORDER BY d.ReceiptDetailID";
-            var rows = new List<PurchaseReceiptDetailLineDto>();
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@id", SqlDbType.Int).Value = receiptId;
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        rows.Add(new PurchaseReceiptDetailLineDto
+                return (from detail in db.PurchaseReceiptDetails
+                        join product in db.Products on detail.ProductID equals product.ProductID
+                        from batch in db.InventoryBatches
+                            .Where(item => item.ReceiptDetailID == detail.ReceiptDetailID)
+                            .DefaultIfEmpty()
+                        where detail.ReceiptID == receiptId
+                        orderby detail.ReceiptDetailID
+                        select new PurchaseReceiptDetailLineDto
                         {
-                            ProductCode = ReadString(reader, 0),
-                            ProductName = ReadString(reader, 1),
-                            BatchCode = ReadString(reader, 2),
-                            LotNumber = ReadString(reader, 3),
-                            ManufactureDate = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
-                            ExpiryDate = reader.IsDBNull(5) ? (DateTime?)null : reader.GetDateTime(5),
-                            Quantity = ReadInt(reader, 6),
-                            ImportPrice = Convert.ToDecimal(reader.GetValue(7), CultureInfo.InvariantCulture)
-                        });
-                    }
-                }
+                            ProductCode = product.ProductCode,
+                            ProductName = product.ProductName,
+                            BatchCode = batch == null ? null : batch.BatchCode,
+                            LotNumber = detail.LotNumber,
+                            ManufactureDate = detail.ManufactureDate,
+                            ExpiryDate = detail.ExpiryDate,
+                            Quantity = detail.Quantity,
+                            ImportPrice = detail.ImportPrice
+                        }).ToList();
             }
-            return rows;
         }
 
         public IReadOnlyList<string> GetPurchaseReceiptSuggestions()
         {
-            const string sql = @"
-                SELECT DISTINCT suggestions.Suggestion
-                FROM (
-                    SELECT CONVERT(NVARCHAR(200), r.ReceiptCode) AS Suggestion
-                    FROM PurchaseReceipts r
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), s.SupplierName)
-                    FROM PurchaseReceipts r
-                    INNER JOIN Suppliers s ON s.SupplierID = r.SupplierID
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), u.FullName)
-                    FROM PurchaseReceipts r
-                    INNER JOIN Users u ON u.UserID = r.CreatedBy
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), p.ProductCode)
-                    FROM PurchaseReceiptDetails d
-                    INNER JOIN Products p ON p.ProductID = d.ProductID
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), p.ProductName)
-                    FROM PurchaseReceiptDetails d
-                    INNER JOIN Products p ON p.ProductID = d.ProductID
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), d.LotNumber)
-                    FROM PurchaseReceiptDetails d
-                    UNION ALL
-                    SELECT CONVERT(NVARCHAR(200), b.BatchCode)
-                    FROM PurchaseReceiptDetails d
-                    INNER JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
-                ) suggestions
-                WHERE suggestions.Suggestion IS NOT NULL
-                  AND LTRIM(RTRIM(suggestions.Suggestion)) <> N''
-                ORDER BY suggestions.Suggestion";
-            var suggestions = new List<string>();
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            using (var reader = command.ExecuteReader())
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                while (reader.Read())
-                    suggestions.Add(reader.GetString(0));
+                var suggestions = db.PurchaseReceipts
+                    .Select(receipt => receipt.ReceiptCode)
+                    .ToList();
+                suggestions.AddRange((from receipt in db.PurchaseReceipts
+                                      join supplier in db.Suppliers
+                                          on receipt.SupplierID equals supplier.SupplierID
+                                      select supplier.SupplierName).ToList());
+                suggestions.AddRange((from receipt in db.PurchaseReceipts
+                                      join user in db.Users on receipt.CreatedBy equals user.UserID
+                                      select user.FullName).ToList());
+                suggestions.AddRange((from detail in db.PurchaseReceiptDetails
+                                      join product in db.Products
+                                          on detail.ProductID equals product.ProductID
+                                      select product.ProductCode).ToList());
+                suggestions.AddRange((from detail in db.PurchaseReceiptDetails
+                                      join product in db.Products
+                                          on detail.ProductID equals product.ProductID
+                                      select product.ProductName).ToList());
+                suggestions.AddRange(db.PurchaseReceiptDetails
+                    .Select(detail => detail.LotNumber)
+                    .ToList());
+                suggestions.AddRange((from batch in db.InventoryBatches
+                                      where batch.ReceiptDetailID.HasValue
+                                          && db.PurchaseReceiptDetails.Any(detail =>
+                                              detail.ReceiptDetailID == batch.ReceiptDetailID.Value)
+                                      select batch.BatchCode).ToList());
+
+                return suggestions
+                    .Where(suggestion => !string.IsNullOrWhiteSpace(suggestion))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(suggestion => suggestion, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
             }
-            return suggestions;
         }
 
         public IReadOnlyList<StockRowDto> GetStock(string keyword, int? categoryId)
         {
-            const string sql = @"
-                SELECT p.ProductID, p.ProductCode, p.ProductName, c.CategoryName, p.Stock, p.MinStock
-                FROM Products p
-                INNER JOIN Categories c ON c.CategoryID = p.CategoryID
-                WHERE p.Status = 'ACTIVE'
-                  AND (@Keyword = N'' OR p.ProductName LIKE @Pattern OR p.ProductCode LIKE @Pattern)
-                  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
-                ORDER BY CASE WHEN p.Stock <= p.MinStock THEN 0 ELSE 1 END, p.ProductName";
-
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
-            var rows = new List<StockRowDto>();
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            string pattern = "%" + normalizedKeyword + "%";
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@Keyword", SqlDbType.NVarChar, 150).Value = normalizedKeyword;
-                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 152).Value = "%" + normalizedKeyword + "%";
-                command.Parameters.Add("@CategoryID", SqlDbType.Int).Value = (object)categoryId ?? DBNull.Value;
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        rows.Add(new StockRowDto
+                return (from product in db.Products
+                        join category in db.Categories
+                            on product.CategoryID equals category.CategoryID
+                        where product.Status == "ACTIVE"
+                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
+                            && (normalizedKeyword.Length == 0
+                                || SqlMethods.Like(product.ProductName, pattern)
+                                || SqlMethods.Like(product.ProductCode, pattern))
+                        orderby (product.Stock <= product.MinStock ? 0 : 1), product.ProductName
+                        select new StockRowDto
                         {
-                            ProductId = reader.GetInt32(0),
-                            Code = ReadString(reader, 1),
-                            Name = ReadString(reader, 2),
-                            CategoryName = ReadString(reader, 3),
-                            Stock = ReadInt(reader, 4),
-                            MinStock = ReadInt(reader, 5)
-                        });
-                    }
-                }
+                            ProductId = product.ProductID,
+                            Code = product.ProductCode,
+                            Name = product.ProductName,
+                            CategoryName = category.CategoryName,
+                            Stock = product.Stock,
+                            MinStock = product.MinStock
+                        }).ToList();
             }
-            return rows;
         }
 
         public IReadOnlyList<StockAlertListItemDto> SearchStockAlerts(
             string keyword, int? categoryId, DateTime? from, DateTime? to)
         {
-            const string sql = @"
-                SELECT sa.AlertID, sa.ProductID, p.ProductCode, p.ProductName, p.CategoryID,
-                       sa.AlertType, sa.StockAtReport, ISNULL(ru.FullName, N'Hệ thống'),
-                       sa.CreatedAt, sa.Status, rv.FullName, sa.ResolvedAt, sa.Note
-                FROM StockAlerts sa
-                INNER JOIN Products p ON sa.ProductID = p.ProductID
-                LEFT JOIN Users ru ON sa.ReportedBy = ru.UserID
-                LEFT JOIN Users rv ON sa.ResolvedBy = rv.UserID
-                WHERE (@HasKeyword = 0
-                       OR p.ProductName LIKE @Pattern
-                       OR p.ProductCode LIKE @Pattern)
-                  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
-                  AND (@FromDate IS NULL OR sa.CreatedAt >= @FromDate)
-                  AND (@ToExclusive IS NULL OR sa.CreatedAt < @ToExclusive)
-                ORDER BY sa.CreatedAt DESC, sa.AlertID DESC";
-
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
+            string pattern = "%" + normalizedKeyword + "%";
             DateTime? fromDate = from.HasValue ? from.Value.Date : (DateTime?)null;
             DateTime? toExclusive = to.HasValue ? to.Value.Date.AddDays(1) : (DateTime?)null;
-            var alerts = new List<StockAlertListItemDto>();
-
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@HasKeyword", SqlDbType.Bit).Value = normalizedKeyword.Length > 0;
-                command.Parameters.Add("@Pattern", SqlDbType.NVarChar, 4000).Value =
-                    "%" + normalizedKeyword + "%";
-                command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                    (object)categoryId ?? DBNull.Value;
-                command.Parameters.Add("@FromDate", SqlDbType.DateTime).Value =
-                    (object)fromDate ?? DBNull.Value;
-                command.Parameters.Add("@ToExclusive", SqlDbType.DateTime).Value =
-                    (object)toExclusive ?? DBNull.Value;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        alerts.Add(new StockAlertListItemDto
+                return (from alert in db.StockAlerts
+                        join product in db.Products on alert.ProductID equals product.ProductID
+                        join reporter in db.Users on alert.ReportedBy equals reporter.UserID into reporters
+                        from reportedBy in reporters.DefaultIfEmpty()
+                        join resolver in db.Users on alert.ResolvedBy equals resolver.UserID into resolvers
+                        from resolvedBy in resolvers.DefaultIfEmpty()
+                        where (normalizedKeyword.Length == 0
+                                || SqlMethods.Like(product.ProductName, pattern)
+                                || SqlMethods.Like(product.ProductCode, pattern))
+                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
+                            && (!fromDate.HasValue || alert.CreatedAt >= fromDate.Value)
+                            && (!toExclusive.HasValue || alert.CreatedAt < toExclusive.Value)
+                        orderby alert.CreatedAt descending, alert.AlertID descending
+                        select new StockAlertListItemDto
                         {
-                            AlertId = reader.GetInt32(0),
-                            ProductId = reader.GetInt32(1),
-                            ProductCode = ReadString(reader, 2),
-                            ProductName = ReadString(reader, 3),
-                            CategoryId = reader.GetInt32(4),
-                            AlertType = ReadString(reader, 5),
-                            StockAtReport = ReadInt(reader, 6),
-                            ReportedByName = ReadString(reader, 7),
-                            CreatedAt = reader.GetDateTime(8),
-                            Status = ReadString(reader, 9),
-                            ResolvedByName = ReadString(reader, 10),
-                            ResolvedAt = reader.IsDBNull(11) ? (DateTime?)null : reader.GetDateTime(11),
-                            Note = ReadString(reader, 12)
-                        });
-                    }
-                }
+                            AlertId = alert.AlertID,
+                            ProductId = alert.ProductID,
+                            ProductCode = product.ProductCode,
+                            ProductName = product.ProductName,
+                            CategoryId = product.CategoryID,
+                            AlertType = alert.AlertType,
+                            StockAtReport = alert.StockAtReport,
+                            ReportedByName = reportedBy == null ? "Hệ thống" : reportedBy.FullName,
+                            CreatedAt = alert.CreatedAt,
+                            Status = alert.Status,
+                            ResolvedByName = resolvedBy == null ? null : resolvedBy.FullName,
+                            ResolvedAt = alert.ResolvedAt,
+                            Note = alert.Note
+                        }).ToList();
             }
-            return alerts;
         }
 
         public int ReportOutOfStock(int productId, int stockAtReport, int reportedBy)
         {
-            const string sql = @"
-                INSERT INTO StockAlerts
-                    (ProductID, AlertType, StockAtReport, Note, ReportedBy)
-                VALUES
-                    (@ProductID, 'OUT_OF_STOCK', @StockAtReport, N'Báo hết hàng từ POS', @ReportedBy);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-            using (var connection = Open())
-            using (var transaction = connection.BeginTransaction())
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                try
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction())
                 {
-                    int alertId;
-                    using (var command = new SqlCommand(sql, connection, transaction))
+                    db.Transaction = transaction;
+                    try
                     {
-                        command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                        command.Parameters.Add("@StockAtReport", SqlDbType.Int).Value = stockAtReport;
-                        command.Parameters.Add("@ReportedBy", SqlDbType.Int).Value = reportedBy;
-                        alertId = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-                    }
-
-                    WriteAuditLog(
-                        connection,
-                        transaction,
-                        reportedBy,
-                        "DATA_CREATE",
-                        "StockAlerts",
-                        alertId,
-                        null,
-                        JsonConvert.SerializeObject(new
+                        var alert = new StockAlertEntity
                         {
                             ProductID = productId,
                             AlertType = "OUT_OF_STOCK",
                             StockAtReport = stockAtReport,
+                            Note = "Báo hết hàng từ POS",
                             ReportedBy = reportedBy,
-                            Status = "NEW"
-                        }),
-                        "Nhân viên báo hết hàng từ POS.");
-                    transaction.Commit();
-                    return alertId;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
+                            CreatedAt = DateTime.Now,
+                            Status = "NEW",
+                            SeenByInventoryManager = false
+                        };
+                        db.StockAlerts.InsertOnSubmit(alert);
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
+
+                        WriteAuditLog(
+                            db,
+                            reportedBy,
+                            "DATA_CREATE",
+                            "StockAlerts",
+                            alert.AlertID,
+                            null,
+                            JsonConvert.SerializeObject(new
+                            {
+                                ProductID = productId,
+                                AlertType = "OUT_OF_STOCK",
+                                StockAtReport = stockAtReport,
+                                ReportedBy = reportedBy,
+                                Status = "NEW"
+                            }),
+                            "Nhân viên báo hết hàng từ POS.");
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
+
+                        transaction.Commit();
+                        return alert.AlertID;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        db.Transaction = null;
+                    }
                 }
             }
         }
 
         public int MarkAlertPlanned(int alertId)
         {
-            const string sql = @"
-                UPDATE StockAlerts
-                SET Status = 'PLANNED'
-                OUTPUT DELETED.Status, INSERTED.Status
-                WHERE AlertID = @id AND Status = 'NEW'";
-            using (var connection = Open())
-            using (var transaction = connection.BeginTransaction())
-            using (var command = new SqlCommand(sql, connection, transaction))
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
-                using (SqlDataReader reader = command.ExecuteReader())
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    if (!reader.Read())
+                    db.Transaction = transaction;
+                    try
                     {
+                        StockAlertEntity alert = db.StockAlerts.SingleOrDefault(item =>
+                            item.AlertID == alertId && item.Status == "NEW");
+                        if (alert == null)
+                        {
+                            transaction.Commit();
+                            return 0;
+                        }
+
+                        string oldStatus = alert.Status;
+                        alert.Status = "PLANNED";
+                        WriteAuditLog(
+                            db,
+                            UserSession.Instance.CurrentUser?.UserId,
+                            "DATA_UPDATE",
+                            "StockAlerts",
+                            alertId,
+                            JsonConvert.SerializeObject(new { Status = oldStatus }),
+                            JsonConvert.SerializeObject(new { Status = alert.Status }),
+                            "Đã chuyển cảnh báo tồn kho sang trạng thái dự kiến.");
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
                         transaction.Commit();
-                        return 0;
+                        return 1;
                     }
-                    string oldStatus = reader.GetString(0);
-                    string newStatus = reader.GetString(1);
-                    reader.Close();
-                    WriteAuditLog(
-                        connection, transaction, UserSession.Instance.CurrentUser?.UserId,
-                        "DATA_UPDATE", "StockAlerts", alertId,
-                        JsonConvert.SerializeObject(new { Status = oldStatus }),
-                        JsonConvert.SerializeObject(new { Status = newStatus }),
-                        "Đã chuyển cảnh báo tồn kho sang trạng thái dự kiến.");
-                    transaction.Commit();
-                    return 1;
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        db.Transaction = null;
+                    }
                 }
             }
         }
 
         public int ResolveAlert(int alertId, int userId)
         {
-            const string sql = @"
-                UPDATE StockAlerts
-                SET Status = 'RESOLVED', ResolvedBy = @userId, ResolvedAt = GETDATE()
-                OUTPUT DELETED.Status, INSERTED.Status
-                WHERE AlertID = @id AND Status <> 'RESOLVED'";
-            using (var connection = Open())
-            using (var transaction = connection.BeginTransaction())
-            using (var command = new SqlCommand(sql, connection, transaction))
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                command.Parameters.Add("@id", SqlDbType.Int).Value = alertId;
-                command.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
-                using (SqlDataReader reader = command.ExecuteReader())
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    if (!reader.Read())
+                    db.Transaction = transaction;
+                    try
                     {
+                        StockAlertEntity alert = db.StockAlerts.SingleOrDefault(item =>
+                            item.AlertID == alertId && item.Status != "RESOLVED");
+                        if (alert == null)
+                        {
+                            transaction.Commit();
+                            return 0;
+                        }
+
+                        string oldStatus = alert.Status;
+                        alert.Status = "RESOLVED";
+                        alert.ResolvedBy = userId;
+                        alert.ResolvedAt = DateTime.Now;
+                        WriteAuditLog(
+                            db,
+                            userId,
+                            "DATA_UPDATE",
+                            "StockAlerts",
+                            alertId,
+                            JsonConvert.SerializeObject(new { Status = oldStatus }),
+                            JsonConvert.SerializeObject(new { Status = alert.Status }),
+                            "Đã xử lý cảnh báo tồn kho.");
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
                         transaction.Commit();
-                        return 0;
+                        return 1;
                     }
-                    string oldStatus = reader.GetString(0);
-                    string newStatus = reader.GetString(1);
-                    reader.Close();
-                    WriteAuditLog(
-                        connection, transaction, userId,
-                        "DATA_UPDATE", "StockAlerts", alertId,
-                        JsonConvert.SerializeObject(new { Status = oldStatus }),
-                        JsonConvert.SerializeObject(new { Status = newStatus }),
-                        "Đã xử lý cảnh báo tồn kho.");
-                    transaction.Commit();
-                    return 1;
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        db.Transaction = null;
+                    }
                 }
             }
         }
 
         public int MarkAllAlertsSeen()
         {
-            const string sql = @"
-                UPDATE StockAlerts
-                SET SeenByInventoryManager = 1
-                WHERE SeenByInventoryManager = 0";
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-                return command.ExecuteNonQuery();
+            using (SimsDataContext db = _connections.CreateDataContext())
+            {
+                List<StockAlertEntity> alerts = db.StockAlerts
+                    .Where(alert => !alert.SeenByInventoryManager)
+                    .ToList();
+                foreach (StockAlertEntity alert in alerts)
+                    alert.SeenByInventoryManager = true;
+                if (alerts.Count > 0)
+                    db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
+                return alerts.Count;
+            }
         }
 
         public void SaveStockCounts(IEnumerable<StockCountDto> counts, int createdBy)
         {
             if (counts == null) throw new ArgumentNullException(nameof(counts));
 
-            const string sql = @"
-                INSERT INTO StockReconciliation (ProductID, SystemStock, ActualStock, Note, CreatedBy)
-                VALUES (@ProductID, @SystemStock, @ActualStock, @Note, @CreatedBy)";
-
-            using (var connection = Open())
-            using (var transaction = connection.BeginTransaction())
+            using (SimsDataContext db = _connections.CreateDataContext())
             {
-                try
+                db.Connection.Open();
+                using (var transaction = db.Connection.BeginTransaction())
                 {
-                    foreach (StockCountDto count in counts)
+                    db.Transaction = transaction;
+                    try
                     {
-                        if (count == null)
-                            throw new ArgumentException("Dòng kiểm kê không được null.", nameof(counts));
-
-                        using (var command = new SqlCommand(sql, connection, transaction))
+                        foreach (StockCountDto count in counts)
                         {
-                            command.Parameters.Add("@ProductID", SqlDbType.Int).Value = count.ProductId;
-                            command.Parameters.Add("@SystemStock", SqlDbType.Int).Value = count.SystemStock;
-                            command.Parameters.Add("@ActualStock", SqlDbType.Int).Value = count.ActualStock;
-                            command.Parameters.Add("@Note", SqlDbType.NVarChar, 255).Value =
-                                (object)count.Note ?? DBNull.Value;
-                            command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = createdBy;
-                            command.ExecuteNonQuery();
+                            if (count == null)
+                                throw new ArgumentException("Dòng kiểm kê không được null.", nameof(counts));
+
+                            db.StockReconciliation.InsertOnSubmit(new StockReconciliationEntity
+                            {
+                                ProductID = count.ProductId,
+                                SystemStock = count.SystemStock,
+                                ActualStock = count.ActualStock,
+                                Note = count.Note,
+                                CreatedBy = createdBy,
+                                CreatedAt = DateTime.Now
+                            });
                             WriteAuditLog(
-                                connection,
-                                transaction,
+                                db,
                                 createdBy,
                                 "DATA_CREATE",
                                 "StockReconciliation",
@@ -602,28 +561,25 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                                 }),
                                 "Đã tạo bản ghi kiểm kê tồn kho.");
                         }
-                    }
 
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
+                        db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        db.Transaction = null;
+                    }
                 }
             }
         }
 
-        private SqlConnection Open()
-        {
-            var connection = _connections.CreateConnection();
-            connection.Open();
-            return connection;
-        }
-
         private static void WriteAuditLog(
-            SqlConnection connection,
-            SqlTransaction transaction,
+            SimsDataContext db,
             int? userId,
             string action,
             string tableName,
@@ -632,47 +588,17 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             string newValue,
             string detail)
         {
-            const string sql = @"
-                INSERT INTO AuditLogs (UserID, Action, TableName, RecordID, OldValue, NewValue, Detail, CreatedAt)
-                VALUES (@UserID, @Action, @TableName, @RecordID, @OldValue, @NewValue, @Detail, GETDATE())";
-            using (var command = new SqlCommand(sql, connection, transaction))
+            db.AuditLogs.InsertOnSubmit(new AuditLogEntity
             {
-                command.Parameters.Add("@UserID", SqlDbType.Int).Value = (object)userId ?? DBNull.Value;
-                command.Parameters.Add("@Action", SqlDbType.VarChar, 50).Value = action;
-                command.Parameters.Add("@TableName", SqlDbType.VarChar, 50).Value = tableName;
-                command.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object)recordId ?? DBNull.Value;
-                command.Parameters.Add("@OldValue", SqlDbType.NVarChar, -1).Value = (object)oldValue ?? DBNull.Value;
-                command.Parameters.Add("@NewValue", SqlDbType.NVarChar, -1).Value = (object)newValue ?? DBNull.Value;
-                command.Parameters.Add("@Detail", SqlDbType.NVarChar, -1).Value = (object)detail ?? DBNull.Value;
-                command.ExecuteNonQuery();
-            }
-        }
-
-        private IReadOnlyList<LookupItem> ReadLookup(string sql)
-        {
-            var items = new List<LookupItem>();
-            using (var connection = Open())
-            using (var command = new SqlCommand(sql, connection))
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                    items.Add(new LookupItem
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = ReadString(reader, 1)
-                    });
-            }
-            return items;
-        }
-
-        private static string ReadString(IDataRecord reader, int index)
-        {
-            return reader.IsDBNull(index) ? null : reader.GetString(index);
-        }
-
-        private static int ReadInt(IDataRecord reader, int index)
-        {
-            return reader.IsDBNull(index) ? 0 : Convert.ToInt32(reader.GetValue(index));
+                UserID = userId,
+                Action = action,
+                TableName = tableName,
+                RecordID = recordId,
+                OldValue = oldValue,
+                NewValue = newValue,
+                Detail = detail,
+                CreatedAt = DateTime.Now
+            });
         }
     }
 }

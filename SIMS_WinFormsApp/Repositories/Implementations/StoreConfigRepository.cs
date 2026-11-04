@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 

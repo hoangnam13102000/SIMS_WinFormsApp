@@ -51,7 +51,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
             _uploadImageButton.Click += UploadImage_Click;
             _clearImageButton.Click += ClearImage_Click;
-            _saveButton.Click += (sender, args) => SaveAndClose();
             _closeButton.Text = readOnly ? "Đóng" : "Hủy";
             _closeButton.Click += (sender, args) =>
             {
@@ -297,6 +296,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _model.IsActive = _statusComboBox.SelectedIndex == 0;
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void _saveButton_Click(object sender, EventArgs e)
+        {
+            SaveAndClose();
         }
 
         private static bool TryParseMoney(string text, out decimal value)

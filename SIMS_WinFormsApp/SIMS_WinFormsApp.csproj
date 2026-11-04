@@ -25,8 +25,16 @@
     <Compile Include="Services\Implementations\Inventory\StockReconciliationService.cs" />
     <Compile Include="Services\Implementations\Sales\InvoiceManagementDataService.cs" />
     <Compile Include="Services\Implementations\Sales\ReturnManagementDataService.cs" />
-    <Compile Include="DAL\Linq\Entities\Business\CatalogEntities.cs" />
-    <Compile Include="DAL\Linq\Entities\Business\SalesEntities.cs" />
+    <Compile Include="DAL\Linq\Sims.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Sims.dbml</DependentUpon>
+    </Compile>
+    <None Include="DAL\Linq\Sims.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>Sims.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
     <Compile Include="Views\Warehouse\ucStockReconciliation.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -54,6 +62,9 @@
     <Content Include="Resources\Media\doorbell.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="DAL\Linq\Sims.dbml.layout">
+      <DependentUpon>Sims.dbml</DependentUpon>
+    </None>
     <None Include="Resources\Auth\auth_brand_preview.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -76,10 +87,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DAL\Linq\Entities\Chat\ChatMessageEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\AuditLogEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\EmployeeEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\StoreConfigEntity.cs" />
     <Compile Include="Services\Interfaces\IStockReconciliationService.cs" />
     <Compile Include="Views\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
@@ -606,11 +613,6 @@
     <Compile Include="Infrastructure\Configuration\ConnectionStringProvider.cs" />
     <Compile Include="Infrastructure\Configuration\IDbConnectionFactory.cs" />
     <Compile Include="Infrastructure\Configuration\DbConnectionFactory.cs" />
-    <Compile Include="DAL\Linq\Entities\Chat\ChatConversationEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\PermissionEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\RoleEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\RolePermissionEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\UserEntity.cs" />
     <Compile Include="DAL\Linq\SimsDataContext.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\UserRepository.cs" />

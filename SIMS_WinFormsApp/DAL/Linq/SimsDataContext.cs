@@ -7,16 +7,14 @@ using System.Data.Linq.Mapping;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Chat;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Services.Session;
 using Newtonsoft.Json;
 
 namespace SIMS_WinFormsApp.DAL.Linq
 {
-    public class SimsDataContext : DataContext
+    public partial class SimsDataContext : DataContext
     {
         private bool _writingAuditLogs;
 
@@ -24,34 +22,20 @@ namespace SIMS_WinFormsApp.DAL.Linq
         {
         }
 
-        public SimsDataContext(string connectionString) : base(connectionString)
+        public void SubmitChangesWithoutAutomaticAudit(ConflictMode failureMode)
         {
+            bool wasWritingAuditLogs = _writingAuditLogs;
+            _writingAuditLogs = true;
+            try
+            {
+                base.SubmitChanges(failureMode);
+            }
+            finally
+            {
+                _writingAuditLogs = wasWritingAuditLogs;
+            }
         }
 
-        public Table<UserEntity> Users => GetTable<UserEntity>();
-        public Table<EmployeeEntity> Employees => GetTable<EmployeeEntity>();
-        public Table<RoleEntity> Roles => GetTable<RoleEntity>();
-        public Table<PermissionEntity> Permissions => GetTable<PermissionEntity>();
-        public Table<RolePermissionEntity> RolePermissions => GetTable<RolePermissionEntity>();
-        public Table<StoreConfigEntity> StoreConfigs => GetTable<StoreConfigEntity>();
-
-        public Table<AuditLogEntity> AuditLogs => GetTable<AuditLogEntity>();
-        public Table<ChatConversationEntity> ChatConversations => GetTable<ChatConversationEntity>();
-        public Table<ChatMessageEntity> ChatMessages => GetTable<ChatMessageEntity>();
-        public Table<CategoryEntity> Categories => GetTable<CategoryEntity>();
-        public Table<ProductEntity> Products => GetTable<ProductEntity>();
-        public Table<CustomerEntity> Customers => GetTable<CustomerEntity>();
-        public Table<InventoryBatchEntity> InventoryBatches => GetTable<InventoryBatchEntity>();
-        public Table<StockDisposalEntity> StockDisposals => GetTable<StockDisposalEntity>();
-        public Table<StockDisposalDetailEntity> StockDisposalDetails => GetTable<StockDisposalDetailEntity>();
-        public Table<SupplierEntity> Suppliers => GetTable<SupplierEntity>();
-        public Table<SupplierProductEntity> SupplierProducts => GetTable<SupplierProductEntity>();
-        public Table<InvoiceEntity> Invoices => GetTable<InvoiceEntity>();
-        public Table<InvoiceDetailEntity> InvoiceDetails => GetTable<InvoiceDetailEntity>();
-        public Table<ReturnExchangeEntity> ReturnExchanges => GetTable<ReturnExchangeEntity>();
-        public Table<ReturnExchangeDetailEntity> ReturnExchangeDetails => GetTable<ReturnExchangeDetailEntity>();
-        public Table<InventoryTransactionEntity> InventoryTransactions => GetTable<InventoryTransactionEntity>();
-        public Table<PromotionEntity> Promotions => GetTable<PromotionEntity>();
         public override void SubmitChanges(ConflictMode failureMode)
         {
             if (_writingAuditLogs)

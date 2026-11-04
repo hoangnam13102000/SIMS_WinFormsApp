@@ -22,9 +22,11 @@ namespace SIMS_WinFormsApp.Views.Reports
     {
         private const int AllCategoriesValue = 0;
         private const int HistoryPageSize = 10;
+        private const int ReportRefreshIntervalMilliseconds = 30000;
         private static readonly CultureInfo Vi = CultureInfo.GetCultureInfo("vi-VN");
         private readonly InventoryReportService _reportService;
         private readonly RevenueReportService _disposalReportService;
+        private System.Windows.Forms.Timer _reportRefreshTimer;
         private List<InventoryBatchHistoryRow> _historyRows = new List<InventoryBatchHistoryRow>();
         private List<InventoryStockBreakdownRow> _categoryBreakdown = new List<InventoryStockBreakdownRow>();
         private int _historyPage = 1;
@@ -61,6 +63,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             ApplyTrendPreset();
             _trendPreset.SelectedIndexChanged += TrendPreset_Changed;
             _trendApply.Click += (s, e) => LoadTrend();
+            _reportRefreshTimer = new System.Windows.Forms.Timer(components)
+            {
+                Interval = ReportRefreshIntervalMilliseconds
+            };
+            _reportRefreshTimer.Tick += ReportRefreshTimer_Tick;
+            VisibleChanged += InventoryReport_VisibleChanged;
+            _importChart.Resize += ImportChart_Resize;
             _historySearchButton.Click += (s, e) => LoadHistory();
             _historySearch.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; LoadHistory(); } };
             _historyClear.Click += (s, e) => { _historySearch.Clear(); _historyFrom.Checked = false; _historyTo.Checked = false; LoadHistory(); };
@@ -119,6 +128,30 @@ namespace SIMS_WinFormsApp.Views.Reports
                 ToolTip = "#VALX: #VAL{N0} sản phẩm"
             });
             _importChart.Series["Số lượng nhập"]["PointWidth"] = "0.65";
+        }
+
+        private void ImportChart_Resize(object sender, EventArgs e)
+        {
+            UpdateImportChartLayout();
+        }
+
+        private void UpdateImportChartLayout()
+        {
+            if (_importChart.ChartAreas.Count == 0 || _importChart.Series.Count == 0)
+                return;
+
+            Series series = _importChart.Series["Số lượng nhập"];
+            int visibleLabelCount = Math.Max(2, _importChart.ClientSize.Width / 48);
+            int pointCount = series.Points.Count;
+            int interval = pointCount == 0
+                ? 1
+                : Math.Max(1, (int)Math.Ceiling(pointCount / (double)visibleLabelCount));
+
+            ChartArea area = _importChart.ChartAreas["InventoryImportArea"];
+            area.AxisX.Interval = interval;
+            area.AxisX.LabelStyle.Angle = interval > 1 ? -45 : 0;
+            series.IsValueShownAsLabel = pointCount > 0 && pointCount <= visibleLabelCount;
+            _importChart.Invalidate();
         }
 
         private void ConfigureCategoryChart()
@@ -190,7 +223,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             if (!TryGetSelectedDateRange(out _, out _))
                 return;
 
-            LoadReport();
+            if (LoadReport())
+                StartReportAutoRefresh();
         }
 
         private bool TryGetSelectedDateRange(out DateTime from, out DateTime to)
@@ -214,32 +248,37 @@ namespace SIMS_WinFormsApp.Views.Reports
             return category.CategoryId;
         }
 
-        private void LoadReport()
+        private bool LoadReport(bool refreshCategories = true)
         {
             if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
-                return;
+                return false;
 
             try
             {
                 int? selectedCategoryId = GetSelectedCategoryId();
-                List<InventoryReportCategory> categories = _reportService.GetCategories();
-                var options = CreateCategoryOptions();
-                options.AddRange(categories);
-                _category.DataSource = options;
-                _category.DisplayMember = nameof(InventoryReportCategory.Name);
-                _category.ValueMember = nameof(InventoryReportCategory.CategoryId);
-                if (selectedCategoryId.HasValue)
-                    _category.SelectedValue = selectedCategoryId.Value;
+                if (refreshCategories)
+                {
+                    List<InventoryReportCategory> categories = _reportService.GetCategories();
+                    var options = CreateCategoryOptions();
+                    options.AddRange(categories);
+                    _category.DataSource = options;
+                    _category.DisplayMember = nameof(InventoryReportCategory.Name);
+                    _category.ValueMember = nameof(InventoryReportCategory.CategoryId);
+                    if (selectedCategoryId.HasValue)
+                        _category.SelectedValue = selectedCategoryId.Value;
+                }
 
                 InventoryReportData report = _reportService.GetReport(from, to, selectedCategoryId);
                 RenderReport(report);
                 RenderDisposalChart(from, to);
                 RenderStockSections(selectedCategoryId);
+                return true;
             }
             catch (SqlException exception)
             {
                 MessageBox.Show(this, "Không thể tải báo cáo tồn kho từ cơ sở dữ liệu.\r\n\r\n"
                     + exception.Message, "Lỗi tải báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
@@ -252,7 +291,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             _lowStock.Text = "CẦN BỔ SUNG / HẾT HẠN\r\n"
                 + report.LowStockProductCount.ToString("N0", vietnamese) + " SP / "
                 + report.ExpiredQuantity.ToString("N0", vietnamese) + " đơn vị";
-            _chartTitle.Text = "Số lượng nhập theo ngày (" + FormatDateRange(_from.Value.Date, _to.Value.Date) + ")";
+            _chartTitle.Text = "Số lượng nhập theo ngày";
 
             _grid.Rows.Clear();
             foreach (InventoryReportProduct product in report.Products)
@@ -277,7 +316,7 @@ namespace SIMS_WinFormsApp.Views.Reports
                 series.Points[pointIndex].ToolTip = point.Date.ToString("dd/MM/yyyy")
                     + ": " + point.Quantity.ToString("N0", vietnamese) + " sản phẩm";
             }
-            _importChart.Invalidate();
+            UpdateImportChartLayout();
 
             Series categorySeries = _categoryChart.Series["Giá trị tồn"];
             categorySeries.Points.Clear();
@@ -304,6 +343,64 @@ namespace SIMS_WinFormsApp.Views.Reports
             }
             _categoryChart.ChartAreas["InventoryCategoryArea"].RecalculateAxesScale();
             _categoryChart.Invalidate();
+        }
+
+        private void InventoryReport_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!Visible || IsDisposed)
+            {
+                _reportRefreshTimer.Stop();
+                return;
+            }
+
+            RefreshReportAndStartTimer();
+        }
+
+        private void ReportRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            if (!Visible || IsDisposed)
+            {
+                _reportRefreshTimer.Stop();
+                return;
+            }
+
+            if (_from.Value.Date > _to.Value.Date)
+                return;
+
+            if (!LoadReport(false))
+            {
+                _reportRefreshTimer.Stop();
+                return;
+            }
+
+            if (_trendFrom.Value.Date <= _trendTo.Value.Date)
+                LoadTrend();
+        }
+
+        private void RefreshReportAndStartTimer()
+        {
+            if (_from.Value.Date > _to.Value.Date)
+            {
+                _reportRefreshTimer.Stop();
+                return;
+            }
+
+            if (LoadReport(false))
+            {
+                if (_trendFrom.Value.Date <= _trendTo.Value.Date)
+                    LoadTrend();
+                StartReportAutoRefresh();
+            }
+            else
+            {
+                _reportRefreshTimer.Stop();
+            }
+        }
+
+        private void StartReportAutoRefresh()
+        {
+            if (Visible && !IsDisposed)
+                _reportRefreshTimer.Start();
         }
 
         private void RenderDisposal(StockDisposalReportData disposal)
