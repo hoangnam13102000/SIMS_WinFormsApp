@@ -12,6 +12,7 @@ using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Toast;
 
@@ -22,7 +23,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private const string SearchPlaceholder = "Tìm tên hoặc mã sản phẩm...";
         private StockReconciliationPresenter _presenter;
         private bool _searchPlaceholderActive;
-        private bool _eventsReady;
         private readonly TextBox _countEditor = new TextBox();
         private int _editingCountRow = -1;
         private string _lastValidCountText = string.Empty;
@@ -45,6 +45,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
 
             _presenter = new StockReconciliationPresenter(this, service, session);
+            DataGridViewCodeCopy.Attach(_stockGrid, "Sku");
+            _loadButton.Click += (sender, args) => RaiseLoadRequested();
+            _exportButton.Click += (sender, args) => ExportStock();
+            _searchBox.Enter += (sender, args) => HideSearchPlaceholder();
+            _searchBox.Leave += (sender, args) => ShowSearchPlaceholder();
+            _searchBox.KeyDown += OnSearchBoxKeyDown;
             _stockGrid.Columns["CountQuantity"].ReadOnly = true;
             _stockGrid.Controls.Add(_countEditor);
             _countEditor.BorderStyle = BorderStyle.FixedSingle;
@@ -57,8 +63,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _countEditor.KeyDown += OnCountEditorKeyDown;
             _countEditor.TextChanged += OnCountEditorTextChanged;
             _countEditor.Leave += OnCountEditorLeave;
+            _stockGrid.CellClick += OnStockGridCellClick;
+            _stockGrid.Scroll += OnStockGridScroll;
+            _stockGrid.SizeChanged += OnStockGridSizeChanged;
+            _stockGrid.ColumnWidthChanged += OnStockGridColumnWidthChanged;
+            _stockGrid.RowHeightChanged += OnStockGridRowHeightChanged;
+            VisibleChanged += OnStockReconciliationVisibleChanged;
             ShowSearchPlaceholder();
-            _eventsReady = true;
             _presenter.Initialize();
         }
 
@@ -174,41 +185,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             RaiseLoadRequested();
         }
 
-        private void _loadButton_Click(object sender, EventArgs e)
-        {
-            RaiseLoadRequested();
-        }
-
-        private void _saveButton_Click(object sender, EventArgs e)
-        {
-            SaveRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void _exportButton_Click(object sender, EventArgs e)
-        {
-            ExportStock();
-        }
-
-        private void _searchBox_Enter(object sender, EventArgs e)
-        {
-            HideSearchPlaceholder();
-        }
-
-        private void _searchBox_Leave(object sender, EventArgs e)
-        {
-            ShowSearchPlaceholder();
-        }
-
         private void RaiseLoadRequested()
         {
             LoadRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        private void _saveButton_Click(object sender, EventArgs e)
+        {
+            // StockReconciliationPresenter.OnSaveRequested validates and persists the counts.
+            SaveRequested?.Invoke(this, EventArgs.Empty);
+        }
+
         private void OnStockReconciliationVisibleChanged(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             if (!Visible)
                 return;
 
@@ -279,33 +268,21 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnStockGridScroll(object sender, ScrollEventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             RepositionCountEditor();
         }
 
         private void OnStockGridSizeChanged(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             RepositionCountEditor();
         }
 
         private void OnStockGridColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             RepositionCountEditor();
         }
 
         private void OnStockGridRowHeightChanged(object sender, DataGridViewRowEventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             RepositionCountEditor();
         }
 

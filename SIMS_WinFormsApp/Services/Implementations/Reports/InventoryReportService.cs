@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
@@ -116,146 +114,114 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
         public InventoryStockSummary GetStockSummary(int? categoryId)
         {
-            const string sql = @"
-SELECT COUNT(*) AS ProductCount,
-       ISNULL(SUM(CAST(p.Stock AS BIGINT)), 0) AS TotalQuantity,
-       ISNULL(SUM(CAST(p.Stock AS DECIMAL(18,0)) * p.SellPrice), 0) AS SellValue,
-       ISNULL(SUM(CAST(p.Stock AS DECIMAL(18,0)) * p.ImportPrice), 0) AS ImportValue,
-       ISNULL(SUM(CASE WHEN p.Stock > 0 AND p.Stock <= p.MinStock THEN 1 ELSE 0 END), 0) AS LowStockCount,
-       ISNULL(SUM(CASE WHEN p.Stock = 0 THEN 1 ELSE 0 END), 0) AS OutOfStockCount
-FROM Products p
-WHERE p.Status = 'ACTIVE'
-  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID);";
-
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-                using (var command = new SqlCommand(sql, cn))
-                {
-                    command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                        categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (!reader.Read())
-                            return new InventoryStockSummary();
+                var products = db.Products.Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
 
-                        return new InventoryStockSummary
-                        {
-                            ProductCount = reader.GetInt32(0),
-                            TotalQuantity = reader.GetInt64(1),
-                            SellValue = reader.GetDecimal(2),
-                            ImportValue = reader.GetDecimal(3),
-                            LowStockCount = reader.GetInt32(4),
-                            OutOfStockCount = reader.GetInt32(5)
-                        };
-                    }
-                }
+                return new InventoryStockSummary
+                {
+                    ProductCount = products.Count(),
+                    TotalQuantity = products.Select(product => (long?)product.Stock).Sum() ?? 0L,
+                    SellValue = products.Select(product =>
+                        (decimal?)product.Stock * product.SellPrice).Sum() ?? 0m,
+                    ImportValue = products.Select(product =>
+                        (decimal?)product.Stock * product.ImportPrice).Sum() ?? 0m,
+                    LowStockCount = products.Count(product =>
+                        product.Stock > 0 && product.Stock <= product.MinStock),
+                    OutOfStockCount = products.Count(product => product.Stock == 0)
+                };
             }
         }
 
         public List<InventoryProductStockPoint> GetTopProductStock(int? categoryId, int top = 20)
         {
-            const string sql = @"
-SELECT TOP (@Top) p.ProductCode, p.ProductName, p.Stock, p.MinStock,
-       (SELECT MIN(b.ExpiryDate)
-        FROM InventoryBatch b
-        WHERE b.ProductID = p.ProductID AND b.Status <> 'DEPLETED'
-          AND b.RemainingQty > 0 AND b.ExpiryDate IS NOT NULL) AS NearestExpiry,
-       CASE WHEN EXISTS
-       (
-           SELECT 1
-           FROM InventoryBatch b
-           WHERE b.ProductID = p.ProductID AND b.Status <> 'DEPLETED'
-             AND b.RemainingQty > 0 AND b.ExpiryDate < CAST(GETDATE() AS DATE)
-       ) THEN 1 ELSE 0 END AS HasExpired
-FROM Products p
-WHERE p.Status = 'ACTIVE'
-  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
-ORDER BY p.Stock DESC, p.ProductName;";
+            int limit = Math.Max(0, top);
+            if (limit == 0)
+                return new List<InventoryProductStockPoint>();
 
-            var results = new List<InventoryProductStockPoint>();
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-                using (var command = new SqlCommand(sql, cn))
-                {
-                    command.Parameters.Add("@Top", SqlDbType.Int).Value = Math.Max(0, top);
-                    command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                        categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            results.Add(new InventoryProductStockPoint
-                            {
-                                ProductCode = reader.GetString(0),
-                                ProductName = reader.GetString(1),
-                                Stock = reader.GetInt32(2),
-                                MinStock = reader.GetInt32(3),
-                                NearestExpiry = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
-                                HasExpired = reader.GetInt32(5) != 0
-                            });
-                        }
-                    }
-                }
-            }
+                var products = db.Products
+                    .Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
 
-            return results;
+                var productRows = products
+                    .OrderByDescending(product => product.Stock)
+                    .ThenBy(product => product.ProductName)
+                    .Take(limit)
+                    .Select(product => new
+                    {
+                        product.ProductID,
+                        product.ProductCode,
+                        product.ProductName,
+                        product.Stock,
+                        product.MinStock
+                    })
+                    .ToList();
+                int[] productIds = productRows.Select(product => product.ProductID).ToArray();
+                var batches = db.InventoryBatches
+                    .Where(batch => productIds.Contains(batch.ProductID)
+                        && batch.Status != "DEPLETED" && batch.RemainingQty > 0)
+                    .Select(batch => new { batch.ProductID, batch.ExpiryDate })
+                    .ToList();
+                DateTime today = DateTime.Today;
+                return productRows.Select(product =>
+                {
+                    var productBatches = batches.Where(batch => batch.ProductID == product.ProductID).ToList();
+                    DateTime? nearestExpiry = productBatches
+                        .Where(batch => batch.ExpiryDate.HasValue)
+                        .Select(batch => batch.ExpiryDate)
+                        .OrderBy(expiryDate => expiryDate)
+                        .FirstOrDefault();
+                    return new InventoryProductStockPoint
+                    {
+                        ProductCode = product.ProductCode,
+                        ProductName = product.ProductName,
+                        Stock = product.Stock,
+                        MinStock = product.MinStock,
+                        NearestExpiry = nearestExpiry,
+                        HasExpired = productBatches.Any(batch =>
+                            batch.ExpiryDate.HasValue && batch.ExpiryDate.Value < today)
+                    };
+                }).ToList();
+            }
         }
 
         public List<InventoryStockBreakdownRow> GetStockByCategory(int? categoryId)
         {
-            const string sql = @"
-SELECT c.CategoryName AS Label,
-       COUNT(p.ProductID) AS ProductCount,
-       ISNULL(SUM(CAST(p.Stock AS BIGINT)), 0) AS Quantity,
-       ISNULL(SUM(CAST(p.Stock AS DECIMAL(18,0)) * p.SellPrice), 0) AS SellValue
-FROM Products p
-JOIN Categories c ON c.CategoryID = p.CategoryID
-WHERE p.Status = 'ACTIVE'
-  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID)
-GROUP BY c.CategoryName
-ORDER BY SellValue DESC;";
-
-            var results = new List<InventoryStockBreakdownRow>();
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            List<InventoryStockBreakdownRow> results;
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-                using (var command = new SqlCommand(sql, cn))
-                {
-                    command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                        categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            results.Add(new InventoryStockBreakdownRow
-                            {
-                                Label = reader.GetString(0),
-                                ProductCount = reader.GetInt32(1),
-                                Quantity = reader.GetInt64(2),
-                                SellValue = reader.GetDecimal(3)
-                            });
-                        }
-                    }
-                }
-            }
+                var products = from product in db.Products
+                               join category in db.Categories
+                                   on product.CategoryID equals category.CategoryID
+                               where product.Status == "ACTIVE"
+                               select new { product, category.CategoryName };
+                if (categoryId.HasValue)
+                    products = products.Where(item => item.product.CategoryID == categoryId.Value);
 
+                results = products
+                    .GroupBy(item => item.CategoryName)
+                    .Select(productsInCategory => new InventoryStockBreakdownRow
+                    {
+                        Label = productsInCategory.Key,
+                        ProductCount = productsInCategory.Count(),
+                        Quantity = productsInCategory.Sum(item => (long?)item.product.Stock) ?? 0L,
+                        SellValue = productsInCategory.Sum(item =>
+                            (decimal?)item.product.Stock * item.product.SellPrice) ?? 0m
+                    })
+                    .OrderByDescending(row => row.SellValue)
+                    .ToList();
+            }
             ApplyBreakdownRatios(results);
             return results;
         }
 
         public List<InventoryStockBreakdownRow> GetStockByPriceRange(int? categoryId)
         {
-            const string sql = @"
-SELECT p.SellPrice, p.Stock
-FROM Products p
-WHERE p.Status = 'ACTIVE'
-  AND (@CategoryID IS NULL OR p.CategoryID = @CategoryID);";
-
             var results = new List<InventoryStockBreakdownRow>
             {
                 new InventoryStockBreakdownRow { Label = "Dưới 50.000 đ" },
@@ -265,31 +231,28 @@ WHERE p.Status = 'ACTIVE'
                 new InventoryStockBreakdownRow { Label = "Từ 500.000 đ trở lên" }
             };
 
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-                using (var command = new SqlCommand(sql, cn))
+                var products = db.Products
+                    .Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
+
+                var productRows = products
+                    .Select(product => new { product.SellPrice, product.Stock })
+                    .ToList();
+                foreach (var product in productRows)
                 {
-                    command.Parameters.Add("@CategoryID", SqlDbType.Int).Value =
-                        categoryId.HasValue ? (object)categoryId.Value : DBNull.Value;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            decimal sellPrice = reader.GetDecimal(0);
-                            int stock = reader.GetInt32(1);
-                            int index = sellPrice < 50000m ? 0
-                                : sellPrice < 100000m ? 1
-                                : sellPrice < 200000m ? 2
-                                : sellPrice < 500000m ? 3
-                                : 4;
-                            InventoryStockBreakdownRow row = results[index];
-                            row.ProductCount++;
-                            row.Quantity += stock;
-                            row.SellValue += sellPrice * stock;
-                        }
-                    }
+                    decimal sellPrice = product.SellPrice;
+                    int index = sellPrice < 50000m ? 0
+                        : sellPrice < 100000m ? 1
+                        : sellPrice < 200000m ? 2
+                        : sellPrice < 500000m ? 3
+                        : 4;
+                    InventoryStockBreakdownRow row = results[index];
+                    row.ProductCount++;
+                    row.Quantity += product.Stock;
+                    row.SellValue += sellPrice * product.Stock;
                 }
             }
 
@@ -311,52 +274,50 @@ WHERE p.Status = 'ACTIVE'
             var currentStocks = new Dictionary<int, int>();
             var productCategories = new Dictionary<int, string>();
             var historyByProduct = new Dictionary<int, List<KeyValuePair<DateTime, int>>>();
-            const string productsSql = @"
-SELECT p.ProductID, c.CategoryName, p.Stock
-FROM Products p
-JOIN Categories c ON c.CategoryID = p.CategoryID
-WHERE p.Status = 'ACTIVE';";
-            const string transactionsSql = @"
-SELECT t.ProductID, t.CreatedAt, t.StockAfter
-FROM InventoryTransactions t
-WHERE t.CreatedAt < @EndExclusive
-ORDER BY t.ProductID, t.CreatedAt, t.TransactionID;";
-
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-
-                using (var command = new SqlCommand(productsSql, cn))
-                using (SqlDataReader reader = command.ExecuteReader())
+                var products = (from product in db.Products
+                                join category in db.Categories
+                                    on product.CategoryID equals category.CategoryID
+                                where product.Status == "ACTIVE"
+                                select new
+                                {
+                                    product.ProductID,
+                                    category.CategoryName,
+                                    product.Stock
+                                }).ToList();
+                foreach (var product in products)
                 {
-                    while (reader.Read())
-                    {
-                        int productId = reader.GetInt32(0);
-                        productCategories[productId] = reader.GetString(1);
-                        currentStocks[productId] = reader.GetInt32(2);
-                    }
+                    productCategories[product.ProductID] = product.CategoryName;
+                    currentStocks[product.ProductID] = product.Stock;
                 }
 
-                using (var command = new SqlCommand(transactionsSql, cn))
-                {
-                    command.Parameters.Add("@EndExclusive", SqlDbType.DateTime).Value = end.AddMonths(1);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                DateTime endExclusive = end.AddMonths(1);
+                var transactions = db.InventoryTransactions
+                    .Where(transaction => transaction.CreatedAt < endExclusive)
+                    .OrderBy(transaction => transaction.ProductID)
+                    .ThenBy(transaction => transaction.CreatedAt)
+                    .ThenBy(transaction => transaction.TransactionID)
+                    .Select(transaction => new
                     {
-                        while (reader.Read())
-                        {
-                            int productId = reader.GetInt32(0);
-                            if (!currentStocks.ContainsKey(productId))
-                                continue;
+                        transaction.ProductID,
+                        transaction.CreatedAt,
+                        transaction.StockAfter
+                    })
+                    .ToList();
+                foreach (var transaction in transactions)
+                {
+                    int productId = transaction.ProductID;
+                    if (!currentStocks.ContainsKey(productId))
+                        continue;
 
-                            if (!historyByProduct.TryGetValue(productId, out List<KeyValuePair<DateTime, int>> history))
-                            {
-                                history = new List<KeyValuePair<DateTime, int>>();
-                                historyByProduct.Add(productId, history);
-                            }
-                            history.Add(new KeyValuePair<DateTime, int>(reader.GetDateTime(1), reader.GetInt32(2)));
-                        }
+                    if (!historyByProduct.TryGetValue(productId, out List<KeyValuePair<DateTime, int>> history))
+                    {
+                        history = new List<KeyValuePair<DateTime, int>>();
+                        historyByProduct.Add(productId, history);
                     }
+                    history.Add(new KeyValuePair<DateTime, int>(
+                        transaction.CreatedAt, transaction.StockAfter));
                 }
             }
 
@@ -405,104 +366,186 @@ ORDER BY t.ProductID, t.CreatedAt, t.TransactionID;";
 
         public List<InventoryBatchHistoryRow> GetBatchHistory(string keyword, DateTime? fromDate, DateTime? toDate)
         {
-            const string sql = @"
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate, r.CreatedAt AS ChangedAt,
-       N'Phiếu nhập' AS DocumentType, r.ReceiptCode AS DocumentCode,
-       p.ProductCode, p.ProductName, d.Quantity, 'IN' AS Direction,
-       CAST(NULL AS NVARCHAR(255)) AS Note
-FROM PurchaseReceiptDetails d
-JOIN PurchaseReceipts r ON r.ReceiptID = d.ReceiptID
-JOIN InventoryBatch b ON b.ReceiptDetailID = d.ReceiptDetailID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE r.Status = 'COMPLETED' AND p.Status = 'ACTIVE'
-UNION ALL
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate, i.CreatedAt,
-       N'Hóa đơn bán', i.InvoiceCode, p.ProductCode, p.ProductName,
-       x.Quantity, 'OUT', CAST(NULL AS NVARCHAR(255))
-FROM InvoiceDetailBatches x
-JOIN InvoiceDetails d ON d.InvoiceDetailID = x.InvoiceDetailID
-JOIN Invoices i ON i.InvoiceID = d.InvoiceID
-JOIN InventoryBatch b ON b.BatchID = x.BatchID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE p.Status = 'ACTIVE'
-UNION ALL
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate, i.CancelledAt,
-       N'Hủy hóa đơn', i.InvoiceCode, p.ProductCode, p.ProductName,
-       x.Quantity, 'IN', CAST(NULL AS NVARCHAR(255))
-FROM InvoiceDetailBatches x
-JOIN InvoiceDetails d ON d.InvoiceDetailID = x.InvoiceDetailID
-JOIN Invoices i ON i.InvoiceID = d.InvoiceID
-JOIN InventoryBatch b ON b.BatchID = x.BatchID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE i.Status = 'CANCELLED' AND i.CancelledAt IS NOT NULL AND p.Status = 'ACTIVE'
-UNION ALL
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate,
-       ISNULL(re.ApprovedAt, re.CreatedAt),
-       CASE WHEN re.Type = 'RETURN' THEN N'Trả hàng' ELSE N'Đổi hàng' END,
-       'RT_' + RIGHT('000000' + CAST(re.ReturnID AS VARCHAR(10)), 6),
-       p.ProductCode, p.ProductName, x.Quantity, d.Direction, re.Reason
-FROM ReturnExchangeDetailBatches x
-JOIN ReturnExchangeDetails d ON d.ReturnDetailID = x.ReturnDetailID
-JOIN ReturnExchanges re ON re.ReturnID = d.ReturnID
-JOIN InventoryBatch b ON b.BatchID = x.BatchID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE re.Status = 'APPROVED' AND p.Status = 'ACTIVE'
-UNION ALL
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate, s.CreatedAt,
-       N'Phiếu hủy', s.DisposalCode, p.ProductCode, p.ProductName,
-       d.Quantity, 'OUT', s.Reason
-FROM StockDisposalDetails d
-JOIN StockDisposals s ON s.DisposalID = d.DisposalID
-JOIN InventoryBatch b ON b.BatchID = d.BatchID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE s.Status = 'COMPLETED' AND p.Status = 'ACTIVE'
-UNION ALL
-SELECT b.BatchID, b.BatchCode, b.LotNumber, b.ExpiryDate, sr.CreatedAt,
-       N'Trả nhà cung cấp', sr.SupplierReturnCode, p.ProductCode, p.ProductName,
-       d.Quantity, 'OUT', sr.Reason
-FROM SupplierReturnDetails d
-JOIN SupplierReturns sr ON sr.SupplierReturnID = d.SupplierReturnID
-JOIN InventoryBatch b ON b.BatchID = d.BatchID
-JOIN Products p ON p.ProductID = b.ProductID
-WHERE sr.Status = 'COMPLETED' AND p.Status = 'ACTIVE'
-ORDER BY BatchCode, ChangedAt, DocumentCode;";
+            var historyEvents = new List<BatchHistoryEvent>();
+            var batchInfo = new Dictionary<int, BatchHistoryInfo>();
+            using (SimsDataContext db = _connectionFactory.CreateDataContext())
+            {
+                var batches = (from batch in db.InventoryBatches
+                               join product in db.Products on batch.ProductID equals product.ProductID
+                               where product.Status == "ACTIVE"
+                               select new
+                               {
+                                   batch.BatchID,
+                                   batch.BatchCode,
+                                   batch.LotNumber,
+                                   batch.ExpiryDate,
+                                   product.ProductCode,
+                                   product.ProductName
+                               }).ToList();
+                batchInfo = batches.ToDictionary(batch => batch.BatchID, batch =>
+                    new BatchHistoryInfo
+                    {
+                        BatchCode = batch.BatchCode,
+                        LotNumber = batch.LotNumber,
+                        ExpiryDate = batch.ExpiryDate,
+                        ProductCode = batch.ProductCode,
+                        ProductName = batch.ProductName
+                    });
+
+                historyEvents.AddRange((from detail in db.PurchaseReceiptDetails
+                                        join receipt in db.PurchaseReceipts
+                                            on detail.ReceiptID equals receipt.ReceiptID
+                                        from batch in db.InventoryBatches
+                                        where batch.ReceiptDetailID == detail.ReceiptDetailID
+                                            && receipt.Status == "COMPLETED"
+                                        select new BatchHistoryEvent
+                                        {
+                                            BatchID = batch.BatchID,
+                                            ChangedAt = receipt.CreatedAt,
+                                            DocumentType = "Phiếu nhập",
+                                            DocumentCode = receipt.ReceiptCode,
+                                            Quantity = detail.Quantity,
+                                            Direction = "IN"
+                                        }).ToList());
+
+                historyEvents.AddRange((from batchLine in db.InvoiceDetailBatches
+                                        join detail in db.InvoiceDetails
+                                            on batchLine.InvoiceDetailID equals detail.InvoiceDetailID
+                                        join invoice in db.Invoices
+                                            on detail.InvoiceID equals invoice.InvoiceID
+                                        join batch in db.InventoryBatches
+                                            on batchLine.BatchID equals batch.BatchID
+                                        select new BatchHistoryEvent
+                                        {
+                                            BatchID = batch.BatchID,
+                                            ChangedAt = invoice.CreatedAt,
+                                            DocumentType = "Hóa đơn bán",
+                                            DocumentCode = invoice.InvoiceCode,
+                                            Quantity = batchLine.Quantity,
+                                            Direction = "OUT"
+                                        }).ToList());
+
+                var cancelledInvoiceEvents = (from batchLine in db.InvoiceDetailBatches
+                                              join detail in db.InvoiceDetails
+                                                  on batchLine.InvoiceDetailID equals detail.InvoiceDetailID
+                                              join invoice in db.Invoices
+                                                  on detail.InvoiceID equals invoice.InvoiceID
+                                              join batch in db.InventoryBatches
+                                                  on batchLine.BatchID equals batch.BatchID
+                                              where invoice.Status == "CANCELLED"
+                                              select new
+                                              {
+                                                  BatchID = batch.BatchID,
+                                                  CancelledAt = invoice.CancelledAt,
+                                                  InvoiceCode = invoice.InvoiceCode,
+                                                  Quantity = batchLine.Quantity
+                                              }).ToList();
+                historyEvents.AddRange(cancelledInvoiceEvents
+                    .Where(item => item.CancelledAt.HasValue)
+                    .Select(item => new BatchHistoryEvent
+                    {
+                        BatchID = item.BatchID,
+                        ChangedAt = item.CancelledAt.Value,
+                        DocumentType = "Hủy hóa đơn",
+                        DocumentCode = item.InvoiceCode,
+                        Quantity = item.Quantity,
+                        Direction = "IN"
+                    }));
+
+                var returnEvents = (from batchLine in db.ReturnExchangeDetailBatches
+                                    join detail in db.ReturnExchangeDetails
+                                        on batchLine.ReturnDetailID equals detail.ReturnDetailID
+                                    join exchange in db.ReturnExchanges
+                                        on detail.ReturnID equals exchange.ReturnID
+                                    join batch in db.InventoryBatches
+                                        on batchLine.BatchID equals batch.BatchID
+                                    where exchange.Status == "APPROVED"
+                                    select new
+                                    {
+                                        BatchID = batch.BatchID,
+                                        ChangedAt = exchange.ApprovedAt ?? exchange.CreatedAt,
+                                        DocumentType = exchange.Type == "RETURN" ? "Trả hàng" : "Đổi hàng",
+                                        ReturnID = exchange.ReturnID,
+                                        Quantity = batchLine.Quantity,
+                                        Direction = detail.Direction,
+                                        Note = exchange.Reason
+                                    }).ToList();
+                historyEvents.AddRange(returnEvents.Select(item => new BatchHistoryEvent
+                {
+                    BatchID = item.BatchID,
+                    ChangedAt = item.ChangedAt,
+                    DocumentType = item.DocumentType,
+                    DocumentCode = "RT_" + item.ReturnID.ToString("D6"),
+                    Quantity = item.Quantity,
+                    Direction = item.Direction,
+                    Note = item.Note
+                }));
+
+                historyEvents.AddRange((from detail in db.StockDisposalDetails
+                                        join disposal in db.StockDisposals
+                                            on detail.DisposalID equals disposal.DisposalID
+                                        join batch in db.InventoryBatches
+                                            on detail.BatchID equals batch.BatchID
+                                        where disposal.Status == "COMPLETED"
+                                        select new BatchHistoryEvent
+                                        {
+                                            BatchID = batch.BatchID,
+                                            ChangedAt = disposal.CreatedAt,
+                                            DocumentType = "Phiếu hủy",
+                                            DocumentCode = disposal.DisposalCode,
+                                            Quantity = detail.Quantity,
+                                            Direction = "OUT",
+                                            Note = disposal.Reason
+                                        }).ToList());
+
+                historyEvents.AddRange((from detail in db.SupplierReturnDetails
+                                        join supplierReturn in db.SupplierReturns
+                                            on detail.SupplierReturnID equals supplierReturn.SupplierReturnID
+                                        join batch in db.InventoryBatches
+                                            on detail.BatchID equals batch.BatchID
+                                        where supplierReturn.Status == "COMPLETED"
+                                        select new BatchHistoryEvent
+                                        {
+                                            BatchID = batch.BatchID,
+                                            ChangedAt = supplierReturn.CreatedAt,
+                                            DocumentType = "Trả nhà cung cấp",
+                                            DocumentCode = supplierReturn.SupplierReturnCode,
+                                            Quantity = detail.Quantity,
+                                            Direction = "OUT",
+                                            Note = supplierReturn.Reason
+                                        }).ToList());
+            }
 
             var historyRows = new List<InventoryBatchHistoryRow>();
             var runningStockByBatch = new Dictionary<int, int>();
-            using (SqlConnection cn = _connectionFactory.CreateConnection())
+            foreach (BatchHistoryEvent historyEvent in historyEvents
+                .Where(item => batchInfo.ContainsKey(item.BatchID))
+                .OrderBy(item => batchInfo[item.BatchID].BatchCode)
+                .ThenBy(item => item.ChangedAt)
+                .ThenBy(item => item.DocumentCode))
             {
-                if (cn.State != ConnectionState.Open)
-                    cn.Open();
-                using (var command = new SqlCommand(sql, cn))
-                using (SqlDataReader reader = command.ExecuteReader())
+                BatchHistoryInfo batch = batchInfo[historyEvent.BatchID];
+                runningStockByBatch.TryGetValue(historyEvent.BatchID, out int stockBefore);
+                int stockAfter = stockBefore +
+                    (historyEvent.Direction == "IN" ? historyEvent.Quantity : -historyEvent.Quantity);
+                runningStockByBatch[historyEvent.BatchID] = stockAfter;
+                historyRows.Add(new InventoryBatchHistoryRow
                 {
-                    while (reader.Read())
-                    {
-                        int batchId = reader.GetInt32(0);
-                        int quantity = reader.GetInt32(9);
-                        string direction = reader.GetString(10);
-                        runningStockByBatch.TryGetValue(batchId, out int stockBefore);
-                        int stockAfter = stockBefore + (direction == "IN" ? quantity : -quantity);
-                        runningStockByBatch[batchId] = stockAfter;
-                        historyRows.Add(new InventoryBatchHistoryRow
-                        {
-                            BatchID = batchId,
-                            BatchCode = reader.GetString(1),
-                            LotNumber = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            ExpiryDate = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
-                            ChangedAt = reader.GetDateTime(4),
-                            DocumentType = reader.GetString(5),
-                            DocumentCode = reader.GetString(6),
-                            ProductCode = reader.GetString(7),
-                            ProductName = reader.GetString(8),
-                            Quantity = quantity,
-                            Direction = direction,
-                            StockBefore = stockBefore,
-                            StockAfter = stockAfter,
-                            Note = reader.IsDBNull(11) ? null : reader.GetString(11)
-                        });
-                    }
-                }
+                    BatchID = historyEvent.BatchID,
+                    BatchCode = batch.BatchCode,
+                    LotNumber = batch.LotNumber,
+                    ExpiryDate = batch.ExpiryDate,
+                    ChangedAt = historyEvent.ChangedAt,
+                    DocumentType = historyEvent.DocumentType,
+                    DocumentCode = historyEvent.DocumentCode,
+                    ProductCode = batch.ProductCode,
+                    ProductName = batch.ProductName,
+                    Quantity = historyEvent.Quantity,
+                    Direction = historyEvent.Direction,
+                    StockBefore = stockBefore,
+                    StockAfter = stockAfter,
+                    Note = historyEvent.Note
+                });
             }
 
             DateTime? from = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
@@ -514,6 +557,26 @@ ORDER BY BatchCode, ChangedAt, DocumentCode;";
                     && (search == null || MatchesBatchHistoryKeyword(row, search)))
                 .OrderByDescending(row => row.ChangedAt)
                 .ToList();
+        }
+
+        private sealed class BatchHistoryEvent
+        {
+            public int BatchID { get; set; }
+            public DateTime ChangedAt { get; set; }
+            public string DocumentType { get; set; }
+            public string DocumentCode { get; set; }
+            public int Quantity { get; set; }
+            public string Direction { get; set; }
+            public string Note { get; set; }
+        }
+
+        private sealed class BatchHistoryInfo
+        {
+            public string BatchCode { get; set; }
+            public string LotNumber { get; set; }
+            public DateTime? ExpiryDate { get; set; }
+            public string ProductCode { get; set; }
+            public string ProductName { get; set; }
         }
 
         private static void ApplyBreakdownRatios(List<InventoryStockBreakdownRow> rows)
@@ -613,8 +676,7 @@ ORDER BY BatchCode, ChangedAt, DocumentCode;";
 
                 var nonEmptyBatches = db.InventoryBatches.Where(batch => batch.Status != "DEPLETED"
                     && batch.RemainingQty > 0
-                    && batch.ExpiryDate.HasValue
-                    && batch.ExpiryDate.Value < today);
+                    && batch.ExpiryDate < today);
                 var expiredBatches = from batch in nonEmptyBatches
                                           join product in db.Products on batch.ProductID equals product.ProductID
                                           where product.Status == "ACTIVE"
@@ -643,12 +705,16 @@ ORDER BY BatchCode, ChangedAt, DocumentCode;";
                                    Date = day.Key,
                                    Quantity = day.Sum(item => item.Quantity)
                                }).ToList();
-                foreach (var import in imports)
+                Dictionary<DateTime, long> importQuantities = imports.ToDictionary(
+                    import => import.Date.Date,
+                    import => (long)import.Quantity);
+                for (DateTime date = rangeStart; date <= toDate.Date; date = date.AddDays(1))
                 {
+                    importQuantities.TryGetValue(date, out long quantity);
                     report.ImportTrend.Add(new InventoryImportTrendPoint
                     {
-                        Date = import.Date,
-                        Quantity = import.Quantity
+                        Date = date,
+                        Quantity = quantity
                     });
                 }
 

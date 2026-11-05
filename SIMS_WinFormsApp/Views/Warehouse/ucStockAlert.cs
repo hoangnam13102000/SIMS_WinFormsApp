@@ -28,7 +28,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly StockAlertPresenter _presenter;
         private readonly Timer _searchTimer;
         private bool _initialized;
-        private bool _eventsReady;
         private bool _suppressEvents;
         private bool _fromDateActive;
         private bool _toDateActive;
@@ -52,9 +51,28 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _searchTimer.Interval = 300;
             _searchTimer.Tick += new EventHandler(this.SearchTimer_Tick);
 
+            _searchBox.HandleCreated += new EventHandler(this.SearchBox_HandleCreated);
             if (_searchBox.IsHandleCreated)
                 ApplySearchPlaceholder();
-            _eventsReady = true;
+            _searchBox.TextChanged += new EventHandler(this.SearchBox_TextChanged);
+            _categoryCombo.SelectedIndexChanged += new EventHandler(this.FilterControl_Changed);
+            _fromDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
+            _toDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
+            _clearFilterLink.LinkClicked += new LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
+            _pageSizeCombo.SelectedIndexChanged += new EventHandler(this.PageSizeCombo_SelectedIndexChanged);
+            _prevButton.Click += new EventHandler(this.PreviousButton_Click);
+            _nextButton.Click += new EventHandler(this.NextButton_Click);
+            _optionsButton.Click += new EventHandler(this.OptionsButton_Click);
+            _exportCsvItem.Click += new EventHandler(this.ExportCsvItem_Click);
+            _exportExcelItem.Click += new EventHandler(this.ExportExcelItem_Click);
+            _grid.CellClick += new DataGridViewCellEventHandler(this.Grid_CellClick);
+            _grid.CellMouseClick += new DataGridViewCellMouseEventHandler(this.Grid_CellMouseClick);
+            _grid.CellMouseEnter += new DataGridViewCellEventHandler(this.Grid_CellMouseEnter);
+            _grid.CellMouseLeave += new DataGridViewCellEventHandler(this.Grid_CellMouseLeave);
+            _grid.CellFormatting += new DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
+            _grid.CellToolTipTextNeeded += new DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
+            DataGridViewCodeCopy.Attach(_grid, false, "colProductCode");
+            VisibleChanged += new EventHandler(this.OnVisibleChanged);
         }
 
         public string Keyword => _searchBox.Text.Trim();
@@ -245,9 +263,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnVisibleChanged(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             if (!Visible || _initialized || _presenter == null)
                 return;
 
@@ -268,9 +283,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void SearchBox_TextChanged(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             if (_suppressEvents)
                 return;
 
@@ -281,18 +293,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             _searchTimer.Stop();
             SearchRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void FilterControl_Changed(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             if (_suppressEvents)
                 return;
 
@@ -332,9 +338,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void PageSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!_eventsReady)
-                return;
-
             PageSizeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -533,5 +536,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
         }
 
+        private void _clearFilterLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+
+        }
     }
 }

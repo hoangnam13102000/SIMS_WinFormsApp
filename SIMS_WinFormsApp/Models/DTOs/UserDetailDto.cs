@@ -18,6 +18,8 @@ namespace SIMS_WinFormsApp.Models.DTOs
         public UserStatus Status { get; set; }
         public bool IsLocked { get; set; }
         public int FailedLoginCount { get; set; }
+        public string CustomerCode { get; set; }
+        public int LoyaltyPoints { get; set; }
 
         public DateTime? CreatedAt { get; set; }
     }

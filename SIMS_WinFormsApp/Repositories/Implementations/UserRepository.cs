@@ -1,6 +1,5 @@
-﻿using SIMS_WinFormsApp.DAL.Linq;
+using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.DAL.Linq.Entities;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Identity;
 using SIMS_WinFormsApp.Models;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Enums;
@@ -275,8 +274,10 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     join r in db.Roles on u.RoleID equals r.RoleID
                     join employeeRow in db.Employees on u.UserID equals employeeRow.UserID into employeeRows
                     from employee in employeeRows.DefaultIfEmpty()
+                    join customerRow in db.Customers on u.UserID equals customerRow.CustomerID into customerRows
+                    from customer in customerRows.DefaultIfEmpty()
                     where !u.IsDeleted
-                    select new { u, r, employee };
+                    select new { u, r, employee, customer };
 
                 if (string.Equals(roleFilter, UserManagementFilters.NonCustomer, StringComparison.OrdinalIgnoreCase))
                     query = query.Where(x => x.r.RoleCode != RoleCodes.Customer);
@@ -314,7 +315,9 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         RoleCode = x.r.RoleCode,
                         RoleName = x.r.RoleName,
                         Status = x.u.Status,
-                        IsLocked = x.u.IsLocked
+                        IsLocked = x.u.IsLocked,
+                        CustomerCode = x.customer == null ? null : x.customer.CustomerCode,
+                        LoyaltyPoints = x.customer == null ? 0 : x.customer.MemberPoint
                     })
                     .ToList();
 

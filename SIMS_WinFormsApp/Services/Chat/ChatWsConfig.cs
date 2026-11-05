@@ -38,6 +38,40 @@ namespace SIMS_WinFormsApp.Services.Chat
         }
 
         public static string ServerListenUrl => $"ws://0.0.0.0:{Port}";
-        public static string ClientEndpoint => $"ws://{Host}:{Port}";
+
+        public static string ClientEndpoint
+        {
+            get
+            {
+                var configuredUrl = ConfigurationManager.AppSettings["WS_CHAT_URL"];
+                if (string.IsNullOrWhiteSpace(configuredUrl))
+                    return $"ws://{Host}:{Port}";
+
+                if (!Uri.TryCreate(configuredUrl.Trim(), UriKind.Absolute, out var uri))
+                    throw new ConfigurationErrorsException("WS_CHAT_URL phải là một URL WebSocket hợp lệ.");
+
+                string scheme;
+                switch (uri.Scheme.ToLowerInvariant())
+                {
+                    case "http":
+                    case "ws":
+                        scheme = "ws";
+                        break;
+                    case "https":
+                    case "wss":
+                        scheme = "wss";
+                        break;
+                    default:
+                        throw new ConfigurationErrorsException(
+                            "WS_CHAT_URL chỉ hỗ trợ các giao thức http, https, ws hoặc wss.");
+                }
+
+                var builder = new UriBuilder(uri) { Scheme = scheme };
+                if (uri.IsDefaultPort)
+                    builder.Port = -1;
+
+                return builder.Uri.ToString();
+            }
+        }
     }
 }

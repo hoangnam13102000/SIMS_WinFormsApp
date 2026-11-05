@@ -25,8 +25,16 @@
     <Compile Include="Services\Implementations\Inventory\StockReconciliationService.cs" />
     <Compile Include="Services\Implementations\Sales\InvoiceManagementDataService.cs" />
     <Compile Include="Services\Implementations\Sales\ReturnManagementDataService.cs" />
-    <Compile Include="DAL\Linq\Entities\Business\CatalogEntities.cs" />
-    <Compile Include="DAL\Linq\Entities\Business\SalesEntities.cs" />
+    <Compile Include="DAL\Linq\Sims.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Sims.dbml</DependentUpon>
+    </Compile>
+    <None Include="DAL\Linq\Sims.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>Sims.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
     <Compile Include="Views\Warehouse\ucStockReconciliation.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -39,6 +47,21 @@
     <Compile Include="Views\Warehouse\frmStockReconciliationDetail.Designer.cs">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Views\Catalog\ucSupplierManagement.resx">
+      <DependentUpon>ucSupplierManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\ucInventoryReport.resx">
+      <DependentUpon>ucInventoryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InventoryReport.rdlc">
+      <LogicalName>SIMS_WinFormsApp.Reports.InventoryReport.rdlc</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RevenueReport.rdlc">
+      <LogicalName>SIMS_WinFormsApp.Reports.RevenueReport.rdlc</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\DisposalReport.rdlc">
+      <LogicalName>SIMS_WinFormsApp.Reports.DisposalReport.rdlc</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -48,10 +71,14 @@
     <Content Include="Resources\Media\doorbell.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="DAL\Linq\Sims.dbml.layout">
+      <DependentUpon>Sims.dbml</DependentUpon>
+    </None>
     <None Include="Resources\Auth\auth_brand_preview.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -62,6 +89,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -70,10 +98,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DAL\Linq\Entities\Chat\ChatMessageEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\AuditLogEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\EmployeeEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\StoreConfigEntity.cs" />
     <Compile Include="Services\Interfaces\IStockReconciliationService.cs" />
     <Compile Include="Views\Chat\ucChat.cs">
       <SubType>UserControl</SubType>
@@ -595,16 +619,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ReportViewer.Common">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.1016.290\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Compile Include="Repositories\Implementations\ChatRepository.cs" />
     <Compile Include="Infrastructure\Configuration\IConnectionStringProvider.cs" />
     <Compile Include="Infrastructure\Configuration\ConnectionStringProvider.cs" />
     <Compile Include="Infrastructure\Configuration\IDbConnectionFactory.cs" />
     <Compile Include="Infrastructure\Configuration\DbConnectionFactory.cs" />
-    <Compile Include="DAL\Linq\Entities\Chat\ChatConversationEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\PermissionEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\RoleEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\RolePermissionEntity.cs" />
-    <Compile Include="DAL\Linq\Entities\Identity\UserEntity.cs" />
     <Compile Include="DAL\Linq\SimsDataContext.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\UserRepository.cs" />
@@ -639,7 +678,14 @@
     <Compile Include="Views\Reports\FinancialReportPdfExporter.cs" />
     <Compile Include="Services\Implementations\Reports\RevenueReportService.cs" />
     <Compile Include="Services\Implementations\Reports\InventoryReportService.cs" />
+    <Compile Include="Services\Implementations\Reports\ReportParameterBuilder.cs" />
     <Compile Include="Services\Implementations\Reports\DashboardDataService.cs" />
+    <Compile Include="Views\Reports\frmReportViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\frmReportViewer.Designer.cs">
+      <DependentUpon>frmReportViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Reports\frmChartDashboard.Designer.cs">
       <DependentUpon>frmChartDashboard.cs</DependentUpon>
     </Compile>

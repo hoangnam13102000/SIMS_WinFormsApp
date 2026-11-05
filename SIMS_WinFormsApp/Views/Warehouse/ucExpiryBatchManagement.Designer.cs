@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -8,6 +9,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _headerPanel;
+        private Panel _headerIconPanel;
+        private IconPictureBox _headerIcon;
         private Label _titleLabel;
         private Label _subtitleLabel;
         private Button _disposeButton;
@@ -41,6 +44,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             components = new System.ComponentModel.Container();
             _root = new TableLayoutPanel();
             _headerPanel = new Panel();
+            _headerIconPanel = new Panel();
+            _headerIcon = new IconPictureBox();
             _titleLabel = new Label();
             _subtitleLabel = new Label();
             _disposeButton = new Button();
@@ -62,8 +67,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid = new DataGridView();
             _footerLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)_grid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)_headerIcon).BeginInit();
             _root.SuspendLayout();
             _headerPanel.SuspendLayout();
+            _headerIconPanel.SuspendLayout();
             _summaryLayout.SuspendLayout();
             _expiredCard.SuspendLayout();
             _nearExpiryCard.SuspendLayout();
@@ -93,42 +100,74 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             //
             // _headerPanel
             //
-            _headerPanel.BackColor = Color.Transparent;
+            _headerPanel.BackColor = Color.White;
+            _headerPanel.BorderStyle = BorderStyle.FixedSingle;
             _headerPanel.Controls.Add(_titleLabel);
             _headerPanel.Controls.Add(_subtitleLabel);
             _headerPanel.Controls.Add(_disposeButton);
+            _headerPanel.Controls.Add(_headerIconPanel);
             _headerPanel.Dock = DockStyle.Fill;
             _headerPanel.Name = "_headerPanel";
             //
+            // _headerIconPanel
+            //
+            _headerIconPanel.BackColor = Color.FromArgb(219, 234, 254);
+            _headerIconPanel.Controls.Add(_headerIcon);
+            _headerIconPanel.Location = new Point(20, 20);
+            _headerIconPanel.Name = "_headerIconPanel";
+            _headerIconPanel.Size = new Size(44, 44);
+            //
+            // _headerIcon
+            //
+            _headerIcon.BackColor = Color.FromArgb(219, 234, 254);
+            _headerIcon.ForeColor = Color.FromArgb(37, 99, 235);
+            _headerIcon.IconChar = IconChar.HourglassHalf;
+            _headerIcon.IconColor = Color.FromArgb(37, 99, 235);
+            _headerIcon.IconFont = IconFont.Auto;
+            _headerIcon.IconSize = 20;
+            _headerIcon.Location = new Point(12, 12);
+            _headerIcon.Name = "_headerIcon";
+            _headerIcon.Size = new Size(20, 20);
+            _headerIcon.SizeMode = PictureBoxSizeMode.CenterImage;
+            _headerIcon.TabStop = false;
+            //
             // _titleLabel
             //
-            _titleLabel.AutoSize = true;
-            _titleLabel.Font = new Font("Segoe UI", 21F, FontStyle.Bold);
+            _titleLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            _titleLabel.AutoEllipsis = true;
+            _titleLabel.Font = new Font("Segoe UI", 15F, FontStyle.Bold);
             _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
-            _titleLabel.Location = new Point(0, 0);
+            _titleLabel.Location = new Point(80, 12);
             _titleLabel.Name = "_titleLabel";
+            _titleLabel.Size = new Size(620, 36);
             _titleLabel.Text = "Quản lý sản phẩm hết hạn";
+            _titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+            _titleLabel.UseMnemonic = false;
             //
             // _subtitleLabel
             //
-            _subtitleLabel.AutoSize = true;
-            _subtitleLabel.Font = new Font("Segoe UI", 9.5F);
+            _subtitleLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            _subtitleLabel.AutoEllipsis = true;
+            _subtitleLabel.Font = new Font("Segoe UI", 9F);
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _subtitleLabel.Location = new Point(3, 50);
+            _subtitleLabel.Location = new Point(80, 52);
             _subtitleLabel.Name = "_subtitleLabel";
+            _subtitleLabel.Size = new Size(620, 20);
             _subtitleLabel.Text = "Theo dõi hàng hết hạn, xem chi tiết theo lô và lập phiếu tiêu hủy.";
+            _subtitleLabel.UseMnemonic = false;
             //
             // _disposeButton
             //
             _disposeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _disposeButton.BackColor = Color.FromArgb(220, 38, 38);
+            _disposeButton.Cursor = Cursors.Hand;
             _disposeButton.FlatAppearance.BorderSize = 0;
             _disposeButton.FlatStyle = FlatStyle.Flat;
             _disposeButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             _disposeButton.ForeColor = Color.White;
-            _disposeButton.Location = new Point(940, 14);
+            _disposeButton.Location = new Point(910, 22);
             _disposeButton.Name = "_disposeButton";
-            _disposeButton.Size = new Size(218, 42);
+            _disposeButton.Size = new Size(218, 38);
             _disposeButton.Text = "Lập phiếu tiêu hủy";
             _disposeButton.UseVisualStyleBackColor = false;
             _disposeButton.Enabled = false;
@@ -222,7 +261,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.ColumnHeadersHeight = 42;
             _grid.Columns.AddRange(new DataGridViewColumn[]
             {
-                MakeColumn("BatchId", "ID", 45),
                 MakeColumn("BatchCode", "Mã lô", 85),
                 MakeColumn("Product", "Sản phẩm", 155),
                 MakeColumn("LotNumber", "Số lô NCC", 95),
@@ -240,9 +278,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.MultiSelect = false;
             _grid.RowTemplate.Height = 36;
             _grid.Name = "_grid";
-            _grid.Rows.Add("12", "LOT_000012", "Sữa tươi nguyên kem", "MILK-042", "NCC Thực phẩm An Tâm",
+            _grid.Rows.Add("LOT_000012", "Sữa tươi nguyên kem", "MILK-042", "NCC Thực phẩm An Tâm",
                 "05/11/2026", "18", "32.000 ₫", "576.000 ₫", "Sắp hết hạn");
-            _grid.Rows.Add("8", "LOT_000008", "Cà phê bột 500g", "LOT-CF-001", "NCC Cà phê Việt",
+            _grid.Rows.Add("LOT_000008", "Cà phê bột 500g", "LOT-CF-001", "NCC Cà phê Việt",
                 "28/10/2026", "10", "65.000 ₫", "650.000 ₫", "Đã hết hạn");
             _grid.Rows[1].DefaultCellStyle.BackColor = Color.FromArgb(254, 242, 242);
             _grid.Rows[1].DefaultCellStyle.ForeColor = Color.FromArgb(153, 27, 27);
@@ -272,7 +310,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _expiredCard.ResumeLayout(false);
             _summaryLayout.ResumeLayout(false);
             _headerPanel.ResumeLayout(false);
-            _headerPanel.PerformLayout();
+            _headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)_headerIcon).EndInit();
             _root.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)_grid).EndInit();
             this.Load += new System.EventHandler(this.ucExpiryBatchManagement_Load);

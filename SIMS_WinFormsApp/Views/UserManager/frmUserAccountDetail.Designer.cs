@@ -36,6 +36,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private DetailInfoItemControl _itemFailedLogin;
         private DetailInfoItemControl _itemGender;
         private DetailInfoItemControl _itemSalary;
+        private DetailInfoItemControl _itemLoyaltyPoints;
+        private DetailInfoItemControl _itemCustomerCode;
 
         private void InitializeComponent()
         {
@@ -53,6 +55,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._itemAccountStatus = new DetailInfoItemControl();
             this._itemGender = new DetailInfoItemControl();
             this._itemSalary = new DetailInfoItemControl();
+            this._itemLoyaltyPoints = new DetailInfoItemControl();
+            this._itemCustomerCode = new DetailInfoItemControl();
             this._designerSecurityGrid = new System.Windows.Forms.TableLayoutPanel();
             this._itemLockStatus = new DetailInfoItemControl();
             this._itemFailedLogin = new DetailInfoItemControl();
@@ -155,6 +159,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerAccountGrid.Controls.Add(this._itemAccountStatus, 1, 2);
             this._designerAccountGrid.Controls.Add(this._itemGender, 0, 3);
             this._designerAccountGrid.Controls.Add(this._itemSalary, 1, 3);
+            this._designerAccountGrid.Controls.Add(this._itemLoyaltyPoints, 0, 3);
+            this._designerAccountGrid.Controls.Add(this._itemCustomerCode, 1, 3);
             this._designerAccountGrid.Location = new System.Drawing.Point(24, 56);
             this._designerAccountGrid.Name = "_designerAccountGrid";
             this._designerAccountGrid.RowCount = 4;
@@ -292,6 +298,38 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._itemSalary.Size = new System.Drawing.Size(431, 88);
             this._itemSalary.TabIndex = 7;
             this._itemSalary.ValueText = "12,000,000";
+            //
+            // _itemLoyaltyPoints
+            //
+            this._itemLoyaltyPoints.BackColor = System.Drawing.Color.Transparent;
+            this._itemLoyaltyPoints.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._itemLoyaltyPoints.Icon = FontAwesome.Sharp.IconChar.Star;
+            this._itemLoyaltyPoints.IconBackground = System.Drawing.Color.FromArgb(((int)(((byte)(237)))), ((int)(((byte)(243)))), ((int)(((byte)(251)))));
+            this._itemLoyaltyPoints.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this._itemLoyaltyPoints.LabelText = "Điểm tích lũy";
+            this._itemLoyaltyPoints.Location = new System.Drawing.Point(0, 288);
+            this._itemLoyaltyPoints.Margin = new System.Windows.Forms.Padding(0, 0, 16, 8);
+            this._itemLoyaltyPoints.MinimumSize = new System.Drawing.Size(160, 48);
+            this._itemLoyaltyPoints.Name = "_itemLoyaltyPoints";
+            this._itemLoyaltyPoints.Size = new System.Drawing.Size(431, 88);
+            this._itemLoyaltyPoints.TabIndex = 8;
+            this._itemLoyaltyPoints.ValueText = "0 điểm";
+            //
+            // _itemCustomerCode
+            //
+            this._itemCustomerCode.BackColor = System.Drawing.Color.Transparent;
+            this._itemCustomerCode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._itemCustomerCode.Icon = FontAwesome.Sharp.IconChar.IdCard;
+            this._itemCustomerCode.IconBackground = System.Drawing.Color.FromArgb(((int)(((byte)(237)))), ((int)(((byte)(243)))), ((int)(((byte)(251)))));
+            this._itemCustomerCode.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(100)))), ((int)(((byte)(200)))));
+            this._itemCustomerCode.LabelText = "Mã khách hàng";
+            this._itemCustomerCode.Location = new System.Drawing.Point(447, 288);
+            this._itemCustomerCode.Margin = new System.Windows.Forms.Padding(0, 0, 16, 8);
+            this._itemCustomerCode.MinimumSize = new System.Drawing.Size(160, 48);
+            this._itemCustomerCode.Name = "_itemCustomerCode";
+            this._itemCustomerCode.Size = new System.Drawing.Size(431, 88);
+            this._itemCustomerCode.TabIndex = 9;
+            this._itemCustomerCode.ValueText = "KH000001";
             // 
             // _designerSecurityGrid
             // 
@@ -356,7 +394,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._tabAccount.TabIndex = 0;
             this._tabAccount.Text = "Tài khoản";
             this._tabAccount.UseVisualStyleBackColor = false;
-            this._tabAccount.Click += new System.EventHandler(this._tabAccount_Click);
             // 
             // _tabSecurity
             // 
@@ -371,7 +408,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._tabSecurity.TabIndex = 1;
             this._tabSecurity.Text = "Bảo mật";
             this._tabSecurity.UseVisualStyleBackColor = false;
-            this._tabSecurity.Click += new System.EventHandler(this._tabSecurity_Click);
             // 
             // _designerSidebar
             // 

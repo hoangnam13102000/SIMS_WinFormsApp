@@ -18,6 +18,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
         private readonly IStockReconciliationListView _view;
         private readonly IStockReconciliationService _service;
         private readonly IUserSession _session;
+        private readonly bool _canReconcile;
         private List<StockReconciliationRowDto> _rows = new List<StockReconciliationRowDto>();
         private int _pageIndex;
         private bool _initialized;
@@ -26,11 +27,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
         public StockReconciliationListPresenter(
             IStockReconciliationListView view,
             IStockReconciliationService service,
-            IUserSession session)
+            IUserSession session,
+            bool canReconcile)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            _canReconcile = canReconcile;
 
             _view.ViewShown += OnViewShown;
             _view.DayCheckRequested += OnDayCheckRequested;
@@ -67,15 +70,21 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
                 _view.SetDates(DateTime.Today);
             }
 
-            int created = PrepareToday();
-            if (created > 0)
-                _view.ShowSuccess("Phiên đối chiếu hôm nay", "Đã tạo " + created + " sản phẩm để đối chiếu kho.");
+            if (_canReconcile)
+            {
+                int created = PrepareToday();
+                if (created > 0)
+                    _view.ShowSuccess("Phiên đối chiếu hôm nay", "Đã tạo " + created + " sản phẩm để đối chiếu kho.");
+            }
             ReloadRows();
         }
 
         // Qua 00:00 thì phiên cũ tự khóa (IsEditable theo ngày), chỉ cần tạo phiên mới.
         private void OnDayCheckRequested(object sender, EventArgs e)
         {
+            if (!_canReconcile)
+                return;
+
             DateTime today = DateTime.Today;
             if (!_initialized || today == _trackedDate)
                 return;
@@ -99,6 +108,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
         private void OnSyncRequested(object sender, EventArgs e)
         {
+            if (!_canReconcile)
+                return;
+
             if (CurrentUserId <= 0)
             {
                 _view.ShowError("Phiên đăng nhập không hợp lệ", "Vui lòng đăng nhập lại.");
@@ -226,6 +238,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
         private void OnActualStockEntered(int reconciliationId, string text)
         {
+            if (!_canReconcile)
+                return;
+
             StockReconciliationRowDto row = FindRow(reconciliationId);
             if (row == null)
                 return;
@@ -255,6 +270,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
         private void OnReasonEntered(int reconciliationId, string text)
         {
+            if (!_canReconcile)
+                return;
+
             StockReconciliationRowDto row = FindRow(reconciliationId);
             if (row == null)
                 return;
@@ -268,6 +286,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
         private void SaveCount(StockReconciliationRowDto row, int actual, string note)
         {
+            if (!_canReconcile)
+                return;
+
             if (!row.IsEditable)
             {
                 _view.RefreshRow(row);
@@ -318,6 +339,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
         private void OnImportRequested(object sender, EventArgs e)
         {
+            if (!_canReconcile)
+                return;
+
             if (CurrentUserId <= 0)
             {
                 _view.ShowError("Phiên đăng nhập không hợp lệ", "Vui lòng đăng nhập lại.");

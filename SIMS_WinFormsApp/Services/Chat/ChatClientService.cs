@@ -125,6 +125,7 @@ namespace SIMS_WinFormsApp.Services.Chat
 
             var socket = new ClientWebSocket();
             var cts = new CancellationTokenSource();
+            string endpoint = null;
             lock (_sync)
             {
                 _socket = socket;
@@ -133,7 +134,8 @@ namespace SIMS_WinFormsApp.Services.Chat
 
             try
             {
-                var uri = new Uri(ChatWsConfig.ClientEndpoint);
+                endpoint = ChatWsConfig.ClientEndpoint;
+                var uri = new Uri(endpoint);
                 await socket.ConnectAsync(uri, cts.Token).ConfigureAwait(false);
 
                 var join = ChatMessageDto.StaffJoin(_userId, _userName, _roleCode);
@@ -169,8 +171,10 @@ namespace SIMS_WinFormsApp.Services.Chat
                 }
             }
             catch (OperationCanceledException) { /* expected on dispose */ }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[ChatClientService] Kết nối WebSocket tới '{endpoint ?? "(chưa xác định)"}' thất bại: {ex}");
                 RaiseConnection(false);
             }
             finally

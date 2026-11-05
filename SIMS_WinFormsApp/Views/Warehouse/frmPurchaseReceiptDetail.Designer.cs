@@ -60,15 +60,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._receiptTotalValueLabel = new System.Windows.Forms.Label();
             this._productCountLabel = new System.Windows.Forms.Label();
             this._grid = new System.Windows.Forms.DataGridView();
-            this.ProductCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ProductNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BatchCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LotNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ManufactureDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExpiryDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ImportPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._product_code_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._product_name_column_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._batch_code_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._lot_number_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._manufacture_date_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._expiry_date_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._import_price_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._amount_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._expiryAlertPanel = new System.Windows.Forms.Panel();
             this._expiryAlertLabel = new System.Windows.Forms.Label();
             this._expiryAlertIcon = new FontAwesome.Sharp.IconPictureBox();
@@ -454,15 +454,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.ColumnHeadersHeight = 40;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ProductCode,
-            this.ProductNameColumn,
-            this.BatchCode,
-            this.LotNumber,
-            this.ManufactureDate,
-            this.ExpiryDate,
-            this.Quantity,
-            this.ImportPrice,
-            this.Amount});
+            this._product_code_column,
+            this._product_name_column_column,
+            this._batch_code_column,
+            this._lot_number_column,
+            this._manufacture_date_column,
+            this._expiry_date_column,
+            this._quantity_column,
+            this._import_price_column,
+            this._amount_column});
             dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle11.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle11.Font = new System.Drawing.Font("Segoe UI", 9.5F);
@@ -490,131 +490,131 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // ProductCode
             // 
-            this.ProductCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._product_code_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ProductCode.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ProductCode.FillWeight = 9F;
-            this.ProductCode.HeaderText = "Mã SP";
-            this.ProductCode.MinimumWidth = 75;
-            this.ProductCode.Name = "ProductCode";
-            this.ProductCode.ReadOnly = true;
+            this._product_code_column.DefaultCellStyle = dataGridViewCellStyle2;
+            this._product_code_column.FillWeight = 9F;
+            this._product_code_column.HeaderText = "Mã SP";
+            this._product_code_column.MinimumWidth = 75;
+            this._product_code_column.Name = "ProductCode";
+            this._product_code_column.ReadOnly = true;
             // 
             // ProductNameColumn
             // 
-            this.ProductNameColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._product_name_column_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(64)))), ((int)(((byte)(175)))));
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ProductNameColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.ProductNameColumn.FillWeight = 20F;
-            this.ProductNameColumn.HeaderText = "Sản phẩm";
-            this.ProductNameColumn.MinimumWidth = 130;
-            this.ProductNameColumn.Name = "ProductName";
-            this.ProductNameColumn.ReadOnly = true;
+            this._product_name_column_column.DefaultCellStyle = dataGridViewCellStyle3;
+            this._product_name_column_column.FillWeight = 20F;
+            this._product_name_column_column.HeaderText = "Sản phẩm";
+            this._product_name_column_column.MinimumWidth = 130;
+            this._product_name_column_column.Name = "ProductName";
+            this._product_name_column_column.ReadOnly = true;
             // 
             // BatchCode
             // 
-            this.BatchCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._batch_code_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.BatchCode.DefaultCellStyle = dataGridViewCellStyle4;
-            this.BatchCode.FillWeight = 12F;
-            this.BatchCode.HeaderText = "Mã lô";
-            this.BatchCode.MinimumWidth = 105;
-            this.BatchCode.Name = "BatchCode";
-            this.BatchCode.ReadOnly = true;
+            this._batch_code_column.DefaultCellStyle = dataGridViewCellStyle4;
+            this._batch_code_column.FillWeight = 12F;
+            this._batch_code_column.HeaderText = "Mã lô";
+            this._batch_code_column.MinimumWidth = 105;
+            this._batch_code_column.Name = "BatchCode";
+            this._batch_code_column.ReadOnly = true;
             // 
             // LotNumber
             // 
-            this.LotNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._lot_number_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.LotNumber.DefaultCellStyle = dataGridViewCellStyle5;
-            this.LotNumber.FillWeight = 11F;
-            this.LotNumber.HeaderText = "Số lô NCC";
-            this.LotNumber.MinimumWidth = 90;
-            this.LotNumber.Name = "LotNumber";
-            this.LotNumber.ReadOnly = true;
+            this._lot_number_column.DefaultCellStyle = dataGridViewCellStyle5;
+            this._lot_number_column.FillWeight = 11F;
+            this._lot_number_column.HeaderText = "Số lô NCC";
+            this._lot_number_column.MinimumWidth = 90;
+            this._lot_number_column.Name = "LotNumber";
+            this._lot_number_column.ReadOnly = true;
             // 
             // ManufactureDate
             // 
-            this.ManufactureDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._manufacture_date_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ManufactureDate.DefaultCellStyle = dataGridViewCellStyle6;
-            this.ManufactureDate.FillWeight = 11F;
-            this.ManufactureDate.HeaderText = "NSX";
-            this.ManufactureDate.MinimumWidth = 95;
-            this.ManufactureDate.Name = "ManufactureDate";
-            this.ManufactureDate.ReadOnly = true;
+            this._manufacture_date_column.DefaultCellStyle = dataGridViewCellStyle6;
+            this._manufacture_date_column.FillWeight = 11F;
+            this._manufacture_date_column.HeaderText = "NSX";
+            this._manufacture_date_column.MinimumWidth = 95;
+            this._manufacture_date_column.Name = "ManufactureDate";
+            this._manufacture_date_column.ReadOnly = true;
             // 
             // ExpiryDate
             // 
-            this.ExpiryDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._expiry_date_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle7.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ExpiryDate.DefaultCellStyle = dataGridViewCellStyle7;
-            this.ExpiryDate.FillWeight = 11F;
-            this.ExpiryDate.HeaderText = "HSD";
-            this.ExpiryDate.MinimumWidth = 95;
-            this.ExpiryDate.Name = "ExpiryDate";
-            this.ExpiryDate.ReadOnly = true;
+            this._expiry_date_column.DefaultCellStyle = dataGridViewCellStyle7;
+            this._expiry_date_column.FillWeight = 11F;
+            this._expiry_date_column.HeaderText = "HSD";
+            this._expiry_date_column.MinimumWidth = 95;
+            this._expiry_date_column.Name = "ExpiryDate";
+            this._expiry_date_column.ReadOnly = true;
             // 
             // Quantity
             // 
-            this.Quantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._quantity_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             dataGridViewCellStyle8.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Quantity.DefaultCellStyle = dataGridViewCellStyle8;
-            this.Quantity.FillWeight = 6F;
-            this.Quantity.HeaderText = "SL";
-            this.Quantity.MinimumWidth = 45;
-            this.Quantity.Name = "Quantity";
-            this.Quantity.ReadOnly = true;
+            this._quantity_column.DefaultCellStyle = dataGridViewCellStyle8;
+            this._quantity_column.FillWeight = 6F;
+            this._quantity_column.HeaderText = "SL";
+            this._quantity_column.MinimumWidth = 45;
+            this._quantity_column.Name = "Quantity";
+            this._quantity_column.ReadOnly = true;
             // 
             // ImportPrice
             // 
-            this.ImportPrice.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._import_price_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             dataGridViewCellStyle9.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(64)))), ((int)(((byte)(175)))));
             dataGridViewCellStyle9.Format = "N0";
             dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ImportPrice.DefaultCellStyle = dataGridViewCellStyle9;
-            this.ImportPrice.FillWeight = 10F;
-            this.ImportPrice.HeaderText = "Giá nhập";
-            this.ImportPrice.MinimumWidth = 95;
-            this.ImportPrice.Name = "ImportPrice";
-            this.ImportPrice.ReadOnly = true;
+            this._import_price_column.DefaultCellStyle = dataGridViewCellStyle9;
+            this._import_price_column.FillWeight = 10F;
+            this._import_price_column.HeaderText = "Giá nhập";
+            this._import_price_column.MinimumWidth = 95;
+            this._import_price_column.Name = "ImportPrice";
+            this._import_price_column.ReadOnly = true;
             // 
             // Amount
             // 
-            this.Amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._amount_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             dataGridViewCellStyle10.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             dataGridViewCellStyle10.Format = "N0";
             dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Amount.DefaultCellStyle = dataGridViewCellStyle10;
-            this.Amount.FillWeight = 11F;
-            this.Amount.HeaderText = "Thành tiền";
-            this.Amount.MinimumWidth = 105;
-            this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
+            this._amount_column.DefaultCellStyle = dataGridViewCellStyle10;
+            this._amount_column.FillWeight = 11F;
+            this._amount_column.HeaderText = "Thành tiền";
+            this._amount_column.MinimumWidth = 105;
+            this._amount_column.Name = "Amount";
+            this._amount_column.ReadOnly = true;
             // 
             // _expiryAlertPanel
             // 
@@ -911,14 +911,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private FlowLayoutPanel _totalPanel;
         private Label _totalCaptionLabel;
         private Label _totalValueLabel;
-        private DataGridViewTextBoxColumn ProductCode;
-        private DataGridViewTextBoxColumn ProductNameColumn;
-        private DataGridViewTextBoxColumn BatchCode;
-        private DataGridViewTextBoxColumn LotNumber;
-        private DataGridViewTextBoxColumn ManufactureDate;
-        private DataGridViewTextBoxColumn ExpiryDate;
-        private DataGridViewTextBoxColumn Quantity;
-        private DataGridViewTextBoxColumn ImportPrice;
-        private DataGridViewTextBoxColumn Amount;
+        private DataGridViewTextBoxColumn _product_code_column;
+        private DataGridViewTextBoxColumn _product_name_column_column;
+        private DataGridViewTextBoxColumn _batch_code_column;
+        private DataGridViewTextBoxColumn _lot_number_column;
+        private DataGridViewTextBoxColumn _manufacture_date_column;
+        private DataGridViewTextBoxColumn _expiry_date_column;
+        private DataGridViewTextBoxColumn _quantity_column;
+        private DataGridViewTextBoxColumn _import_price_column;
+        private DataGridViewTextBoxColumn _amount_column;
     }
 }

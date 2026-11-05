@@ -116,6 +116,18 @@ namespace SIMS_WinFormsApp.UI.Theme
             ApplyToolTip();
         }
 
+        public void ApplyTheme(System.Drawing.Color background, System.Drawing.Color iconColor)
+        {
+            if (_disposed || _button.IsDisposed)
+                return;
+
+            _button.BackColor = background;
+            _button.FlatAppearance.MouseDownBackColor = background;
+            _button.FlatAppearance.MouseOverBackColor = background;
+            _button.IconColor = iconColor;
+            _button.Invalidate();
+        }
+
         private void ToggleVisibility(object sender, EventArgs e)
         {
             _passwordVisible = !_passwordVisible;

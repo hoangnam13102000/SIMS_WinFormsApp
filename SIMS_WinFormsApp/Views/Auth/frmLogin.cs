@@ -224,27 +224,35 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void OnThemeChanged(object sender, EventArgs e)
         {
-            bool dark = ThemeManager.Instance.IsDark;
+            Color pageBackground = AppColors.PageBg;
+            Color inputBackground = ThemeManager.Instance.IsDark
+                ? AppColors.BgLighter
+                : Color.White;
 
-            pnlRight.BackColor = dark ? Color.FromArgb(18, 20, 26) : AppColors.White;
-            pnlRight.ForeColor = dark ? Color.White : AppColors.TextPrimary;
-            lblTitle.ForeColor = dark ? Color.White : AppColors.TextTitle;
-            lblSubtitle.ForeColor = dark ? Color.FromArgb(200, 210, 225) : AppColors.TextMuted;
-            lblUsername.ForeColor = dark ? Color.White : AppColors.TextPrimary;
-            lblPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            pnlRight.BackColor = pageBackground;
+            pnlRight.FillColor = pageBackground;
+            pnlRight.ForeColor = AppColors.TextPrimary;
+            pnlFormCard.BackColor = pageBackground;
+            pnlFormCard.FillColor = pageBackground;
+            pnlOptionsRow.BackColor = pageBackground;
+            lblTitle.ForeColor = AppColors.TextTitle;
+            lblSubtitle.ForeColor = AppColors.TextMuted;
+            lblUsername.ForeColor = AppColors.TextPrimary;
+            lblPassword.ForeColor = AppColors.TextPrimary;
             lblError.ForeColor = AppColors.Error;
-            btnLogin.CustomAccentColor = dark ? Color.FromArgb(33, 128, 185) : AppColors.Accent;
-            txtUsername.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
-            txtUsername.ForeColor = dark ? Color.White : AppColors.TextPrimary;
-            pnlUsernameInput.FillColor = txtUsername.BackColor;
+            btnLogin.CustomAccentColor = AppColors.Accent;
+            txtUsername.BackColor = inputBackground;
+            txtUsername.ForeColor = AppColors.TextPrimary;
+            pnlUsernameInput.FillColor = inputBackground;
             pnlUsernameInput.BorderColor = txtUsername.Focused ? AppColors.Accent : AppColors.FieldBorder;
-            txtPassword.BackColor = dark ? Color.FromArgb(18, 20, 26) : Color.White;
-            txtPassword.ForeColor = dark ? Color.White : AppColors.TextPrimary;
+            txtPassword.BackColor = inputBackground;
+            txtPassword.ForeColor = AppColors.TextPrimary;
             pnlPasswordInput.FillColor = txtPassword.BackColor;
             pnlPasswordInput.BorderColor = txtPassword.Focused ? AppColors.Accent : AppColors.FieldBorder;
-            chkRemember.BackColor = dark ? Color.FromArgb(18, 20, 26) : AppColors.White;
-            chkRemember.ForeColor = dark ? Color.White : AppColors.TextMuted;
-            lnkForgotPassword.ForeColor = dark ? Color.FromArgb(120, 200, 255) : AppColors.Accent;
+            chkRemember.BackColor = pageBackground;
+            chkRemember.ForeColor = AppColors.TextSecondary;
+            lnkForgotPassword.ForeColor = AppColors.Accent;
+            _passwordVisibilityToggle?.ApplyTheme(inputBackground, AppColors.TextMuted);
 
             Refresh();
         }

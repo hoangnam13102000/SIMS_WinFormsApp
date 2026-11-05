@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Inventory;
+using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -33,6 +34,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
+            DataGridViewCodeCopy.Attach(_grid, "BatchCode");
             _canDispose = canDispose;
             _service = AppComposition.CreateExpiryBatchManagementService();
             _searchTimer = new Timer(components) { Interval = 300 };
@@ -173,7 +175,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 }
 
                 int rowIndex = _grid.Rows.Add(
-                    batch.BatchId,
                     batch.BatchCode,
                     batch.ProductCode + " · " + batch.ProductName,
                     batch.LotNumber,

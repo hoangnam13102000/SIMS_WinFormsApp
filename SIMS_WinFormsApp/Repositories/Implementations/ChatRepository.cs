@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Chat;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Models.Chat;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 

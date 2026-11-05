@@ -20,7 +20,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
     internal sealed class ProductTileControl : UserControl
     {
         public const int TileWidth = 250;
-        public const int TileHeight = 330;
+        public const int TileHeight = 350;
         private const int ImageHeight = 150;
         private const int ContentPadding = 12;
 
@@ -117,7 +117,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             {
                 Location = new Point(ContentPadding, nameLabel.Bottom + 1),
                 Size = new Size(TileWidth - (ContentPadding * 2),
-                    product.StockBatchDifference != 0 ? 54 : product.ExpiredQuantity > 0 ? 38 : 20),
+                    product.StockBatchDifference != 0 ? 54 : product.ExpiredQuantity > 0 ? 44 : 36),
                 Text = (string.IsNullOrWhiteSpace(product.CategoryName) ? "Chưa phân loại" : product.CategoryName) +
                     Environment.NewLine + "Có thể bán: " + product.SellableQuantity +
                     (product.ExpiredQuantity > 0 ? "  ·  Hết hạn theo lô: " + product.ExpiredQuantity : string.Empty) +
@@ -164,16 +164,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             {
                 actionButton.IsPrimary = false;
                 actionButton.CustomAccentColor = AppColors.Warning;
-                if (product.ExpiredQuantity > 0)
-                {
-                    actionButton.Text = "Hàng hết hạn";
-                    actionButton.Enabled = false;
-                }
-                else
-                {
-                    actionButton.Text = "Báo hết hàng";
-                    actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
-                }
+                actionButton.Text = "Báo hết hàng";
+                actionButton.Click += (s, e) => NotifyRestockClicked?.Invoke(this, EventArgs.Empty);
             }
             else if (product.IsCartQuantityLimitReached)
             {

@@ -39,8 +39,7 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 | Ngôn ngữ | C# (.NET 6.0 / .NET Framework 4.8) |
 | Giao diện | Windows Forms |
 | Cơ sở dữ liệu | Microsoft SQL Server 2022+ (hoặc file .mdf LocalDB) |
-| Kết nối CSDL | ADO.NET / SqlClient |
-| Truy vấn dữ liệu | LINQ to SQL / LINQ to Entities |
+| Kết nối và truy vấn dữ liệu | LINQ to SQL qua model DBML (`Sims.dbml`) |
 | Bảo mật mật khẩu | BCrypt.Net (Hash + Salt tự động) |
 | Cấu hình kết nối | App.config + chuỗi kết nối được mã hóa |
 | Báo cáo & In ấn | RDLC / ReportViewer |
@@ -57,6 +56,17 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 - .NET 6.0 Runtime / .NET Framework 4.8 trở lên
 - SQL Server 2022+ hoặc SQL Server Express LocalDB (đính kèm file .mdf)
 - Quyền đọc/ghi thư mục dự án và quyền kết nối CSDL
+
+### Kết nối chat nội bộ qua ngrok
+
+Trên máy host, mở ứng dụng và chạy `ngrok http 8890`. Lấy địa chỉ HTTPS trong dòng
+`Forwarding` của ngrok, rồi đặt `WS_CHAT_URL` trong `SIMS_WinFormsApp.exe.config`
+(hoặc `SIMS.exe.config` nếu dùng gói đóng gói) thành địa chỉ đó với giao thức `wss://`,
+ví dụ `wss://<ten-mien-ngrok-cua-ban>`. Có thể dùng URL `https://` tương ứng; ứng dụng
+sẽ tự đổi sang WebSocket bảo mật. Cấu hình cùng địa chỉ này trên mỗi máy tham gia chat.
+
+Chat server chỉ chạy khi mở màn hình chat trên máy host. Địa chỉ ngrok có thể truy cập
+công khai; chỉ chia sẻ với người được phép và tắt tunnel khi không sử dụng.
 
 ---
 
@@ -84,16 +94,31 @@ Sau nhiều năm mở rộng chi nhánh, Connect Mart gặp khó khăn khi quả
 Project sử dụng MVP (Model–View–Presenter) theo luồng:
 
 ```text
-WinForms View -> Presenter -> Service -> Repository -> LINQ to SQL/Database
+WinForms View -> Presenter -> Service -> Repository -> Sims.dbml/LINQ to SQL -> SQL Server
 ```
 
 - `Forms/` chỉ chứa mã giao diện và triển khai các interface trong `Views/Interfaces/`.
 - `MVP/Presenters/` điều phối event, validation ở cấp màn hình và cập nhật View.
 - `Services/Interfaces/` chứa contract nghiệp vụ; `Services/Implementations/` chứa các use case.
 - `Repositories/Interfaces/` chứa abstraction persistence; `Repositories/Implementations/`
-  chứa các repository implementation. `DAL/` chỉ chứa `DbHelper`, `DataContext` và LINQ entities.
+  chứa các repository implementation. `DAL/Linq/Sims.dbml` là mapping nguồn cho các bảng;
+  `Sims.designer.cs` chứa `DataContext` và entity được sinh từ mapping này.
 - `Models/DTOs/` là dữ liệu trao đổi giữa các layer; `Models/Entities/` là model nghiệp vụ.
 - `Infrastructure/` chứa cấu hình, lưu trữ bảo mật và các adapter nền tảng.
+
+Truy vấn và cập nhật dữ liệu nghiệp vụ sử dụng LINQ to SQL qua `SimsDataContext`.
+SqlClient được giữ cho sao lưu SQL Server native và kiểm tra chuỗi kết nối.
+
+### Chỉnh sửa sơ đồ LINQ to SQL
+
+Mở `SIMS_WinFormsApp\DAL\Linq\Sims.dbml` trong Visual Studio bằng LINQ to SQL
+Classes Designer. DBML được khai báo với custom tool `MSLinqToSQLGenerator`; khi
+lưu DBML, Visual Studio cập nhật `Sims.designer.cs`. Có thể mở Server Explorer,
+kết nối tới database theo schema `sql\SIMS.sql`, rồi kéo các bảng vào sơ đồ.
+Không sửa trực tiếp `Sims.designer.cs` vì đây là mã được sinh tự động.
+
+Nếu Visual Studio không nhận DBML Designer, cài thành phần hỗ trợ LINQ to SQL
+Designer cho Visual Studio/.NET Framework rồi mở lại project.
 
 Dependency được truyền vào Presenter/Service qua constructor. Composition của các dependency
 mặc định chỉ được thực hiện ở tầng khởi tạo ứng dụng hoặc constructor mặc định của adapter,

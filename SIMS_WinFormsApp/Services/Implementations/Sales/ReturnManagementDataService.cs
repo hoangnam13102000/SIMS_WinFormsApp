@@ -4,7 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using SIMS_WinFormsApp.DAL.Linq;
-using SIMS_WinFormsApp.DAL.Linq.Entities.Business;
+using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
@@ -45,7 +45,24 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
         public string Status { get; set; }
     }
 
-    internal sealed class ReturnManagementDataService
+    internal interface IReturnManagementDataService
+    {
+        IReadOnlyList<ReturnableLineData> GetReturnableLines(int invoiceId);
+        void GetReturnPolicy(out decimal approvalThreshold, out int returnPolicyDays);
+        ReturnCreateResult CreateReturn(
+            int invoiceId, int currentUserId, int returnPolicyDays, bool canApprove, bool approveImmediately,
+            string reason, IReadOnlyList<ReturnSelectionData> selected);
+        IReadOnlyList<ReturnRequestRowData> GetRequests(
+            DateTime fromDate, DateTime toDate, bool canApprove, int currentUserId,
+            string keyword, string reasonFilter);
+        bool UpdateRequest(int returnId, bool approve, string rejectionReason, int userId);
+        List<NotificationDto> GetCompletedReturns(int userId);
+        List<NotificationDto> GetPendingReturnNotifications(int currentUserId);
+        List<NotificationDto> GetStockAlertNotifications();
+        List<NotificationDto> GetLowStockNotifications();
+    }
+
+    internal sealed class ReturnManagementDataService : IReturnManagementDataService
     {
         private readonly IDbConnectionFactory _connections;
 
@@ -383,6 +400,92 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                     CreatedAt = item.CreatedAt,
                     TargetPageKey = "returns"
                 }).ToList();
+            }
+        }
+
+        public List<NotificationDto> GetStockAlertNotifications()
+        {
+            using (SimsDataContext db = _connections.CreateDataContext())
+            {
+                var alerts = (from alert in db.StockAlerts
+                              join product in db.Products on alert.ProductID equals product.ProductID
+                              join user in db.Users on alert.ReportedBy equals user.UserID into reporters
+                              from reporter in reporters.DefaultIfEmpty()
+                              where alert.Status != "RESOLVED"
+                              orderby alert.CreatedAt descending, alert.AlertID descending
+                              select new
+                              {
+                                  alert.AlertID,
+                                  alert.AlertType,
+                                  alert.StockAtReport,
+                                  alert.CreatedAt,
+                                  alert.SeenByInventoryManager,
+                                  product.ProductName,
+                                  ReporterFullName = reporter == null ? null : reporter.FullName,
+                                  ReporterUsername = reporter == null ? null : reporter.Username
+                              }).Take(20).ToList();
+
+                var notifications = new List<NotificationDto>(alerts.Count);
+                foreach (var alert in alerts)
+                {
+                    string productName = alert.ProductName ?? "sản phẩm";
+                    string reporterName = !string.IsNullOrEmpty(alert.ReporterFullName)
+                        ? alert.ReporterFullName
+                        : alert.ReporterUsername ?? "Hệ thống";
+                    notifications.Add(new NotificationDto
+                    {
+                        NotificationId = "stock-alert:" +
+                            alert.AlertID.ToString(CultureInfo.InvariantCulture),
+                        Kind = "STOCK_ALERT",
+                        Title = alert.AlertType == "OUT_OF_STOCK"
+                            ? "Báo cáo hết hàng"
+                            : "Báo cáo sắp hết hàng",
+                        Message = reporterName + " báo \"" + productName +
+                            "\" hết hàng. Tồn tại thời điểm báo: " +
+                            alert.StockAtReport.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) + ".",
+                        CreatedAt = alert.CreatedAt,
+                        IsRead = alert.SeenByInventoryManager,
+                        TargetPageKey = "stock-alert"
+                    });
+                }
+                return notifications;
+            }
+        }
+
+        public List<NotificationDto> GetLowStockNotifications()
+        {
+            const int minimumStock = 10;
+            using (SimsDataContext db = _connections.CreateDataContext())
+            {
+                var products = db.Products
+                    .Where(product => product.Status == "ACTIVE" && product.Stock < minimumStock)
+                    .OrderBy(product => product.Stock)
+                    .ThenBy(product => product.ProductName)
+                    .Take(20)
+                    .ToList();
+                var notifications = new List<NotificationDto>(products.Count);
+                foreach (var product in products)
+                {
+                    string productCode = product.ProductCode ?? string.Empty;
+                    string productName = product.ProductName ?? "sản phẩm";
+                    notifications.Add(new NotificationDto
+                    {
+                        NotificationId = "low-stock:" +
+                            product.ProductID.ToString(CultureInfo.InvariantCulture),
+                        Kind = "LOW_STOCK",
+                        Title = "Tồn kho dưới mức tối thiểu",
+                        Message = (string.IsNullOrWhiteSpace(productCode)
+                                ? productName
+                                : productCode + " - " + productName) +
+                            " hiện còn " +
+                            product.Stock.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) +
+                            " (mức tối thiểu: " +
+                            minimumStock.ToString(CultureInfo.InvariantCulture) + ").",
+                        CreatedAt = DateTime.Now,
+                        TargetPageKey = "inventory"
+                    });
+                }
+                return notifications;
             }
         }
 

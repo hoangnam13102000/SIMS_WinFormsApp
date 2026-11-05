@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Dialogs;
@@ -13,10 +12,9 @@ namespace SIMS_WinFormsApp.Views.Sales
 {
     public partial class ucReturnManagement : UserControl
     {
-        private readonly IDbConnectionFactory _connectionFactory;
         private readonly int _currentUserId;
         private readonly bool _canApprove;
-        private readonly ReturnManagementDataService _dataService;
+        private readonly IReturnManagementDataService _dataService;
         private readonly Label _emptyStateLabel;
 
         public ucReturnManagement()
@@ -24,10 +22,12 @@ namespace SIMS_WinFormsApp.Views.Sales
         {
         }
 
-        public ucReturnManagement(IDbConnectionFactory connectionFactory, int currentUserId, bool canApprove)
+        internal ucReturnManagement(
+            IReturnManagementDataService dataService,
+            int currentUserId,
+            bool canApprove)
         {
-            _connectionFactory = connectionFactory;
-            _dataService = connectionFactory == null ? null : new ReturnManagementDataService(connectionFactory);
+            _dataService = dataService;
             _currentUserId = currentUserId;
             _canApprove = canApprove;
 
@@ -57,6 +57,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             _approve.Visible = canApprove;
             _reject.Visible = canApprove;
             _grid.CellClick += Grid_CellClick;
+            DataGridViewCodeCopy.Attach(_grid, "ReturnCode", "OrderCode");
             _search.KeyDown += Search_KeyDown;
             _refreshButton.Click += (sender, args) => LoadRequests();
             _from.ValueChanged += (sender, args) => LoadRequests();
@@ -98,7 +99,7 @@ namespace SIMS_WinFormsApp.Views.Sales
 
         private void LoadRequests()
         {
-            if (_connectionFactory == null || IsDisposed || _from.Value.Date > _to.Value.Date)
+            if (_dataService == null || IsDisposed || _from.Value.Date > _to.Value.Date)
                 return;
 
             try

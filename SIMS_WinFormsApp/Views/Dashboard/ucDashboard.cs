@@ -57,6 +57,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
+            _revenueCard.Paint += DrawCardBorder;
+            _ordersCard.Paint += DrawCardBorder;
+            _stockCard.Paint += DrawCardBorder;
+            _customersCard.Paint += DrawCardBorder;
+            _activityCard.Paint += DrawCardBorder;
             ConfigureExpiryBatchesLink();
             ConfigureRevenueSummaryChart();
             ConfigureRevenuePeriodFilter();
@@ -79,6 +84,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             Load += Dashboard_Load;
             VisibleChanged += Dashboard_VisibleChanged;
         }
+
+        public DataGridViewTextBoxColumn Activity => _activity_column;
+        public DataGridViewTextBoxColumn User => _user_column;
+        public DataGridViewTextBoxColumn Time => _time_column;
+        public DataGridViewTextBoxColumn Status => _status_column;
 
         public void ShowDashboardUser(string displayName)
         {
@@ -121,6 +131,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             bool showActivities = data.Kind == DashboardKind.Overview || data.IsSalesStaffDashboard;
             _activityCard.Visible = showActivities;
             ConfigureDashboardLayout(data.IsSalesStaffDashboard, showActivities);
+            OnActivityCardSizeChanged(_activityCard, EventArgs.Empty);
 
             _titleLabel.Text = data.Kind == DashboardKind.Inventory
                 ? "Tổng quan kho hàng"
@@ -260,6 +271,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 Padding = new Padding(18),
                 Name = "_revenueSummaryPanel"
             };
+            _revenueSummaryPanel.Paint += DrawCardBorder;
             var chartLayout = new TableLayoutPanel
             {
                 ColumnCount = 1,
@@ -449,9 +461,22 @@ namespace SIMS_WinFormsApp.Views.Dashboard
 
         private void OnActivityCardSizeChanged(object sender, EventArgs e)
         {
+            bool compactHeader = _activityCard.ClientSize.Width < 700
+                && _invoiceFilterPanel.Visible;
+            int gridTop = compactHeader ? 112 : 80;
+            int gridBottomInset = _invoiceFilterPanel.Visible ? 64 : 18;
+            int availableWidth = Math.Max(1, _activityCard.ClientSize.Width - 36);
+            int availableHeight = Math.Max(
+                1,
+                _activityCard.ClientSize.Height - gridTop - gridBottomInset);
+
             _invoiceFilterPanel.Location = new Point(
-                Math.Max(18, _activityCard.ClientSize.Width - 18 - _invoiceFilterPanel.Width),
-                14);
+                compactHeader
+                    ? 18
+                    : Math.Max(18, _activityCard.ClientSize.Width - 18 - _invoiceFilterPanel.Width),
+                compactHeader ? 74 : 14);
+            _activityGrid.Location = new Point(18, gridTop);
+            _activityGrid.Size = new Size(availableWidth, availableHeight);
         }
 
         private async void OnApplyInvoiceFilterClick(object sender, EventArgs e)
@@ -599,6 +624,17 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
+        private static void DrawCardBorder(object sender, PaintEventArgs e)
+        {
+            var panel = sender as Panel;
+            if (panel == null || panel.Width < 2 || panel.Height < 2)
+                return;
+
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            using (var pen = new Pen(AppColors.FieldBorder))
+                e.Graphics.DrawRectangle(pen, 0, 0, panel.Width - 1, panel.Height - 1);
+        }
+
         private async void Dashboard_Load(object sender, System.EventArgs e)
         {
             await LoadDashboardDataAsync();
@@ -656,13 +692,5 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
-        private void _titleLabel_Click(object sender, System.EventArgs e)
-        {
-        }
-
-        private void _activityTitle_Click(object sender, System.EventArgs e)
-        {
-
-        }
     }
 }

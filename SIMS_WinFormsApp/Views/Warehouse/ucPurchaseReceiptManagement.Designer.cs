@@ -580,11 +580,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.Location = new System.Drawing.Point(0, 0);
             this._grid.MultiSelect = false;
             this._grid.Name = "_grid";
+            this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grid.ReadOnly = true;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 51;
             this._grid.RowTemplate.Height = 44;
-            this._grid.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this._grid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1158, 482);
             this._grid.TabIndex = 0;
@@ -607,77 +608,84 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _codeColumn
             // 
+            this._codeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._codeColumn.FillWeight = 15F;
             this._codeColumn.HeaderText = "Mã phiếu";
-            this._codeColumn.MinimumWidth = 6;
+            this._codeColumn.MinimumWidth = 125;
             this._codeColumn.Name = "_codeColumn";
             this._codeColumn.ReadOnly = true;
-            this._codeColumn.Width = 140;
             // 
             // _supplierColumn
             // 
             this._supplierColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._supplierColumn.FillWeight = 20F;
             this._supplierColumn.HeaderText = "Nhà cung cấp";
-            this._supplierColumn.MinimumWidth = 180;
+            this._supplierColumn.MinimumWidth = 145;
             this._supplierColumn.Name = "_supplierColumn";
             this._supplierColumn.ReadOnly = true;
             // 
             // _creatorColumn
             // 
+            this._creatorColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._creatorColumn.FillWeight = 15F;
             this._creatorColumn.HeaderText = "Người tạo";
-            this._creatorColumn.MinimumWidth = 6;
+            this._creatorColumn.MinimumWidth = 115;
             this._creatorColumn.Name = "_creatorColumn";
             this._creatorColumn.ReadOnly = true;
-            this._creatorColumn.Width = 190;
             // 
             // _dateColumn
             // 
+            this._dateColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._dateColumn.FillWeight = 12F;
             dataGridViewCellStyle3.Format = "dd/MM/yyyy";
             dataGridViewCellStyle3.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
             this._dateColumn.DefaultCellStyle = dataGridViewCellStyle3;
             this._dateColumn.HeaderText = "Ngày tạo";
-            this._dateColumn.MinimumWidth = 6;
+            this._dateColumn.MinimumWidth = 95;
             this._dateColumn.Name = "_dateColumn";
             this._dateColumn.ReadOnly = true;
-            this._dateColumn.Width = 150;
             // 
             // _itemCountColumn
             // 
+            this._itemCountColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._itemCountColumn.FillWeight = 8F;
             this._itemCountColumn.HeaderText = "Số SP";
-            this._itemCountColumn.MinimumWidth = 6;
+            this._itemCountColumn.MinimumWidth = 65;
             this._itemCountColumn.Name = "_itemCountColumn";
             this._itemCountColumn.ReadOnly = true;
-            this._itemCountColumn.Width = 125;
             // 
             // _totalColumn
             // 
+            this._totalColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._totalColumn.FillWeight = 14F;
             dataGridViewCellStyle4.Format = "N0";
             dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
             this._totalColumn.DefaultCellStyle = dataGridViewCellStyle4;
             this._totalColumn.HeaderText = "Tổng tiền";
-            this._totalColumn.MinimumWidth = 6;
+            this._totalColumn.MinimumWidth = 105;
             this._totalColumn.Name = "_totalColumn";
             this._totalColumn.ReadOnly = true;
-            this._totalColumn.Width = 140;
             // 
             // _statusColumn
             // 
+            this._statusColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._statusColumn.FillWeight = 10F;
             this._statusColumn.HeaderText = "Trạng thái";
-            this._statusColumn.MinimumWidth = 6;
+            this._statusColumn.MinimumWidth = 95;
             this._statusColumn.Name = "_statusColumn";
             this._statusColumn.ReadOnly = true;
-            this._statusColumn.Width = 120;
             // 
             // _actionColumn
             // 
-            this._actionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._actionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this._actionColumn.FillWeight = 6F;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this._actionColumn.DefaultCellStyle = dataGridViewCellStyle5;
             this._actionColumn.HeaderText = "Thao tác";
-            this._actionColumn.MinimumWidth = 6;
+            this._actionColumn.MinimumWidth = 65;
             this._actionColumn.Name = "_actionColumn";
             this._actionColumn.ReadOnly = true;
             this._actionColumn.ToolTipText = "Xem chi tiết phiếu nhập";
-            this._actionColumn.Width = 90;
             // 
             // _pagingPanel
             // 

@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.UI.Theme;
@@ -12,35 +11,31 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 {
     public partial class InvoiceManagementPage : Form
     {
-        private readonly IDbConnectionFactory _connectionFactory;
         private readonly int _currentUserId;
         private readonly bool _canViewAll;
         private readonly bool _canCreateReturns;
         private readonly bool _canApproveReturns;
         private readonly Action<int> _onInvoiceViewed;
-        private readonly InvoiceManagementDataService _dataService;
+        private readonly IInvoiceManagementDataService _dataService;
+        private readonly IReturnManagementDataService _returnDataService;
         private bool _themeSubscribed;
 
         public InvoiceManagementPage()
-            : this(null, 0, true)
+            : this(null, null, 0, true, false, false)
         {
         }
 
-        public InvoiceManagementPage(IDbConnectionFactory connectionFactory, int currentUserId, bool canViewAll)
-            : this(connectionFactory, currentUserId, canViewAll, false, false)
-        {
-        }
-
-        public InvoiceManagementPage(
-            IDbConnectionFactory connectionFactory,
+        internal InvoiceManagementPage(
+            IInvoiceManagementDataService dataService,
+            IReturnManagementDataService returnDataService,
             int currentUserId,
             bool canViewAll,
             bool canCreateReturns,
             bool canApproveReturns,
             Action<int> onInvoiceViewed = null)
         {
-            _connectionFactory = connectionFactory;
-            _dataService = connectionFactory == null ? null : new InvoiceManagementDataService(connectionFactory);
+            _dataService = dataService;
+            _returnDataService = returnDataService;
             _currentUserId = currentUserId;
             _canViewAll = canViewAll;
             _canCreateReturns = canCreateReturns;
@@ -50,8 +45,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             InitializeComponent();
             ConfigurePage();
             ApplyThemeColors();
+            DataGridViewCodeCopy.Attach(_invoicesGrid, "Invoice");
 
-            if (_connectionFactory != null)
+            if (_dataService != null)
             {
                 ThemeManager.Instance.ThemeChanged += OnThemeChanged;
                 _themeSubscribed = true;
@@ -160,7 +156,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         private void ReloadInvoices()
         {
-            if (_connectionFactory == null || IsDisposed)
+            if (_dataService == null || IsDisposed)
                 return;
 
             if (_fromDate.Value.Date > _toDate.Value.Date)
@@ -222,7 +218,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         private void PrintSelectedInvoice()
         {
-            if (_invoicesGrid.CurrentRow == null || _connectionFactory == null)
+            if (_invoicesGrid.CurrentRow == null || _dataService == null)
                 return;
 
             int invoiceId = Convert.ToInt32(_invoicesGrid.CurrentRow.Cells["InvoiceId"].Value);
@@ -250,7 +246,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         private void ShowSelectedInvoice()
         {
-            if (_invoicesGrid.CurrentRow == null || _connectionFactory == null)
+            if (_invoicesGrid.CurrentRow == null || _dataService == null)
                 return;
 
             int invoiceId = Convert.ToInt32(_invoicesGrid.CurrentRow.Cells["InvoiceId"].Value);
@@ -290,7 +286,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             try
             {
                 using (var dialog = new InvoiceReturnDialog(
-                    _connectionFactory,
+                    _returnDataService,
                     invoice,
                     _currentUserId,
                     _canApproveReturns))
@@ -315,10 +311,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             return amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) + " đ";
         }
 
-        private void _subtitle_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 
 }

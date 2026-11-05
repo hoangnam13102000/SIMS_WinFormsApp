@@ -475,6 +475,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.btnSaveProfile.TabIndex = 8;
             this.btnSaveProfile.Text = "Lưu thay đổi";
             this.btnSaveProfile.UseVisualStyleBackColor = false;
+            this.btnSaveProfile.Click += new System.EventHandler(this.btnSaveProfile_Click);
             // 
             // passwordHost
             // 

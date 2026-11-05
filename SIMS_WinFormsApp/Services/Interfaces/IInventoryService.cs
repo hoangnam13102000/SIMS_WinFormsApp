@@ -16,6 +16,7 @@ namespace SIMS_WinFormsApp.Services.Interfaces
         IReadOnlyList<string> GetPurchaseReceiptSuggestions();
         IReadOnlyList<StockAlertListItemDto> SearchStockAlerts(
             string keyword, int? categoryId, DateTime? from, DateTime? to);
+        int ReportOutOfStock(int productId, int stockAtReport, int reportedBy);
         int MarkAlertPlanned(int alertId);
         int ResolveAlert(int alertId, int userId);
         int MarkAllAlertsSeen();

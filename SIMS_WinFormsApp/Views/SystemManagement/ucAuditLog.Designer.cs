@@ -81,11 +81,11 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this._exportExcelButton = new System.Windows.Forms.Button();
             this._gridPanel = new System.Windows.Forms.Panel();
             this._auditGrid = new System.Windows.Forms.DataGridView();
-            this.Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Action = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Table = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._time_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._user_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._action_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._table_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._description_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ViewDetail = new System.Windows.Forms.DataGridViewButtonColumn();
             this._emptyLabel = new System.Windows.Forms.Label();
             this._pagingPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -450,11 +450,11 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this._auditGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._auditGrid.ColumnHeadersHeight = 40;
             this._auditGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Time,
-            this.User,
-            this.Action,
-            this.Table,
-            this.Description,
+            this._time_column,
+            this._user_column,
+            this._action_column,
+            this._table_column,
+            this._description_column,
             this.ViewDetail});
             this._auditGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._auditGrid.EnableHeadersVisualStyles = false;
@@ -472,51 +472,51 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             // 
             // Time
             // 
-            this.Time.FillWeight = 17F;
-            this.Time.HeaderText = "Thời gian";
-            this.Time.MinimumWidth = 8;
-            this.Time.Name = "Time";
-            this.Time.ReadOnly = true;
-            this.Time.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._time_column.FillWeight = 17F;
+            this._time_column.HeaderText = "Thời gian";
+            this._time_column.MinimumWidth = 8;
+            this._time_column.Name = "Time";
+            this._time_column.ReadOnly = true;
+            this._time_column.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // User
             // 
-            this.User.FillWeight = 15F;
-            this.User.HeaderText = "Người dùng";
-            this.User.MinimumWidth = 8;
-            this.User.Name = "User";
-            this.User.ReadOnly = true;
-            this.User.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._user_column.FillWeight = 15F;
+            this._user_column.HeaderText = "Người dùng";
+            this._user_column.MinimumWidth = 8;
+            this._user_column.Name = "User";
+            this._user_column.ReadOnly = true;
+            this._user_column.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Action
             // 
-            this.Action.FillWeight = 17F;
-            this.Action.HeaderText = "Hành động";
-            this.Action.MinimumWidth = 8;
-            this.Action.Name = "Action";
-            this.Action.ReadOnly = true;
-            this.Action.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._action_column.FillWeight = 17F;
+            this._action_column.HeaderText = "Hành động";
+            this._action_column.MinimumWidth = 8;
+            this._action_column.Name = "Action";
+            this._action_column.ReadOnly = true;
+            this._action_column.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Table
             // 
-            this.Table.FillWeight = 14F;
-            this.Table.HeaderText = "Bảng dữ liệu";
-            this.Table.MinimumWidth = 8;
-            this.Table.Name = "Table";
-            this.Table.ReadOnly = true;
-            this.Table.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._table_column.FillWeight = 14F;
+            this._table_column.HeaderText = "Bảng dữ liệu";
+            this._table_column.MinimumWidth = 8;
+            this._table_column.Name = "Table";
+            this._table_column.ReadOnly = true;
+            this._table_column.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Description
             // 
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Description.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Description.FillWeight = 29F;
-            this.Description.HeaderText = "Chi tiết";
-            this.Description.MinimumWidth = 8;
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
-            this.Description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this._description_column.DefaultCellStyle = dataGridViewCellStyle1;
+            this._description_column.FillWeight = 29F;
+            this._description_column.HeaderText = "Chi tiết";
+            this._description_column.MinimumWidth = 8;
+            this._description_column.Name = "Description";
+            this._description_column.ReadOnly = true;
+            this._description_column.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // ViewDetail
             // 
@@ -661,11 +661,11 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         }
 
-        private DataGridViewTextBoxColumn Time;
-        private DataGridViewTextBoxColumn User;
-        private DataGridViewTextBoxColumn Action;
-        private DataGridViewTextBoxColumn Table;
-        private DataGridViewTextBoxColumn Description;
+        private DataGridViewTextBoxColumn _time_column;
+        private DataGridViewTextBoxColumn _user_column;
+        private DataGridViewTextBoxColumn _action_column;
+        private DataGridViewTextBoxColumn _table_column;
+        private DataGridViewTextBoxColumn _description_column;
         private DataGridViewButtonColumn ViewDetail;
     }
 }

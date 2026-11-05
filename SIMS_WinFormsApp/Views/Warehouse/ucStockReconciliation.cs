@@ -27,27 +27,44 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private static readonly Color TextColor = Color.FromArgb(15, 23, 42);
 
         private readonly StockReconciliationListPresenter _presenter;
+        private readonly bool _canReconcile;
         private bool _suppressDateEvents;
         private bool _eventsReady;
         private bool _fromDateActive;
         private bool _toDateActive;
 
-        public ucStockReconciliation() : this(null, null)
+        public ucStockReconciliation() : this(null, null, false)
         {
         }
 
         public ucStockReconciliation(IStockReconciliationService service, IUserSession session)
+            : this(service, session, true)
+        {
+        }
+
+        public ucStockReconciliation(
+            IStockReconciliationService service,
+            IUserSession session,
+            bool canReconcile)
         {
             InitializeComponent();
+            _canReconcile = canReconcile;
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
             _presenter = new StockReconciliationListPresenter(
                 this,
                 service ?? AppComposition.CreateStockReconciliationService(),
-                session ?? UserSession.Instance);
+                session ?? UserSession.Instance,
+                _canReconcile);
 
             _pageSizeCombo.SelectedIndex = 0;
+            _syncButton.Visible = _canReconcile;
+            _importItem.Visible = _canReconcile;
+            _menuSeparator.Visible = _canReconcile;
+            colEdit.Visible = _canReconcile;
+            colActual.ReadOnly = !_canReconcile;
+            colReason.ReadOnly = !_canReconcile;
             _exportCsvItem.Image = IconBitmapCache.Get(IconChar.FileCsv, Blue, new Size(18, 18));
             _exportExcelItem.Image = IconBitmapCache.Get(IconChar.FileExcel, Blue, new Size(18, 18));
             _importItem.Image = IconBitmapCache.Get(IconChar.FileImport, Blue, new Size(18, 18));
@@ -146,7 +163,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         {
             gridRow.Cells[colSystem.Index].Value = row.SystemStock;
             gridRow.Cells[colActual.Index].Value = row.ActualStock;
-            gridRow.Cells[colEdit.Index].Value = row.IsEditable
+            gridRow.Cells[colEdit.Index].Value = _canReconcile && row.IsEditable
                 ? IconBitmapCache.Get(IconChar.Pen, Blue, new Size(15, 15))
                 : null;
             gridRow.Cells[colDiff.Index].Value = row.DiscrepancyText;
@@ -350,7 +367,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
             if (e.ColumnIndex == colCopy.Index || e.ColumnIndex == colProductCode.Index)
                 ProductCodeCopyRequested?.Invoke(row.ProductCode);
-            else if (e.ColumnIndex == colEdit.Index)
+            else if (_canReconcile && e.ColumnIndex == colEdit.Index)
                 BeginEditCell(e.RowIndex, colActual.Index);
             else if (e.ColumnIndex == colDetail.Index)
                 DetailRequested?.Invoke(row.ReconciliationId);
@@ -362,7 +379,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (row == null)
                 return;
 
-            if (e.ColumnIndex == colActual.Index || e.ColumnIndex == colReason.Index)
+            if (_canReconcile && (e.ColumnIndex == colActual.Index || e.ColumnIndex == colReason.Index))
                 BeginEditCell(e.RowIndex, e.ColumnIndex);
             else if (e.ColumnIndex != colCopy.Index && e.ColumnIndex != colProductCode.Index
                      && e.ColumnIndex != colEdit.Index && e.ColumnIndex != colDetail.Index)
@@ -371,7 +388,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.F2 || _grid.CurrentCell == null)
+            if (!_canReconcile || e.KeyCode != Keys.F2 || _grid.CurrentCell == null)
                 return;
             int column = _grid.CurrentCell.ColumnIndex == colReason.Index ? colReason.Index : colActual.Index;
             BeginEditCell(_grid.CurrentCell.RowIndex, column);
@@ -383,7 +400,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             StockReconciliationRowDto row = RowAt(rowIndex);
             if (row == null)
                 return;
-            if (!row.IsEditable)
+            if (!_canReconcile || !row.IsEditable)
             {
                 ShowWarning("Phiên đã khóa", "Đã qua 00:00 — chỉ được sửa phiên hôm nay.");
                 return;
@@ -395,7 +412,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void Grid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             StockReconciliationRowDto row = RowAt(e.RowIndex);
-            if (row == null || !row.IsEditable
+            if (!_canReconcile || row == null || !row.IsEditable
                 || (e.ColumnIndex != colActual.Index && e.ColumnIndex != colReason.Index))
                 e.Cancel = true;
         }
@@ -408,6 +425,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
             string text = Convert.ToString(_grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value,
                 CultureInfo.InvariantCulture) ?? string.Empty;
+            if (!_canReconcile)
+                return;
             if (e.ColumnIndex == colActual.Index)
                 ActualStockEntered?.Invoke(row.ReconciliationId, text);
             else if (e.ColumnIndex == colReason.Index)
@@ -460,11 +479,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.ColumnIndex == colCopy.Index || e.ColumnIndex == colProductCode.Index)
                 e.ToolTipText = "Click để copy mã sản phẩm: " + row.ProductCode;
             else if (e.ColumnIndex == colActual.Index || e.ColumnIndex == colEdit.Index)
-                e.ToolTipText = row.IsEditable
+                e.ToolTipText = !_canReconcile
+                    ? "Bạn chỉ có quyền xem kho"
+                    : row.IsEditable
                     ? "Double-click, F2 hoặc bấm bút để sửa tồn thực tế (phiên hôm nay)"
                     : "Phiên đã khóa lúc 00:00 — chỉ xem, không sửa được";
             else if (e.ColumnIndex == colReason.Index)
-                e.ToolTipText = row.IsEditable
+                e.ToolTipText = !_canReconcile
+                    ? "Bạn chỉ có quyền xem kho"
+                    : row.IsEditable
                     ? "Double-click hoặc F2 để ghi lý do chênh lệch"
                     : (row.Note ?? string.Empty);
             else if (e.ColumnIndex == colDetail.Index)
@@ -519,4 +542,3 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
     }
 }
-

@@ -15,6 +15,8 @@ namespace SIMS_WinFormsApp.Models.DTOs
         public string RoleName { get; set; }
         public string Status { get; set; }
         public bool IsLocked { get; set; }
+        public string CustomerCode { get; set; }
+        public int LoyaltyPoints { get; set; }
     }
 
     public sealed class UserManagementPageDto

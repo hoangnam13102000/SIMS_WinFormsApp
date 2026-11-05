@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
+using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -26,6 +27,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             InitializeComponent();
             _disposal = disposal ?? new StockDisposalListItemDto();
             _lines = lines ?? new List<StockDisposalDetailLineDto>();
+            DataGridViewCodeCopy.Attach(_grid, "colProductCode", "colBatchCode");
             ShowDisposal();
             _closeButton.Click += new EventHandler(_closeButton_Click);
         }

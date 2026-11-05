@@ -1,3 +1,4 @@
+using System;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 
@@ -6,6 +7,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
     public sealed partial class frmSupplierEditor : Form
     {
         private SupplierEditDto _model;
+        private readonly Func<SupplierEditDto, CatalogSaveResult> _save;
+        private CatalogSaveResult _saveResult;
 
         public frmSupplierEditor()
         {
@@ -13,10 +16,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
             Text = "Nhà cung cấp";
         }
 
-        private frmSupplierEditor(IWin32Window owner, SupplierEditDto model, bool readOnly)
+        private frmSupplierEditor(
+            IWin32Window owner,
+            SupplierEditDto model,
+            bool readOnly,
+            Func<SupplierEditDto, CatalogSaveResult> save)
         {
             InitializeComponent();
             _model = model ?? new SupplierEditDto();
+            _save = save;
             Text = readOnly
                 ? "Chi tiết nhà cung cấp"
                 : (_model.SupplierId > 0 ? "Sửa nhà cung cấp" : "Thêm nhà cung cấp");
@@ -33,7 +41,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _itemsTextBox.ReadOnly = readOnly;
             _saveButton.Visible = !readOnly;
             _cancelButton.Text = readOnly ? "Đóng" : "Hủy";
-            _saveButton.Click += (sender, args) => SaveAndClose();
             _cancelButton.Click += (sender, args) =>
             {
                 DialogResult = DialogResult.Cancel;
@@ -41,24 +48,72 @@ namespace SIMS_WinFormsApp.Views.Catalog
             };
         }
 
-        public static bool TryEdit(IWin32Window owner, SupplierEditDto model, bool readOnly, out SupplierEditDto result)
+        public static bool TryEdit(
+            IWin32Window owner,
+            SupplierEditDto model,
+            bool readOnly,
+            Func<SupplierEditDto, CatalogSaveResult> save,
+            out SupplierEditDto result,
+            out CatalogSaveResult saveResult)
         {
             result = null;
-            using (var dialog = new frmSupplierEditor(owner, model.Copy(), readOnly))
+            saveResult = null;
+            using (var dialog = new frmSupplierEditor(owner, model.Copy(), readOnly, save))
             {
                 if (dialog.ShowDialog(owner) != DialogResult.OK) return false;
                 result = dialog._model;
+                saveResult = dialog._saveResult;
                 return true;
             }
         }
 
-        private void SaveAndClose()
+        private void _saveButton_Click(object sender, System.EventArgs e)
         {
             _model.Name = _nameTextBox.Text;
             _model.Phone = _phoneTextBox.Text;
             _model.Email = _emailTextBox.Text;
             _model.Address = _addressTextBox.Text;
             _model.SuppliedItems = _itemsTextBox.Text;
+            if (string.IsNullOrWhiteSpace(_model.Name))
+            {
+                MessageBox.Show(this, "Nhập tên nhà cung cấp.", "Thông tin chưa hợp lệ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (_model.Name.Trim().Length > 150)
+            {
+                MessageBox.Show(this, "Tên nhà cung cấp tối đa 150 ký tự.", "Thông tin chưa hợp lệ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(_model.Phone) && _model.Phone.Trim().Length > 20)
+            {
+                MessageBox.Show(this, "Số điện thoại tối đa 20 ký tự.", "Thông tin chưa hợp lệ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(_model.Email) && _model.Email.Trim().Length > 100)
+            {
+                MessageBox.Show(this, "Email tối đa 100 ký tự.", "Thông tin chưa hợp lệ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (_save == null)
+            {
+                MessageBox.Show(this, "Không thể lưu nhà cung cấp.", "Lỗi lưu dữ liệu",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _saveResult = _save(_model);
+            if (_saveResult == null || !_saveResult.Success)
+            {
+                MessageBox.Show(this,
+                    _saveResult == null ? "Không thể lưu nhà cung cấp." : _saveResult.Message,
+                    "Không thể lưu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             DialogResult = DialogResult.OK;
             Close();
         }

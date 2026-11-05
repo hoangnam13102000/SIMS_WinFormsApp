@@ -158,7 +158,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             button.Text = string.Empty;
             button.UseVisualStyleBackColor = false;
             button.Cursor = Cursors.Hand;
-            button.Size = new Size(40, 40);
+            button.Size = new Size(48, 48);
             SetCircularRegion(button);
             button.SizeChanged += (sender, args) =>
                 SetCircularRegion(button);
@@ -246,6 +246,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _pages[key] = page;
             _pageLabels[key] = label ?? key;
             _contentHost.Controls.Add(page);
+            ThemeManager.Instance.ApplyTheme(page);
 
             if (!showInSidebar)
                 return;
@@ -415,7 +416,12 @@ namespace SIMS_WinFormsApp.Views.Shell
                     _notificationsEnabled
                         ? Lang.Get("quickSettings.notifications.on")
                         : Lang.Get("quickSettings.notifications.off"),
+                    Lang.Get("quickSettings.theme"),
+                    ThemeManager.Instance.IsDark
+                           ? Lang.Get("quickSettings.theme.dark")
+                           : Lang.Get("quickSettings.theme.light"),
                     Lang.Get("quickSettings.footer"));
+                _settingsPopup.DarkModeEnabled = ThemeManager.Instance.IsDark;
             }
         }
 
@@ -423,7 +429,10 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             _settingsPopup = new SettingsQuickPopup();
             _settingsPopup.NotificationsEnabled = _notificationsEnabled;
+            _settingsPopup.DarkModeEnabled = ThemeManager.Instance.IsDark;
             _settingsPopup.LanguageToggleRequested += (sender, args) => LanguageManager.Instance.Toggle();
+            _settingsPopup.DarkModeEnabledChanged += enabled =>
+                ThemeManager.Instance.SetMode(enabled ? ThemeMode.Dark : ThemeMode.Light);
             _settingsPopup.NotificationsEnabledChanged += enabled =>
             {
                 _notificationsEnabled = enabled;
@@ -523,6 +532,10 @@ namespace SIMS_WinFormsApp.Views.Shell
                     return "Hoàn trả cần duyệt";
                 case "RETURN_RESULT":
                     return "Kết quả hoàn trả";
+                case "STOCK_ALERT":
+                    return "Cảnh báo tồn kho";
+                case "LOW_STOCK":
+                    return "Tồn kho dưới mức tối thiểu";
                 default:
                     return "Thông báo";
             }
@@ -778,6 +791,20 @@ namespace SIMS_WinFormsApp.Views.Shell
                 UpdateHeaderMenuLabels();
                 UpdateAccountMenuAppearance();
                 ApplyAppearance();
+                if (IsHandleCreated)
+                    BeginInvoke((Action)ApplyPagesTheme);
+            }
+        }
+
+        private void ApplyPagesTheme()
+        {
+            if (IsDisposed)
+                return;
+
+            foreach (Control page in _pages.Values)
+            {
+                if (!page.IsDisposed)
+                    ThemeManager.Instance.ApplyTheme(page);
             }
         }
 
@@ -845,6 +872,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             _contentHost.BackColor = AppColors.PageBg;
             _navigationTree.BackColor = Color.FromArgb(24, 35, 52);
             _settingsPopup?.ApplyAppearance();
+            ApplyPagesTheme();
             Refresh();
         }
 
@@ -877,6 +905,7 @@ namespace SIMS_WinFormsApp.Views.Shell
                     page.Dock = DockStyle.Fill;
                     Controls.Clear();
                     Controls.Add(page);
+                    ThemeManager.Instance.ApplyTheme(page);
                     page.Visible = true;
                     _created = true;
                 }
@@ -910,16 +939,27 @@ namespace SIMS_WinFormsApp.Views.Shell
                 {
                     AutoSize = false,
                     Dock = DockStyle.Top,
-                    Height = 72,
+                    Height = 56,
                     Padding = new Padding(20),
                     ForeColor = Color.FromArgb(153, 27, 27),
                     Text = "Không thể mở trang này.\r\n" + exception.Message
+                };
+                var errorDetails = new TextBox
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Location = new Point(20, 62),
+                    Multiline = true,
+                    ReadOnly = true,
+                    ScrollBars = ScrollBars.Both,
+                    Size = new Size(Math.Max(300, ClientSize.Width - 40), 220),
+                    Text = exception.ToString(),
+                    WordWrap = false
                 };
                 var retryButton = new Button
                 {
                     AutoSize = true,
                     Text = "Thử lại",
-                    Location = new Point(20, 82)
+                    Location = new Point(20, errorDetails.Bottom + 8)
                 };
                 retryButton.Click += (sender, args) =>
                 {
@@ -927,13 +967,10 @@ namespace SIMS_WinFormsApp.Views.Shell
                     EnsurePageCreated();
                 };
                 Controls.Add(errorLabel);
+                Controls.Add(errorDetails);
                 Controls.Add(retryButton);
             }
         }
 
-        private void _subtitleLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

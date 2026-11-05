@@ -174,6 +174,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 Lang.Get("audit.filter.allTables"), AuditLogDisplayMapper.GetTableLabel);
         }
 
+        public DataGridViewTextBoxColumn Time => _time_column;
+        public DataGridViewTextBoxColumn User => _user_column;
+        public DataGridViewTextBoxColumn Action => _action_column;
+        public DataGridViewTextBoxColumn Table => _table_column;
+        public DataGridViewTextBoxColumn Description => _description_column;
+
         public void ShowDetail(AuditLogDetailDto detail)
         {
             frmAuditLogDetail.Show(FindForm(), detail);

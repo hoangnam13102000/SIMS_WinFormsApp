@@ -51,6 +51,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _usersGrid.CellDoubleClick += (sender, args) => { if (args.RowIndex >= 0) ShowSelectedUser(args.RowIndex); };
             _usersGrid.CellMouseClick += UsersGrid_CellMouseClick;
             _usersGrid.CellMouseDown += UsersGrid_CellMouseDown;
+            DataGridViewCodeCopy.Attach(_usersGrid, "EmployeeId");
             _rowMenu.Items.Add("Xem chi tiết", null, (sender, args) => ShowSelectedUser());
             _rowMenu.Items.Add("Sửa tài khoản", null, (sender, args) => EditSelectedUser());
             _rowMenu.Items.Add("Khóa / mở khóa", null, (sender, args) => ToggleSelectedUserLock());

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
+using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
 using SIMS_WinFormsApp.Views.Dialogs;
@@ -21,6 +22,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly IProductCatalogService _catalogService;
         private readonly ICustomerLookupService _customerService;
         private readonly IInvoiceService _invoiceService;
+        private readonly IInventoryService _inventoryService;
         private readonly IPromotionService _promotionService;
         private readonly IBarcodeScannerLauncher _scannerLauncher;
         private readonly HeldCartStore _heldCartStore;
@@ -48,6 +50,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             IProductCatalogService catalogService,
             ICustomerLookupService customerService,
             IInvoiceService invoiceService,
+            IInventoryService inventoryService,
             IPromotionService promotionService,
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
@@ -60,6 +63,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _catalogService = catalogService ?? throw new ArgumentNullException(nameof(catalogService));
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _invoiceService = invoiceService ?? throw new ArgumentNullException(nameof(invoiceService));
+            _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
             _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _scannerLauncher = scannerLauncher ?? throw new ArgumentNullException(nameof(scannerLauncher));
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
@@ -72,6 +76,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.ProductSearchChanged += OnProductSearchChanged;
             _view.CategoryChanged += OnCategoryChanged;
             _view.ScanBarcodeRequested += OnScanBarcodeRequested;
+            _view.CustomerBarcodeScanRequested += OnCustomerBarcodeScanRequested;
 
             _view.AddToCartRequested += OnAddToCartRequested;
             _view.NotifyWhenRestockRequested += OnNotifyWhenRestockRequested;
@@ -147,6 +152,26 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             }
             AddProductToCart(product, owner);
         }
+
+        private void OnCustomerBarcodeScanRequested(object sender, EventArgs e)
+        {
+            IWin32Window owner = _ownerWindowProvider();
+            string code = _scannerLauncher.Scan(
+                owner,
+                "Quét mã khách hàng",
+                "Đưa mã khách hàng vào giữa khung hình");
+            if (string.IsNullOrWhiteSpace(code)) return;
+
+            CustomerLookupDto customer = _customerService.FindCustomer(code.Trim());
+            if (customer == null)
+            {
+                AppToast.Warning(owner as Control, "Không tìm thấy khách hàng",
+                    "Không có khách hàng nào khớp với mã vừa quét: " + code.Trim());
+                return;
+            }
+
+            SelectCustomer(customer);
+        }
         #endregion
 
         #region Giỏ hàng
@@ -178,9 +203,44 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void OnNotifyWhenRestockRequested(object sender, int productId)
         {
             var product = _catalogService.GetById(productId);
-            string name = product?.Name ?? "sản phẩm này";
-            AppToast.Info(_ownerWindowProvider() as Control, "Đã ghi nhận",
-                "Sẽ thông báo cho bạn khi \"" + name + "\" có hàng trở lại.");
+            IWin32Window owner = _ownerWindowProvider();
+            if (product == null)
+            {
+                AppToast.Warning(owner as Control, "Không tìm thấy sản phẩm",
+                    "Sản phẩm không còn bán hoặc không tồn tại.");
+                return;
+            }
+
+            if (!product.IsOutOfStock)
+            {
+                ReloadProducts();
+                AppToast.Info(owner as Control, "Sản phẩm đã có hàng",
+                    "\"" + product.Name + "\" hiện có thể bán.");
+                return;
+            }
+
+            if (_userSession.CurrentUser == null)
+            {
+                AppToast.Error(owner as Control, "Không thể gửi cảnh báo",
+                    "Không xác định được nhân viên đang đăng nhập.");
+                return;
+            }
+
+            try
+            {
+                _inventoryService.ReportOutOfStock(
+                    product.ProductId,
+                    product.SellableQuantity,
+                    _userSession.CurrentUser.UserId);
+                AppToast.Success(owner as Control, "Đã gửi cảnh báo",
+                    "Quản lý kho sẽ nhận được thông báo hết hàng của \"" + product.Name + "\".");
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    "[PosPresenter] Failed to report out-of-stock product: " + exception);
+                AppToast.Error(owner as Control, "Không thể gửi cảnh báo", exception.Message);
+            }
         }
 
         private void OnCartQuantityChanged(object sender, (int ProductId, int Quantity) e)
@@ -216,6 +276,18 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private void RefreshTotals()
         {
+            var totalsWithoutPoints = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, 0);
+            decimal pointsAllowedByTotal = Math.Floor(
+                totalsWithoutPoints.GrandTotal / CartCalculator.PointRedeemRateVnd);
+            int customerPoints = _selectedCustomer == null
+                ? 0
+                : Math.Max(0, _selectedCustomer.LoyaltyPoints);
+            int maxRedeemablePoints = pointsAllowedByTotal >= int.MaxValue
+                ? customerPoints
+                : Math.Min(customerPoints, (int)pointsAllowedByTotal);
+            _pointsToUse = Math.Min(_pointsToUse, maxRedeemablePoints);
+            _view.SetPointRedemptionLimit(maxRedeemablePoints);
+
             var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
             _view.SetTotals(totals);
             _view.SetCheckoutEnabled(!_cart.IsEmpty);
@@ -493,6 +565,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.ProductSearchChanged -= OnProductSearchChanged;
             _view.CategoryChanged -= OnCategoryChanged;
             _view.ScanBarcodeRequested -= OnScanBarcodeRequested;
+            _view.CustomerBarcodeScanRequested -= OnCustomerBarcodeScanRequested;
 
             _view.AddToCartRequested -= OnAddToCartRequested;
             _view.NotifyWhenRestockRequested -= OnNotifyWhenRestockRequested;

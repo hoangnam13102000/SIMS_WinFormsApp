@@ -6,7 +6,16 @@ using SIMS_WinFormsApp.Models.DTOs.Sales;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Sales
 {
-    internal sealed class InvoiceManagementDataService
+    internal interface IInvoiceManagementDataService
+    {
+        IReadOnlyList<InvoiceManagementRow> GetInvoices(
+            DateTime fromDate, DateTime toDate, bool canViewAll, int currentUserId,
+            string status, string keyword);
+
+        InvoiceDetails GetInvoiceDetails(int invoiceId, bool canViewAll, int currentUserId);
+    }
+
+    internal sealed class InvoiceManagementDataService : IInvoiceManagementDataService
     {
         private readonly IDbConnectionFactory _connections;
 
@@ -81,7 +90,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                     DiscountAmount = header.DiscountAmount,
                     PromotionCode = header.PromotionCode ?? string.Empty,
                     VatRate = header.VATRate,
-                    VatAmount = header.VATAmount,
+                    VatAmount = header.VATAmount ?? 0m,
                     TotalAmount = header.TotalAmount,
                     IsCancelled = header.Status == "CANCELLED",
                     CancelReason = header.CancelReason ?? string.Empty,
@@ -105,7 +114,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                         ProductName = line.ProductName,
                         Quantity = line.Quantity,
                         UnitPrice = line.UnitPrice,
-                        LineTotal = line.LineTotal
+                        LineTotal = line.LineTotal ?? 0m
                     });
                 return result;
             }

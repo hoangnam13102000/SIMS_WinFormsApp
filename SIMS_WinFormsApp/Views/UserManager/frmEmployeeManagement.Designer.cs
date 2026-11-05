@@ -54,14 +54,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._statusFilter = new System.Windows.Forms.ComboBox();
             this._gridCard = new System.Windows.Forms.Panel();
             this._usersGrid = new System.Windows.Forms.DataGridView();
-            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FullName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EmployeeId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Email = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Role = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Lock = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Actions = new System.Windows.Forms.DataGridViewImageColumn();
+            this._username_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._full_name_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._employee_id_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._email_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._role_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._status_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._lock_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._actions_column = new System.Windows.Forms.DataGridViewImageColumn();
             this._surface.SuspendLayout();
             this._contentLayout.SuspendLayout();
             this._headerPanel.SuspendLayout();
@@ -296,14 +296,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this._usersGrid.ColumnHeadersHeight = 40;
             this._usersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Username,
-            this.FullName,
-            this.EmployeeId,
-            this.Email,
-            this.Role,
-            this.Status,
-            this.Lock,
-            this.Actions});
+            this._username_column,
+            this._full_name_column,
+            this._employee_id_column,
+            this._email_column,
+            this._role_column,
+            this._status_column,
+            this._lock_column,
+            this._actions_column});
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -329,68 +329,68 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // Username
             // 
-            this.Username.FillWeight = 95F;
-            this.Username.HeaderText = "Tên đăng nhập";
-            this.Username.MinimumWidth = 8;
-            this.Username.Name = "Username";
-            this.Username.ReadOnly = true;
-            this.Username.Visible = false;
+            this._username_column.FillWeight = 95F;
+            this._username_column.HeaderText = "Tên đăng nhập";
+            this._username_column.MinimumWidth = 8;
+            this._username_column.Name = "Username";
+            this._username_column.ReadOnly = true;
+            this._username_column.Visible = false;
             // 
             // FullName
             // 
-            this.FullName.FillWeight = 105F;
-            this.FullName.HeaderText = "Họ và tên";
-            this.FullName.MinimumWidth = 8;
-            this.FullName.Name = "FullName";
-            this.FullName.ReadOnly = true;
+            this._full_name_column.FillWeight = 105F;
+            this._full_name_column.HeaderText = "Họ và tên";
+            this._full_name_column.MinimumWidth = 8;
+            this._full_name_column.Name = "FullName";
+            this._full_name_column.ReadOnly = true;
             // 
             // EmployeeId
             // 
-            this.EmployeeId.FillWeight = 95F;
-            this.EmployeeId.HeaderText = "Mã nhân viên";
-            this.EmployeeId.MinimumWidth = 8;
-            this.EmployeeId.Name = "EmployeeId";
-            this.EmployeeId.ReadOnly = true;
+            this._employee_id_column.FillWeight = 95F;
+            this._employee_id_column.HeaderText = "Mã nhân viên";
+            this._employee_id_column.MinimumWidth = 8;
+            this._employee_id_column.Name = "EmployeeId";
+            this._employee_id_column.ReadOnly = true;
             // 
             // Email
             // 
-            this.Email.FillWeight = 135F;
-            this.Email.HeaderText = "Email";
-            this.Email.MinimumWidth = 8;
-            this.Email.Name = "Email";
-            this.Email.ReadOnly = true;
+            this._email_column.FillWeight = 135F;
+            this._email_column.HeaderText = "Email";
+            this._email_column.MinimumWidth = 8;
+            this._email_column.Name = "Email";
+            this._email_column.ReadOnly = true;
             // 
             // Role
             // 
-            this.Role.HeaderText = "Vai trò";
-            this.Role.MinimumWidth = 8;
-            this.Role.Name = "Role";
-            this.Role.ReadOnly = true;
+            this._role_column.HeaderText = "Vai trò";
+            this._role_column.MinimumWidth = 8;
+            this._role_column.Name = "Role";
+            this._role_column.ReadOnly = true;
             // 
             // Status
             // 
-            this.Status.HeaderText = "Trạng thái";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this._status_column.HeaderText = "Trạng thái";
+            this._status_column.MinimumWidth = 8;
+            this._status_column.Name = "Status";
+            this._status_column.ReadOnly = true;
             // 
             // Lock
             // 
-            this.Lock.FillWeight = 75F;
-            this.Lock.HeaderText = "Khóa";
-            this.Lock.MinimumWidth = 8;
-            this.Lock.Name = "Lock";
-            this.Lock.ReadOnly = true;
+            this._lock_column.FillWeight = 75F;
+            this._lock_column.HeaderText = "Khóa";
+            this._lock_column.MinimumWidth = 8;
+            this._lock_column.Name = "Lock";
+            this._lock_column.ReadOnly = true;
             // 
             // Actions
             // 
-            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Actions.HeaderText = "Thao tác";
-            this.Actions.MinimumWidth = 8;
-            this.Actions.Name = "Actions";
-            this.Actions.ReadOnly = true;
-            this.Actions.ToolTipText = "Xem, sửa hoặc khóa / mở khóa";
-            this.Actions.Width = 120;
+            this._actions_column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._actions_column.HeaderText = "Thao tác";
+            this._actions_column.MinimumWidth = 8;
+            this._actions_column.Name = "Actions";
+            this._actions_column.ReadOnly = true;
+            this._actions_column.ToolTipText = "Xem, sửa hoặc khóa / mở khóa";
+            this._actions_column.Width = 120;
             // 
             // frmEmployeeManagement
             // 
@@ -415,13 +415,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         }
 
-        private DataGridViewTextBoxColumn Username;
-        private DataGridViewTextBoxColumn FullName;
-        private DataGridViewTextBoxColumn EmployeeId;
-        private DataGridViewTextBoxColumn Email;
-        private DataGridViewTextBoxColumn Role;
-        private DataGridViewTextBoxColumn Status;
-        private DataGridViewTextBoxColumn Lock;
-        private DataGridViewImageColumn Actions;
+        private DataGridViewTextBoxColumn _username_column;
+        private DataGridViewTextBoxColumn _full_name_column;
+        private DataGridViewTextBoxColumn _employee_id_column;
+        private DataGridViewTextBoxColumn _email_column;
+        private DataGridViewTextBoxColumn _role_column;
+        private DataGridViewTextBoxColumn _status_column;
+        private DataGridViewTextBoxColumn _lock_column;
+        private DataGridViewImageColumn _actions_column;
     }
 }
