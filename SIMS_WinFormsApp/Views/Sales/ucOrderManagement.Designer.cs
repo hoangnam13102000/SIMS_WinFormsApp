@@ -164,7 +164,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._grid.RowHeadersWidth = 62;
             this._grid.Size = new System.Drawing.Size(946, 522);
             this._grid.TabIndex = 2;
-            this._grid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._grid_CellContentClick);
             // 
             // Code
             // 

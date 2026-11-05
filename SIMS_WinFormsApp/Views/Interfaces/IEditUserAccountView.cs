@@ -22,8 +22,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 
         event EventHandler SaveRequested;
 
-        event EventHandler CancelRequested;
-
         void ShowError(string message);
         void ShowSuccess(string message);
 

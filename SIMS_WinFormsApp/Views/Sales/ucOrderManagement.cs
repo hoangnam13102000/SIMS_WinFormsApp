@@ -21,10 +21,5 @@ namespace SIMS_WinFormsApp.Views.Sales
             _title.Text = Lang.Get("placeholder.orders.title");
             _subtitle.Text = Lang.Get("placeholder.orders.description");
         }
-
-        private void _grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
     }
 }

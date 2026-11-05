@@ -1,5 +1,7 @@
+using System;
 using System.Windows.Forms;
 using System.Drawing;
+using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
@@ -7,6 +9,11 @@ namespace SIMS_WinFormsApp.Views.Sales
 {
     public partial class PromotionEditorDialog : Form
     {
+        public event EventHandler<PromotionSaveRequestedEventArgs> SaveRequested;
+        public event EventHandler CancelRequested;
+
+        public int PromotionId { get; set; }
+
         public PromotionEditorDialog()
         {
             InitializeComponent();
@@ -45,6 +52,34 @@ namespace SIMS_WinFormsApp.Views.Sales
         public CheckBox ActiveInput { get { return _activeInput; } }
         public CheckBox BannerInput { get { return _bannerInput; } }
         public Button SaveButton { get { return _saveButton; } }
+
+        private void _saveButton_Click(object sender, EventArgs e)
+        {
+            var input = new PromotionEditorInput
+            {
+                PromotionId = PromotionId,
+                Code = _codeInput.Text,
+                Name = _nameInput.Text,
+                DiscountType = Convert.ToString(_typeInput.SelectedItem),
+                DiscountValue = _valueInput.Text,
+                MaximumDiscount = _maximumInput.Text,
+                MinimumOrder = _minimumInput.Text,
+                StartDate = _startInput.Value.Date,
+                EndDate = _endInput.Value.Date,
+                UsageLimit = _limitInput.Text,
+                IsActive = _activeInput.Checked,
+                ShowOnBanner = _bannerInput.Checked
+            };
+
+            // Presenter.OnSaveRequested sẽ xử lý thông qua page view.
+            SaveRequested?.Invoke(this, new PromotionSaveRequestedEventArgs(input));
+        }
+
+        private void _cancelButton_Click(object sender, EventArgs e)
+        {
+            // Presenter.OnCancelEditorRequested sẽ xử lý thông qua page view.
+            CancelRequested?.Invoke(this, EventArgs.Empty);
+        }
 
         private void ConfigureNumericInputs()
         {

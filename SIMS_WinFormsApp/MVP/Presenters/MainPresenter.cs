@@ -444,7 +444,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 }
                 if (HasAnyPermission(permissions, AppPermission.PROMOTION_MANAGE))
                     layout.AddLazyPage("promotions", "Mã giảm giá",
-                        () => new PromotionManagementPage(AppComposition.CreatePromotionManagementService()), IconChar.Tags);
+                        () => PromotionManagementPage.Create(), IconChar.Tags);
                 if (HasAnyPermission(permissions,
                         AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
                         AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST,

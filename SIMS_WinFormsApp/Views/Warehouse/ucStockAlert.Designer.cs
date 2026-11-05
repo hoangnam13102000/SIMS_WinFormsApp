@@ -274,7 +274,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearFilterLink.TabStop = true;
             this._clearFilterLink.Text = "✕ Xóa lọc";
             this._clearFilterLink.Visible = false;
-            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._clearFilterLink_LinkClicked);
             // 
             // _totalLabel
             // 

@@ -71,10 +71,5 @@ namespace SIMS_WinFormsApp.Views.Sales
             _closeButton.BackColor = AppColors.CancelBg;
             _closeButton.ForeColor = AppColors.TextPrimary;
         }
-
-        private void _layout_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

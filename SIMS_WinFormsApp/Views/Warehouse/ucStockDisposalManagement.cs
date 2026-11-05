@@ -396,10 +396,5 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
 
-        private void _toDatePicker_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
     }
 }

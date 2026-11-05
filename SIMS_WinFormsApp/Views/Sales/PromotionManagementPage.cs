@@ -7,33 +7,53 @@ using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Promotions;
-using SIMS_WinFormsApp.Services.Interfaces;
+using SIMS_WinFormsApp.Infrastructure.Composition;
+using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.Toast;
 
 namespace SIMS_WinFormsApp.Views.Sales
 {
-    public partial class PromotionManagementPage : UserControl
+    public partial class PromotionManagementPage : UserControl, IPromotionManagementView
     {
-        private readonly IPromotionManagementService _service;
         private readonly List<PromotionDto> _currentRows = new List<PromotionDto>();
         private PromotionEditorDialog _editorDialog;
         private int _selectedId;
         private bool _themeSubscribed;
         private bool _languageSubscribed;
 
+        public event EventHandler ReloadRequested;
+        public event EventHandler NewPromotionRequested;
+        public event EventHandler ViewPromotionRequested;
+        public event EventHandler EditPromotionRequested;
+        public event EventHandler ToggleActiveRequested;
+        public event EventHandler DeletePromotionRequested;
+        public event EventHandler CancelEditorRequested;
+        public event EventHandler<PromotionSaveRequestedEventArgs> SaveRequested;
+
         public PromotionManagementPage()
         {
             InitializePage();
         }
 
-        public PromotionManagementPage(IPromotionManagementService service)
+        public static PromotionManagementPage Create()
         {
-            _service = service ?? throw new ArgumentNullException(nameof(service));
-            InitializePage();
+            var view = new PromotionManagementPage();
+            var presenter = new PromotionManagementPresenter(
+                view,
+                AppComposition.CreatePromotionManagementService());
+            view.Disposed += (sender, args) => presenter.Dispose();
+            return view;
         }
+
+        public string Keyword { get { return _search.Text.Trim(); } }
+        public bool IncludeDeleted { get { return _includeDeleted.Checked; } }
+        public int PageIndex { get { return _pager.PageIndex; } }
+        public int PageSize { get { return _pager.PageSize; } }
+        public int SelectedPromotionId { get { return _selectedId; } }
 
         private void InitializePage()
         {
@@ -41,28 +61,26 @@ namespace SIMS_WinFormsApp.Views.Sales
             ApplyPageTheme();
             _grid.DataBindingComplete += (sender, args) => ApplyGridHeaders();
 
-            if (_service != null)
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 ThemeManager.Instance.ThemeChanged += OnThemeChanged;
                 _themeSubscribed = true;
                 LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
                 _languageSubscribed = true;
-                Load += (sender, args) => Reload();
-                _reloadButton.Click += (sender, args) => Reload();
-                _newPromotionButton.Click += (sender, args) => OpenEditor(null);
+                Load += (sender, args) => ReloadRequested?.Invoke(this, EventArgs.Empty);
                 _grid.SelectionChanged += (sender, args) => LoadSelected();
                 _grid.CellDoubleClick += (sender, args) =>
                 {
                     if (args.RowIndex >= 0)
                     {
                         _grid.CurrentCell = _grid.Rows[args.RowIndex].Cells["Code"];
-                        ViewSelected();
+                        ViewPromotionRequested?.Invoke(this, EventArgs.Empty);
                     }
                 };
                 _grid.CellMouseClick += Grid_CellMouseClick;
-                _pager.PageChanged += (sender, args) => Reload();
-                _search.TextChanged += (sender, args) => Reload(true);
-                _includeDeleted.CheckedChanged += (sender, args) => Reload(true);
+                _pager.PageChanged += (sender, args) => ReloadRequested?.Invoke(this, EventArgs.Empty);
+                _search.TextChanged += (sender, args) => RequestReload(true);
+                _includeDeleted.CheckedChanged += (sender, args) => RequestReload(true);
             }
             else if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
@@ -73,6 +91,25 @@ namespace SIMS_WinFormsApp.Views.Sales
             }
 
             ApplyGridHeaders();
+        }
+
+        private void RequestReload(bool resetPage)
+        {
+            if (resetPage)
+                _pager.ResetPage();
+            ReloadRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _reloadButton_Click(object sender, EventArgs e)
+        {
+            // Presenter.OnReloadRequested sẽ xử lý.
+            ReloadRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _newPromotionButton_Click(object sender, EventArgs e)
+        {
+            // Presenter.OnNewPromotionRequested sẽ xử lý.
+            NewPromotionRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
@@ -131,29 +168,18 @@ namespace SIMS_WinFormsApp.Views.Sales
             _grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
         }
 
-        private void Reload(bool resetPage = false)
+        public bool ShowItems(PromotionPage page)
         {
-            if (resetPage)
-                _pager.ResetPage();
-            try
-            {
-                PromotionPage page = _service.GetPage(
-                    _search.Text.Trim(),
-                    _includeDeleted.Checked,
-                    _pager.PageIndex,
-                    _pager.PageSize);
-                if (_pager.SetTotalCount(page.TotalCount))
-                {
-                    Reload();
-                    return;
-                }
+            if (page == null)
+                throw new ArgumentNullException(nameof(page));
+            if (_pager.SetTotalCount(page.TotalCount))
+                return true;
 
-                _currentRows.Clear();
-                _currentRows.AddRange(page.Rows);
-                var rows = _currentRows.Select(ToRow).ToList();
-                _grid.DataSource = rows;
-            }
-            catch (Exception ex) { ShowError(ex.Message); }
+            _currentRows.Clear();
+            _currentRows.AddRange(page.Rows);
+            var rows = _currentRows.Select(ToRow).ToList();
+            _grid.DataSource = rows;
+            return false;
         }
 
         private static object ToRow(PromotionDto item) => new
@@ -191,61 +217,38 @@ namespace SIMS_WinFormsApp.Views.Sales
                 return;
 
             if (actionIndex == 0)
-                ViewSelected();
+                RequestViewSelected();
             else if (actionIndex == 1)
-                EditSelected();
+                RequestEditSelected();
             else
-                Delete();
+                DeleteSelected();
         }
 
-        private void ViewSelected()
+        private void RequestViewSelected()
         {
-            if (_selectedId <= 0)
-            {
-                ShowError("Chọn mã giảm giá cần xem.");
-                return;
-            }
-
-            PromotionDto promotion = _service.GetById(_selectedId);
-            if (promotion == null)
-            {
-                ShowError("Không tìm thấy mã giảm giá đã chọn.");
-                return;
-            }
-            ShowDetails(promotion);
+            ViewPromotionRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ShowDetails(PromotionDto promotion)
+        public void ShowDetails(PromotionDto promotion)
         {
             using (var dialog = new PromotionDetailsDialog(promotion))
             {
-            Form owner = FindForm();
-            if (owner == null) dialog.ShowDialog();
-            else dialog.ShowDialog(owner);
+                Form owner = FindForm();
+                if (owner == null) dialog.ShowDialog();
+                else dialog.ShowDialog(owner);
             }
         }
 
-        private void EditSelected()
+        private void RequestEditSelected()
         {
-            if (_selectedId <= 0)
-            {
-                ShowError("Chọn mã giảm giá cần sửa.");
-                return;
-            }
-
-            PromotionDto dto = _service.GetById(_selectedId);
-            if (dto == null)
-            {
-                ShowError("Không tìm thấy mã giảm giá đã chọn.");
-                return;
-            }
-            OpenEditor(dto);
+            EditPromotionRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OpenEditor(PromotionDto promotion)
+        public void ShowEditor(PromotionDto promotion)
         {
             _selectedId = promotion == null ? 0 : promotion.PromotionId;
             var dialog = new PromotionEditorDialog(promotion == null);
+            dialog.PromotionId = _selectedId;
             _editorDialog = dialog;
 
             if (promotion != null)
@@ -263,66 +266,67 @@ namespace SIMS_WinFormsApp.Views.Sales
                 dialog.BannerInput.Checked = promotion.ShowOnBanner;
             }
 
-            dialog.SaveButton.Click += (sender, args) => Save();
-            Form owner = FindForm();
-            if (owner == null)
-                dialog.ShowDialog();
-            else
-                dialog.ShowDialog(owner);
-            _editorDialog = null;
-            dialog.Dispose();
+            dialog.SaveRequested += EditorSaveRequested;
+            dialog.CancelRequested += EditorCancelRequested;
+            try
+            {
+                Form owner = FindForm();
+                if (owner == null)
+                    dialog.ShowDialog();
+                else
+                    dialog.ShowDialog(owner);
+            }
+            finally
+            {
+                dialog.SaveRequested -= EditorSaveRequested;
+                dialog.CancelRequested -= EditorCancelRequested;
+                _editorDialog = null;
+                dialog.Dispose();
+            }
         }
 
-        private void Save()
+        private void EditorSaveRequested(object sender, PromotionSaveRequestedEventArgs e)
         {
-            decimal value, max, minimum;
-            int limit;
-            if (!decimal.TryParse(_editorDialog.DiscountValueInput.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out value)) { ShowError("Giá trị giảm không hợp lệ."); return; }
-            if (!TryOptionalDecimal(_editorDialog.MaximumDiscountInput.Text, out max) || !decimal.TryParse(_editorDialog.MinimumOrderInput.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out minimum) || !TryOptionalInt(_editorDialog.UsageLimitInput.Text, out limit)) { ShowError("Thông tin tiền hoặc giới hạn lượt không hợp lệ."); return; }
-            var dto = new PromotionEditDto { PromotionId = _selectedId, Code = _editorDialog.CodeInput.Text, Name = _editorDialog.NameInput.Text, DiscountType = Convert.ToString(_editorDialog.DiscountTypeInput.SelectedItem), DiscountValue = value, MaxDiscountAmount = string.IsNullOrWhiteSpace(_editorDialog.MaximumDiscountInput.Text) ? (decimal?)null : max, MinOrderAmount = minimum, StartDate = _editorDialog.StartDateInput.Value.Date, EndDate = _editorDialog.EndDateInput.Value.Date, UsageLimit = string.IsNullOrWhiteSpace(_editorDialog.UsageLimitInput.Text) ? (int?)null : limit, IsActive = _editorDialog.ActiveInput.Checked, ShowOnBanner = _editorDialog.BannerInput.Checked };
-            PromotionSaveResult result = _service.Save(dto); if (!result.IsSuccess) { ShowError(result.Message); return; }
-            ShowInfo(result.Message);
-            Reload();
+            SaveRequested?.Invoke(this, e);
+        }
+
+        private void EditorCancelRequested(object sender, EventArgs e)
+        {
+            CancelEditorRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void CloseEditor()
+        {
             _editorDialog?.Close();
         }
 
-        private void Toggle()
+        private void DeleteSelected()
         {
-            if (_selectedId <= 0) { ShowError("Chọn mã cần bật hoặc tắt."); return; }
-            PromotionDto dto = _service.GetById(_selectedId); if (dto == null) return;
-            PromotionSaveResult result = _service.SetActive(_selectedId, !dto.IsActive); if (!result.IsSuccess) ShowError(result.Message); else { ShowInfo(result.Message); Reload(); }
+            DeletePromotionRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void Delete()
+        private void ToggleSelected()
         {
-            if (_selectedId <= 0) { ShowError("Chọn mã cần xóa."); return; }
-            DialogResult confirm = MessageBox.Show(
+            ToggleActiveRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public bool ConfirmDelete()
+        {
+            return MessageBox.Show(
                 this,
                 "Bạn có chắc muốn xóa mã giảm giá đã chọn?",
                 "Xác nhận xóa",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
-            if (confirm != DialogResult.Yes)
-                return;
-            PromotionSaveResult result = _service.Delete(_selectedId);
-            if (!result.IsSuccess) { ShowError(result.Message); return; }
-            ShowInfo(result.Message);
+                MessageBoxIcon.Warning) == DialogResult.Yes;
+        }
+
+        public void ClearSelection()
+        {
             _selectedId = 0;
-            Reload();
+            _grid.ClearSelection();
         }
 
-        private static bool TryOptionalDecimal(string text, out decimal value)
-        {
-            if (string.IsNullOrWhiteSpace(text)) { value = 0; return true; }
-            return decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
-        }
-
-        private static bool TryOptionalInt(string text, out int value)
-        {
-            if (string.IsNullOrWhiteSpace(text)) { value = 0; return true; }
-            return int.TryParse(NumberInputFormatter.DigitsOnly(text), out value);
-        }
-        private void ShowInfo(string message) => AppToast.Info(this, message);
-        private void ShowError(string message) => AppToast.Error(this, "Mã giảm giá", message);
+        public void ShowInfo(string message) => AppToast.Info(this, message);
+        public void ShowError(string message) => AppToast.Error(this, "Mã giảm giá", message);
     }
 }

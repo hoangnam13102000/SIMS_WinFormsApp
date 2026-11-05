@@ -328,7 +328,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Name = "_toDatePicker";
             this._toDatePicker.Size = new System.Drawing.Size(146, 29);
             this._toDatePicker.TabIndex = 4;
-            this._toDatePicker.ValueChanged += new System.EventHandler(this._toDatePicker_ValueChanged);
             // 
             // _totalLabel
             // 

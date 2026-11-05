@@ -331,9 +331,5 @@ namespace SIMS_WinFormsApp.Views.UserManager
             base.Dispose(disposing);
         }
 
-        private void _designerPhone_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

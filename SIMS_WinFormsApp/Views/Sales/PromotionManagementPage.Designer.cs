@@ -168,6 +168,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._reloadButton.TabIndex = 2;
             this._reloadButton.Text = "Tải lại";
             this._reloadButton.UseVisualStyleBackColor = false;
+            this._reloadButton.Click += new System.EventHandler(this._reloadButton_Click);
             // 
             // _newPromotionButton
             // 
@@ -184,6 +185,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._newPromotionButton.TabIndex = 3;
             this._newPromotionButton.Text = "+ Tạo mã mới";
             this._newPromotionButton.UseVisualStyleBackColor = false;
+            this._newPromotionButton.Click += new System.EventHandler(this._newPromotionButton_Click);
             // 
             // _gridPanel
             // 

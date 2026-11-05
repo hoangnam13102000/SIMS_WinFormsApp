@@ -152,16 +152,6 @@ namespace SIMS_WinFormsApp.Views.Shell
                 control.Region = new Region(path);
             previousRegion?.Dispose();
         }
-
-        private void _contentPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void _notificationsRow_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 
     internal sealed class SettingsToggleSwitch : Control
