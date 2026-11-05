@@ -51,12 +51,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
@@ -189,7 +188,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             // _addButton
             // 
-            this._addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._addButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._addButton.FlatAppearance.BorderSize = 0;
             this._addButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(78)))), ((int)(((byte)(216)))));
@@ -202,10 +200,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._addButton.TabIndex = 3;
             this._addButton.Text = "Thêm sản phẩm";
             this._addButton.UseVisualStyleBackColor = false;
+            this._addButton.Click += new System.EventHandler(this._addButton_Click);
             // 
             // _optionsButton
             // 
-            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._optionsButton.BackColor = System.Drawing.Color.White;
             this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -218,7 +216,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             // _refreshButton
             // 
-            this._refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._refreshButton.BackColor = System.Drawing.Color.White;
             this._refreshButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -326,19 +323,19 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._productsGrid.AllowUserToAddRows = false;
             this._productsGrid.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._productsGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._productsGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._productsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._productsGrid.BackgroundColor = System.Drawing.Color.White;
             this._productsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._productsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._productsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this._productsGrid.ColumnHeadersHeight = 40;
             this._productsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._imageColumn,
@@ -350,14 +347,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._expiredBatchesColumn,
             this._statusColumn,
             this._actionsColumn});
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._productsGrid.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._productsGrid.DefaultCellStyle = dataGridViewCellStyle5;
             this._productsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._productsGrid.EnableHeadersVisualStyles = false;
             this._productsGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -418,8 +415,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             // Stock
             // 
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._stockColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._stockColumn.DefaultCellStyle = dataGridViewCellStyle3;
             this._stockColumn.FillWeight = 19F;
             this._stockColumn.HeaderText = "Tồn kho";
             this._stockColumn.MinimumWidth = 8;
@@ -438,8 +435,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             // Status
             // 
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._statusColumn.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._statusColumn.DefaultCellStyle = dataGridViewCellStyle4;
             this._statusColumn.FillWeight = 12F;
             this._statusColumn.HeaderText = "Trạng thái";
             this._statusColumn.MinimumWidth = 8;
@@ -506,7 +503,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             "10 dòng",
             "20 dòng",
             "50 dòng"});
-            this._pageSizeComboBox.SelectedIndex = 0;
             this._pageSizeComboBox.Location = new System.Drawing.Point(212, 8);
             this._pageSizeComboBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
             this._pageSizeComboBox.Name = "_pageSizeComboBox";
@@ -541,7 +537,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton.Name = "_nextButton";
             this._nextButton.Size = new System.Drawing.Size(36, 34);
             this._nextButton.TabIndex = 0;
-            this._nextButton.Text = "";
             this._nextButton.UseVisualStyleBackColor = false;
             // 
             // _pageLabel
@@ -572,7 +567,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._previousButton.Name = "_previousButton";
             this._previousButton.Size = new System.Drawing.Size(36, 34);
             this._previousButton.TabIndex = 2;
-            this._previousButton.Text = "";
             this._previousButton.UseVisualStyleBackColor = false;
             // 
             // ucProductManagement

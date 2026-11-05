@@ -72,6 +72,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Location = new System.Drawing.Point(27, 27);
             this._header.Name = "_header";
             this._header.Size = new System.Drawing.Size(946, 70);

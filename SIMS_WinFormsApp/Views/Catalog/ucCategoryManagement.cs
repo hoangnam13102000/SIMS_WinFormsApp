@@ -24,7 +24,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly CategoryManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
-        private readonly ContextMenuStrip _optionsMenu;
         private readonly bool _canEditCategories;
         private readonly bool _canManageCategories;
         private int _pageIndex;
@@ -55,14 +54,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 DrawPagingArrow(args.Graphics, _previousButton.ClientRectangle, false, _previousButton.Enabled);
             _nextButton.Paint += (sender, args) =>
                 DrawPagingArrow(args.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
-            _refreshButton.Click += (sender, args) => LoadPage();
-            _optionsMenu = new ContextMenuStrip(components);
-            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportCategories(new CsvTableExporter()));
-            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportCategories(new ExcelTableExporter()));
-            if (_canManageCategories)
-                _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportCategories());
-            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             _addButton.Visible = _canManageCategories;
+            _importItem.Visible = _canManageCategories;
             if (service == null) return;
 
             _service = service;
@@ -92,19 +85,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 _pageIndex = 0;
                 LoadPage();
             };
-            _previousButton.Click += (sender, args) =>
-            {
-                if (_pageIndex <= 0) return;
-                _pageIndex--;
-                LoadPage();
-            };
-            _nextButton.Click += (sender, args) =>
-            {
-                if (_pageIndex + 1 >= PageCount) return;
-                _pageIndex++;
-                LoadPage();
-            };
-            _addButton.Click += (sender, args) => EditCategory(_presenter.NewDraft());
             _categoriesGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();
@@ -205,12 +185,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     e.RowIndex >= _presenter.CurrentRows.Count)
                     return;
 
-                if (e.ColumnIndex != _actionsColumn.Index) return;
+                if (e.ColumnIndex != Actions.Index) return;
                 var row = _presenter.CurrentRows[e.RowIndex];
                 const int iconSize = 24;
                 const int gap = 8;
                 int stripWidth = iconSize * 3 + gap * 2;
-                int offset = e.X - (_actionsColumn.Width - stripWidth) / 2;
+                int offset = e.X - (Actions.Width - stripWidth) / 2;
                 int actionIndex = offset / (iconSize + gap);
                 if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
                 if (actionIndex == 0)
@@ -252,7 +232,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void ImportCategories()
         {
-            if (!_canManageCategories)
+            if (!_canManageCategories || _service == null)
                 return;
 
             var importer = new CategoryImportRowHandler(_service);
@@ -268,6 +248,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void ExportCategories(ITableDataExporter exporter)
         {
+            if (_presenter == null) return;
+
             string[] headers = { "Tên danh mục", "Số sản phẩm", "Trạng thái" };
             TableExportRunner.Run(
                 FindForm(), exporter, "Danh mục", () => headers, _presenter.ExportRows);
@@ -279,6 +261,51 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 AppToast.Success(this, result.Message);
             else
                 AppToast.Warning(this, result == null ? "Không lưu được dữ liệu." : result.Message);
+        }
+
+        private void _addButton_Click(object sender, EventArgs e)
+        {
+            if (!_canManageCategories || _presenter == null) return;
+            EditCategory(_presenter.NewDraft());
+        }
+
+        private void _refreshButton_Click(object sender, EventArgs e)
+        {
+            LoadPage();
+        }
+
+        private void _optionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void _previousButton_Click(object sender, EventArgs e)
+        {
+            if (_pageIndex <= 0) return;
+            _pageIndex--;
+            LoadPage();
+        }
+
+        private void _nextButton_Click(object sender, EventArgs e)
+        {
+            if (_pageIndex + 1 >= PageCount) return;
+            _pageIndex++;
+            LoadPage();
+        }
+
+        private void _exportCsvItem_Click(object sender, EventArgs e)
+        {
+            ExportCategories(new CsvTableExporter());
+        }
+
+        private void _exportExcelItem_Click(object sender, EventArgs e)
+        {
+            ExportCategories(new ExcelTableExporter());
+        }
+
+        private void _importItem_Click(object sender, EventArgs e)
+        {
+            ImportCategories();
         }
     }
 }

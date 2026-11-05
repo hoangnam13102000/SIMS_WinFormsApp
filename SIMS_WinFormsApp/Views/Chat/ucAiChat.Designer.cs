@@ -33,6 +33,7 @@ namespace SIMS_WinFormsApp.Views.Chat
             _designerInputPanel.SuspendLayout();
 
             _designerHeader.BackColor = SystemColors.Window;
+            _designerHeader.BorderStyle = BorderStyle.FixedSingle;
             _designerHeader.Dock = DockStyle.Top;
             _designerHeader.Height = 76;
             _designerHeader.Name = "aiChatHeader";

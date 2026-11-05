@@ -11,7 +11,6 @@ using System;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -107,7 +106,6 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void WireEvents()
         {
-            btnLogin.Click += BtnLogin_Click;
             lnkForgotPassword.Click += LnkForgotPassword_Click;
         }
 
@@ -352,14 +350,5 @@ namespace SIMS_WinFormsApp.Views.Auth
             Close();
         }
 
-        private void lnkForgotPassword_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void brandPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

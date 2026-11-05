@@ -59,9 +59,6 @@
     <EmbeddedResource Include="Reports\RevenueReport.rdlc">
       <LogicalName>SIMS_WinFormsApp.Reports.RevenueReport.rdlc</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Reports\DisposalReport.rdlc">
-      <LogicalName>SIMS_WinFormsApp.Reports.DisposalReport.rdlc</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </EmbeddedResource>

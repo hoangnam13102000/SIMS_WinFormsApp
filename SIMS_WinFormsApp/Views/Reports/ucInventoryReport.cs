@@ -26,7 +26,6 @@ namespace SIMS_WinFormsApp.Views.Reports
         private const int ReportRefreshIntervalMilliseconds = 30000;
         private static readonly CultureInfo Vi = CultureInfo.GetCultureInfo("vi-VN");
         private readonly InventoryReportService _reportService;
-        private readonly RevenueReportService _disposalReportService;
         private System.Windows.Forms.Timer _reportRefreshTimer;
         private List<InventoryBatchHistoryRow> _historyRows = new List<InventoryBatchHistoryRow>();
         private List<InventoryStockBreakdownRow> _categoryBreakdown = new List<InventoryStockBreakdownRow>();
@@ -40,7 +39,6 @@ namespace SIMS_WinFormsApp.Views.Reports
                 return;
 
             _reportService = AppComposition.CreateInventoryReportService();
-            _disposalReportService = AppComposition.CreateRevenueReportService();
             _from.Value = DateTime.Today.AddDays(-29);
             _to.Value = DateTime.Today;
             _category.DataSource = CreateCategoryOptions();
@@ -426,7 +424,7 @@ namespace SIMS_WinFormsApp.Views.Reports
         private void RenderDisposalChart(DateTime from, DateTime to)
         {
             CultureInfo vietnamese = CultureInfo.GetCultureInfo("vi-VN");
-            StockDisposalReportData disposal = _disposalReportService.GetStockDisposalReport(from, to);
+            StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to);
             _disposalChartTitle.Text = "Thiệt hại tiêu hủy theo lý do ("
                 + disposal.TotalLoss.ToString("N0", vietnamese) + " đ)";
 
@@ -778,14 +776,25 @@ namespace SIMS_WinFormsApp.Views.Reports
             try
             {
                 InventoryReportData report = _reportService.GetReport(from, to, GetSelectedCategoryId());
+                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to);
                 string categoryName = _category.SelectedItem is InventoryReportCategory category
                     ? category.Name
                     : "Tất cả danh mục";
+                var disposalReasons = disposal.Reasons.Select(item => new
+                {
+                    Reason = DisposalReasons.ToLabel(item.Reason),
+                    item.DisposalCount,
+                    item.ProductQuantity,
+                    item.LossAmount
+                }).ToList();
                 var sources = new[]
                 {
                     new ReportDataSource("InventorySummaryDataSet", new[] { report }),
                     new ReportDataSource("InventoryDataSet", report.Products),
-                    new ReportDataSource("ImportTrendDataSet", report.ImportTrend)
+                    new ReportDataSource("ImportTrendDataSet", report.ImportTrend),
+                    new ReportDataSource("DisposalSummaryDataSet", new[] { disposal }),
+                    new ReportDataSource("DisposalReasonsDataSet", disposalReasons),
+                    new ReportDataSource("DisposalProductsDataSet", disposal.Products)
                 };
                 IDictionary<string, string> parameters = ReportParameterBuilder.CreateInventoryParameters(
                     report, from, to, categoryName, GetCurrentUserName());

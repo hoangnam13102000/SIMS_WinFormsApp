@@ -144,6 +144,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // Header
             _headerPanel.AutoSize = false;
             _headerPanel.BackColor = Color.White;
+            _headerPanel.BorderStyle = BorderStyle.FixedSingle;
             _headerPanel.Controls.Add(_headerIconPanel);
             _headerPanel.Controls.Add(_titleLabel);
             _headerPanel.Controls.Add(_subtitleLabel);

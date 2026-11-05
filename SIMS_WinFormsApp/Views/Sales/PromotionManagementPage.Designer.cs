@@ -86,6 +86,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Controls.Add(this._title);
             this._header.Controls.Add(this._subtitle);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;

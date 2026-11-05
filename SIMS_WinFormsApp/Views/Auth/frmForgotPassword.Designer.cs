@@ -214,6 +214,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnSubmit1.TabIndex = 8;
             this.btnSubmit1.Text = "Gửi mã xác minh";
             this.btnSubmit1.UseVisualStyleBackColor = false;
+            this.btnSubmit1.Click += new System.EventHandler(this.btnSubmit1_Click);
             // 
             // lnkBack1
             // 
@@ -327,6 +328,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnVerify2.TabIndex = 6;
             this.btnVerify2.Text = "Xác minh mã";
             this.btnVerify2.UseVisualStyleBackColor = false;
+            this.btnVerify2.Click += new System.EventHandler(this.btnVerify2_Click);
             // 
             // lnkBack2
             // 
@@ -488,6 +490,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnReset3.TabIndex = 9;
             this.btnReset3.Text = "Đổi mật khẩu";
             this.btnReset3.UseVisualStyleBackColor = false;
+            this.btnReset3.Click += new System.EventHandler(this.btnReset3_Click);
             // 
             // lnkCancel3
             // 

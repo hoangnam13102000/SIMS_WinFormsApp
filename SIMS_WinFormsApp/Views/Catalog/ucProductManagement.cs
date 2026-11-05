@@ -121,8 +121,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 _pageIndex++;
                 LoadPage();
             };
-            if (_canManageProducts)
-                _addButton.Click += (sender, args) => EditProduct(_presenter.NewDraft());
             _productsGrid.CellMouseClick += OnGridCellMouseClick;
             DataGridViewCodeCopy.Attach(_productsGrid, "Code");
             Load += (sender, args) =>
@@ -467,6 +465,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 AppToast.Success(this, result.Message);
             else
                 AppToast.Warning(this, result == null ? "Không lưu được dữ liệu." : result.Message);
+        }
+
+        private void _addButton_Click(object sender, EventArgs e)
+        {
+            if (!_canManageProducts || _presenter == null)
+                return;
+
+            EditProduct(_presenter.NewDraft());
         }
     }
 }

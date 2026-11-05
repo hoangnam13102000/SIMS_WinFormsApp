@@ -21,12 +21,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private Button _addButton;
         private Button _optionsButton;
         private Button _refreshButton;
+        private ContextMenuStrip _optionsMenu;
+        private ToolStripMenuItem _exportCsvItem;
+        private ToolStripMenuItem _exportExcelItem;
+        private ToolStripMenuItem _importItem;
         private Panel _gridCard;
         private DataGridView _categoriesGrid;
-        private DataGridViewTextBoxColumn _nameColumn;
-        private DataGridViewTextBoxColumn _productCountColumn;
-        private DataGridViewTextBoxColumn _stateColumn;
-        private DataGridViewImageColumn _actionsColumn;
         private TableLayoutPanel _paging;
         private FlowLayoutPanel _pagingInfo;
         private FlowLayoutPanel _pagingNavigation;
@@ -45,9 +45,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
@@ -65,9 +65,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._gridCard = new System.Windows.Forms.Panel();
             this._categoriesGrid = new System.Windows.Forms.DataGridView();
             this._nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._productCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._stateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ProductCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Actions = new System.Windows.Forms.DataGridViewImageColumn();
             this._paging = new System.Windows.Forms.TableLayoutPanel();
             this._pagingInfo = new System.Windows.Forms.FlowLayoutPanel();
             this._resultsLabel = new System.Windows.Forms.Label();
@@ -76,6 +76,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton = new System.Windows.Forms.Button();
             this._pageLabel = new System.Windows.Forms.Label();
             this._previousButton = new System.Windows.Forms.Button();
+            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._exportCsvItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportExcelItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._importItem = new System.Windows.Forms.ToolStripMenuItem();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -86,6 +90,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._paging.SuspendLayout();
             this._pagingInfo.SuspendLayout();
             this._pagingNavigation.SuspendLayout();
+            this._optionsMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // _root
@@ -179,12 +184,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._addButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._addButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._addButton.ForeColor = System.Drawing.Color.White;
-            this._addButton.Location = new System.Drawing.Point(570, 34);
+            this._addButton.Location = new System.Drawing.Point(559, 34);
             this._addButton.Name = "_addButton";
-            this._addButton.Size = new System.Drawing.Size(132, 38);
+            this._addButton.Size = new System.Drawing.Size(145, 38);
             this._addButton.TabIndex = 3;
             this._addButton.Text = "Thêm danh mục";
             this._addButton.UseVisualStyleBackColor = false;
+            this._addButton.Click += new System.EventHandler(this._addButton_Click);
             // 
             // _optionsButton
             // 
@@ -197,6 +203,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._optionsButton.TabIndex = 4;
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this._optionsButton_Click);
             // 
             // _refreshButton
             // 
@@ -209,6 +216,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._refreshButton.TabIndex = 5;
             this._refreshButton.Text = "Làm mới";
             this._refreshButton.UseVisualStyleBackColor = false;
+            this._refreshButton.Click += new System.EventHandler(this._refreshButton_Click);
             // 
             // _toolbar
             // 
@@ -285,33 +293,33 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._categoriesGrid.AllowUserToAddRows = false;
             this._categoriesGrid.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._categoriesGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._categoriesGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._categoriesGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._categoriesGrid.BackgroundColor = System.Drawing.Color.White;
             this._categoriesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._categoriesGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._categoriesGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this._categoriesGrid.ColumnHeadersHeight = 40;
             this._categoriesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._nameColumn,
-            this._productCountColumn,
-            this._stateColumn,
-            this._actionsColumn});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._categoriesGrid.DefaultCellStyle = dataGridViewCellStyle6;
+            this.ProductCount,
+            this.Status,
+            this.Actions});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._categoriesGrid.DefaultCellStyle = dataGridViewCellStyle3;
             this._categoriesGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._categoriesGrid.EnableHeadersVisualStyles = false;
             this._categoriesGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -327,7 +335,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._categoriesGrid.Size = new System.Drawing.Size(1050, 436);
             this._categoriesGrid.TabIndex = 0;
             // 
-            // _nameColumn
+            // Name
             // 
             this._nameColumn.FillWeight = 44F;
             this._nameColumn.HeaderText = "Tên danh mục";
@@ -335,31 +343,31 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nameColumn.Name = "Name";
             this._nameColumn.ReadOnly = true;
             // 
-            // _productCountColumn
+            // ProductCount
             // 
-            this._productCountColumn.FillWeight = 18F;
-            this._productCountColumn.HeaderText = "Số sản phẩm";
-            this._productCountColumn.MinimumWidth = 8;
-            this._productCountColumn.Name = "ProductCount";
-            this._productCountColumn.ReadOnly = true;
+            this.ProductCount.FillWeight = 18F;
+            this.ProductCount.HeaderText = "Số sản phẩm";
+            this.ProductCount.MinimumWidth = 8;
+            this.ProductCount.Name = "ProductCount";
+            this.ProductCount.ReadOnly = true;
             // 
-            // _stateColumn
+            // Status
             // 
-            this._stateColumn.FillWeight = 20F;
-            this._stateColumn.HeaderText = "Trạng thái";
-            this._stateColumn.MinimumWidth = 8;
-            this._stateColumn.Name = "Status";
-            this._stateColumn.ReadOnly = true;
+            this.Status.FillWeight = 20F;
+            this.Status.HeaderText = "Trạng thái";
+            this.Status.MinimumWidth = 8;
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
             // 
-            // _actionsColumn
+            // Actions
             // 
-            this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this._actionsColumn.HeaderText = "Thao tác";
-            this._actionsColumn.MinimumWidth = 8;
-            this._actionsColumn.Name = "Actions";
-            this._actionsColumn.ReadOnly = true;
-            this._actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
-            this._actionsColumn.Width = 120;
+            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Actions.HeaderText = "Thao tác";
+            this.Actions.MinimumWidth = 8;
+            this.Actions.Name = "Actions";
+            this.Actions.ReadOnly = true;
+            this.Actions.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
+            this.Actions.Width = 120;
             // 
             // _paging
             // 
@@ -409,7 +417,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             "10 dòng",
             "20 dòng",
             "50 dòng"});
-            this._pageSizeComboBox.SelectedIndex = 0;
             this._pageSizeComboBox.Location = new System.Drawing.Point(212, 8);
             this._pageSizeComboBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
             this._pageSizeComboBox.Name = "_pageSizeComboBox";
@@ -435,7 +442,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton.AccessibleName = "Trang sau";
             this._nextButton.BackColor = System.Drawing.Color.White;
             this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._nextButton.FlatAppearance.BorderSize = 1;
             this._nextButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
             this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._nextButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
@@ -445,8 +451,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton.Name = "_nextButton";
             this._nextButton.Size = new System.Drawing.Size(36, 34);
             this._nextButton.TabIndex = 0;
-            this._nextButton.Text = "";
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this._nextButton_Click);
             // 
             // _pageLabel
             // 
@@ -466,7 +472,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._previousButton.AccessibleName = "Trang trước";
             this._previousButton.BackColor = System.Drawing.Color.White;
             this._previousButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._previousButton.FlatAppearance.BorderSize = 1;
             this._previousButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
             this._previousButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._previousButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
@@ -476,8 +481,39 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._previousButton.Name = "_previousButton";
             this._previousButton.Size = new System.Drawing.Size(36, 34);
             this._previousButton.TabIndex = 2;
-            this._previousButton.Text = "";
             this._previousButton.UseVisualStyleBackColor = false;
+            this._previousButton.Click += new System.EventHandler(this._previousButton_Click);
+            // 
+            // _optionsMenu
+            // 
+            this._optionsMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._exportCsvItem,
+            this._exportExcelItem,
+            this._importItem});
+            this._optionsMenu.Name = "_optionsMenu";
+            this._optionsMenu.Size = new System.Drawing.Size(187, 100);
+            // 
+            // _exportCsvItem
+            // 
+            this._exportCsvItem.Name = "_exportCsvItem";
+            this._exportCsvItem.Size = new System.Drawing.Size(186, 32);
+            this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this._exportCsvItem_Click);
+            // 
+            // _exportExcelItem
+            // 
+            this._exportExcelItem.Name = "_exportExcelItem";
+            this._exportExcelItem.Size = new System.Drawing.Size(186, 32);
+            this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this._exportExcelItem_Click);
+            // 
+            // _importItem
+            // 
+            this._importItem.Name = "_importItem";
+            this._importItem.Size = new System.Drawing.Size(186, 32);
+            this._importItem.Text = "Nhập dữ liệu";
+            this._importItem.Click += new System.EventHandler(this._importItem_Click);
             // 
             // ucCategoryManagement
             // 
@@ -499,9 +535,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._paging.ResumeLayout(false);
             this._pagingInfo.ResumeLayout(false);
             this._pagingNavigation.ResumeLayout(false);
+            this._optionsMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
+        private DataGridViewTextBoxColumn _nameColumn;
+        private DataGridViewTextBoxColumn ProductCount;
+        private DataGridViewTextBoxColumn Status;
+        private DataGridViewImageColumn Actions;
     }
 }

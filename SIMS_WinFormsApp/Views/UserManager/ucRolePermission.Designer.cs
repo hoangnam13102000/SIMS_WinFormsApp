@@ -97,6 +97,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _root.Controls.Add(_content, 0, 1);
 
             _headerPanel.Dock = DockStyle.Fill;
+            _headerPanel.BorderStyle = BorderStyle.FixedSingle;
             _headerPanel.Controls.Add(_subtitleLabel);
             _headerPanel.Controls.Add(_titleLabel);
             _headerPanel.Controls.Add(_headerActions);

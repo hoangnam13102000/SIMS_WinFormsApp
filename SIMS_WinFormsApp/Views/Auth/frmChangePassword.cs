@@ -76,8 +76,6 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void WireEvents()
         {
-            btnCancel.Click += BtnCancel_Click;
-            btnSubmit.Click += BtnSubmit_Click;
             Load += FrmChangePassword_Load;
         }
 
@@ -186,9 +184,5 @@ namespace SIMS_WinFormsApp.Views.Auth
             Close();
         }
 
-        private void brandPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

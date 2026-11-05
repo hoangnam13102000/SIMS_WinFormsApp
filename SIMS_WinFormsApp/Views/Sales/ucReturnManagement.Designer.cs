@@ -83,6 +83,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             _root.Controls.Add(_filters, 0, 1);
             _root.Controls.Add(_gridCard, 0, 2);
             _header.BackColor = Color.White;
+            _header.BorderStyle = BorderStyle.FixedSingle;
             _header.Controls.Add(_headerIconPanel);
             _header.Controls.Add(_subtitle);
             _header.Controls.Add(_title);
