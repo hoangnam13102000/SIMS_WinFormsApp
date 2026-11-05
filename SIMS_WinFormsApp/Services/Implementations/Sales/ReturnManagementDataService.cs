@@ -45,7 +45,24 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
         public string Status { get; set; }
     }
 
-    internal sealed class ReturnManagementDataService
+    internal interface IReturnManagementDataService
+    {
+        IReadOnlyList<ReturnableLineData> GetReturnableLines(int invoiceId);
+        void GetReturnPolicy(out decimal approvalThreshold, out int returnPolicyDays);
+        ReturnCreateResult CreateReturn(
+            int invoiceId, int currentUserId, int returnPolicyDays, bool canApprove, bool approveImmediately,
+            string reason, IReadOnlyList<ReturnSelectionData> selected);
+        IReadOnlyList<ReturnRequestRowData> GetRequests(
+            DateTime fromDate, DateTime toDate, bool canApprove, int currentUserId,
+            string keyword, string reasonFilter);
+        bool UpdateRequest(int returnId, bool approve, string rejectionReason, int userId);
+        List<NotificationDto> GetCompletedReturns(int userId);
+        List<NotificationDto> GetPendingReturnNotifications(int currentUserId);
+        List<NotificationDto> GetStockAlertNotifications();
+        List<NotificationDto> GetLowStockNotifications();
+    }
+
+    internal sealed class ReturnManagementDataService : IReturnManagementDataService
     {
         private readonly IDbConnectionFactory _connections;
 

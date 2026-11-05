@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.Reporting.WinForms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Export;
@@ -47,14 +48,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             _category.ValueMember = nameof(InventoryReportCategory.CategoryId);
             _header.SizeChanged += (s, e) => LayoutReportHeader();
             _apply.Click += Apply_Click;
-            _exportPdf.Click += ExportPdf_Click;
+            _viewRdlc.Click += ViewRdlc_Click;
+            _exportOptions.Click += (s, e) => _exportMenu.Show(_exportOptions, 0, _exportOptions.Height);
+            _exportCategoryCsv.Click += (s, e) => ExportCategoryBreakdown(new CsvTableExporter());
             LayoutReportHeader();
             ConfigureImportChart();
             ConfigureCategoryChart();
             ConfigureDisposalChart();
-            _exportOptions.Click += (s, e) => _exportMenu.Show(_exportOptions, 0, _exportOptions.Height);
-            _exportCategoryCsv.Click += (s, e) => ExportCategoryBreakdown(new CsvTableExporter());
-            _exportCategoryExcel.Click += (s, e) => ExportCategoryBreakdown(new ExcelTableExporter());
             _categoryBreakdownGrid.CellPainting += RatioCell_Painting;
             _priceBreakdownGrid.CellPainting += RatioCell_Painting;
             DataGridViewCodeCopy.Attach(_grid, "Code");
@@ -77,7 +77,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             _historyNext.Click += (s, e) => { _historyPage++; RenderHistoryPage(); };
             _historyExport.Click += (s, e) => _historyExportMenu.Show(_historyExport, 0, _historyExport.Height);
             _historyExportCsv.Click += (s, e) => ExportHistory(new CsvTableExporter());
-            _historyExportExcel.Click += (s, e) => ExportHistory(new ExcelTableExporter());
             LoadReport();
             LoadTrend();
             LoadHistory();
@@ -87,11 +86,10 @@ namespace SIMS_WinFormsApp.Views.Reports
         {
             int right = _header.ClientSize.Width - 16;
             _exportOptions.Location = new Point(right - _exportOptions.Width, 25);
-            _exportPdf.Location = new Point(_exportOptions.Left - 8 - _exportPdf.Width, 25);
-            int textWidth = Math.Max(160, _exportPdf.Left - _title.Left - 16);
+            _viewRdlc.Location = new Point(_exportOptions.Left - 8 - _viewRdlc.Width, 25);
+            int textWidth = Math.Max(160, _viewRdlc.Left - _title.Left - 16);
             _title.Width = textWidth;
             _subtitle.Width = textWidth;
-            _exportPdf.BringToFront();
             _exportOptions.BringToFront();
         }
 
@@ -719,6 +717,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             _historyNext.Enabled = _historyPage < pages;
         }
 
+        private static string GetStockStatus(InventoryReportProduct product)
+        {
+            if (product.Stock <= 0)
+                return "Hết hàng";
+            return product.Stock <= product.MinStock ? "Cần bổ sung" : "Đủ hàng";
+        }
+
         private void ExportCategoryBreakdown(ITableDataExporter exporter)
         {
             string[] headers =
@@ -765,14 +770,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             TableExportRunner.Run(this, exporter, "lịch sử lô hàng", () => headers, () => rows);
         }
 
-        private static string GetStockStatus(InventoryReportProduct product)
-        {
-            if (product.Stock <= 0)
-                return "Hết hàng";
-            return product.Stock <= product.MinStock ? "Cần bổ sung" : "Đủ hàng";
-        }
-
-        private void ExportPdf_Click(object sender, EventArgs e)
+        private void ViewRdlc_Click(object sender, EventArgs e)
         {
             if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
                 return;
@@ -783,45 +781,58 @@ namespace SIMS_WinFormsApp.Views.Reports
                 string categoryName = _category.SelectedItem is InventoryReportCategory category
                     ? category.Name
                     : "Tất cả danh mục";
-                string path = FinancialReportPdfExporter.SaveInventory(
-                    this,
-                    report,
-                    categoryName,
-                    GetCurrentUserName(),
-                    from,
-                    to,
-                    "Bao_cao_ton_kho_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + ".pdf",
-                    "BÁO CÁO TỒN KHO");
-                if (path != null)
+                var sources = new[]
                 {
-                    MessageBox.Show(this, "Đã tạo báo cáo PDF tại:\r\n" + path,
-                        "Xuất báo cáo thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    new ReportDataSource("InventorySummaryDataSet", new[] { report }),
+                    new ReportDataSource("InventoryDataSet", report.Products),
+                    new ReportDataSource("ImportTrendDataSet", report.ImportTrend)
+                };
+                IDictionary<string, string> parameters = ReportParameterBuilder.CreateInventoryParameters(
+                    report, from, to, categoryName, GetCurrentUserName());
+
+                using (var viewer = new frmReportViewer(
+                    "Báo cáo tồn kho",
+                    "SIMS_WinFormsApp.Reports.InventoryReport.rdlc",
+                    sources,
+                    parameters))
+                {
+                    viewer.ShowDialog(this);
                 }
             }
             catch (SqlException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
             catch (InvalidOperationException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
-            catch (IOException exception)
+            catch (FileNotFoundException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
-            catch (UnauthorizedAccessException exception)
+            catch (FileLoadException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
-            catch (System.ComponentModel.Win32Exception exception)
+            catch (TypeLoadException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
-            catch (System.Runtime.InteropServices.ExternalException exception)
+            catch (BadImageFormatException exception)
             {
-                ShowExportError(exception.Message);
+                ShowRdlcError(exception.Message);
             }
+            catch (LocalProcessingException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+        }
+
+        private void ShowRdlcError(string details)
+        {
+            MessageBox.Show(this, "Không thể mở báo cáo RDLC. Hãy kiểm tra thư viện ReportViewer và mẫu báo cáo đã được cài đặt/nhúng.\r\n\r\n"
+                + details, "Lỗi báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private static string FormatCurrency(decimal value, CultureInfo culture)
@@ -842,10 +853,5 @@ namespace SIMS_WinFormsApp.Views.Reports
             return user == null ? "Hệ thống" : user.FullName;
         }
 
-        private void ShowExportError(string details)
-        {
-            MessageBox.Show(this, "Không thể tạo báo cáo PDF.\r\n\r\n" + details,
-                "Lỗi tạo báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
     }
 }

@@ -273,14 +273,5 @@ namespace SIMS_WinFormsApp.Views.UserManager
             base.Dispose(disposing);
         }
 
-        private void _tabAccount_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _tabSecurity_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

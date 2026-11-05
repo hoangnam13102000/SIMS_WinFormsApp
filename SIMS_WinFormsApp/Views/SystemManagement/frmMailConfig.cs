@@ -86,8 +86,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 }
             };
 
-            btnSave.Click += async (s, e) => await SaveAsync();
             btnTest.Click += async (s, e) => await SendTestAsync();
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            await SaveAsync();
         }
 
         private bool ValidateInput(out string email, out string appPassword)
@@ -127,6 +131,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 SecureConfigStore.Set(MailSender.KeySenderAddress, email);
                 SecureConfigStore.Set(MailSender.KeySenderAppPassword, appPassword);
                 ShowMessage(Lang.Get("mailconfig.save.success"), AppColors.Success);
+                Close();
             }
             catch (Exception)
             {
@@ -195,14 +200,5 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             lblMessage.ForeColor = color;
         }
 
-        private void lblAppPassword_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblSenderEmail_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

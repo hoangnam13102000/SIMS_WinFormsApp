@@ -80,9 +80,14 @@ namespace SIMS_WinFormsApp.Views.Profile
             _passwordPresenter = new ChangePasswordPresenter(this, _authService);
             Disposed += (s, e) => _profilePresenter?.Dispose();
 
-            btnSaveProfile.Click += (s, e) => SaveRequested?.Invoke(this, EventArgs.Empty);
             btnChangePassword.Click += async (s, e) => await _passwordPresenter.ChangeAsync();
             _runtimeInitialized = true;
+        }
+
+        private void btnSaveProfile_Click(object sender, EventArgs e)
+        {
+            // EditUserAccountPresenter.OnSaveRequested validates and persists the profile.
+            SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void LoadCurrentUser()

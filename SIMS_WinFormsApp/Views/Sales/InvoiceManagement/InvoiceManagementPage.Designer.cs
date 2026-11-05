@@ -137,7 +137,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._subtitle.Size = new System.Drawing.Size(427, 25);
             this._subtitle.TabIndex = 0;
             this._subtitle.Text = "Tra cứu, xem chi tiết và xem trước hóa đơn bán hàng";
-            this._subtitle.Click += new System.EventHandler(this._subtitle_Click);
             // 
             // _title
             // 

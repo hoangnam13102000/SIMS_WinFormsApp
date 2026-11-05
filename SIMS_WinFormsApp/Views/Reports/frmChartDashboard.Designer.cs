@@ -21,7 +21,8 @@ namespace SIMS_WinFormsApp.Views.Reports
         private DateTimePicker _toDate;
         private ComboBox _periodFilter;
         private Button _applyFilter;
-        private Button _exportReportPdf;
+        private Button _viewRevenueRdlc;
+        private Button _viewDisposalRdlc;
         private TableLayoutPanel _summary;
         private Label _revenueCard;
         private Label _orderCard;
@@ -53,7 +54,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitle = new System.Windows.Forms.Label();
             this._title = new System.Windows.Forms.Label();
-            this._exportReportPdf = new System.Windows.Forms.Button();
+            this._viewRevenueRdlc = new System.Windows.Forms.Button();
+            this._viewDisposalRdlc = new System.Windows.Forms.Button();
             this._filters = new System.Windows.Forms.FlowLayoutPanel();
             this._fromLabel = new System.Windows.Forms.Label();
             this._fromDate = new System.Windows.Forms.DateTimePicker();
@@ -90,9 +92,9 @@ namespace SIMS_WinFormsApp.Views.Reports
             ((System.ComponentModel.ISupportInitialize)(this._categoryChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._topProductsGrid)).BeginInit();
             this.SuspendLayout();
-            // 
+            //
             // _root
-            // 
+            //
             this._root.ColumnCount = 1;
             this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Controls.Add(this._header, 0, 0);
@@ -112,7 +114,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 170F));
             this._root.Size = new System.Drawing.Size(1180, 800);
             this._root.TabIndex = 0;
-            // 
+            //
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.White;
@@ -120,7 +122,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
-            this._header.Controls.Add(this._exportReportPdf);
+            this._header.Controls.Add(this._viewRevenueRdlc);
+            this._header.Controls.Add(this._viewDisposalRdlc);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
             this._header.Location = new System.Drawing.Point(27, 27);
             this._header.Name = "_header";
@@ -180,24 +183,36 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._title.Text = "Báo cáo doanh thu và tiêu hủy";
             this._title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._title.UseMnemonic = false;
-            this._title.Click += new System.EventHandler(this._title_Click);
-            // 
-            // _exportReportPdf
-            // 
-            this._exportReportPdf.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._exportReportPdf.BackColor = System.Drawing.Color.White;
-            this._exportReportPdf.Cursor = System.Windows.Forms.Cursors.Hand;
-            this._exportReportPdf.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._exportReportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._exportReportPdf.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this._exportReportPdf.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._exportReportPdf.Location = new System.Drawing.Point(946, 22);
-            this._exportReportPdf.Name = "_exportReportPdf";
-            this._exportReportPdf.Size = new System.Drawing.Size(164, 38);
-            this._exportReportPdf.TabIndex = 2;
-            this._exportReportPdf.Text = "Xuất báo cáo PDF";
-            this._exportReportPdf.UseVisualStyleBackColor = false;
-            // 
+            // _viewRevenueRdlc
+            //
+            this._viewRevenueRdlc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._viewRevenueRdlc.BackColor = System.Drawing.Color.White;
+            this._viewRevenueRdlc.Cursor = System.Windows.Forms.Cursors.Hand;
+            this._viewRevenueRdlc.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewRevenueRdlc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._viewRevenueRdlc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._viewRevenueRdlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewRevenueRdlc.Location = new System.Drawing.Point(630, 22);
+            this._viewRevenueRdlc.Name = "_viewRevenueRdlc";
+            this._viewRevenueRdlc.Size = new System.Drawing.Size(150, 38);
+            this._viewRevenueRdlc.TabIndex = 3;
+            this._viewRevenueRdlc.Text = "Báo cáo doanh thu";
+            this._viewRevenueRdlc.UseVisualStyleBackColor = false;
+            // _viewDisposalRdlc
+            //
+            this._viewDisposalRdlc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._viewDisposalRdlc.BackColor = System.Drawing.Color.White;
+            this._viewDisposalRdlc.Cursor = System.Windows.Forms.Cursors.Hand;
+            this._viewDisposalRdlc.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewDisposalRdlc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._viewDisposalRdlc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._viewDisposalRdlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewDisposalRdlc.Location = new System.Drawing.Point(786, 22);
+            this._viewDisposalRdlc.Name = "_viewDisposalRdlc";
+            this._viewDisposalRdlc.Size = new System.Drawing.Size(150, 38);
+            this._viewDisposalRdlc.TabIndex = 4;
+            this._viewDisposalRdlc.Text = "Báo cáo tiêu hủy";
+            this._viewDisposalRdlc.UseVisualStyleBackColor = false;
             // _filters
             // 
             this._filters.Controls.Add(this._fromLabel);

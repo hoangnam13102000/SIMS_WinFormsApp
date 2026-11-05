@@ -394,7 +394,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._tabAccount.TabIndex = 0;
             this._tabAccount.Text = "Tài khoản";
             this._tabAccount.UseVisualStyleBackColor = false;
-            this._tabAccount.Click += new System.EventHandler(this._tabAccount_Click);
             // 
             // _tabSecurity
             // 
@@ -409,7 +408,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._tabSecurity.TabIndex = 1;
             this._tabSecurity.Text = "Bảo mật";
             this._tabSecurity.UseVisualStyleBackColor = false;
-            this._tabSecurity.Click += new System.EventHandler(this._tabSecurity_Click);
             // 
             // _designerSidebar
             // 

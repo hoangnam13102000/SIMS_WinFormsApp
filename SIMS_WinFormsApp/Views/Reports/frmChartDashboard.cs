@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.Reporting.WinForms;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Implementations.Reports;
 
@@ -31,7 +33,10 @@ namespace SIMS_WinFormsApp.Views.Reports
             _fromDate.Value = DateTime.Today.AddDays(-6);
             _toDate.Value = DateTime.Today;
             _applyFilter.Click += ApplyFilter_Click;
-            _exportReportPdf.Click += ExportCombinedReportPdf_Click;
+            _viewRevenueRdlc.Click += ViewRevenueRdlc_Click;
+            _viewDisposalRdlc.Click += ViewDisposalRdlc_Click;
+            _header.SizeChanged += (s, e) => LayoutReportHeader();
+            LayoutReportHeader();
 
             ConfigureRevenueChart();
             ConfigureCategoryChart();
@@ -40,49 +45,151 @@ namespace SIMS_WinFormsApp.Views.Reports
             UpdateReport();
         }
 
-        private void ExportCombinedReportPdf_Click(object sender, EventArgs e)
+        private void LayoutReportHeader()
         {
-            if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
-                return;
-
-            try
-            {
-                RevenueReportPeriod period = (RevenueReportPeriod)_periodFilter.SelectedIndex;
-                RevenueReportData revenue = _reportService.GetReport(from, to, period);
-                StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to, period);
-                FinancialReportSignatories signatories = _reportService.GetFinancialReportSignatories();
-                string path = FinancialReportPdfExporter.Save(
-                    this,
-                    revenue,
-                    disposal,
-                    signatories,
-                    GetCurrentUserName(),
-                    from,
-                    to,
-                    period);
-                ShowExportSuccess(path);
-            }
-            catch (SqlException exception)
-            {
-                ShowDatabaseError(exception.Message);
-            }
-            catch (InvalidOperationException exception)
-            {
-                ShowExportError(exception.Message);
-            }
-            catch (IOException exception)
-            {
-                ShowExportError(exception.Message);
-            }
-            catch (UnauthorizedAccessException exception)
-            {
-                ShowExportError(exception.Message);
-            }
-            catch (System.Runtime.InteropServices.ExternalException exception)
-            {
-                ShowExportError(exception.Message);
-            }
+            int right = _header.ClientSize.Width - 16;
+            _viewDisposalRdlc.Location = new Point(right - _viewDisposalRdlc.Width, 22);
+            _viewRevenueRdlc.Location = new Point(_viewDisposalRdlc.Left - 8 - _viewRevenueRdlc.Width, 22);
+            int textWidth = Math.Max(160, _viewRevenueRdlc.Left - _title.Left - 16);
+            _title.Width = textWidth;
+            _subtitle.Width = textWidth;
         }
+
+        private void ViewRevenueRdlc_Click(object sender, EventArgs e)
+            {
+                if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
+                    return;
+
+                try
+                {
+                    RevenueReportPeriod period = (RevenueReportPeriod)_periodFilter.SelectedIndex;
+                    RevenueReportData revenue = _reportService.GetReport(from, to, period);
+                    FinancialReportSignatories signatories = _reportService.GetFinancialReportSignatories();
+                    var sources = new[]
+                    {
+                        new ReportDataSource("RevenueSummaryDataSet", new[] { revenue }),
+                        new ReportDataSource("RevenueTrendDataSet", revenue.Trend),
+                        new ReportDataSource("RevenueCategoriesDataSet", revenue.Categories),
+                        new ReportDataSource("RevenueTopProductsDataSet", revenue.TopProducts)
+                    };
+                    IDictionary<string, string> parameters = ReportParameterBuilder.CreateFinancialParameters(
+                        signatories, from, to, GetCurrentUserName(), GetPeriodLabel(period));
+
+                    using (var viewer = new frmReportViewer(
+                        "Báo cáo doanh thu",
+                        "SIMS_WinFormsApp.Reports.RevenueReport.rdlc",
+                        sources,
+                        parameters))
+                    {
+                        viewer.ShowDialog(this);
+                    }
+                }
+                catch (SqlException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (InvalidOperationException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (FileNotFoundException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (FileLoadException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (TypeLoadException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (BadImageFormatException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (LocalProcessingException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+            }
+
+        private void ViewDisposalRdlc_Click(object sender, EventArgs e)
+            {
+                if (!TryGetSelectedDateRange(out DateTime from, out DateTime to))
+                    return;
+
+                try
+                {
+                    RevenueReportPeriod period = (RevenueReportPeriod)_periodFilter.SelectedIndex;
+                    StockDisposalReportData disposal = _reportService.GetStockDisposalReport(from, to, period);
+                    FinancialReportSignatories signatories = _reportService.GetFinancialReportSignatories();
+                    var sources = new[]
+                    {
+                        new ReportDataSource("DisposalSummaryDataSet", new[] { disposal }),
+                        new ReportDataSource("DisposalReasonsDataSet", disposal.Reasons),
+                        new ReportDataSource("DisposalProductsDataSet", disposal.Products)
+                    };
+                    IDictionary<string, string> parameters = ReportParameterBuilder.CreateFinancialParameters(
+                        signatories, from, to, GetCurrentUserName(), GetPeriodLabel(period));
+
+                    using (var viewer = new frmReportViewer(
+                        "Báo cáo tiêu hủy",
+                        "SIMS_WinFormsApp.Reports.DisposalReport.rdlc",
+                        sources,
+                        parameters))
+                    {
+                        viewer.ShowDialog(this);
+                    }
+                }
+                catch (SqlException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (InvalidOperationException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (FileNotFoundException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (FileLoadException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (TypeLoadException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (BadImageFormatException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+                catch (LocalProcessingException exception)
+                {
+                    ShowRdlcError(exception.Message);
+                }
+            }
+
+        private static string GetPeriodLabel(RevenueReportPeriod period)
+            {
+                switch (period)
+                {
+                    case RevenueReportPeriod.Month:
+                        return "Theo tháng";
+                    case RevenueReportPeriod.Quarter:
+                        return "Theo quý";
+                    default:
+                        return "Theo ngày";
+                }
+            }
+
+        private void ShowRdlcError(string details)
+            {
+                MessageBox.Show(this, "Không thể mở báo cáo RDLC. Hãy kiểm tra thư viện ReportViewer và mẫu báo cáo đã được cài đặt/nhúng.\r\n\r\n"
+                    + details, "Lỗi báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         private bool TryGetSelectedDateRange(out DateTime from, out DateTime to)
         {
@@ -103,20 +210,6 @@ namespace SIMS_WinFormsApp.Views.Reports
         {
             var user = SIMS_WinFormsApp.Services.Session.UserSession.Instance.CurrentUser;
             return user == null ? "Hệ thống" : user.FullName;
-        }
-
-        private void ShowExportError(string details)
-        {
-            MessageBox.Show(this, "Không thể tạo báo cáo PDF.\r\n\r\n" + details,
-                "Lỗi tạo báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        private void ShowExportSuccess(string path)
-        {
-            if (path == null)
-                return;
-            MessageBox.Show(this, "Đã tạo báo cáo PDF tại:\r\n" + path,
-                "Xuất báo cáo thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ConfigureRevenueChart()
@@ -424,8 +517,5 @@ namespace SIMS_WinFormsApp.Views.Reports
                 MessageBoxIcon.Error);
         }
 
-        private void _title_Click(object sender, EventArgs e)
-        {
-        }
     }
 }

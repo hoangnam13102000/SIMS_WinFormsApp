@@ -11,6 +11,7 @@ using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Implementations.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
 using SIMS_WinFormsApp.Services.Implementations.Reports;
+using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.Services.AI.Implementations;
 using SIMS_WinFormsApp.Services.AI.Implementations.Tools;
 using SIMS_WinFormsApp.Services.AI.Interfaces;
@@ -201,6 +202,16 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IInvoiceService CreateInvoiceService()
         {
             return new SqlInvoiceService(CreateConnectionFactory());
+        }
+
+        internal static IInvoiceManagementDataService CreateInvoiceManagementDataService()
+        {
+            return new InvoiceManagementDataService(CreateConnectionFactory());
+        }
+
+        internal static IReturnManagementDataService CreateReturnManagementDataService()
+        {
+            return new ReturnManagementDataService(CreateConnectionFactory());
         }
 
         public static IPromotionService CreatePromotionService()

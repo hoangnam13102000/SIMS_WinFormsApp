@@ -939,16 +939,27 @@ namespace SIMS_WinFormsApp.Views.Shell
                 {
                     AutoSize = false,
                     Dock = DockStyle.Top,
-                    Height = 72,
+                    Height = 56,
                     Padding = new Padding(20),
                     ForeColor = Color.FromArgb(153, 27, 27),
                     Text = "Không thể mở trang này.\r\n" + exception.Message
+                };
+                var errorDetails = new TextBox
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Location = new Point(20, 62),
+                    Multiline = true,
+                    ReadOnly = true,
+                    ScrollBars = ScrollBars.Both,
+                    Size = new Size(Math.Max(300, ClientSize.Width - 40), 220),
+                    Text = exception.ToString(),
+                    WordWrap = false
                 };
                 var retryButton = new Button
                 {
                     AutoSize = true,
                     Text = "Thử lại",
-                    Location = new Point(20, 82)
+                    Location = new Point(20, errorDetails.Bottom + 8)
                 };
                 retryButton.Click += (sender, args) =>
                 {
@@ -956,13 +967,10 @@ namespace SIMS_WinFormsApp.Views.Shell
                     EnsurePageCreated();
                 };
                 Controls.Add(errorLabel);
+                Controls.Add(errorDetails);
                 Controls.Add(retryButton);
             }
         }
 
-        private void _subtitleLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

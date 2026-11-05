@@ -241,26 +241,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 AppToast.Warning(this, "Không tìm thấy danh mục.");
                 return;
             }
-            if (!frmCategoryEditor.TryEdit(FindForm(), draft, readOnly, out var edited) || readOnly)
+            if (!frmCategoryEditor.TryEdit(
+                    FindForm(), draft, readOnly, _presenter.Save, out var edited, out var saveResult) || readOnly)
                 return;
 
-            while (edited != null)
-            {
-                var result = _presenter.Save(edited);
-                if (result != null && result.Success)
-                {
-                    Notify(result);
-                    _pageIndex = 0;
-                    LoadPage();
-                    return;
-                }
-
-                DialogHelper.ShowWarning(this, "Không thể lưu",
-                    result == null ? "Không lưu được danh mục." : result.Message);
-                draft = edited;
-                if (!frmCategoryEditor.TryEdit(FindForm(), draft, false, out edited))
-                    return;
-            }
+            Notify(saveResult);
+            _pageIndex = 0;
+            LoadPage();
         }
 
         private void ImportCategories()

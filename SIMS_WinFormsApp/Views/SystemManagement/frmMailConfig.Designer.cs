@@ -125,6 +125,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.btnSave.TabIndex = 1;
             this.btnSave.Text = "Lưu cấu hình";
             this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // lblMessage
             // 
@@ -180,7 +181,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.lblAppPassword.Size = new System.Drawing.Size(520, 37);
             this.lblAppPassword.TabIndex = 5;
             this.lblAppPassword.Text = "App Password";
-            this.lblAppPassword.Click += new System.EventHandler(this.lblAppPassword_Click);
             // 
             // txtSenderEmail
             // 
@@ -203,7 +203,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.lblSenderEmail.Size = new System.Drawing.Size(520, 36);
             this.lblSenderEmail.TabIndex = 7;
             this.lblSenderEmail.Text = "Địa chỉ Gmail";
-            this.lblSenderEmail.Click += new System.EventHandler(this.lblSenderEmail_Click);
             // 
             // lblSubtitle
             // 

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
-using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
@@ -19,7 +18,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private readonly InvoiceDetails _invoice;
         private readonly int _currentUserId;
         private readonly bool _canApprove;
-        private readonly ReturnManagementDataService _dataService;
+        private readonly IReturnManagementDataService _dataService;
         private readonly DataGridView _linesGrid;
         private readonly ComboBox _reasonCombo;
         private readonly TextBox _reasonDetails;
@@ -39,29 +38,29 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         }
 
         internal InvoiceReturnDialog(
-            IDbConnectionFactory connectionFactory,
+            IReturnManagementDataService dataService,
             InvoiceDetails invoice,
             int currentUserId,
             bool canApprove)
-            : this(connectionFactory, invoice, currentUserId, canApprove, false)
+            : this(dataService, invoice, currentUserId, canApprove, false)
         {
         }
 
         private InvoiceReturnDialog(
-            IDbConnectionFactory connectionFactory,
+            IReturnManagementDataService dataService,
             InvoiceDetails invoice,
             int currentUserId,
             bool canApprove,
             bool designPreview)
         {
-            if (connectionFactory == null && !designPreview)
-                throw new ArgumentNullException(nameof(connectionFactory));
+            if (dataService == null && !designPreview)
+                throw new ArgumentNullException(nameof(dataService));
             InitializeComponent();
             _designPreview = designPreview;
             _invoice = invoice ?? throw new ArgumentNullException(nameof(invoice));
             _currentUserId = currentUserId;
             _canApprove = canApprove;
-            _dataService = designPreview ? null : new ReturnManagementDataService(connectionFactory);
+            _dataService = designPreview ? null : dataService;
 
             Text = "Tạo yêu cầu trả hàng";
             StartPosition = FormStartPosition.CenterParent;

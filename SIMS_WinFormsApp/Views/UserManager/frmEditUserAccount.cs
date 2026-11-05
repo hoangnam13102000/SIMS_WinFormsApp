@@ -78,7 +78,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             NumberInputFormatter.Attach(_designerSalary);
             _designerChooseAvatarButton.Click += ChooseAvatarButton_Click;
             _designerCancelButton.Click += (s, e) => RaiseCloseRequested();
-            _designerSaveButton.Click += (s, e) => RaiseSaveRequested();
             _designerFullName.TextChanged += (s, e) => UpdateAvatarInitial();
             _designerAvatarCircle.Resize += AvatarCircle_Resize;
             ApplyAvatarCircleRegion();
@@ -284,7 +283,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             Close();
         }
 
-        private void RaiseSaveRequested() => SaveRequested?.Invoke(this, EventArgs.Empty);
+        private void _designerSaveButton_Click(object sender, EventArgs e)
+        {
+            // EditUserAccountPresenter.OnSaveRequested validates and persists the account.
+            SaveRequested?.Invoke(this, EventArgs.Empty);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -297,24 +300,5 @@ namespace SIMS_WinFormsApp.Views.UserManager
             base.Dispose(disposing);
         }
 
-        private void _designerAccountIdValue_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _designerHireDate_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _designerGenderLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _designerBirthDateLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

@@ -6,7 +6,16 @@ using SIMS_WinFormsApp.Models.DTOs.Sales;
 
 namespace SIMS_WinFormsApp.Services.Implementations.Sales
 {
-    internal sealed class InvoiceManagementDataService
+    internal interface IInvoiceManagementDataService
+    {
+        IReadOnlyList<InvoiceManagementRow> GetInvoices(
+            DateTime fromDate, DateTime toDate, bool canViewAll, int currentUserId,
+            string status, string keyword);
+
+        InvoiceDetails GetInvoiceDetails(int invoiceId, bool canViewAll, int currentUserId);
+    }
+
+    internal sealed class InvoiceManagementDataService : IInvoiceManagementDataService
     {
         private readonly IDbConnectionFactory _connections;
 

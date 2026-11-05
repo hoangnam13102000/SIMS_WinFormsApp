@@ -401,9 +401,5 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         }
 
-        private void _fromDateLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

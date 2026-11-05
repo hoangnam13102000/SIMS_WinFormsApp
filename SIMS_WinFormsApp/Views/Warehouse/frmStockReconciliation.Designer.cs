@@ -264,6 +264,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._saveButton.TabIndex = 0;
             this._saveButton.Text = "Lưu kết quả";
             this._saveButton.UseVisualStyleBackColor = true;
+            this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
             // 
             // _exportButton
             // 

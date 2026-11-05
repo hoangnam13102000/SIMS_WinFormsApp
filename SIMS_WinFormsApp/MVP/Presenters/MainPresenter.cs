@@ -43,7 +43,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly SIMS_WinFormsApp.Repositories.Interfaces.IAuditLogWriter _auditLogWriter;
         private HashSet<AppPermission> _currentPermissions;
         private DailyBackupScheduler _dailyBackupScheduler;
-        private ReturnManagementDataService _notificationService;
+        private IReturnManagementDataService _notificationService;
         private Timer _notificationTimer;
         private readonly HashSet<string> _seenNotificationIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _readNotificationIds = new HashSet<string>(StringComparer.Ordinal);
@@ -149,8 +149,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             if (user == null)
                 return;
 
-            _notificationService = new ReturnManagementDataService(
-                AppComposition.CreateConnectionFactory());
+            _notificationService = AppComposition.CreateReturnManagementDataService();
             _layout.NotificationReadRequested += OnNotificationReadRequested;
             _layout.NotificationDeleteRequested += OnNotificationDeleteRequested;
             _layout.NotificationsClearRequested += OnNotificationsClearRequested;
@@ -453,7 +452,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 {
                     layout.AddLazyPage("orders", Lang.Get("sidebar.page.orders"),
                         () => PrepareEmbeddedForm(new InvoiceManagementPage(
-                            AppComposition.CreateConnectionFactory(),
+                            AppComposition.CreateInvoiceManagementDataService(),
+                            AppComposition.CreateReturnManagementDataService(),
                             UserSession.Instance.CurrentUser?.UserId ?? 0,
                             CanViewAllInvoices(permissions),
                             permissions.Contains(AppPermission.RETURN_EXCHANGE_CREATE),
@@ -465,7 +465,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 {
                     layout.AddLazyPage("returns", Lang.Get("sidebar.page.returns"),
                         () => new ucReturnManagement(
-                            AppComposition.CreateConnectionFactory(),
+                            AppComposition.CreateReturnManagementDataService(),
                             UserSession.Instance.CurrentUser?.UserId ?? 0,
                             permissions.Contains(AppPermission.RETURN_EXCHANGE_APPROVE)), IconChar.RotateLeft);
                 }

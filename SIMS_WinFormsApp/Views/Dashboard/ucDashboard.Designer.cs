@@ -139,7 +139,6 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._titleLabel.Text = "Tổng quan";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._titleLabel.UseMnemonic = false;
-            this._titleLabel.Click += new System.EventHandler(this._titleLabel_Click);
             // 
             // _headerIconPanel
             // 
@@ -421,7 +420,6 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityTitle.Size = new System.Drawing.Size(250, 36);
             this._activityTitle.TabIndex = 2;
             this._activityTitle.Text = "Hoạt động gần đây";
-            this._activityTitle.Click += new System.EventHandler(this._activityTitle_Click);
             // 
             // ucDashboard
             // 

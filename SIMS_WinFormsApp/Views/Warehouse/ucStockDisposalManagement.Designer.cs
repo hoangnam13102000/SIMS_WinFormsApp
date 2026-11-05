@@ -295,7 +295,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDateLabel.Size = new System.Drawing.Size(29, 23);
             this._fromDateLabel.TabIndex = 1;
             this._fromDateLabel.Text = "Từ";
-            this._fromDateLabel.Click += new System.EventHandler(this._fromDateLabel_Click);
             // 
             // _fromDatePicker
             // 

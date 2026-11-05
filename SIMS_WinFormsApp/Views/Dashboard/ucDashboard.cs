@@ -692,13 +692,5 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
-        private void _titleLabel_Click(object sender, System.EventArgs e)
-        {
-        }
-
-        private void _activityTitle_Click(object sender, System.EventArgs e)
-        {
-
-        }
     }
 }

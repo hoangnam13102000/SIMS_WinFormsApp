@@ -186,26 +186,20 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (readOnly)
             {
                 SupplierEditDto ignored;
-                frmSupplierEditor.TryEdit(owner, draft, true, out ignored);
+                CatalogSaveResult ignoredResult;
+                frmSupplierEditor.TryEdit(owner, draft, true, _presenter.Save, out ignored, out ignoredResult);
                 return;
             }
 
             SupplierEditDto edited;
-            while (frmSupplierEditor.TryEdit(owner, draft, false, out edited))
-            {
-                CatalogSaveResult result = _presenter.Save(edited);
-                if (result != null && result.Success)
-                {
-                    Notify(result);
-                    _pageIndex = 0;
-                    LoadPage();
-                    return;
-                }
+            CatalogSaveResult saveResult;
+            if (!frmSupplierEditor.TryEdit(
+                    owner, draft, false, _presenter.Save, out edited, out saveResult))
+                return;
 
-                DialogHelper.ShowWarning(owner ?? this,
-                    result == null ? "Không lưu được nhà cung cấp." : result.Message);
-                draft = edited;
-            }
+            Notify(saveResult);
+            _pageIndex = 0;
+            LoadPage();
         }
 
         private void ImportSuppliers()

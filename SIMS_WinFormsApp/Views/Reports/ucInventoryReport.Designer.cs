@@ -21,11 +21,10 @@ namespace SIMS_WinFormsApp.Views.Reports
         private DateTimePicker _to;
         private ComboBox _category;
         private Button _apply;
-        private Button _exportPdf;
+        private Button _viewRdlc;
         private Button _exportOptions;
         private ContextMenuStrip _exportMenu;
         private ToolStripMenuItem _exportCategoryCsv;
-        private ToolStripMenuItem _exportCategoryExcel;
         private TableLayoutPanel _summary;
         private Label _productCount;
         private Label _totalStock;
@@ -106,7 +105,6 @@ namespace SIMS_WinFormsApp.Views.Reports
         private Button _historyExport;
         private ContextMenuStrip _historyExportMenu;
         private ToolStripMenuItem _historyExportCsv;
-        private ToolStripMenuItem _historyExportExcel;
         private FlowLayoutPanel _historyPager;
         private Button _historyNext;
         private Label _historyPageInfo;
@@ -155,7 +153,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitle = new System.Windows.Forms.Label();
             this._title = new System.Windows.Forms.Label();
-            this._exportPdf = new System.Windows.Forms.Button();
+            this._viewRdlc = new System.Windows.Forms.Button();
             this._exportOptions = new System.Windows.Forms.Button();
             this._filters = new System.Windows.Forms.FlowLayoutPanel();
             this._fromLabel = new System.Windows.Forms.Label();
@@ -267,10 +265,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._historyTitle = new System.Windows.Forms.Label();
             this._exportMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._exportCategoryCsv = new System.Windows.Forms.ToolStripMenuItem();
-            this._exportCategoryExcel = new System.Windows.Forms.ToolStripMenuItem();
             this._historyExportMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._historyExportCsv = new System.Windows.Forms.ToolStripMenuItem();
-            this._historyExportExcel = new System.Windows.Forms.ToolStripMenuItem();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -347,7 +343,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
-            this._header.Controls.Add(this._exportPdf);
+            this._header.Controls.Add(this._viewRdlc);
             this._header.Controls.Add(this._exportOptions);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
             this._header.Location = new System.Drawing.Point(27, 27);
@@ -409,22 +405,20 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._title.Text = "Báo cáo hàng tồn kho";
             this._title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._title.UseMnemonic = false;
-            // 
-            // _exportPdf
-            // 
-            this._exportPdf.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._exportPdf.BackColor = System.Drawing.Color.White;
-            this._exportPdf.Cursor = System.Windows.Forms.Cursors.Hand;
-            this._exportPdf.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._exportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._exportPdf.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this._exportPdf.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._exportPdf.Location = new System.Drawing.Point(1590, 25);
-            this._exportPdf.Name = "_exportPdf";
-            this._exportPdf.Size = new System.Drawing.Size(150, 38);
-            this._exportPdf.TabIndex = 3;
-            this._exportPdf.Text = "Xuất báo cáo PDF";
-            this._exportPdf.UseVisualStyleBackColor = false;
+            // _viewRdlc
+            this._viewRdlc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._viewRdlc.BackColor = System.Drawing.Color.White;
+            this._viewRdlc.Cursor = System.Windows.Forms.Cursors.Hand;
+            this._viewRdlc.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewRdlc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._viewRdlc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._viewRdlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._viewRdlc.Location = new System.Drawing.Point(1430, 25);
+            this._viewRdlc.Name = "_viewRdlc";
+            this._viewRdlc.Size = new System.Drawing.Size(154, 38);
+            this._viewRdlc.TabIndex = 4;
+            this._viewRdlc.Text = "Xem báo cáo (RDLC)";
+            this._viewRdlc.UseVisualStyleBackColor = false;
             // 
             // _exportOptions
             // 
@@ -1708,10 +1702,9 @@ namespace SIMS_WinFormsApp.Views.Reports
             // 
             this._exportMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._exportMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._exportCategoryCsv,
-            this._exportCategoryExcel});
+            this._exportCategoryCsv});
             this._exportMenu.Name = "_exportMenu";
-            this._exportMenu.Size = new System.Drawing.Size(321, 68);
+            this._exportMenu.Size = new System.Drawing.Size(321, 40);
             // 
             // _exportCategoryCsv
             // 
@@ -1719,32 +1712,19 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._exportCategoryCsv.Size = new System.Drawing.Size(320, 32);
             this._exportCategoryCsv.Text = "Xuất CSV tồn theo danh mục";
             // 
-            // _exportCategoryExcel
-            // 
-            this._exportCategoryExcel.Name = "_exportCategoryExcel";
-            this._exportCategoryExcel.Size = new System.Drawing.Size(320, 32);
-            this._exportCategoryExcel.Text = "Xuất Excel tồn theo danh mục";
-            // 
             // _historyExportMenu
             // 
             this._historyExportMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._historyExportMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._historyExportCsv,
-            this._historyExportExcel});
+            this._historyExportCsv});
             this._historyExportMenu.Name = "_historyExportMenu";
-            this._historyExportMenu.Size = new System.Drawing.Size(164, 68);
+            this._historyExportMenu.Size = new System.Drawing.Size(164, 40);
             // 
             // _historyExportCsv
             // 
             this._historyExportCsv.Name = "_historyExportCsv";
             this._historyExportCsv.Size = new System.Drawing.Size(163, 32);
             this._historyExportCsv.Text = "Xuất CSV";
-            // 
-            // _historyExportExcel
-            // 
-            this._historyExportExcel.Name = "_historyExportExcel";
-            this._historyExportExcel.Size = new System.Drawing.Size(163, 32);
-            this._historyExportExcel.Text = "Xuất Excel";
             // 
             // ucInventoryReport
             // 

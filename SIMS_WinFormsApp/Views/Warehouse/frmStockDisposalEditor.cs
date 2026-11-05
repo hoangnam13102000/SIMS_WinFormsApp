@@ -48,7 +48,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _linesGrid.CellMouseMove += new DataGridViewCellMouseEventHandler(this.LinesGrid_CellMouseMove);
             _linesGrid.MouseLeave += new EventHandler(this.LinesGrid_MouseLeave);
             DataGridViewCodeCopy.Attach(_linesGrid, "colBatchCode");
-            _saveButton.Click += new EventHandler(this.SaveButton_Click);
             _cancelButton.Click += new EventHandler(this.CancelButton_Click);
         }
 
@@ -249,6 +248,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
+            // StockDisposalEditorPresenter.OnSaveRequested validates and persists the disposal.
             SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 

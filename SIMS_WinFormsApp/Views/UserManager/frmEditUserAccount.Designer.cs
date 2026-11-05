@@ -280,7 +280,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerBirthDateLabel.Size = new System.Drawing.Size(270, 41);
             this._designerBirthDateLabel.TabIndex = 13;
             this._designerBirthDateLabel.Text = "Ngày sinh";
-            this._designerBirthDateLabel.Click += new System.EventHandler(this._designerBirthDateLabel_Click);
             // 
             // _designerBirthDate
             // 
@@ -299,7 +298,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerGenderLabel.Size = new System.Drawing.Size(288, 31);
             this._designerGenderLabel.TabIndex = 15;
             this._designerGenderLabel.Text = "Giới tính";
-            this._designerGenderLabel.Click += new System.EventHandler(this._designerGenderLabel_Click);
             // 
             // _designerGender
             // 
@@ -343,7 +341,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerHireDate.Name = "_designerHireDate";
             this._designerHireDate.Size = new System.Drawing.Size(290, 42);
             this._designerHireDate.TabIndex = 20;
-            this._designerHireDate.ValueChanged += new System.EventHandler(this._designerHireDate_ValueChanged);
             // 
             // _designerSalaryLabel
             // 
@@ -411,7 +408,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerAccountIdValue.Size = new System.Drawing.Size(260, 24);
             this._designerAccountIdValue.TabIndex = 1;
             this._designerAccountIdValue.Text = "1";
-            this._designerAccountIdValue.Click += new System.EventHandler(this._designerAccountIdValue_Click);
             // 
             // _designerUsernameCaption
             // 
@@ -469,6 +465,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSaveButton.TabIndex = 1;
             this._designerSaveButton.Text = "Lưu thay đổi";
             this._designerSaveButton.UseVisualStyleBackColor = false;
+            this._designerSaveButton.Click += new System.EventHandler(this._designerSaveButton_Click);
             // 
             // frmEditUserAccount
             // 

@@ -116,8 +116,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         {
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                var products = db.Products.Where(product => product.Status == "ACTIVE"
-                    && (!categoryId.HasValue || product.CategoryID == categoryId.Value));
+                var products = db.Products.Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
+
                 return new InventoryStockSummary
                 {
                     ProductCount = products.Count(),
@@ -142,8 +144,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
                 var products = db.Products
-                    .Where(product => product.Status == "ACTIVE"
-                        && (!categoryId.HasValue || product.CategoryID == categoryId.Value))
+                    .Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
+
+                var productRows = products
                     .OrderByDescending(product => product.Stock)
                     .ThenBy(product => product.ProductName)
                     .Take(limit)
@@ -156,14 +161,14 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                         product.MinStock
                     })
                     .ToList();
-                int[] productIds = products.Select(product => product.ProductID).ToArray();
+                int[] productIds = productRows.Select(product => product.ProductID).ToArray();
                 var batches = db.InventoryBatches
                     .Where(batch => productIds.Contains(batch.ProductID)
                         && batch.Status != "DEPLETED" && batch.RemainingQty > 0)
                     .Select(batch => new { batch.ProductID, batch.ExpiryDate })
                     .ToList();
                 DateTime today = DateTime.Today;
-                return products.Select(product =>
+                return productRows.Select(product =>
                 {
                     var productBatches = batches.Where(batch => batch.ProductID == product.ProductID).ToList();
                     DateTime? nearestExpiry = productBatches
@@ -190,20 +195,24 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             List<InventoryStockBreakdownRow> results;
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
-                results = (from product in db.Products
-                           join category in db.Categories
-                               on product.CategoryID equals category.CategoryID
-                           where product.Status == "ACTIVE"
-                               && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
-                           group product by category.CategoryName into products
-                           select new InventoryStockBreakdownRow
-                           {
-                               Label = products.Key,
-                               ProductCount = products.Count(),
-                               Quantity = products.Sum(product => (long?)product.Stock) ?? 0L,
-                               SellValue = products.Sum(product =>
-                                   (decimal?)product.Stock * product.SellPrice) ?? 0m
-                           })
+                var products = from product in db.Products
+                               join category in db.Categories
+                                   on product.CategoryID equals category.CategoryID
+                               where product.Status == "ACTIVE"
+                               select new { product, category.CategoryName };
+                if (categoryId.HasValue)
+                    products = products.Where(item => item.product.CategoryID == categoryId.Value);
+
+                results = products
+                    .GroupBy(item => item.CategoryName)
+                    .Select(productsInCategory => new InventoryStockBreakdownRow
+                    {
+                        Label = productsInCategory.Key,
+                        ProductCount = productsInCategory.Count(),
+                        Quantity = productsInCategory.Sum(item => (long?)item.product.Stock) ?? 0L,
+                        SellValue = productsInCategory.Sum(item =>
+                            (decimal?)item.product.Stock * item.product.SellPrice) ?? 0m
+                    })
                     .OrderByDescending(row => row.SellValue)
                     .ToList();
             }
@@ -225,11 +234,14 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
             {
                 var products = db.Products
-                    .Where(product => product.Status == "ACTIVE"
-                        && (!categoryId.HasValue || product.CategoryID == categoryId.Value))
+                    .Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                    products = products.Where(product => product.CategoryID == categoryId.Value);
+
+                var productRows = products
                     .Select(product => new { product.SellPrice, product.Stock })
                     .ToList();
-                foreach (var product in products)
+                foreach (var product in productRows)
                 {
                     decimal sellPrice = product.SellPrice;
                     int index = sellPrice < 50000m ? 0
@@ -413,23 +425,32 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                             Direction = "OUT"
                                         }).ToList());
 
-                historyEvents.AddRange((from batchLine in db.InvoiceDetailBatches
-                                        join detail in db.InvoiceDetails
-                                            on batchLine.InvoiceDetailID equals detail.InvoiceDetailID
-                                        join invoice in db.Invoices
-                                            on detail.InvoiceID equals invoice.InvoiceID
-                                        join batch in db.InventoryBatches
-                                            on batchLine.BatchID equals batch.BatchID
-                                        where invoice.Status == "CANCELLED" && invoice.CancelledAt.HasValue
-                                        select new BatchHistoryEvent
-                                        {
-                                            BatchID = batch.BatchID,
-                                            ChangedAt = invoice.CancelledAt.Value,
-                                            DocumentType = "Hủy hóa đơn",
-                                            DocumentCode = invoice.InvoiceCode,
-                                            Quantity = batchLine.Quantity,
-                                            Direction = "IN"
-                                        }).ToList());
+                var cancelledInvoiceEvents = (from batchLine in db.InvoiceDetailBatches
+                                              join detail in db.InvoiceDetails
+                                                  on batchLine.InvoiceDetailID equals detail.InvoiceDetailID
+                                              join invoice in db.Invoices
+                                                  on detail.InvoiceID equals invoice.InvoiceID
+                                              join batch in db.InventoryBatches
+                                                  on batchLine.BatchID equals batch.BatchID
+                                              where invoice.Status == "CANCELLED"
+                                              select new
+                                              {
+                                                  BatchID = batch.BatchID,
+                                                  CancelledAt = invoice.CancelledAt,
+                                                  InvoiceCode = invoice.InvoiceCode,
+                                                  Quantity = batchLine.Quantity
+                                              }).ToList();
+                historyEvents.AddRange(cancelledInvoiceEvents
+                    .Where(item => item.CancelledAt.HasValue)
+                    .Select(item => new BatchHistoryEvent
+                    {
+                        BatchID = item.BatchID,
+                        ChangedAt = item.CancelledAt.Value,
+                        DocumentType = "Hủy hóa đơn",
+                        DocumentCode = item.InvoiceCode,
+                        Quantity = item.Quantity,
+                        Direction = "IN"
+                    }));
 
                 var returnEvents = (from batchLine in db.ReturnExchangeDetailBatches
                                     join detail in db.ReturnExchangeDetails
@@ -655,8 +676,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
 
                 var nonEmptyBatches = db.InventoryBatches.Where(batch => batch.Status != "DEPLETED"
                     && batch.RemainingQty > 0
-                    && batch.ExpiryDate.HasValue
-                    && batch.ExpiryDate.Value < today);
+                    && batch.ExpiryDate < today);
                 var expiredBatches = from batch in nonEmptyBatches
                                           join product in db.Products on batch.ProductID equals product.ProductID
                                           where product.Status == "ACTIVE"

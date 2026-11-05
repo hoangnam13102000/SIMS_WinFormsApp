@@ -47,7 +47,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _presenter = new StockReconciliationPresenter(this, service, session);
             DataGridViewCodeCopy.Attach(_stockGrid, "Sku");
             _loadButton.Click += (sender, args) => RaiseLoadRequested();
-            _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
             _exportButton.Click += (sender, args) => ExportStock();
             _searchBox.Enter += (sender, args) => HideSearchPlaceholder();
             _searchBox.Leave += (sender, args) => ShowSearchPlaceholder();
@@ -189,6 +188,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void RaiseLoadRequested()
         {
             LoadRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _saveButton_Click(object sender, EventArgs e)
+        {
+            // StockReconciliationPresenter.OnSaveRequested validates and persists the counts.
+            SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnStockReconciliationVisibleChanged(object sender, EventArgs e)

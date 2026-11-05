@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/Microsoft.SqlServer.Types.nuspec" Id="Rcd10cf5129574db6" />
+  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/91003d33f41f47a8a6b14688f0d5c107.psmdcp" Id="Re8520741d4584123" />
+</Relationships>

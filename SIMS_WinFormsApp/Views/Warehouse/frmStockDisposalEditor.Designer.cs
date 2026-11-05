@@ -229,6 +229,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._saveButton.Text = "Lưu phiếu tiêu hủy";
             this._saveButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this._saveButton.UseVisualStyleBackColor = false;
+            this._saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // _footerLine
             // 
