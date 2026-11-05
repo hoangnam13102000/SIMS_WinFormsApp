@@ -18,6 +18,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly Timer _searchTimer;
         private bool _isLoading;
         private bool _reloadRequested;
+        private bool _eventsReady;
         private int? _filterProductId;
 
         public event Action<int> DisposeBatchRequested;
@@ -35,43 +36,78 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _canDispose = canDispose;
             _service = AppComposition.CreateExpiryBatchManagementService();
             _searchTimer = new Timer(components) { Interval = 300 };
-            _searchTimer.Tick += async (sender, args) =>
-            {
-                _searchTimer.Stop();
-                await LoadBatchesAsync();
-            };
-            _filterCombo.SelectedIndexChanged += async (sender, args) => await LoadBatchesAsync();
-            _searchBox.TextChanged += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                _searchTimer.Start();
-            };
-            _refreshButton.Click += async (sender, args) => await LoadBatchesAsync();
+            _searchTimer.Tick += new EventHandler(this._searchTimer_Tick);
             _disposeButton.Enabled = false;
             _disposeButton.Visible = _canDispose;
-            _disposeButton.Click += (sender, args) =>
-            {
-                ExpiryBatchDto selected = GetSelectedBatch();
-                if (selected != null && selected.IsExpired)
-                    DisposeBatchRequested?.Invoke(selected.BatchId);
-            };
             _clearProductFilterButton.Visible = false;
-            _clearProductFilterButton.Click += async (sender, args) =>
-            {
-                _filterProductId = null;
-                _clearProductFilterButton.Visible = false;
-                _filterCombo.SelectedIndex = 0;
-                _searchBox.Clear();
-                _searchTimer.Stop();
+            _eventsReady = true;
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            _searchTimer.Stop();
+            await LoadBatchesAsync();
+        }
+
+        private async void _filterCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            await LoadBatchesAsync();
+        }
+
+        private void _searchBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private async void _refreshButton_Click(object sender, EventArgs e)
+        {
+            await LoadBatchesAsync();
+        }
+
+        private void _disposeButton_Click(object sender, EventArgs e)
+        {
+            ExpiryBatchDto selected = GetSelectedBatch();
+            if (selected != null && selected.IsExpired)
+                DisposeBatchRequested?.Invoke(selected.BatchId);
+        }
+
+        private async void _clearProductFilterButton_Click(object sender, EventArgs e)
+        {
+            _filterProductId = null;
+            _clearProductFilterButton.Visible = false;
+            _filterCombo.SelectedIndex = 0;
+            _searchBox.Clear();
+            _searchTimer.Stop();
+            await LoadBatchesAsync();
+        }
+
+        private void _grid_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateDisposeButton();
+        }
+
+        private async void ucExpiryBatchManagement_Load(object sender, EventArgs e)
+        {
+            await LoadBatchesAsync();
+        }
+
+        private async void ucExpiryBatchManagement_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            if (Visible && IsHandleCreated)
                 await LoadBatchesAsync();
-            };
-            _grid.SelectionChanged += (sender, args) => UpdateDisposeButton();
-            Load += async (sender, args) => await LoadBatchesAsync();
-            VisibleChanged += async (sender, args) =>
-            {
-                if (Visible && IsHandleCreated)
-                    await LoadBatchesAsync();
-            };
         }
 
         private async Task LoadBatchesAsync()

@@ -29,6 +29,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly IUserSession _session;
         private readonly StockDisposalListPresenter _presenter;
         private bool _initialized;
+        private bool _eventsReady;
         private bool _suppressDateEvents;
 
         public ucStockDisposalManagement()
@@ -47,29 +48,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _session = session ?? UserSession.Instance;
             _presenter = new StockDisposalListPresenter(this, _service, _session);
 
-            _searchBox.HandleCreated += new EventHandler(this.SearchBox_HandleCreated);
             if (_searchBox.IsHandleCreated)
                 ApplySearchPlaceholder();
-            _searchBox.TextChanged += new EventHandler(this.SearchBox_TextChanged);
-            _fromDatePicker.ValueChanged += new EventHandler(this.DatePicker_ValueChanged);
-            _toDatePicker.ValueChanged += new EventHandler(this.DatePicker_ValueChanged);
-            _clearDateLink.LinkClicked += new LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
-            _pageSizeCombo.SelectedIndexChanged += new EventHandler(this.PageSizeCombo_SelectedIndexChanged);
-            _prevButton.Click += new EventHandler(this.PreviousButton_Click);
-            _nextButton.Click += new EventHandler(this.NextButton_Click);
-            _createButton.Click += new EventHandler(this.CreateButton_Click);
-            _optionsButton.Click += new EventHandler(this.OptionsButton_Click);
-            _exportCsvItem.Click += new EventHandler(this.ExportCsvItem_Click);
-            _exportExcelItem.Click += new EventHandler(this.ExportExcelItem_Click);
             _importItem.Image = IconBitmapCache.Get(IconChar.FileImport, Color.FromArgb(37, 99, 235), new Size(18, 18));
-            _importItem.Click += (sender, args) => ImportRequested?.Invoke(this, EventArgs.Empty);
-            _grid.CellClick += new DataGridViewCellEventHandler(this.Grid_CellClick);
-            _grid.CellDoubleClick += new DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
-            _grid.CellMouseMove += new DataGridViewCellMouseEventHandler(this.Grid_CellMouseMove);
-            _grid.MouseLeave += new EventHandler(this.Grid_MouseLeave);
-            _grid.CellToolTipTextNeeded += new DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
-            _grid.CellFormatting += new DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
-            VisibleChanged += new EventHandler(this.OnVisibleChanged);
+            _eventsReady = true;
         }
 
         public event EventHandler SearchRequested;
@@ -235,6 +217,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnVisibleChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             if (!Visible || _initialized || _presenter == null)
                 return;
 
@@ -255,18 +240,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void SearchBox_TextChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             _searchTimer.Stop();
             _searchTimer.Start();
         }
 
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             _searchTimer.Stop();
             SearchRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void DatePicker_ValueChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             if (!_suppressDateEvents)
                 ((DateTimePicker)sender).Checked = true;
             UpdateClearDateVisibility();
@@ -291,6 +285,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void PageSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             PageSizeChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -322,6 +319,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void ExportExcelItem_Click(object sender, EventArgs e)
         {
             ExcelExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _importItem_Click(object sender, EventArgs e)
+        {
+            ImportRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void Grid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -396,14 +398,5 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
 
-        private void _toDatePicker_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _fromDateLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

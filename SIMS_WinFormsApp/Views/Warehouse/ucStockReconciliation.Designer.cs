@@ -105,12 +105,14 @@
             this._exportCsvItem.Name = "_exportCsvItem";
             this._exportCsvItem.Size = new System.Drawing.Size(179, 28);
             this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this._exportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
             this._exportExcelItem.Size = new System.Drawing.Size(179, 28);
             this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this._exportExcelItem_Click);
             // 
             // _menuSeparator
             // 
@@ -122,6 +124,7 @@
             this._importItem.Name = "_importItem";
             this._importItem.Size = new System.Drawing.Size(179, 28);
             this._importItem.Text = "Nhập dữ liệu";
+            this._importItem.Click += new System.EventHandler(this._importItem_Click);
             // 
             // _clearDateLink
             // 
@@ -138,14 +141,17 @@
             this._clearDateLink.Text = "Xoá lọc";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
             this._clearDateLink.Visible = false;
+            this._clearDateLink.Click += new System.EventHandler(this._clearDateLink_Click);
             // 
             // _searchTimer
             // 
             this._searchTimer.Interval = 300;
+            this._searchTimer.Tick += new System.EventHandler(this._searchTimer_Tick);
             // 
             // _rolloverTimer
             // 
             this._rolloverTimer.Interval = 60000;
+            this._rolloverTimer.Tick += new System.EventHandler(this._rolloverTimer_Tick);
             // 
             // _headerCard
             // 
@@ -183,6 +189,7 @@
             this._syncButton.Text = "Đồng bộ SP hôm nay";
             this._syncButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this._syncButton.UseVisualStyleBackColor = false;
+            this._syncButton.Click += new System.EventHandler(this._syncButton_Click);
             // 
             // _optionsButton
             // 
@@ -204,6 +211,7 @@
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this._optionsButton_Click);
             // 
             // _subtitleLabel
             // 
@@ -308,6 +316,8 @@
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(256, 22);
             this._searchBox.TabIndex = 1;
+            this._searchBox.HandleCreated += new System.EventHandler(this._searchBox_HandleCreated);
+            this._searchBox.TextChanged += new System.EventHandler(this._searchBox_TextChanged);
             // 
             // _searchIcon
             // 
@@ -344,6 +354,8 @@
             this._fromDatePicker.Size = new System.Drawing.Size(124, 29);
             this._fromDatePicker.TabIndex = 2;
             this._fromDatePicker.Value = new System.DateTime(2026, 11, 1, 2, 5, 1, 526);
+            this._fromDatePicker.ValueChanged += new System.EventHandler(this.DatePicker_ValueChanged);
+            this._fromDatePicker.CloseUp += new System.EventHandler(this.DatePicker_CloseUp);
             // 
             // _fromDateIcon
             // 
@@ -360,6 +372,7 @@
             this._fromDateIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._fromDateIcon.TabIndex = 3;
             this._fromDateIcon.TabStop = false;
+            this._fromDateIcon.Click += new System.EventHandler(this._fromDateIcon_Click);
             // 
             // _toDateLabel
             // 
@@ -379,6 +392,8 @@
             this._toDatePicker.Name = "_toDatePicker";
             this._toDatePicker.Size = new System.Drawing.Size(124, 29);
             this._toDatePicker.TabIndex = 5;
+            this._toDatePicker.ValueChanged += new System.EventHandler(this.DatePicker_ValueChanged);
+            this._toDatePicker.CloseUp += new System.EventHandler(this.DatePicker_CloseUp);
             // 
             // _toDateIcon
             // 
@@ -395,6 +410,7 @@
             this._toDateIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._toDateIcon.TabIndex = 6;
             this._toDateIcon.TabStop = false;
+            this._toDateIcon.Click += new System.EventHandler(this._toDateIcon_Click);
             // 
             // _totalLabel
             // 
@@ -473,6 +489,15 @@
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(930, 396);
             this._grid.TabIndex = 0;
+            this._grid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellClick);
+            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
+            this._grid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.Grid_CellBeginEdit);
+            this._grid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellEndEdit);
+            this._grid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
+            this._grid.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
+            this._grid.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.Grid_CellMouseMove);
+            this._grid.MouseLeave += new System.EventHandler(this._grid_MouseLeave);
+            this._grid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Grid_KeyDown);
             // 
             // colReconciliationId
             // 
@@ -652,6 +677,7 @@
             this._prevButton.Size = new System.Drawing.Size(32, 32);
             this._prevButton.TabIndex = 0;
             this._prevButton.UseVisualStyleBackColor = false;
+            this._prevButton.Click += new System.EventHandler(this._prevButton_Click);
             // 
             // _pageLabel
             // 
@@ -679,6 +705,7 @@
             this._nextButton.Size = new System.Drawing.Size(32, 32);
             this._nextButton.TabIndex = 2;
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this._nextButton_Click);
             // 
             // _pageInfoLabel
             // 
@@ -705,6 +732,7 @@
             this._pageSizeCombo.Name = "_pageSizeCombo";
             this._pageSizeCombo.Size = new System.Drawing.Size(104, 29);
             this._pageSizeCombo.TabIndex = 4;
+            this._pageSizeCombo.SelectedIndexChanged += new System.EventHandler(this._pageSizeCombo_SelectedIndexChanged);
             // 
             // ucStockReconciliation
             // 
@@ -737,6 +765,7 @@
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this._pagerCard.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
+            this.VisibleChanged += new System.EventHandler(this.OnViewVisibleChanged);
             this.ResumeLayout(false);
 
         }

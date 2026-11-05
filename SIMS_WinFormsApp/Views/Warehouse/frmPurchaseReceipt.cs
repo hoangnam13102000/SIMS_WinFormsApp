@@ -44,7 +44,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             InitializeComponent();
             _service = service;
             _session = session;
-            Load += Editor_Load;
 
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
@@ -60,17 +59,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             NumberInputFormatter.SetMaximumDigits(_priceTextBox, 18);
             ConfigureEntryControls();
 
-            _demoButton.Click += (sender, args) => FillDemoData();
-            _addLineButton.Click += (sender, args) => AddLineFromInputs();
-            _linesGrid.CellClick += LinesGrid_CellClick;
-            _linesGrid.CellPainting += LinesGrid_CellPainting;
-            _linesGrid.CellToolTipTextNeeded += LinesGrid_CellToolTipTextNeeded;
-            _saveButton.Click += (sender, args) => SaveReceipt();
-            _cancelButton.Click += (sender, args) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
             _presenter.Initialize();
         }
 
@@ -179,7 +167,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void ConfigureEntryControls()
         {
             _quantityTextBox.MaxLength = 9;
-            _quantityTextBox.KeyPress += IntegerTextBox_KeyPress;
+        }
+
+        private void _demoButton_Click(object sender, EventArgs e)
+        {
+            FillDemoData();
+        }
+
+        private void _addLineButton_Click(object sender, EventArgs e)
+        {
+            AddLineFromInputs();
+        }
+
+        private void _saveButton_Click(object sender, EventArgs e)
+        {
+            SaveReceipt();
+        }
+
+        private void _cancelButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void Editor_Load(object sender, EventArgs e)

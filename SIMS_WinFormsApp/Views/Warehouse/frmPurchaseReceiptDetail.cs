@@ -30,9 +30,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.Columns["ImportPrice"].DefaultCellStyle.FormatProvider = VietnameseCulture;
             _grid.Columns["Amount"].DefaultCellStyle.FormatProvider = VietnameseCulture;
             UpdateReceiptData();
-            _headerIconCircle.Paint += new PaintEventHandler(HeaderIconCircle_Paint);
-            _closeButton.Click += new EventHandler(_closeButton_Click);
-            Load += new EventHandler(DetailForm_Load);
         }
 
         private void UpdateReceiptData()

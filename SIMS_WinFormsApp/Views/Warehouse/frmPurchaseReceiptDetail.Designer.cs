@@ -757,6 +757,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerIconCircle.Name = "_headerIconCircle";
             this._headerIconCircle.Size = new System.Drawing.Size(44, 44);
             this._headerIconCircle.TabIndex = 0;
+            this._headerIconCircle.Paint += new System.Windows.Forms.PaintEventHandler(this.HeaderIconCircle_Paint);
             // 
             // _headerReceiptIcon
             // 
@@ -871,6 +872,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerPanel.ResumeLayout(false);
             this._headerIconCircle.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._headerReceiptIcon)).EndInit();
+            this.Load += new System.EventHandler(this.DetailForm_Load);
             this.ResumeLayout(false);
 
         }

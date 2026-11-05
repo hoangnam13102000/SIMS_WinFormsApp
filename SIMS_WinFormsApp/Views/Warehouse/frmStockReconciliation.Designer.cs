@@ -134,6 +134,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(330, 22);
             this._searchBox.TabIndex = 0;
+            this._searchBox.Enter += new System.EventHandler(this._searchBox_Enter);
+            this._searchBox.Leave += new System.EventHandler(this._searchBox_Leave);
+            this._searchBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnSearchBoxKeyDown);
             // 
             // _categoryFilter
             // 
@@ -155,6 +158,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._loadButton.TabIndex = 2;
             this._loadButton.Text = "Tải danh sách";
             this._loadButton.UseVisualStyleBackColor = true;
+            this._loadButton.Click += new System.EventHandler(this._loadButton_Click);
             // 
             // _stockGrid
             // 
@@ -180,6 +184,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._stockGrid.RowHeadersWidth = 51;
             this._stockGrid.Size = new System.Drawing.Size(1146, 526);
             this._stockGrid.TabIndex = 2;
+            this._stockGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnStockGridCellClick);
+            this._stockGrid.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnStockGridScroll);
+            this._stockGrid.SizeChanged += new System.EventHandler(this.OnStockGridSizeChanged);
+            this._stockGrid.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.OnStockGridColumnWidthChanged);
+            this._stockGrid.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.OnStockGridRowHeightChanged);
             // 
             // _productIdColumn
             // 
@@ -264,6 +273,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._saveButton.TabIndex = 0;
             this._saveButton.Text = "Lưu kết quả";
             this._saveButton.UseVisualStyleBackColor = true;
+            this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
             // 
             // _exportButton
             // 
@@ -275,6 +285,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportButton.TabIndex = 1;
             this._exportButton.Text = "Xuất kiểm kê";
             this._exportButton.UseVisualStyleBackColor = true;
+            this._exportButton.Click += new System.EventHandler(this._exportButton_Click);
             // 
             // _countLabel
             // 
@@ -306,6 +317,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ((System.ComponentModel.ISupportInitialize)(this._stockGrid)).EndInit();
             this._actions.ResumeLayout(false);
             this._actions.PerformLayout();
+            this.VisibleChanged += new System.EventHandler(this.OnStockReconciliationVisibleChanged);
             this.ResumeLayout(false);
 
         }

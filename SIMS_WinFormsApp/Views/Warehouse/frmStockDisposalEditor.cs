@@ -24,6 +24,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly IUserSession _session;
         private readonly StockDisposalEditorPresenter _presenter;
         private readonly IDialogService _dialogService;
+        private bool _eventsReady;
 
         public frmStockDisposalEditor()
             : this(null, null)
@@ -33,7 +34,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public frmStockDisposalEditor(IStockDisposalService service, IUserSession session)
         {
             InitializeComponent();
-            Load += new EventHandler(this.Editor_Load);
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
                 return;
 
@@ -41,14 +41,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _session = session ?? UserSession.Instance;
             _dialogService = AppComposition.CreateDialogService();
             _presenter = new StockDisposalEditorPresenter(this, _service, _session);
-
-            _batchComboBox.SelectedIndexChanged += new EventHandler(this.BatchComboBox_SelectedIndexChanged);
-            _addLineButton.Click += new EventHandler(this.AddLineButton_Click);
-            _linesGrid.CellClick += new DataGridViewCellEventHandler(this.LinesGrid_CellClick);
-            _linesGrid.CellMouseMove += new DataGridViewCellMouseEventHandler(this.LinesGrid_CellMouseMove);
-            _linesGrid.MouseLeave += new EventHandler(this.LinesGrid_MouseLeave);
-            _saveButton.Click += new EventHandler(this.SaveButton_Click);
-            _cancelButton.Click += new EventHandler(this.CancelButton_Click);
+            _eventsReady = true;
         }
 
         public event EventHandler LinesChanged;
@@ -155,6 +148,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void BatchComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             DisposableBatchDto batch = _batchComboBox.SelectedItem as DisposableBatchDto;
             _remainHintLabel.Text = batch == null
                 ? string.Empty

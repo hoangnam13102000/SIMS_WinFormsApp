@@ -132,6 +132,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _disposeButton.Text = "Lập phiếu tiêu hủy";
             _disposeButton.UseVisualStyleBackColor = false;
             _disposeButton.Enabled = false;
+            this._disposeButton.Click += new System.EventHandler(this._disposeButton_Click);
             //
             // _summaryLayout
             //
@@ -176,6 +177,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _searchBox.Name = "_searchBox";
             _searchBox.Size = new Size(390, 25);
             _searchBox.Text = "";
+            this._searchBox.TextChanged += new System.EventHandler(this._searchBox_TextChanged);
             //
             // _filterCombo
             //
@@ -186,6 +188,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _filterCombo.Name = "_filterCombo";
             _filterCombo.Size = new Size(230, 25);
             _filterCombo.SelectedIndex = 0;
+            this._filterCombo.SelectedIndexChanged += new System.EventHandler(this._filterCombo_SelectedIndexChanged);
             //
             // _clearProductFilterButton
             //
@@ -196,6 +199,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _clearProductFilterButton.Name = "_clearProductFilterButton";
             _clearProductFilterButton.Size = new Size(160, 34);
             _clearProductFilterButton.Text = "Bỏ lọc sản phẩm";
+            this._clearProductFilterButton.Click += new System.EventHandler(this._clearProductFilterButton_Click);
             //
             // _refreshButton
             //
@@ -206,6 +210,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _refreshButton.Name = "_refreshButton";
             _refreshButton.Size = new Size(92, 34);
             _refreshButton.Text = "Tải lại";
+            this._refreshButton.Click += new System.EventHandler(this._refreshButton_Click);
             //
             // _grid
             //
@@ -241,6 +246,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 "28/10/2026", "10", "65.000 ₫", "650.000 ₫", "Đã hết hạn");
             _grid.Rows[1].DefaultCellStyle.BackColor = Color.FromArgb(254, 242, 242);
             _grid.Rows[1].DefaultCellStyle.ForeColor = Color.FromArgb(153, 27, 27);
+            this._grid.SelectionChanged += new System.EventHandler(this._grid_SelectionChanged);
             //
             // _footerLabel
             //
@@ -269,6 +275,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _headerPanel.PerformLayout();
             _root.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)_grid).EndInit();
+            this.Load += new System.EventHandler(this.ucExpiryBatchManagement_Load);
+            this.VisibleChanged += new System.EventHandler(this.ucExpiryBatchManagement_VisibleChanged);
             ResumeLayout(false);
         }
 

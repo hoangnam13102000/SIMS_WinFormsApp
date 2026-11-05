@@ -163,6 +163,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn ▾";
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             // 
             // _optionsMenu
             // 
@@ -178,12 +179,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem.Name = "_exportCsvItem";
             this._exportCsvItem.Size = new System.Drawing.Size(146, 24);
             this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
             this._exportExcelItem.Size = new System.Drawing.Size(146, 24);
             this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _filterCard
             // 
@@ -210,6 +213,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(260, 27);
             this._searchBox.TabIndex = 0;
+            this._searchBox.HandleCreated += new System.EventHandler(this.SearchBox_HandleCreated);
+            this._searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
             // 
             // _categoryCombo
             // 
@@ -219,6 +224,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._categoryCombo.Name = "_categoryCombo";
             this._categoryCombo.Size = new System.Drawing.Size(170, 28);
             this._categoryCombo.TabIndex = 1;
+            this._categoryCombo.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
             // 
             // _fromLabel
             // 
@@ -239,6 +245,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDatePicker.Name = "_fromDatePicker";
             this._fromDatePicker.Size = new System.Drawing.Size(140, 27);
             this._fromDatePicker.TabIndex = 3;
+            this._fromDatePicker.ValueChanged += new System.EventHandler(this.FilterControl_Changed);
             // 
             // _toLabel
             // 
@@ -259,6 +266,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Name = "_toDatePicker";
             this._toDatePicker.Size = new System.Drawing.Size(140, 27);
             this._toDatePicker.TabIndex = 5;
+            this._toDatePicker.ValueChanged += new System.EventHandler(this.FilterControl_Changed);
             // 
             // _clearFilterLink
             // 
@@ -274,7 +282,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearFilterLink.TabStop = true;
             this._clearFilterLink.Text = "✕ Xóa lọc";
             this._clearFilterLink.Visible = false;
-            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._clearFilterLink_LinkClicked);
+            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
             // 
             // _totalLabel
             // 
@@ -353,6 +361,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1250, 410);
             this._grid.TabIndex = 0;
+            this._grid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellClick);
+            this._grid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.Grid_CellMouseClick);
+            this._grid.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellMouseEnter);
+            this._grid.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellMouseLeave);
+            this._grid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
+            this._grid.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
             // 
             // colAlertId
             // 
@@ -530,6 +544,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
             this._prevButton.UseVisualStyleBackColor = false;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageLabel
             // 
@@ -555,6 +570,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pageInfoLabel
             // 
@@ -586,6 +602,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageSizeCombo.Name = "_pageSizeCombo";
             this._pageSizeCombo.Size = new System.Drawing.Size(60, 28);
             this._pageSizeCombo.TabIndex = 5;
+            this._pageSizeCombo.SelectedIndexChanged += new System.EventHandler(this.PageSizeCombo_SelectedIndexChanged);
             // 
             // _rowsLabel
             // 
@@ -622,6 +639,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this._pagerPanel.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
+            this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
             this.ResumeLayout(false);
 
         }

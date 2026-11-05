@@ -212,6 +212,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerIconCircle.Name = "_headerIconCircle";
             this._headerIconCircle.Size = new System.Drawing.Size(56, 56);
             this._headerIconCircle.TabIndex = 0;
+            this._headerIconCircle.Paint += new System.Windows.Forms.PaintEventHandler(this.HeaderIconCircle_Paint);
             // 
             // _titleIcon
             // 
@@ -303,6 +304,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.TabIndex = 0;
             this._createButton.Text = "+ Lập phiếu nhập";
             this._createButton.UseVisualStyleBackColor = false;
+            this._createButton.Click += new System.EventHandler(this._createButton_Click);
             // 
             // _optionsButton
             // 
@@ -320,6 +322,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.TabIndex = 1;
             this._optionsButton.Text = "Tùy chọn  ⌄";
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this._optionsButton_Click);
             // 
             // _filterCard
             // 
@@ -429,6 +432,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(301, 20);
             this._searchBox.TabIndex = 1;
+            this._searchBox.HandleCreated += new System.EventHandler(this.SearchBox_HandleCreated);
+            this._searchBox.TextChanged += new System.EventHandler(this.OnSearchTextChanged);
             // 
             // _clearSearchButton
             // 
@@ -446,6 +451,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearSearchButton.Text = "✕";
             this._clearSearchButton.UseVisualStyleBackColor = false;
             this._clearSearchButton.Visible = false;
+            this._clearSearchButton.Click += new System.EventHandler(this._clearSearchButton_Click);
             // 
             // _fromDateLabel
             // 
@@ -470,6 +476,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDate.Size = new System.Drawing.Size(177, 36);
             this._fromDate.TabIndex = 0;
             this._fromDate.Value = null;
+            this._fromDate.ValueChanged += new System.EventHandler(this.OnDateValueChanged);
             // 
             // _toDate
             // 
@@ -481,6 +488,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDate.Size = new System.Drawing.Size(177, 36);
             this._toDate.TabIndex = 1;
             this._toDate.Value = null;
+            this._toDate.ValueChanged += new System.EventHandler(this.OnDateValueChanged);
             // 
             // _totalLabel
             // 
@@ -512,6 +520,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
             this._clearDateLink.UseVisualStyleBackColor = false;
             this._clearDateLink.Visible = false;
+            this._clearDateLink.Click += new System.EventHandler(this._clearDateLink_Click);
             // 
             // _gridCard
             // 
@@ -579,6 +588,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1158, 482);
             this._grid.TabIndex = 0;
+            this._grid.Resize += new System.EventHandler(this.Grid_Resize);
+            this._grid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.Grid_CellPainting);
+            this._grid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellClick);
+            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
+            this._grid.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
+            this._grid.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.Grid_CellMouseMove);
+            this._grid.MouseLeave += new System.EventHandler(this._grid_MouseLeave);
             // 
             // _receiptIdColumn
             // 
@@ -694,6 +710,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
             this._prevButton.UseVisualStyleBackColor = true;
+            this._prevButton.Click += new System.EventHandler(this._prevButton_Click);
             // 
             // _pageNumberBadge
             // 
@@ -704,6 +721,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageNumberBadge.Name = "_pageNumberBadge";
             this._pageNumberBadge.Size = new System.Drawing.Size(34, 34);
             this._pageNumberBadge.TabIndex = 1;
+            this._pageNumberBadge.Paint += new System.Windows.Forms.PaintEventHandler(this.PageNumberBadge_Paint);
             // 
             // _pageNumberLabel
             // 
@@ -730,6 +748,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
             this._nextButton.UseVisualStyleBackColor = true;
+            this._nextButton.Click += new System.EventHandler(this._nextButton_Click);
             // 
             // _pageInfoLabel
             // 
@@ -770,6 +789,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageSizeCombo.Name = "_pageSizeCombo";
             this._pageSizeCombo.Size = new System.Drawing.Size(64, 28);
             this._pageSizeCombo.TabIndex = 5;
+            this._pageSizeCombo.SelectedIndexChanged += new System.EventHandler(this._pageSizeCombo_SelectedIndexChanged);
             // 
             // _rowsLabel
             // 
@@ -799,6 +819,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.Name = "ucPurchaseReceiptManagement";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Size = new System.Drawing.Size(1200, 760);
+            this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
             this._root.ResumeLayout(false);
             this._root.PerformLayout();
             this._headerCard.ResumeLayout(false);

@@ -31,6 +31,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly Timer _searchTimer;
         private readonly ContextMenuStrip _optionsMenu;
         private bool _initialized;
+        private bool _eventsReady;
         private bool _suppressDateEvents;
         private int _lastVisibleRowCapacity;
 
@@ -50,10 +51,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
             _service = service ?? AppComposition.CreateInventoryService();
             _presenter = new PurchaseReceiptListPresenter(this, _service);
-            _grid.Resize += Grid_Resize;
             _searchTimer = new Timer(components) { Interval = 300 };
             _searchTimer.Tick += (sender, args) =>
             {
+                if (!_eventsReady)
+                    return;
+
                 _searchTimer.Stop();
                 SearchRequested?.Invoke(this, EventArgs.Empty);
             };
@@ -61,24 +64,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _searchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             _searchBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             _searchBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
-            _searchBox.HandleCreated += SearchBox_HandleCreated;
             if (_searchBox.IsHandleCreated)
                 ApplySearchPlaceholder();
-            _searchBox.TextChanged += OnSearchTextChanged;
-            _clearSearchButton.Click += (sender, args) =>
-            {
-                _searchBox.Clear();
-                _searchBox.Focus();
-            };
-
-            _fromDate.ValueChanged += OnDateValueChanged;
-            _toDate.ValueChanged += OnDateValueChanged;
-            _clearDateLink.Click += (sender, args) => ClearDatesRequested?.Invoke(this, EventArgs.Empty);
-            _pageSizeCombo.SelectedIndexChanged += (sender, args) =>
-                PageSizeChanged?.Invoke(this, EventArgs.Empty);
-            _prevButton.Click += (sender, args) => PreviousPageRequested?.Invoke(this, EventArgs.Empty);
-            _nextButton.Click += (sender, args) => NextPageRequested?.Invoke(this, EventArgs.Empty);
-            _createButton.Click += (sender, args) => CreateRequested?.Invoke(this, EventArgs.Empty);
 
             _optionsMenu = new ContextMenuStrip(components);
             _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất CSV",
@@ -91,18 +78,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _optionsMenu.Items.Add(new ToolStripMenuItem("Nhập dữ liệu",
                 IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new Size(18, 18)),
                 (sender, args) => ImportReceipts()));
-            _optionsButton.Click += (sender, args) =>
-                _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
-
-            _grid.CellPainting += Grid_CellPainting;
-            _grid.CellClick += Grid_CellClick;
-            _grid.CellDoubleClick += Grid_CellDoubleClick;
-            _grid.CellToolTipTextNeeded += Grid_CellToolTipTextNeeded;
-            _grid.CellMouseMove += Grid_CellMouseMove;
-            _grid.MouseLeave += (sender, args) => _grid.Cursor = Cursors.Default;
-            _pageNumberBadge.Paint += PageNumberBadge_Paint;
-            _headerIconCircle.Paint += HeaderIconCircle_Paint;
-            VisibleChanged += OnVisibleChanged;
+            _eventsReady = true;
         }
 
         public event EventHandler SearchRequested;
@@ -134,6 +110,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void Grid_Resize(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             int visibleRowCapacity = GetVisibleRowCapacity();
             if (visibleRowCapacity == _lastVisibleRowCapacity)
                 return;
@@ -286,6 +265,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnVisibleChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             if (!Visible || _initialized || _presenter == null)
                 return;
 
@@ -306,6 +288,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnSearchTextChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             _clearSearchButton.Visible = _searchBox.TextLength > 0;
             _searchTimer.Stop();
             _searchTimer.Start();
@@ -313,6 +298,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void OnDateValueChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             UpdateClearDateVisibility();
             if (!_suppressDateEvents)
                 DateFilterChanged?.Invoke(this, EventArgs.Empty);
@@ -427,12 +415,59 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 e.ToolTipText = "Sao chép mã phiếu";
         }
 
-            private void Grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
-            {
-                _grid.Cursor = e.RowIndex >= 0 && e.ColumnIndex == _actionColumn.Index
+        private void Grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            _grid.Cursor = e.RowIndex >= 0 && e.ColumnIndex == _actionColumn.Index
                 ? Cursors.Hand
                 : Cursors.Default;
-            }
+        }
+
+        private void _clearSearchButton_Click(object sender, EventArgs e)
+        {
+            _searchBox.Clear();
+            _searchBox.Focus();
+        }
+
+        private void _clearDateLink_Click(object sender, EventArgs e)
+        {
+            ClearDatesRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _pageSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            PageSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _prevButton_Click(object sender, EventArgs e)
+        {
+            PreviousPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _nextButton_Click(object sender, EventArgs e)
+        {
+            NextPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _createButton_Click(object sender, EventArgs e)
+        {
+            CreateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _optionsButton_Click(object sender, EventArgs e)
+        {
+            if (_optionsMenu == null)
+                return;
+
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void _grid_MouseLeave(object sender, EventArgs e)
+        {
+            _grid.Cursor = Cursors.Default;
+        }
 
         private void PageNumberBadge_Paint(object sender, PaintEventArgs e)
         {

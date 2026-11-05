@@ -206,6 +206,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _demoButton.TabIndex = 3;
             _demoButton.Text = "⚡ Điền dữ liệu Demo";
             _demoButton.UseVisualStyleBackColor = false;
+            this._demoButton.Click += new System.EventHandler(this._demoButton_Click);
             _headerDivider.BackColor = Color.FromArgb(226, 232, 240);
             _headerDivider.Dock = DockStyle.Bottom;
             _headerDivider.Location = new Point(0, 95);
@@ -321,6 +322,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _quantityTextBox.Location = new Point(466, 78);
             _quantityTextBox.Name = "_quantityTextBox";
             _quantityTextBox.Size = new Size(230, 36);
+            this._quantityTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(IntegerTextBox_KeyPress);
             _lotNumberTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             _lotNumberTextBox.AutoSize = false;
             _lotNumberTextBox.BorderStyle = BorderStyle.FixedSingle;
@@ -375,6 +377,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _addLineButton.Size = new Size(238, 40);
             _addLineButton.Text = "+ Thêm dòng";
             _addLineButton.UseVisualStyleBackColor = false;
+            this._addLineButton.Click += new System.EventHandler(this._addLineButton_Click);
             _entryCard.Controls.Add(_entryIcon);
             _entryCard.Controls.Add(_entryTitle);
             _entryCard.Controls.Add(_productLabel);
@@ -469,6 +472,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _linesGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             _linesGrid.ScrollBars = ScrollBars.Vertical;
             _linesGrid.Size = new Size(930, 250);
+            this._linesGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LinesGrid_CellClick);
+            this._linesGrid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.LinesGrid_CellPainting);
+            this._linesGrid.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.LinesGrid_CellToolTipTextNeeded);
             _productColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             _productColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             _productColumn.FillWeight = 28F;
@@ -614,6 +620,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _saveButton.Text = "Lưu phiếu nhập";
             _saveButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             _saveButton.UseVisualStyleBackColor = false;
+            this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
             _cancelButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _cancelButton.AutoSize = false;
             _cancelButton.BackColor = Color.White;
@@ -633,6 +640,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _cancelButton.Text = "Hủy";
             _cancelButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             _cancelButton.UseVisualStyleBackColor = false;
+            this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
             _footerPanel.Controls.Add(_totalCaptionLabel);
             _footerPanel.Controls.Add(_totalValueLabel);
             _footerPanel.Controls.Add(_saveButton);
@@ -659,6 +667,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _entryCard.ResumeLayout(false);
             _linesCard.ResumeLayout(false);
             _footerPanel.ResumeLayout(false);
+            this.Load += new System.EventHandler(this.Editor_Load);
             ResumeLayout(false);
         }
     }

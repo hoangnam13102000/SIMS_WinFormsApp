@@ -28,6 +28,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private readonly StockReconciliationListPresenter _presenter;
         private bool _suppressDateEvents;
+        private bool _eventsReady;
         private bool _fromDateActive;
         private bool _toDateActive;
 
@@ -51,51 +52,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _exportExcelItem.Image = IconBitmapCache.Get(IconChar.FileExcel, Blue, new Size(18, 18));
             _importItem.Image = IconBitmapCache.Get(IconChar.FileImport, Blue, new Size(18, 18));
 
-            _searchBox.HandleCreated += (sender, args) => ApplySearchPlaceholder();
             if (_searchBox.IsHandleCreated)
                 ApplySearchPlaceholder();
-            _searchBox.TextChanged += (sender, args) => { _searchTimer.Stop(); _searchTimer.Start(); };
-            _searchTimer.Tick += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                SearchRequested?.Invoke(this, EventArgs.Empty);
-            };
-
-            _fromDatePicker.ValueChanged += DatePicker_ValueChanged;
-            _toDatePicker.ValueChanged += DatePicker_ValueChanged;
-            _fromDatePicker.CloseUp += DatePicker_CloseUp;
-            _toDatePicker.CloseUp += DatePicker_CloseUp;
-            _fromDateIcon.Click += (sender, args) => OpenCalendar(_fromDatePicker);
-            _toDateIcon.Click += (sender, args) => OpenCalendar(_toDatePicker);
-            _clearDateLink.Click += (sender, args) => ClearDatesRequested?.Invoke(this, EventArgs.Empty);
-
-            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
-            _exportCsvItem.Click += (sender, args) => CsvExportRequested?.Invoke(this, EventArgs.Empty);
-            _exportExcelItem.Click += (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty);
-            _importItem.Click += (sender, args) => ImportRequested?.Invoke(this, EventArgs.Empty);
-            _syncButton.Click += (sender, args) => SyncRequested?.Invoke(this, EventArgs.Empty);
-
-            _prevButton.Click += (sender, args) => PreviousPageRequested?.Invoke(this, EventArgs.Empty);
-            _nextButton.Click += (sender, args) => NextPageRequested?.Invoke(this, EventArgs.Empty);
-            _pageSizeCombo.SelectedIndexChanged += (sender, args) => PageSizeChanged?.Invoke(this, EventArgs.Empty);
-
-            _grid.CellClick += Grid_CellClick;
-            _grid.CellDoubleClick += Grid_CellDoubleClick;
-            _grid.CellBeginEdit += Grid_CellBeginEdit;
-            _grid.CellEndEdit += Grid_CellEndEdit;
-            _grid.CellFormatting += Grid_CellFormatting;
-            _grid.CellToolTipTextNeeded += Grid_CellToolTipTextNeeded;
-            _grid.CellMouseMove += Grid_CellMouseMove;
-            _grid.MouseLeave += (sender, args) => _grid.Cursor = Cursors.Default;
-            _grid.KeyDown += Grid_KeyDown;
-
-            _rolloverTimer.Tick += (sender, args) => DayCheckRequested?.Invoke(this, EventArgs.Empty);
             _rolloverTimer.Start();
-            VisibleChanged += (sender, args) =>
-            {
-                if (Visible)
-                    ViewShown?.Invoke(this, EventArgs.Empty);
-            };
+            _eventsReady = true;
         }
 
         public event EventHandler ViewShown;
@@ -273,6 +233,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void DatePicker_ValueChanged(object sender, EventArgs e)
         {
+            if (!_eventsReady)
+                return;
+
             if (_suppressDateEvents)
                 return;
             SetDateActive((DateTimePicker)sender, true);
@@ -287,6 +250,81 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 return;
             SetDateActive(picker, true);
             DateFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _fromDateIcon_Click(object sender, EventArgs e)
+        {
+            OpenCalendar(_fromDatePicker);
+        }
+
+        private void _toDateIcon_Click(object sender, EventArgs e)
+        {
+            OpenCalendar(_toDatePicker);
+        }
+
+        private void _clearDateLink_Click(object sender, EventArgs e)
+        {
+            ClearDatesRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _optionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void _exportCsvItem_Click(object sender, EventArgs e)
+        {
+            CsvExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _exportExcelItem_Click(object sender, EventArgs e)
+        {
+            ExcelExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _importItem_Click(object sender, EventArgs e)
+        {
+            ImportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _syncButton_Click(object sender, EventArgs e)
+        {
+            SyncRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _prevButton_Click(object sender, EventArgs e)
+        {
+            PreviousPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _nextButton_Click(object sender, EventArgs e)
+        {
+            NextPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _pageSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            PageSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _rolloverTimer_Tick(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            DayCheckRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnViewVisibleChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            if (Visible)
+                ViewShown?.Invoke(this, EventArgs.Empty);
         }
 
         private static void OpenCalendar(DateTimePicker picker)
@@ -441,6 +479,34 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                     || e.ColumnIndex == colDetail.Index
                     || (e.ColumnIndex == colEdit.Index && row.IsEditable));
             _grid.Cursor = hand ? Cursors.Hand : Cursors.Default;
+        }
+
+        private void _grid_MouseLeave(object sender, EventArgs e)
+        {
+            _grid.Cursor = Cursors.Default;
+        }
+
+        private void _searchBox_HandleCreated(object sender, EventArgs e)
+        {
+            ApplySearchPlaceholder();
+        }
+
+        private void _searchBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            if (!_eventsReady)
+                return;
+
+            _searchTimer.Stop();
+            SearchRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void ApplySearchPlaceholder()
