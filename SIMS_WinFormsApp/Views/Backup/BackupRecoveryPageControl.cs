@@ -22,34 +22,18 @@ using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Backup
 {
-    internal sealed class BackupRecoveryPageControl : UserControl, IBackupRecoveryView, IDateRangeFilterView
+    internal sealed partial class BackupRecoveryPageControl : UserControl, IBackupRecoveryView, IDateRangeFilterView
     {
-        private PrimaryButton _restoreFileButton;
-        private PrimaryButton _backupNowButton;
-
-        private TextBox _searchTextBox;
         private Timer _searchTimer;
         private string _lastCommittedSearch = string.Empty;
         private DateRangeFilterPresenter _datePresenter;
-        private TableLayoutPanel _listLayout;
-        private Panel _filterHost;
-        private Panel _searchFrame;
-        private Panel _dateRangePanel;
-        private Button _todayButton;
-        private Button _clearRangeButton;
-        private DateTimePicker _fromDatePicker;
-        private DateTimePicker _toDatePicker;
-        private CheckBox _fromDateCheckBox;
-        private CheckBox _toDateCheckBox;
         private bool _updatingDateRange;
         private bool _reflowingFilter;
 
-        private DataGridView _grid;
         private List<BackupRowDto> _currentPageRows = new List<BackupRowDto>();
         private int _hoverRow = -1;
         private int _hoverAction = -1;
 
-        private PaginationControl _paginationControl;
         private PaginationPresenter _paginationPresenter;
 
         #region IBackupRecoveryView - events
@@ -63,20 +47,10 @@ namespace SIMS_WinFormsApp.Views.Backup
 
         public BackupRecoveryPageControl()
         {
-            Dock = DockStyle.Fill;
-            BackColor = AppColors.PageBg;
-            Padding = new Padding(16);
+            InitializeComponent();
 
-            var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, BackColor = Color.Transparent };
-            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 112));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            Controls.Add(root);
-
-            root.Controls.Add(BuildBanner(), 0, 0);
-            root.Controls.Add(BuildListCard(), 0, 1);
-
-            _searchTimer = new Timer { Interval = 300 };
+            NativeTextBoxBehavior.SetCueBanner(_searchTextBox, "Tìm theo tên file backup...");
+            _searchTimer = new Timer() { Interval = 300 };
             _searchTimer.Tick += (s, e) =>
             {
                 _searchTimer.Stop();
@@ -93,6 +67,19 @@ namespace SIMS_WinFormsApp.Views.Backup
                 _searchTimer.Stop();
                 _searchTimer.Start();
             };
+            _grid.CellContentClick += OnGridCellContentClick;
+            _fromDatePicker.ValueChanged += (s, e) =>
+            {
+                if (!_updatingDateRange && _fromDatePicker.Checked)
+                    FromPicked?.Invoke(this, _fromDatePicker.Value.Date);
+            };
+            _toDatePicker.ValueChanged += (s, e) =>
+            {
+                if (!_updatingDateRange && _toDatePicker.Checked)
+                    ToPicked?.Invoke(this, _toDatePicker.Value.Date);
+            };
+            _fromDateCheckBox.CheckedChanged += (s, e) => OnDatePickerCheckedChanged(true);
+            _toDateCheckBox.CheckedChanged += (s, e) => OnDatePickerCheckedChanged(false);
 
             _datePresenter = new DateRangeFilterPresenter(this);
             _datePresenter.RangeChanged += (s, e) =>
@@ -107,303 +94,6 @@ namespace SIMS_WinFormsApp.Views.Backup
             _paginationPresenter.PageChanged += (s, e) => RaiseQueryChanged();
 
             Load += (s, e) => ViewReady?.Invoke(this, EventArgs.Empty);
-        }
-
-        #region Banner tiêu đề + nút hành động
-        private Panel BuildBanner()
-        {
-            var header = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Margin = new Padding(0, 0, 0, 12),
-                BackColor = AppColors.White
-            };
-
-            var iconCircle = new Panel
-            {
-                Size = new Size(48, 48),
-                Location = new Point(20, 16),
-                BackColor = Color.Transparent
-            };
-            iconCircle.Paint += (sender, args) =>
-            {
-                using (var brush = new SolidBrush(AppColors.InfoBg))
-                    args.Graphics.FillEllipse(brush, iconCircle.ClientRectangle);
-            };
-            var icon = new IconPictureBox
-            {
-                IconChar = IconChar.ShieldHalved,
-                IconColor = AppColors.Accent,
-                IconSize = 24,
-                Size = new Size(28, 28),
-                SizeMode = PictureBoxSizeMode.CenterImage,
-                BackColor = Color.Transparent,
-                Location = new Point(10, 10)
-            };
-            iconCircle.Controls.Add(icon);
-
-            var title = new Label
-            {
-                AutoSize = true,
-                Text = "Sao lưu & Khôi phục",
-                Font = AppFonts.HeadingMd,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                Location = new Point(84, 13)
-            };
-            var subtitle = new Label
-            {
-                AutoSize = true,
-                Text = "Bảo vệ dữ liệu khi hệ thống gặp sự cố hoặc bị tấn công",
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent,
-                Location = new Point(84, 47)
-            };
-
-            var actions = new FlowLayoutPanel
-            {
-                Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
-                FlowDirection = FlowDirection.LeftToRight,
-                WrapContents = false,
-                Size = new Size(360, 80),
-                BackColor = Color.Transparent,
-                Margin = new Padding(0),
-                Padding = new Padding(0, 19, 0, 0)
-            };
-
-            _restoreFileButton = CreateActionButton(
-                "Khôi phục từ file...",
-                IconChar.Upload,
-                isPrimary: false,
-                accent: AppColors.Warning,
-                size: new Size(192, 42),
-                onClick: (s, e) => RestoreFromFileRequested?.Invoke(this, EventArgs.Empty));
-
-            _backupNowButton = CreateActionButton(
-                "Sao lưu ngay",
-                IconChar.Download,
-                isPrimary: true,
-                accent: AppColors.Accent,
-                size: new Size(150, 42),
-                onClick: (s, e) => BackupNowRequested?.Invoke(this, EventArgs.Empty));
-
-            actions.Controls.Add(_restoreFileButton);
-            actions.Controls.Add(_backupNowButton);
-            header.Controls.Add(iconCircle);
-            header.Controls.Add(title);
-            header.Controls.Add(subtitle);
-            header.Controls.Add(actions);
-            void PositionActions()
-            {
-                actions.Location = new Point(Math.Max(360, header.ClientSize.Width - actions.Width - 20), 0);
-            }
-            header.Resize += (sender, args) => PositionActions();
-            PositionActions();
-            return header;
-        }
-        #endregion
-
-        private static PrimaryButton CreateActionButton(string text, IconChar icon, bool isPrimary, Color accent, Size size, EventHandler onClick)
-        {
-            var button = new PrimaryButton
-            {
-                Text = string.Empty,
-                IsPrimary = isPrimary,
-                CustomAccentColor = accent,
-                CornerRadius = AppRadius.Medium,
-                Size = size,
-                Margin = new Padding(0, 0, isPrimary ? 0 : 12, 0),
-                BackColor = Color.Transparent,
-                ForeColor = Color.White,
-                Padding = new Padding(0)
-            };
-
-            var iconBox = new IconPictureBox
-            {
-                IconChar = icon,
-                IconColor = isPrimary ? Color.White : AppColors.TextPrimary,
-                IconSize = 15,
-                Size = new Size(18, 18),
-                Location = new Point(16, (size.Height - 18) / 2),
-                BackColor = Color.Transparent,
-                Cursor = Cursors.Hand
-            };
-
-            var label = new Label
-            {
-                AutoSize = false,
-                Dock = DockStyle.Fill,
-                Font = AppFonts.Button,
-                ForeColor = isPrimary ? Color.White : AppColors.TextPrimary,
-                TextAlign = ContentAlignment.MiddleLeft,
-                BackColor = Color.Transparent,
-                Padding = new Padding(42, 0, 12, 0),
-                Text = text
-            };
-
-            button.Controls.Add(iconBox);
-            button.Controls.Add(label);
-            button.Click += onClick;
-            iconBox.Click += (s, e) => onClick?.Invoke(button, EventArgs.Empty);
-            label.Click += (s, e) => onClick?.Invoke(button, EventArgs.Empty);
-            return button;
-        }
-
-        #region Thẻ "Các bản sao lưu hiện có"
-        private Panel BuildListCard()
-        {
-            var card = CreateCardPanel();
-            card.Margin = new Padding(0, 16, 0, 0);
-
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, BackColor = Color.Transparent };
-            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 148));
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
-            _listLayout = layout;
-            card.Controls.Add(layout);
-
-            layout.Controls.Add(BuildFilterRow(), 0, 0);
-
-            _grid = CreateGrid();
-            _grid.CellContentClick += OnGridCellContentClick;
-            var gridHolder = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0, 10, 0, 10) };
-            gridHolder.Controls.Add(_grid);
-            layout.Controls.Add(gridHolder, 0, 1);
-
-            _paginationControl = new PaginationControl { Dock = DockStyle.Fill };
-            layout.Controls.Add(_paginationControl, 0, 2);
-
-            return card;
-        }
-
-        private Panel BuildFilterRow()
-        {
-            var panel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Transparent,
-                Padding = new Padding(4, 2, 4, 0)
-            };
-            _filterHost = panel;
-
-            var searchIcon = new Label
-            {
-                Text = "\u2315",
-                Font = new Font("Segoe UI Symbol", 16f),
-                ForeColor = AppColors.IconMuted,
-                TextAlign = ContentAlignment.MiddleCenter,
-                BackColor = Color.Transparent,
-                Size = new Size(32, 38)
-            };
-            _searchTextBox = new TextBox
-            {
-                BorderStyle = BorderStyle.None,
-                Font = AppFonts.Input,
-                ForeColor = AppColors.TextPrimary,
-                BackColor = AppColors.White,
-                Location = new Point(38, 8),
-                Height = 24,
-                Anchor = AnchorStyles.Left | AnchorStyles.Right
-            };
-            NativeTextBoxBehavior.SetCueBanner(_searchTextBox, "Tìm theo tên file backup...");
-            _searchFrame = new Panel
-            {
-                BackColor = AppColors.White,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            _searchFrame.Controls.Add(searchIcon);
-            _searchFrame.Controls.Add(_searchTextBox);
-            _searchFrame.Resize += (s, e) =>
-                _searchTextBox.Width = Math.Max(30, _searchFrame.ClientSize.Width - _searchTextBox.Left - 10);
-
-            _dateRangePanel = new Panel { BackColor = Color.Transparent };
-            _todayButton = CreatePresetButton(Lang.Get("audit.date.today"), DateRangePreset.Today);
-            _clearRangeButton = new Button
-            {
-                Text = Lang.Get("audit.date.clear"),
-                AutoSize = false,
-                Height = 30,
-                Font = AppFonts.Small,
-                FlatStyle = FlatStyle.Flat,
-                BackColor = AppColors.White,
-                ForeColor = AppColors.TextMuted
-            };
-            _clearRangeButton.FlatAppearance.BorderColor = AppColors.FieldBorder;
-            _clearRangeButton.Click += (s, e) => ClearRequested?.Invoke(this, EventArgs.Empty);
-            _fromDatePicker = CreateDatePicker();
-            _toDatePicker = CreateDatePicker();
-            _fromDateCheckBox = CreateDateCheckBox(Lang.Get("audit.date.from"));
-            _toDateCheckBox = CreateDateCheckBox(Lang.Get("audit.date.to"));
-            _fromDatePicker.ValueChanged += (s, e) =>
-            {
-                if (!_updatingDateRange && _fromDatePicker.Checked)
-                    FromPicked?.Invoke(this, _fromDatePicker.Value.Date);
-            };
-            _toDatePicker.ValueChanged += (s, e) =>
-            {
-                if (!_updatingDateRange && _toDatePicker.Checked)
-                    ToPicked?.Invoke(this, _toDatePicker.Value.Date);
-            };
-            _fromDateCheckBox.CheckedChanged += (s, e) => OnDatePickerCheckedChanged(true);
-            _toDateCheckBox.CheckedChanged += (s, e) => OnDatePickerCheckedChanged(false);
-            _dateRangePanel.Controls.AddRange(new Control[]
-            {
-                _todayButton, _clearRangeButton,
-                _fromDateCheckBox, _fromDatePicker, _toDateCheckBox, _toDatePicker
-            });
-
-            panel.Controls.Add(_searchFrame);
-            panel.Controls.Add(_dateRangePanel);
-            panel.Resize += (s, e) => ReflowFilter();
-            return panel;
-        }
-
-        private Button CreatePresetButton(string text, DateRangePreset preset)
-        {
-            var button = new Button
-            {
-                Text = text,
-                Tag = preset,
-                AutoSize = false,
-                Height = 30,
-                Font = AppFonts.Small,
-                FlatStyle = FlatStyle.Flat,
-                BackColor = AppColors.White,
-                ForeColor = AppColors.TextPrimary,
-                Margin = Padding.Empty,
-                Padding = new Padding(8, 0, 8, 0)
-            };
-            button.FlatAppearance.BorderColor = AppColors.FieldBorder;
-            button.Click += (s, e) => PresetRequested?.Invoke(this, preset);
-            return button;
-        }
-
-        private static DateTimePicker CreateDatePicker()
-        {
-            return new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Custom,
-                CustomFormat = "dd/MM/yyyy",
-                Font = AppFonts.Small,
-                Width = 150,
-                Height = 30
-            };
-        }
-
-        private static CheckBox CreateDateCheckBox(string text)
-        {
-            return new CheckBox
-            {
-                Text = text,
-                AutoSize = true,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent,
-                Height = 30,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
         }
 
         private void OnDatePickerCheckedChanged(bool fromBound)
@@ -504,99 +194,8 @@ namespace SIMS_WinFormsApp.Views.Backup
             _toDatePicker.SetBounds(labelWidth, fieldY, pickerWidth, rowHeight);
             return fieldY + rowHeight;
         }
-        #endregion
 
         #region Bảng danh sách backup
-        private DataGridView CreateGrid()
-        {
-            var grid = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                AllowUserToResizeRows = false,
-                AutoGenerateColumns = false,
-                RowHeadersVisible = false,
-                BackgroundColor = AppColors.White,
-                GridColor = AppColors.TableGrid,
-                BorderStyle = BorderStyle.None,
-                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
-                ColumnHeadersHeight = 50,
-                RowTemplate = { Height = 52 },
-                EnableHeadersVisualStyles = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false,
-                ReadOnly = true
-            };
-
-            grid.Columns.Add(TextColumn("FileName", "Tên file", false, 140));
-            grid.Columns.Add(TextColumn("Strategy", "Chiến lược", true, 110));
-            grid.Columns.Add(TextColumn("CreatedAt", "Thời gian", true, 140));
-            grid.Columns.Add(TextColumn("Size", "Dung lượng", true, 100));
-            grid.Columns.Add(CreateLinkColumn("Local", "Local", 100));
-            var cloudColumn = new DataGridViewLinkColumn
-            {
-                Name = "Cloud",
-                HeaderText = "Cloud",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                MinimumWidth = 110,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                LinkColor = AppColors.Accent,
-                ActiveLinkColor = AppColors.Accent,
-                VisitedLinkColor = AppColors.Accent,
-                TrackVisitedState = false,
-                DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
-            };
-            cloudColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            grid.Columns.Add(cloudColumn);
-
-            var actionColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "Actions",
-                HeaderText = string.Empty,
-                Width = 88,
-                MinimumWidth = 88,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                ReadOnly = true
-            };
-            actionColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            grid.Columns.Add(actionColumn);
-            grid.CellPainting += PaintActionCell;
-            grid.CellMouseMove += OnActionMouseMove;
-            grid.CellMouseLeave += OnActionMouseLeave;
-            grid.CellMouseClick += OnActionMouseClick;
-            grid.CellToolTipTextNeeded += OnCellToolTip;
-
-            grid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
-            grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            grid.ColumnHeadersDefaultCellStyle.Font = AppFonts.BodyBold;
-            grid.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
-            grid.DefaultCellStyle.Font = AppFonts.Body;
-            grid.DefaultCellStyle.ForeColor = AppColors.TableRowText;
-            grid.DefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
-            grid.DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
-            grid.DefaultCellStyle.SelectionForeColor = AppColors.TextPrimary;
-            grid.DefaultCellStyle.BackColor = AppColors.White;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = AppColors.TableRowOdd;
-
-            return grid;
-        }
-
-        private static DataGridViewTextBoxColumn TextColumn(string name, string header, bool centered, int minWidth)
-        {
-            return new DataGridViewTextBoxColumn
-            {
-                Name = name,
-                HeaderText = header,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                MinimumWidth = minWidth,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                DefaultCellStyle = { Alignment = centered ? DataGridViewContentAlignment.MiddleCenter : DataGridViewContentAlignment.MiddleLeft },
-                HeaderCell = { Style = { Alignment = centered ? DataGridViewContentAlignment.MiddleCenter : DataGridViewContentAlignment.MiddleLeft } }
-            };
-        }
-
         private void OnGridCellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= _currentPageRows.Count) return;
@@ -733,41 +332,65 @@ namespace SIMS_WinFormsApp.Views.Backup
             if (column >= 0) _grid.InvalidateCell(column, rowIndex);
         }
 
-        private static DataGridViewLinkColumn CreateLinkColumn(string name, string header, int minWidth)
-        {
-            var column = new DataGridViewLinkColumn
-            {
-                Name = name,
-                HeaderText = header,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                MinimumWidth = minWidth,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                LinkColor = AppColors.Accent,
-                ActiveLinkColor = AppColors.Accent,
-                VisitedLinkColor = AppColors.Accent,
-                TrackVisitedState = false,
-                DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
-            };
-            column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            return column;
-        }
         #endregion
 
-        #region Tiện ích dựng UI dùng chung
-        private static Panel CreateCardPanel()
+        private void CardPanel_Paint(object sender, PaintEventArgs e)
         {
-            var card = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent, Padding = new Padding(20), Margin = new Padding(0) };
-            card.Paint += (s, e) =>
+            var card = (Panel)sender;
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            var rect = new Rectangle(0, 0, card.Width - 1, card.Height - 1);
+            using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
+            using (var brush = new SolidBrush(AppColors.White))
             {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                var rect = new Rectangle(0, 0, card.Width - 1, card.Height - 1);
-                using (var path = AppRadius.GetRoundedPath(rect, AppRadius.Large))
-                using (var brush = new SolidBrush(AppColors.White))
-                {
-                    e.Graphics.FillPath(brush, path);
-                }
-            };
-            return card;
+                e.Graphics.FillPath(brush, path);
+            }
+        }
+
+        private void IconCircle_Paint(object sender, PaintEventArgs e)
+        {
+            using (var brush = new SolidBrush(AppColors.InfoBg))
+                e.Graphics.FillEllipse(brush, _iconCircle.ClientRectangle);
+        }
+
+        private void HeaderPanel_Resize(object sender, EventArgs e)
+        {
+            PositionActions();
+        }
+
+        private void PositionActions()
+        {
+            _actionsPanel.Location = new Point(
+                Math.Max(360, _headerPanel.ClientSize.Width - _actionsPanel.Width - 20), 0);
+        }
+
+        private void SearchFrame_Resize(object sender, EventArgs e)
+        {
+            _searchTextBox.Width = Math.Max(30, _searchFrame.ClientSize.Width - _searchTextBox.Left - 10);
+        }
+
+        private void FilterHost_Resize(object sender, EventArgs e)
+        {
+            ReflowFilter();
+        }
+
+        private void RestoreFileButton_Click(object sender, EventArgs e)
+        {
+            RestoreFromFileRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void BackupNowButton_Click(object sender, EventArgs e)
+        {
+            BackupNowRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TodayButton_Click(object sender, EventArgs e)
+        {
+            PresetRequested?.Invoke(this, DateRangePreset.Today);
+        }
+
+        private void ClearRangeButton_Click(object sender, EventArgs e)
+        {
+            ClearRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void RaiseQueryChanged()
@@ -816,14 +439,6 @@ namespace SIMS_WinFormsApp.Views.Backup
             button.ForeColor = active ? AppColors.Accent : AppColors.TextPrimary;
             button.FlatAppearance.BorderColor = active ? AppColors.Accent : AppColors.FieldBorder;
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && _searchTimer != null)
-                _searchTimer.Dispose();
-            base.Dispose(disposing);
-        }
-        #endregion
 
         #region IBackupRecoveryView - methods
         public void BindRows(IReadOnlyList<BackupRowDto> pageRows, int totalCount)
@@ -887,5 +502,15 @@ namespace SIMS_WinFormsApp.Views.Backup
         }
 
         #endregion
+
+        private void _titleLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void _grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
