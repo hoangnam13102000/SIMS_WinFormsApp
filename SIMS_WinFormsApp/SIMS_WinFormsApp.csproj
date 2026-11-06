@@ -808,6 +808,9 @@
     <Compile Include="Views\Warehouse\ucExpiredBatchDisposal.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Warehouse\ucExpiredBatchDisposal.Designer.cs">
+      <DependentUpon>ucExpiredBatchDisposal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Warehouse\ucExpiryBatchManagement.Designer.cs">
       <DependentUpon>ucExpiryBatchManagement.cs</DependentUpon>
     </Compile>
@@ -1010,6 +1013,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockDisposalEditor.resx">
       <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucExpiredBatchDisposal.resx">
+      <DependentUpon>ucExpiredBatchDisposal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockDisposalManagement.resx">
       <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
