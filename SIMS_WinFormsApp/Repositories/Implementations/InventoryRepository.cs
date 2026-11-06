@@ -183,13 +183,17 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             DateTime? toExclusive = toDate.HasValue
                 ? toDate.Value.Date.AddDays(1)
                 : (DateTime?)null;
+            bool hasFrom = fromDateTime.HasValue;
+            bool hasTo = toExclusive.HasValue;
+            DateTime fromValue = fromDateTime ?? new DateTime(1900, 1, 1);
+            DateTime toValue = toExclusive ?? new DateTime(9999, 12, 31);
             using (SimsDataContext db = _connections.CreateDataContext())
             {
                 return (from receipt in db.PurchaseReceipts
                         join supplier in db.Suppliers on receipt.SupplierID equals supplier.SupplierID
                         join user in db.Users on receipt.CreatedBy equals user.UserID
-                        where (!fromDateTime.HasValue || receipt.CreatedAt >= fromDateTime.Value)
-                            && (!toExclusive.HasValue || receipt.CreatedAt < toExclusive.Value)
+                        where (!hasFrom || receipt.CreatedAt >= fromValue)
+                            && (!hasTo || receipt.CreatedAt < toValue)
                             && (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(receipt.ReceiptCode, pattern)
                                 || SqlMethods.Like(supplier.SupplierName, pattern)
@@ -288,13 +292,15 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
         {
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
             string pattern = "%" + normalizedKeyword + "%";
+            bool hasCategory = categoryId.HasValue;
+            int categoryValue = categoryId ?? 0;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
                 return (from product in db.Products
                         join category in db.Categories
                             on product.CategoryID equals category.CategoryID
                         where product.Status == "ACTIVE"
-                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
+                            && (!hasCategory || product.CategoryID == categoryValue)
                             && (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(product.ProductName, pattern)
                                 || SqlMethods.Like(product.ProductCode, pattern))
@@ -318,6 +324,12 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             string pattern = "%" + normalizedKeyword + "%";
             DateTime? fromDate = from.HasValue ? from.Value.Date : (DateTime?)null;
             DateTime? toExclusive = to.HasValue ? to.Value.Date.AddDays(1) : (DateTime?)null;
+            bool hasCategory = categoryId.HasValue;
+            int categoryValue = categoryId ?? 0;
+            bool hasFrom = fromDate.HasValue;
+            bool hasTo = toExclusive.HasValue;
+            DateTime fromValue = fromDate ?? new DateTime(1900, 1, 1);
+            DateTime toValue = toExclusive ?? new DateTime(9999, 12, 31);
             using (SimsDataContext db = _connections.CreateDataContext())
             {
                 return (from alert in db.StockAlerts
@@ -329,9 +341,9 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         where (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(product.ProductName, pattern)
                                 || SqlMethods.Like(product.ProductCode, pattern))
-                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
-                            && (!fromDate.HasValue || alert.CreatedAt >= fromDate.Value)
-                            && (!toExclusive.HasValue || alert.CreatedAt < toExclusive.Value)
+                            && (!hasCategory || product.CategoryID == categoryValue)
+                            && (!hasFrom || alert.CreatedAt >= fromValue)
+                            && (!hasTo || alert.CreatedAt < toValue)
                         orderby alert.CreatedAt descending, alert.AlertID descending
                         select new StockAlertListItemDto
                         {

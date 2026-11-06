@@ -67,7 +67,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _canManageProducts = canManageProducts;
             _showExpiredBatches = showExpiredBatches;
             _expiredBatchesColumn.Visible = _showExpiredBatches != null;
-            _optionsMenu = new ContextMenuStrip(components);
+           _optionsMenu = new ContextMenuStrip();
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
             if (_canManageProducts)

@@ -31,6 +31,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
             string normalizedKeyword = (keyword ?? string.Empty).Trim();
             string pattern = "%" + normalizedKeyword + "%";
             DateTime today = DateTime.Today;
+            bool hasProduct = productId.HasValue;
+            int productIdValue = productId ?? 0;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
                 var batches = (from batch in db.InventoryBatches
@@ -39,7 +41,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                                where batch.Status == "ACTIVE"
                                    && batch.ExpiryDate.HasValue
                                    && batch.RemainingQty > 0
-                                   && (!productId.HasValue || batch.ProductID == productId.Value)
+                                 && (!hasProduct || batch.ProductID == productIdValue)
                                    && (filter == ExpiryBatchFilter.All
                                        || (filter == ExpiryBatchFilter.NearExpiry
                                            && batch.ExpiryDate >= today

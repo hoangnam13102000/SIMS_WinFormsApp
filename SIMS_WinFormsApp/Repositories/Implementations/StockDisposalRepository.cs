@@ -30,12 +30,16 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             string reasonCodes = "," + (reasonCodeList ?? string.Empty) + ",";
             DateTime? fromDateTime = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
             DateTime? toExclusive = toDate.HasValue ? toDate.Value.Date.AddDays(1) : (DateTime?)null;
+            bool hasFrom = fromDateTime.HasValue;
+            bool hasTo = toExclusive.HasValue;
+            DateTime fromValue = fromDateTime ?? new DateTime(1900, 1, 1);
+            DateTime toValue = toExclusive ?? new DateTime(9999, 12, 31);
             using (SimsDataContext db = _connections.CreateDataContext())
             {
                 return (from disposal in db.StockDisposals
                     join user in db.Users on disposal.CreatedBy equals user.UserID
-                    where (!fromDateTime.HasValue || disposal.CreatedAt >= fromDateTime.Value)
-                        && (!toExclusive.HasValue || disposal.CreatedAt < toExclusive.Value)
+                    where (!hasFrom || disposal.CreatedAt >= fromValue)
+                        && (!hasTo || disposal.CreatedAt < toValue)
                         && (normalizedKeyword.Length == 0
                             || SqlMethods.Like(disposal.DisposalCode, pattern)
                             || SqlMethods.Like(user.FullName, pattern)
