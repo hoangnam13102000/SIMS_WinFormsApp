@@ -76,6 +76,32 @@ namespace SIMS_WinFormsApp.UI.Theme
             ActionStripCache[key] = bitmap;
             return bitmap;
         }
+
+        public static Bitmap GetActionStrip(bool canEdit, bool canManage, bool isLocked)
+        {
+            IconChar finalAction = isLocked ? IconChar.LockOpen : IconChar.Lock;
+            Color finalActionColor = AppColors.Warning;
+            string key = canEdit + ":" + canManage + ":" + isLocked;
+            Bitmap cached;
+            if (ActionStripCache.TryGetValue(key, out cached)) return cached;
+
+            const int iconSize = 24;
+            const int gap = 8;
+            const int height = 28;
+            var bitmap = new Bitmap(iconSize * 3 + gap * 2, height);
+            using (Graphics graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Transparent);
+                graphics.DrawImageUnscaled(Get(IconChar.Eye, AppColors.TableViewAction, new Size(iconSize, iconSize)), 0, 2);
+                if (canEdit)
+                    graphics.DrawImageUnscaled(Get(IconChar.PenToSquare, AppColors.TableEditAction, new Size(iconSize, iconSize)), iconSize + gap, 2);
+                if (canManage)
+                    graphics.DrawImageUnscaled(Get(finalAction, finalActionColor, new Size(iconSize, iconSize)), (iconSize + gap) * 2, 2);
+            }
+
+            ActionStripCache[key] = bitmap;
+            return bitmap;
+        }
     }
 
     internal static class DataGridViewCodeCopy

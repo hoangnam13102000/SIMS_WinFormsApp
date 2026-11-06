@@ -67,7 +67,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.brandPanel.Name = "brandPanel";
             this.brandPanel.Size = new System.Drawing.Size(440, 650);
             this.brandPanel.TabIndex = 1;
-            this.brandPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.brandPanel_Paint);
             // 
             // pnlRight
             // 
@@ -116,6 +115,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnCancel.TabIndex = 0;
             this.btnCancel.Text = "Hủy";
             this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // btnSubmit
             // 
@@ -138,6 +138,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnSubmit.TabIndex = 1;
             this.btnSubmit.Text = "Cập nhật mật khẩu";
             this.btnSubmit.UseVisualStyleBackColor = false;
+            this.btnSubmit.Click += new System.EventHandler(this.BtnSubmit_Click);
             // 
             // lblError
             // 

@@ -106,7 +106,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearDateLink.Text = "Xoá lọc";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
             this._clearDateLink.Visible = false;
-            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
             // 
             // _headerCard
             // 
@@ -199,7 +198,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this._optionsButton.UseVisualStyleBackColor = false;
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             // 
             // _createButton
             // 
@@ -222,7 +220,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.Text = "Lập phiếu tiêu hủy";
             this._createButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this._createButton.UseVisualStyleBackColor = false;
-            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             // 
             // _headerLine
             // 
@@ -287,8 +284,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(254, 22);
             this._searchBox.TabIndex = 1;
-            this._searchBox.HandleCreated += new System.EventHandler(this.SearchBox_HandleCreated);
-            this._searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
             // 
             // _fromDateLabel
             // 
@@ -311,7 +306,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDatePicker.Name = "_fromDatePicker";
             this._fromDatePicker.Size = new System.Drawing.Size(146, 29);
             this._fromDatePicker.TabIndex = 2;
-            this._fromDatePicker.ValueChanged += new System.EventHandler(this.DatePicker_ValueChanged);
             // 
             // _toDateLabel
             // 
@@ -334,7 +328,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Name = "_toDatePicker";
             this._toDatePicker.Size = new System.Drawing.Size(146, 29);
             this._toDatePicker.TabIndex = 4;
-            this._toDatePicker.ValueChanged += new System.EventHandler(this.DatePicker_ValueChanged);
             // 
             // _totalLabel
             // 
@@ -413,12 +406,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(930, 302);
             this._grid.TabIndex = 0;
-            this._grid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellClick);
-            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
-            this._grid.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.Grid_CellMouseMove);
-            this._grid.MouseLeave += new System.EventHandler(this.Grid_MouseLeave);
-            this._grid.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
-            this._grid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
             // 
             // colDisposalId
             // 
@@ -614,7 +601,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.Size = new System.Drawing.Size(32, 32);
             this._prevButton.TabIndex = 0;
             this._prevButton.UseVisualStyleBackColor = false;
-            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageLabel
             // 
@@ -642,7 +628,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.Size = new System.Drawing.Size(32, 32);
             this._nextButton.TabIndex = 2;
             this._nextButton.UseVisualStyleBackColor = false;
-            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pagerLine1
             // 
@@ -694,7 +679,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageSizeCombo.Name = "_pageSizeCombo";
             this._pageSizeCombo.Size = new System.Drawing.Size(60, 29);
             this._pageSizeCombo.TabIndex = 7;
-            this._pageSizeCombo.SelectedIndexChanged += new System.EventHandler(this.PageSizeCombo_SelectedIndexChanged);
             // 
             // _rowsLabel
             // 
@@ -729,14 +713,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem.Name = "_exportCsvItem";
             this._exportCsvItem.Size = new System.Drawing.Size(179, 28);
             this._exportCsvItem.Text = "Xuất CSV";
-            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
             this._exportExcelItem.Size = new System.Drawing.Size(179, 28);
             this._exportExcelItem.Text = "Xuất Excel";
-            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _menuSeparator
             // 
@@ -748,7 +730,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._importItem.Name = "_importItem";
             this._importItem.Size = new System.Drawing.Size(179, 28);
             this._importItem.Text = "Nhập dữ liệu";
-            this._importItem.Click += new System.EventHandler(this._importItem_Click);
             // 
             // ucStockDisposalManagement
             // 
@@ -779,7 +760,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pagerCard.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
             this._optionsMenu.ResumeLayout(false);
-            this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
             this.ResumeLayout(false);
 
         }

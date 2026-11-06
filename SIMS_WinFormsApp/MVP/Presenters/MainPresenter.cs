@@ -414,15 +414,15 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (HasAnyPermission(permissions, AppPermission.USER_MANAGE, AppPermission.USER_EDIT, AppPermission.USER_VIEW))
                 {
                     layout.AddLazyPage("accounts", Lang.Get("sidebar.page.accounts"),
-                        () => new frmUserManagement(_userManagementService), IconChar.UsersCog);
+                        () => new frmUserManagement(_userManagementService, PermissionSet.Of(permissions)), IconChar.UsersCog);
                     layout.AddLazyPage("employees", Lang.Get("sidebar.page.employees"),
-                        () => new frmEmployeeManagement(_userManagementService), IconChar.User);
+                        () => new frmEmployeeManagement(_userManagementService, PermissionSet.Of(permissions)), IconChar.User);
                 }
                 if (HasAnyPermission(permissions,
                         AppPermission.CUSTOMER_MANAGE, AppPermission.CUSTOMER_EDIT, AppPermission.CUSTOMER_VIEW))
                 {
                     layout.AddLazyPage("customers", Lang.Get("sidebar.page.customers"),
-                        () => new frmCustomerManagement(_userManagementService), IconChar.AddressBook);
+                        () => new frmCustomerManagement(_userManagementService, PermissionSet.Of(permissions)), IconChar.AddressBook);
                 }
             }
 
@@ -444,7 +444,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 }
                 if (HasAnyPermission(permissions, AppPermission.PROMOTION_MANAGE))
                     layout.AddLazyPage("promotions", "Mã giảm giá",
-                        () => new PromotionManagementPage(AppComposition.CreatePromotionManagementService()), IconChar.Tags);
+                        () => PromotionManagementPage.Create(), IconChar.Tags);
                 if (HasAnyPermission(permissions,
                         AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
                         AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST,

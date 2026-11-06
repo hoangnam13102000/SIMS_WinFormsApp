@@ -65,10 +65,8 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private void WireEvents()
         {
-            btnSubmit1.Click += async (s, e) => await RequestOtpAsync();
             lnkBack1.Click += (s, e) => RequestClose();
 
-            btnVerify2.Click += async (s, e) => await VerifyOtpAsync();
             lnkBack2.Click += (s, e) => ReturnToIdentify();
             lnkResend2.Click += async (s, e) => await ResendOtpAsync();
 
@@ -77,8 +75,22 @@ namespace SIMS_WinFormsApp.Views.Auth
             txtNewPassword3.TextChanged += (s, e) => UpdatePasswordMatch();
             txtConfirmPassword3.TextChanged += (s, e) => UpdatePasswordMatch();
 
-            btnReset3.Click += async (s, e) => await ResetPasswordAsync();
             lnkCancel3.Click += (s, e) => RequestClose();
+        }
+
+        private async void btnSubmit1_Click(object sender, EventArgs e)
+        {
+            await RequestOtpAsync();
+        }
+
+        private async void btnVerify2_Click(object sender, EventArgs e)
+        {
+            await VerifyOtpAsync();
+        }
+
+        private async void btnReset3_Click(object sender, EventArgs e)
+        {
+            await ResetPasswordAsync();
         }
 
         private void RefreshTexts()

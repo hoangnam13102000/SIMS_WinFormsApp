@@ -294,7 +294,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerPhone.Name = "_designerPhone";
             this._designerPhone.Size = new System.Drawing.Size(308, 42);
             this._designerPhone.TabIndex = 8;
-            this._designerPhone.TextChanged += new System.EventHandler(this._designerPhone_TextChanged);
             // 
             // _designerBirthDate
             // 

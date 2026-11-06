@@ -22,12 +22,10 @@ namespace SIMS_WinFormsApp.Views.Reports
         private ComboBox _periodFilter;
         private Button _applyFilter;
         private Button _viewRevenueRdlc;
-        private Button _viewDisposalRdlc;
         private TableLayoutPanel _summary;
         private Label _revenueCard;
         private Label _orderCard;
         private Label _averageCard;
-        private Label _disposalCard;
         private TableLayoutPanel _charts;
         private Panel _revenueChartPlaceholder;
         private Panel _salesChartPlaceholder;
@@ -55,7 +53,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._subtitle = new System.Windows.Forms.Label();
             this._title = new System.Windows.Forms.Label();
             this._viewRevenueRdlc = new System.Windows.Forms.Button();
-            this._viewDisposalRdlc = new System.Windows.Forms.Button();
             this._filters = new System.Windows.Forms.FlowLayoutPanel();
             this._fromLabel = new System.Windows.Forms.Label();
             this._fromDate = new System.Windows.Forms.DateTimePicker();
@@ -67,7 +64,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._revenueCard = new System.Windows.Forms.Label();
             this._orderCard = new System.Windows.Forms.Label();
             this._averageCard = new System.Windows.Forms.Label();
-            this._disposalCard = new System.Windows.Forms.Label();
             this._charts = new System.Windows.Forms.TableLayoutPanel();
             this._revenueChartPlaceholder = new System.Windows.Forms.Panel();
             this._revenueTrendChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -123,7 +119,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);
             this._header.Controls.Add(this._viewRevenueRdlc);
-            this._header.Controls.Add(this._viewDisposalRdlc);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
             this._header.Location = new System.Drawing.Point(27, 27);
             this._header.Name = "_header";
@@ -180,7 +175,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._title.Name = "_title";
             this._title.Size = new System.Drawing.Size(850, 36);
             this._title.TabIndex = 1;
-            this._title.Text = "Báo cáo doanh thu và tiêu hủy";
+            this._title.Text = "Báo cáo doanh thu";
             this._title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._title.UseMnemonic = false;
             // _viewRevenueRdlc
@@ -198,21 +193,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._viewRevenueRdlc.TabIndex = 3;
             this._viewRevenueRdlc.Text = "Báo cáo doanh thu";
             this._viewRevenueRdlc.UseVisualStyleBackColor = false;
-            // _viewDisposalRdlc
-            //
-            this._viewDisposalRdlc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._viewDisposalRdlc.BackColor = System.Drawing.Color.White;
-            this._viewDisposalRdlc.Cursor = System.Windows.Forms.Cursors.Hand;
-            this._viewDisposalRdlc.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._viewDisposalRdlc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._viewDisposalRdlc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this._viewDisposalRdlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._viewDisposalRdlc.Location = new System.Drawing.Point(786, 22);
-            this._viewDisposalRdlc.Name = "_viewDisposalRdlc";
-            this._viewDisposalRdlc.Size = new System.Drawing.Size(150, 38);
-            this._viewDisposalRdlc.TabIndex = 4;
-            this._viewDisposalRdlc.Text = "Báo cáo tiêu hủy";
-            this._viewDisposalRdlc.UseVisualStyleBackColor = false;
             // _filters
             // 
             this._filters.Controls.Add(this._fromLabel);
@@ -286,15 +266,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             // 
             // _summary
             // 
-            this._summary.ColumnCount = 4;
-            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this._summary.ColumnCount = 3;
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this._summary.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this._summary.Controls.Add(this._revenueCard, 0, 0);
             this._summary.Controls.Add(this._orderCard, 1, 0);
             this._summary.Controls.Add(this._averageCard, 2, 0);
-            this._summary.Controls.Add(this._disposalCard, 3, 0);
             this._summary.Dock = System.Windows.Forms.DockStyle.Fill;
             this._summary.Location = new System.Drawing.Point(27, 163);
             this._summary.Name = "_summary";
@@ -343,19 +321,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._averageCard.TabIndex = 2;
             this._averageCard.Text = "GIÁ TRỊ TRUNG BÌNH\r\n—";
             // 
-            // _disposalCard
-            // 
-            this._disposalCard.BackColor = System.Drawing.Color.White;
-            this._disposalCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._disposalCard.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this._disposalCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this._disposalCard.Location = new System.Drawing.Point(848, 0);
-            this._disposalCard.Margin = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this._disposalCard.Name = "_disposalCard";
-            this._disposalCard.Padding = new System.Windows.Forms.Padding(12);
-            this._disposalCard.Size = new System.Drawing.Size(278, 90);
-            this._disposalCard.TabIndex = 3;
-            this._disposalCard.Text = "THIỆT HẠI TIÊU HỦY\r\n—";
             // 
             // _charts
             // 
@@ -512,7 +477,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this.Controls.Add(this._root);
             this.MinimumSize = new System.Drawing.Size(900, 650);
             this.Name = "frmChartDashboard";
-            this.Text = "Báo cáo doanh thu và tiêu hủy";
+            this.Text = "Báo cáo doanh thu";
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._headerIconPanel.ResumeLayout(false);

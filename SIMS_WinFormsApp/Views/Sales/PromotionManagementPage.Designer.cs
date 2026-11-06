@@ -86,6 +86,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Controls.Add(this._title);
             this._header.Controls.Add(this._subtitle);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -167,6 +168,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._reloadButton.TabIndex = 2;
             this._reloadButton.Text = "Tải lại";
             this._reloadButton.UseVisualStyleBackColor = false;
+            this._reloadButton.Click += new System.EventHandler(this._reloadButton_Click);
             // 
             // _newPromotionButton
             // 
@@ -183,6 +185,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._newPromotionButton.TabIndex = 3;
             this._newPromotionButton.Text = "+ Tạo mã mới";
             this._newPromotionButton.UseVisualStyleBackColor = false;
+            this._newPromotionButton.Click += new System.EventHandler(this._newPromotionButton_Click);
             // 
             // _gridPanel
             // 

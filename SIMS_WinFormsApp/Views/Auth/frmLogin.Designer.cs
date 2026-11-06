@@ -121,6 +121,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.btnLogin.TabIndex = 0;
             this.btnLogin.Text = "Đăng nhập";
             this.btnLogin.UseVisualStyleBackColor = false;
+            this.btnLogin.Click += new System.EventHandler(this.BtnLogin_Click);
             // 
             // lblError
             // 
@@ -169,7 +170,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.lnkForgotPassword.TabStop = true;
             this.lnkForgotPassword.Text = "Quên mật khẩu?";
             this.lnkForgotPassword.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lnkForgotPassword.Click += new System.EventHandler(this.lnkForgotPassword_Click_1);
             // 
             // pnlPasswordInput
             // 
@@ -294,7 +294,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.brandPanel.Name = "brandPanel";
             this.brandPanel.Size = new System.Drawing.Size(480, 760);
             this.brandPanel.TabIndex = 0;
-            this.brandPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.brandPanel_Paint);
             // 
             // frmLogin
             // 

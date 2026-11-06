@@ -92,6 +92,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _header.Controls.Add(_title);
             _header.Controls.Add(_saveButton);
             _header.Dock = DockStyle.Fill;
+            _header.BorderStyle = BorderStyle.FixedSingle;
             _title.AutoSize = true;
             _title.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
             _title.ForeColor = Color.FromArgb(15, 23, 42);

@@ -65,6 +65,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _header.Controls.Add(_subtitle);
             _header.Controls.Add(_title);
             _header.Dock = DockStyle.Fill;
+            _header.BorderStyle = BorderStyle.FixedSingle;
             _title.AutoSize = true;
             _title.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
             _title.ForeColor = Color.FromArgb(15, 23, 42);

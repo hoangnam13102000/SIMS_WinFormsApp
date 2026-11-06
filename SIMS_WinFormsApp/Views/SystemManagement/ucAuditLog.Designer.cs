@@ -136,6 +136,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this._headerPanel.Controls.Add(this._subtitleLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._headerPanel.Location = new System.Drawing.Point(3, 3);
             this._headerPanel.Name = "_headerPanel";
             this._headerPanel.Size = new System.Drawing.Size(1154, 64);

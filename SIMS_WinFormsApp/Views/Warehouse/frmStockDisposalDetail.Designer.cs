@@ -79,6 +79,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _headerPanel
             // 
             this._headerPanel.BackColor = System.Drawing.Color.White;
+            this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._headerPanel.Controls.Add(this._headerIconPanel);
             this._headerPanel.Controls.Add(this._disposalCodeLabel);
             this._headerPanel.Controls.Add(this._subtitleLabel);

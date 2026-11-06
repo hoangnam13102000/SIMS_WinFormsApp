@@ -13,6 +13,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
         public frmCategoryEditor()
         {
             InitializeComponent();
+            _model = new CategoryEditDto();
+            _statusComboBox.SelectedIndex = 0;
             Text = "Danh mục";
         }
 
@@ -35,11 +37,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _statusComboBox.Enabled = !readOnly;
             _saveButton.Visible = !readOnly;
             _cancelButton.Text = readOnly ? "Đóng" : "Hủy";
-            _cancelButton.Click += (sender, args) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
         }
 
         public static bool TryEdit(
@@ -62,6 +59,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
         }
 
         private CatalogSaveResult _saveResult;
+
+        private void _cancelButton_Click(object sender, System.EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
 
         private void _saveButton_Click(object sender, System.EventArgs e)
         {

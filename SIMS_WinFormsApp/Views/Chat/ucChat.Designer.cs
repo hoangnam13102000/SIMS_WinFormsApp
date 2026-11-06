@@ -160,6 +160,7 @@ namespace SIMS_WinFormsApp.Views.Chat
             // _designerHeader
             // 
             this._designerHeader.BackColor = System.Drawing.SystemColors.Window;
+            this._designerHeader.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._designerHeader.Controls.Add(this._peerTitleLabel);
             this._designerHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this._designerHeader.Location = new System.Drawing.Point(0, 0);

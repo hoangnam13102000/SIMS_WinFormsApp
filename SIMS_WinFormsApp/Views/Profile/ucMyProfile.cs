@@ -238,12 +238,6 @@ namespace SIMS_WinFormsApp.Views.Profile
 
         public event EventHandler SaveRequested;
 
-        event EventHandler IEditUserAccountView.CancelRequested
-        {
-            add { }
-            remove { }
-        }
-
         void IEditUserAccountView.ShowError(string message) => ShowProfileError(message);
 
         void IEditUserAccountView.ShowSuccess(string message) => AppToast.Success(this, message);

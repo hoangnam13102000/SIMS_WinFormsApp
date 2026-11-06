@@ -94,6 +94,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.White;
+            this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._subtitle);
             this._header.Controls.Add(this._title);

@@ -426,6 +426,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._saveButton.TabIndex = 0;
             this._saveButton.Text = "Tạo mã";
             this._saveButton.UseVisualStyleBackColor = false;
+            this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
             // 
             // _cancelButton
             // 
@@ -442,6 +443,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._cancelButton.TabIndex = 1;
             this._cancelButton.Text = "Hủy";
             this._cancelButton.UseVisualStyleBackColor = false;
+            this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
             // 
             // PromotionEditorDialog
             // 

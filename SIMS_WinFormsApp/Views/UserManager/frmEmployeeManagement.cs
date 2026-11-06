@@ -7,6 +7,7 @@ using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Mapping;
+using SIMS_WinFormsApp.Models.Permission;
 using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Interfaces;
@@ -25,6 +26,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private readonly ContextMenuStrip _optionsMenu;
         private readonly UserManagementPager _pager;
         private IUserManagementService _service;
+        private bool _canEdit;
+        private bool _canManage;
         private int _loadGeneration;
 
         public frmEmployeeManagement()
@@ -52,13 +55,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _usersGrid.CellMouseClick += UsersGrid_CellMouseClick;
             _usersGrid.CellMouseDown += UsersGrid_CellMouseDown;
             DataGridViewCodeCopy.Attach(_usersGrid, "EmployeeId");
-            _rowMenu.Items.Add("Xem chi tiết", null, (sender, args) => ShowSelectedUser());
-            _rowMenu.Items.Add("Sửa tài khoản", null, (sender, args) => EditSelectedUser());
-            _rowMenu.Items.Add("Khóa / mở khóa", null, (sender, args) => ToggleSelectedUserLock());
             _usersGrid.ContextMenuStrip = _rowMenu;
             _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportUsers(new CsvTableExporter()));
             _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportUsers(new ExcelTableExporter()));
-            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportUsers());
             _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             _addButton.Click += (sender, args) => AddEmployee();
         }
@@ -69,9 +68,12 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _refreshButton.Location = new Point(right - _refreshButton.Width, 29);
             right = _refreshButton.Left - 8;
             _optionsButton.Location = new Point(right - _optionsButton.Width, 29);
-            right = _optionsButton.Left - 8;
-            _addButton.Location = new Point(right - _addButton.Width, 29);
-            _titleLabel.Width = Math.Max(180, _addButton.Left - _titleLabel.Left - 16);
+            if (_canManage)
+            {
+                right = _optionsButton.Left - 8;
+                _addButton.Location = new Point(right - _addButton.Width, 29);
+            }
+            _titleLabel.Width = Math.Max(180, (_canManage ? _addButton.Left : _optionsButton.Left) - _titleLabel.Left - 16);
             _addButton.BringToFront();
             _optionsButton.BringToFront();
             _refreshButton.BringToFront();
@@ -86,7 +88,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _statusFilter.Width = Math.Max(180, _toolbar.ClientSize.Width - statusLeft - 32);
         }
 
-        public frmEmployeeManagement(IUserManagementService service) : this()
+        public frmEmployeeManagement(IUserManagementService service, PermissionSet permissions) : this()
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
             TopLevel = false;
@@ -94,6 +96,30 @@ namespace SIMS_WinFormsApp.Views.UserManager
             Dock = DockStyle.Fill;
             _searchBox.Clear();
             _service = service;
+            ConfigurePermissions(permissions);
+        }
+
+        private void ConfigurePermissions(PermissionSet permissions)
+        {
+            permissions = permissions ?? PermissionSet.Empty;
+            _canManage = permissions.Has(AppPermission.USER_MANAGE);
+            _canEdit = _canManage || permissions.Has(AppPermission.USER_EDIT);
+
+            _addButton.Visible = _canManage;
+            DataGridViewColumn actionsColumn = _usersGrid.Columns["Actions"];
+            actionsColumn.Visible = _canEdit || _canManage;
+            actionsColumn.ToolTipText = _canManage
+                ? "Xem, sửa hoặc khóa / mở khóa"
+                : _canEdit ? "Xem hoặc sửa" : "Xem chi tiết";
+            if (_canEdit)
+                _rowMenu.Items.Add("Sửa tài khoản", null, (sender, args) => EditSelectedUser());
+            if (_canManage)
+            {
+                _rowMenu.Items.Add("Khóa / mở khóa", null, (sender, args) => ToggleSelectedUserLock());
+                _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportUsers());
+            }
+            _rowMenu.Items.Insert(0, new ToolStripMenuItem("Xem chi tiết", null, (sender, args) => ShowSelectedUser()));
+            LayoutHeader();
         }
 
         private async void ReloadUsers(bool resetPage = false)
@@ -146,7 +172,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void UsersGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left || e.RowIndex < 0 || e.RowIndex >= _currentRows.Count ||
-                _usersGrid.Columns[e.ColumnIndex].Name != "Actions") return;
+                _usersGrid.Columns[e.ColumnIndex].Name != "Actions" || (!_canEdit && !_canManage)) return;
             _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells["FullName"];
             const int iconSize = 24;
             const int gap = 8;
@@ -156,9 +182,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
             if (actionIndex == 0)
                 ShowSelectedUser(e.RowIndex);
-            else if (actionIndex == 1)
+            else if (actionIndex == 1 && _canEdit)
                 EditSelectedUser();
-            else
+            else if (actionIndex == 2 && _canManage)
                 ToggleSelectedUserLock();
         }
 
@@ -173,7 +199,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 role,
                 status,
                 isLocked ? "Đang khóa" : "Bình thường",
-                IconBitmapCache.GetActionStrip(isLocked));
+                IconBitmapCache.GetActionStrip(_canEdit, _canManage, isLocked));
         }
 
         private UserManagementRowDto SelectedUser()
@@ -195,6 +221,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void EditSelectedUser()
         {
+            if (!_canEdit)
+            {
+                AppToast.Warning(this, "Bạn không có quyền sửa thông tin tài khoản.");
+                return;
+            }
             UserManagementRowDto user = SelectedUser();
             if (user != null && frmEditUserAccount.Show(this, UserDetailMapper.FromRow(user), _service) == DialogResult.OK)
                 ReloadUsers();
@@ -202,6 +233,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void ToggleSelectedUserLock()
         {
+            if (!_canManage)
+            {
+                AppToast.Warning(this, "Bạn không có quyền khóa hoặc mở khóa tài khoản.");
+                return;
+            }
             UserManagementRowDto user = SelectedUser();
             if (user == null) return;
             bool shouldLock = !user.IsLocked;
@@ -216,6 +252,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void AddEmployee()
         {
+            if (!_canManage)
+            {
+                AppToast.Warning(this, "Bạn không có quyền thêm nhân viên.");
+                return;
+            }
             if (frmAddEmployee.Show(this, _service) == DialogResult.OK)
                 ReloadUsers();
         }
@@ -239,6 +280,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private void ImportUsers()
         {
+            if (!_canManage)
+            {
+                AppToast.Warning(this, "Bạn không có quyền nhập dữ liệu nhân viên.");
+                return;
+            }
             var handler = new EmployeeImportRowHandler(_service);
             DialogResult result = frmImportData.Show(this, "Nhân viên",
                 EmployeeImportRowHandler.ExpectedColumns,

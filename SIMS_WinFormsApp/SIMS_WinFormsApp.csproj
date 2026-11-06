@@ -59,9 +59,6 @@
     <EmbeddedResource Include="Reports\RevenueReport.rdlc">
       <LogicalName>SIMS_WinFormsApp.Reports.RevenueReport.rdlc</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Reports\DisposalReport.rdlc">
-      <LogicalName>SIMS_WinFormsApp.Reports.DisposalReport.rdlc</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -136,6 +133,7 @@
     <Compile Include="Views\Sales\PromotionManagementPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Interfaces\IPromotionManagementView.cs" />
     <Compile Include="Views\Sales\PromotionManagementPage.Designer.cs">
       <DependentUpon>PromotionManagementPage.cs</DependentUpon>
     </Compile>
@@ -269,6 +267,7 @@
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <!-- MỚI: Presenter dùng chung cho popup "Nhập dữ liệu" -->
     <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
+    <Compile Include="MVP\Presenters\PromotionManagementPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <!-- MỚI: Header -->
