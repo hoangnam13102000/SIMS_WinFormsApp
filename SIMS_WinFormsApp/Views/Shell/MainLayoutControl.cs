@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
+using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Toast;
@@ -319,7 +320,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         private void SetAvatar(string avatarPath, string initial)
         {
             _avatarControl.Initial = initial;
-            _avatarControl.TryLoadImage(avatarPath);
+            _avatarControl.TryLoadImage(AvatarPathResolver.Resolve(avatarPath));
         }
 
         private void ConfigureAccountMenu()

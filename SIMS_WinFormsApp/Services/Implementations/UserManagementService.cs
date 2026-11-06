@@ -32,7 +32,7 @@ namespace SIMS_WinFormsApp.Services.Implementations
             _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
             _mailSender = mailSender ?? throw new ArgumentNullException(nameof(mailSender));
 
-            Directory.CreateDirectory(GetAvatarDirectory());
+            Directory.CreateDirectory(AvatarPathResolver.GetAvatarDirectory());
         }
 
         public UserManagementPageDto GetPage(
@@ -151,12 +151,12 @@ namespace SIMS_WinFormsApp.Services.Implementations
             if (!File.Exists(sourcePath))
                 throw new FileNotFoundException("Không tìm thấy ảnh đại diện đã chọn.", sourcePath);
 
-            string directory = GetAvatarDirectory();
+            string directory = AvatarPathResolver.GetAvatarDirectory();
             Directory.CreateDirectory(directory);
             string extension = Path.GetExtension(sourcePath).ToLowerInvariant();
-            string destination = Path.Combine(directory, "user_" + userId + extension);
+            string destination = Path.Combine(directory, "user_" + userId + "_" + Guid.NewGuid().ToString("N") + extension);
             File.Copy(sourcePath, destination, true);
-            return destination;
+            return AvatarPathResolver.ToStoredPath(destination);
         }
 
         private static string StoreAvatarForNewUser(string sourcePath)
@@ -165,28 +165,12 @@ namespace SIMS_WinFormsApp.Services.Implementations
             if (!File.Exists(sourcePath))
                 throw new FileNotFoundException("Không tìm thấy ảnh đại diện đã chọn.", sourcePath);
 
-            string directory = GetAvatarDirectory();
+            string directory = AvatarPathResolver.GetAvatarDirectory();
             Directory.CreateDirectory(directory);
             string extension = Path.GetExtension(sourcePath).ToLowerInvariant();
             string destination = Path.Combine(directory, "new_" + Guid.NewGuid().ToString("N") + extension);
             File.Copy(sourcePath, destination, true);
-            return destination;
-        }
-
-        private static string GetAvatarDirectory()
-        {
-            string assemblyDirectory = Path.GetDirectoryName(
-                typeof(UserManagementService).Assembly.Location);
-            DirectoryInfo projectDirectory = string.IsNullOrWhiteSpace(assemblyDirectory)
-                ? null
-                : new DirectoryInfo(assemblyDirectory).Parent?.Parent;
-
-            if (projectDirectory != null)
-            {
-                return Path.Combine(projectDirectory.FullName, "Resources", "Avatars");
-            }
-
-            throw new DirectoryNotFoundException("Không xác định được thư mục project SIMS_WinFormsApp.");
+            return AvatarPathResolver.ToStoredPath(destination);
         }
 
         private bool IsRoleAssignable(int roleId)

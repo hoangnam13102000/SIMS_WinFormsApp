@@ -331,5 +331,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             base.Dispose(disposing);
         }
 
+        private void _designerSaveButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

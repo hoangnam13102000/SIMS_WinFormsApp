@@ -7,6 +7,7 @@ using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.MVP.Presenters;
 using SIMS_WinFormsApp.Repositories.Interfaces;
+using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.Views.Toast;
@@ -98,11 +99,12 @@ namespace SIMS_WinFormsApp.Views.Profile
 
             lblAvatarInitial.Text = GetInitial(user.FullName);
             SetAvatarPreview(null, null);
-            if (!string.IsNullOrWhiteSpace(user.AvatarUrl) && File.Exists(user.AvatarUrl))
+            string avatarPath = AvatarPathResolver.Resolve(user.AvatarUrl);
+            if (!string.IsNullOrWhiteSpace(avatarPath) && File.Exists(avatarPath))
             {
                 try
                 {
-                    SetAvatarPreview(LoadImageWithoutLockingFile(user.AvatarUrl), user.AvatarUrl);
+                    SetAvatarPreview(LoadImageWithoutLockingFile(avatarPath), avatarPath);
                 }
                 catch (Exception)
                 {

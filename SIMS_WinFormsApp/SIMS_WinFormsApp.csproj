@@ -47,6 +47,9 @@
     <Compile Include="Views\Warehouse\frmStockReconciliationDetail.Designer.cs">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Views\Backup\BackupRecoveryPageControl.resx">
+      <DependentUpon>BackupRecoveryPageControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Catalog\ucSupplierManagement.resx">
       <DependentUpon>ucSupplierManagement.cs</DependentUpon>
     </EmbeddedResource>
@@ -401,6 +404,9 @@
     <Compile Include="Views\Backup\BackupPage.cs" />
     <Compile Include="Views\Backup\BackupRecoveryPageControl.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Backup\BackupRecoveryPageControl.Designer.cs">
+      <DependentUpon>BackupRecoveryPageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\BarcodeScannerPresenter.cs" />
@@ -847,6 +853,7 @@
     <Compile Include="Services\Interfaces\IPasswordResetService.cs" />
     <Compile Include="Services\Interfaces\IUserManagementService.cs" />
     <Compile Include="Services\Implementations\UserManagementService.cs" />
+    <Compile Include="Services\Implementations\AvatarPathResolver.cs" />
     <Compile Include="Services\Security\IPasswordHasher.cs" />
     <Compile Include="Services\Security\BCryptPasswordHasher.cs" />
     <Compile Include="Services\Security\PasswordResetService.cs" />

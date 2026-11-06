@@ -214,6 +214,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             if (string.IsNullOrWhiteSpace(avatarPath))
                 return;
 
+            avatarPath = AvatarPathResolver.Resolve(avatarPath);
             if (!File.Exists(avatarPath))
             {
                 AppToast.Warning(this, "Không tìm thấy ảnh đại diện", avatarPath);
