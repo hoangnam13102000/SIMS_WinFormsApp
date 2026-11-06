@@ -106,7 +106,9 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         {
             string directory = ConfigurationManager.AppSettings["BackupDirectory"];
             if (string.IsNullOrWhiteSpace(directory))
-                directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Backups");
+                directory = "Backups";
+            if (!Path.IsPathRooted(directory))
+                directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, directory);
 
             var storage = new BackupStorage(directory);
             var strategies = new IBackupStrategy[]

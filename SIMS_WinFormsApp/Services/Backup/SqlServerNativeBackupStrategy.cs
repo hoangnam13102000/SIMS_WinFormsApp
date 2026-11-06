@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Data.Common;
+using SIMS_WinFormsApp.DAL.Linq;
 using SIMS_WinFormsApp.Infrastructure.Configuration;
 
 namespace SIMS_WinFormsApp.Services.Backup
@@ -20,17 +21,21 @@ namespace SIMS_WinFormsApp.Services.Backup
         {
             string databaseName = GetDatabaseName();
 
-            using (var connection = _connectionFactory.CreateConnection())
+            using (SimsDataContext context = _connectionFactory.CreateDataContext())
             {
-                connection.Open();
+                context.CommandTimeout = 600;
                 try
                 {
-                    ExecuteBackup(connection, databaseName, destinationFilePath, withCompression: true);
+                    context.ExecuteCommand(
+                        "BACKUP DATABASE [" + EscapeIdentifier(databaseName) + "] TO DISK = {0} WITH INIT, COMPRESSION, STATS = 10",
+                        destinationFilePath);
                 }
-                catch (SqlException ex) when (IsCompressionUnsupported(ex))
+                catch (Exception ex) when (ex.Message.IndexOf("COMPRESSION", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     // Một số bản SQL Server Express không có tùy chọn nén -> thử lại không nén.
-                    ExecuteBackup(connection, databaseName, destinationFilePath, withCompression: false);
+                    context.ExecuteCommand(
+                        "BACKUP DATABASE [" + EscapeIdentifier(databaseName) + "] TO DISK = {0} WITH INIT, STATS = 10",
+                        destinationFilePath);
                 }
             }
         }
@@ -39,68 +44,53 @@ namespace SIMS_WinFormsApp.Services.Backup
         {
             string databaseName = GetDatabaseName();
 
-            using (var connection = new SqlConnection(BuildMasterConnectionString()))
+            using (var master = new SimsDataContext(BuildMasterConnectionString()))
             {
-                connection.Open();
-                ExecuteNonQuery(connection,
-                    "ALTER DATABASE [" + EscapeIdentifier(databaseName) + "] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;", 60);
+                master.CommandTimeout = 600;
+                master.ExecuteCommand(
+                    "ALTER DATABASE [" + EscapeIdentifier(databaseName) + "] SET SINGLE_USER WITH ROLLBACK IMMEDIATE");
                 try
                 {
-                    using (var command = new SqlCommand(
-                        "RESTORE DATABASE [" + EscapeIdentifier(databaseName) + "] FROM DISK = @path WITH REPLACE, STATS = 10",
-                        connection))
-                    {
-                        command.CommandTimeout = 600;
-                        command.Parameters.AddWithValue("@path", backupFilePath);
-                        command.ExecuteNonQuery();
-                    }
+                    master.ExecuteCommand(
+                        "RESTORE DATABASE [" + EscapeIdentifier(databaseName) + "] FROM DISK = {0} WITH REPLACE, STATS = 10",
+                        backupFilePath);
                 }
                 finally
                 {
-                    ExecuteNonQuery(connection,
-                        "ALTER DATABASE [" + EscapeIdentifier(databaseName) + "] SET MULTI_USER;", 60);
+                    master.ExecuteCommand(
+                        "ALTER DATABASE [" + EscapeIdentifier(databaseName) + "] SET MULTI_USER");
                 }
-            }
-        }
-
-        private static void ExecuteBackup(SqlConnection connection, string databaseName, string destinationFilePath, bool withCompression)
-        {
-            string options = withCompression ? "WITH INIT, COMPRESSION, STATS = 10" : "WITH INIT, STATS = 10";
-            using (var command = new SqlCommand(
-                "BACKUP DATABASE [" + EscapeIdentifier(databaseName) + "] TO DISK = @path " + options, connection))
-            {
-                command.CommandTimeout = 600;
-                command.Parameters.AddWithValue("@path", destinationFilePath);
-                command.ExecuteNonQuery();
             }
         }
 
         private string GetDatabaseName()
         {
-            using (var probe = _connectionFactory.CreateConnection())
-                return new SqlConnectionStringBuilder(probe.ConnectionString).InitialCatalog;
+            var builder = new DbConnectionStringBuilder
+            {
+                ConnectionString = _connectionFactory.GetConnectionString()
+            };
+            string databaseKey = GetDatabaseKey(builder);
+            return Convert.ToString(builder[databaseKey]);
         }
 
         private string BuildMasterConnectionString()
         {
-            using (var probe = _connectionFactory.CreateConnection())
+            var builder = new DbConnectionStringBuilder
             {
-                var builder = new SqlConnectionStringBuilder(probe.ConnectionString) { InitialCatalog = "master" };
-                return builder.ConnectionString;
-            }
+                ConnectionString = _connectionFactory.GetConnectionString()
+            };
+            builder[GetDatabaseKey(builder)] = "master";
+            return builder.ConnectionString;
         }
 
-        private static void ExecuteNonQuery(SqlConnection connection, string sql, int timeoutSeconds)
+        private static string GetDatabaseKey(DbConnectionStringBuilder builder)
         {
-            using (var command = new SqlCommand(sql, connection))
-            {
-                command.CommandTimeout = timeoutSeconds;
-                command.ExecuteNonQuery();
-            }
+            if (builder.ContainsKey("Initial Catalog"))
+                return "Initial Catalog";
+            if (builder.ContainsKey("Database"))
+                return "Database";
+            throw new InvalidOperationException("Connection string không chứa tên cơ sở dữ liệu.");
         }
-
-        private static bool IsCompressionUnsupported(SqlException ex) =>
-            ex.Message.IndexOf("COMPRESSION", StringComparison.OrdinalIgnoreCase) >= 0;
 
         private static string EscapeIdentifier(string identifier) => identifier.Replace("]", "]]");
     }
