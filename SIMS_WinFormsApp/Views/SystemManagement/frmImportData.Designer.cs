@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.SystemManagement
@@ -10,22 +11,27 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private InfoBannerPanel _designerBanner;
         private Label _designerColumns;
         private Label _designerInstructions;
-        private PrimaryButton _designerChooseFile;
+        private PrimaryButton _btnChooseFile;
         private Label _designerFileName;
         private Panel _designerFilePanel;
         private TextBox _designerResult;
+        private PrimaryButton _btnClose;
+        private PrimaryButton _btnStart;
 
         private void InitializeComponent()
         {
             _designerBanner = new InfoBannerPanel();
             _designerColumns = new Label();
             _designerInstructions = new Label();
-            _designerChooseFile = new PrimaryButton();
+            _btnChooseFile = new PrimaryButton();
             _designerFileName = new Label();
             _designerFilePanel = new Panel();
             _designerResult = new TextBox();
+            _btnClose = new PrimaryButton();
+            _btnStart = new PrimaryButton();
             SuspendLayout();
             ContentHost.SuspendLayout();
+            FooterHost.SuspendLayout();
 
             _designerBanner.Dock = DockStyle.Top;
             _designerBanner.TitleText = "Nhập dữ liệu từ file";
@@ -43,10 +49,14 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerInstructions.Text = "Dòng đầu tiên trong file là tiêu đề cột.";
             _designerInstructions.Name = "importInstructions";
 
-            _designerChooseFile.Location = new Point(0, 0);
-            _designerChooseFile.Name = "chooseFileButton";
-            _designerChooseFile.Size = new Size(140, 42);
-            _designerChooseFile.Text = "Chọn file...";
+            _btnChooseFile.CornerRadius = AppRadius.Medium;
+            _btnChooseFile.Font = AppFonts.Button;
+            _btnChooseFile.IsPrimary = false;
+            _btnChooseFile.Location = new Point(0, 0);
+            _btnChooseFile.Name = "_btnChooseFile";
+            _btnChooseFile.Size = new Size(140, 42);
+            _btnChooseFile.Text = "Chọn file...";
+            _btnChooseFile.Click += new System.EventHandler(ChooseFileButton_Click);
             _designerFileName.AutoSize = false;
             _designerFileName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             _designerFileName.Location = new Point(152, 0);
@@ -58,7 +68,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerFilePanel.Height = 46;
             _designerFilePanel.Name = "fileSelectionPanel";
             _designerFilePanel.Controls.Add(_designerFileName);
-            _designerFilePanel.Controls.Add(_designerChooseFile);
+            _designerFilePanel.Controls.Add(_btnChooseFile);
 
             _designerResult.Dock = DockStyle.Top;
             _designerResult.Height = 160;
@@ -68,11 +78,35 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _designerResult.Name = "importResults";
             _designerResult.Text = "Kết quả nhập dữ liệu sẽ hiển thị tại đây.";
 
+            _btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _btnClose.CornerRadius = AppRadius.Medium;
+            _btnClose.Font = AppFonts.Button;
+            _btnClose.IsPrimary = false;
+            _btnClose.Location = new Point(302, 22);
+            _btnClose.Name = "_btnClose";
+            _btnClose.Size = new Size(112, 44);
+            _btnClose.Text = "Đóng";
+            _btnClose.Click += new System.EventHandler(CloseImportButton_Click);
+
+            _btnStart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _btnStart.CornerRadius = AppRadius.Medium;
+            _btnStart.Enabled = false;
+            _btnStart.Font = AppFonts.Button;
+            _btnStart.IsPrimary = true;
+            _btnStart.Location = new Point(426, 22);
+            _btnStart.Name = "_btnStart";
+            _btnStart.Size = new Size(170, 44);
+            _btnStart.Text = "Bắt đầu nhập";
+            _btnStart.Click += new System.EventHandler(StartImportButton_Click);
+
             ContentHost.Controls.Add(_designerResult);
             ContentHost.Controls.Add(_designerFilePanel);
             ContentHost.Controls.Add(_designerInstructions);
             ContentHost.Controls.Add(_designerColumns);
             ContentHost.Controls.Add(_designerBanner);
+            FooterHost.Controls.Add(_btnClose);
+            FooterHost.Controls.Add(_btnStart);
+            FooterHost.ResumeLayout(false);
             ContentHost.ResumeLayout(false);
             ClientSize = new Size(800, 700);
             Name = "frmImportData";

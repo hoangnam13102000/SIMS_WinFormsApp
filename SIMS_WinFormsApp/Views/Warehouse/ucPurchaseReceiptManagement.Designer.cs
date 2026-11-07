@@ -10,6 +10,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
     partial class ucPurchaseReceiptManagement
     {
         private System.ComponentModel.IContainer components = null;
+        private ContextMenuStrip _optionsMenu;
+        private ToolStripMenuItem _exportCsvMenuItem;
+        private ToolStripMenuItem _exportExcelMenuItem;
+        private ToolStripSeparator _optionsSeparator;
+        private ToolStripMenuItem _importMenuItem;
         private TableLayoutPanel _root;
         private Panel _headerCard;
         private TableLayoutPanel _headerLayout;
@@ -67,6 +72,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._optionsSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -119,6 +129,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageSizeCombo = new System.Windows.Forms.ComboBox();
             this._rowsLabel = new System.Windows.Forms.Label();
             this._toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this._optionsMenu.SuspendLayout();
             this._root.SuspendLayout();
             this._headerCard.SuspendLayout();
             this._headerLayout.SuspendLayout();
@@ -175,7 +186,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._headerLayout.ColumnCount = 2;
             this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 340F));
+            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 430F));
             this._headerLayout.Controls.Add(this._headerLeftLayout, 0, 0);
             this._headerLayout.Controls.Add(this._headerActions, 1, 0);
             this._headerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -200,7 +211,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerLeftLayout.Name = "_headerLeftLayout";
             this._headerLeftLayout.RowCount = 1;
             this._headerLeftLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._headerLeftLayout.Size = new System.Drawing.Size(794, 86);
+            this._headerLeftLayout.Size = new System.Drawing.Size(704, 86);
             this._headerLeftLayout.TabIndex = 0;
             // 
             // _headerIconCircle
@@ -241,7 +252,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCopyLayout.RowCount = 2;
             this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._headerCopyLayout.Size = new System.Drawing.Size(726, 64);
+            this._headerCopyLayout.Size = new System.Drawing.Size(636, 64);
             this._headerCopyLayout.TabIndex = 1;
             // 
             // _titleLabel
@@ -279,11 +290,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerActions.Controls.Add(this._optionsButton);
             this._headerActions.Dock = System.Windows.Forms.DockStyle.Right;
             this._headerActions.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this._headerActions.Location = new System.Drawing.Point(794, 0);
+            this._headerActions.Location = new System.Drawing.Point(704, 0);
             this._headerActions.Margin = new System.Windows.Forms.Padding(0);
             this._headerActions.Name = "_headerActions";
             this._headerActions.Padding = new System.Windows.Forms.Padding(0, 21, 6, 0);
-            this._headerActions.Size = new System.Drawing.Size(340, 86);
+            this._headerActions.Size = new System.Drawing.Size(430, 86);
             this._headerActions.TabIndex = 1;
             this._headerActions.WrapContents = false;
             // 
@@ -302,6 +313,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.Size = new System.Drawing.Size(180, 44);
             this._createButton.TabIndex = 0;
             this._createButton.Text = "+ Lập phiếu nhập";
+            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             this._createButton.UseVisualStyleBackColor = false;
             // 
             // _optionsButton
@@ -319,10 +331,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.Size = new System.Drawing.Size(130, 44);
             this._optionsButton.TabIndex = 1;
             this._optionsButton.Text = "Tùy chọn  ⌄";
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             this._optionsButton.UseVisualStyleBackColor = false;
-            // 
+            //
             // _filterCard
-            // 
+            //
             this._filterCard.BackColor = System.Drawing.Color.White;
             this._filterCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._filterCard.Controls.Add(this._filterLayout);
@@ -444,6 +457,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearSearchButton.Size = new System.Drawing.Size(30, 30);
             this._clearSearchButton.TabIndex = 2;
             this._clearSearchButton.Text = "✕";
+            this._clearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
             this._clearSearchButton.UseVisualStyleBackColor = false;
             this._clearSearchButton.Visible = false;
             // 
@@ -510,6 +524,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearDateLink.TabIndex = 3;
             this._clearDateLink.Text = "✕";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
+            this._clearDateLink.Click += new System.EventHandler(this.ClearDateLink_Click);
             this._clearDateLink.UseVisualStyleBackColor = false;
             this._clearDateLink.Visible = false;
             // 
@@ -580,6 +595,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1158, 482);
             this._grid.TabIndex = 0;
+            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
             // 
             // _receiptIdColumn
             // 
@@ -701,6 +717,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.Size = new System.Drawing.Size(34, 34);
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             this._prevButton.UseVisualStyleBackColor = true;
             // 
             // _pageNumberBadge
@@ -737,6 +754,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.Size = new System.Drawing.Size(34, 34);
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             this._nextButton.UseVisualStyleBackColor = true;
             // 
             // _pageInfoLabel
@@ -797,9 +815,43 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toolTip.AutoPopDelay = 5000;
             this._toolTip.InitialDelay = 500;
             this._toolTip.ReshowDelay = 100;
-            // 
+            //
+            // _exportCsvMenuItem
+            //
+            this._exportCsvMenuItem.AutoSize = true;
+            this._exportCsvMenuItem.Image = IconBitmapCache.Get(IconChar.FileCsv, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
+            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
+            this._exportCsvMenuItem.Text = "Xuất CSV";
+            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
+            //
+            // _exportExcelMenuItem
+            //
+            this._exportExcelMenuItem.AutoSize = true;
+            this._exportExcelMenuItem.Image = IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
+            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
+            this._exportExcelMenuItem.Text = "Xuất Excel";
+            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
+            //
+            // _importMenuItem
+            //
+            this._importMenuItem.AutoSize = true;
+            this._importMenuItem.Image = IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
+            this._importMenuItem.Name = "_importMenuItem";
+            this._importMenuItem.Text = "Nhập dữ liệu";
+            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
+            //
+            // _optionsMenu
+            //
+            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._exportCsvMenuItem,
+            this._exportExcelMenuItem,
+            this._optionsSeparator,
+            this._importMenuItem});
+            this._optionsMenu.Name = "_optionsMenu";
+            this._optionsMenu.ResumeLayout(false);
+            //
             // ucPurchaseReceiptManagement
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));

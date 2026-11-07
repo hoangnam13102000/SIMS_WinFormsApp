@@ -621,6 +621,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this._pagerPanel.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
+            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
+            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
+            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             this.ResumeLayout(false);
 
         }

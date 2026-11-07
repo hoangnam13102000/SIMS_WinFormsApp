@@ -21,23 +21,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
     public partial class ucDashboard : UserControl, IDashboardView
     {
         private readonly DashboardPresenter _presenter;
-        private Panel _revenueSummaryPanel;
-        private TableLayoutPanel _revenueSummaryLayout;
-        private Chart _revenueSummaryChart;
-        private Label _chartTitleLabel;
-        private Panel _revenueFilterPanel;
-        private ComboBox _revenuePeriodFilter;
-        private DateTimePicker _revenueDatePicker;
-        private Panel _invoiceFilterPanel;
-        private ComboBox _invoicePeriodFilter;
-        private DateTimePicker _invoiceDatePicker;
-        private Button _applyInvoiceFilterButton;
         private int _loadedInvoiceCount;
         private DashboardKind _currentDashboardKind;
         private bool _isLoading;
         private bool _hasLoaded;
         private bool _reloadRequested;
-        private LinkLabel _expiryBatchesLink;
 
         public ucDashboard() : this(null, null)
         {
@@ -57,17 +45,10 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         {
             InitializeComponent();
             BackColor = AppColors.PageBg;
-            _revenueCard.Paint += DrawCardBorder;
-            _ordersCard.Paint += DrawCardBorder;
-            _stockCard.Paint += DrawCardBorder;
-            _customersCard.Paint += DrawCardBorder;
-            _activityCard.Paint += DrawCardBorder;
-            ConfigureExpiryBatchesLink();
-            ConfigureRevenueSummaryChart();
-            ConfigureRevenuePeriodFilter();
-            ConfigureRecentInvoiceFilter();
 
             bool isDesignTime = DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+            _expiryBatchesLink.Visible = isDesignTime;
+            _invoiceFilterPanel.Visible = isDesignTime;
             if (isDesignTime)
             {
                 PopulateRevenueChartDesignPreview();
@@ -81,8 +62,6 @@ namespace SIMS_WinFormsApp.Views.Dashboard
                 roleCode,
                 currentUserId,
                 dataService ?? AppComposition.CreateDashboardDataService());
-            Load += Dashboard_Load;
-            VisibleChanged += Dashboard_VisibleChanged;
         }
 
         public DataGridViewTextBoxColumn Activity => _activity_column;
@@ -187,23 +166,9 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
-        private void ConfigureExpiryBatchesLink()
+        private void ExpiryBatchesLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            _expiryBatchesLink = new LinkLabel
-            {
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                LinkColor = Color.FromArgb(37, 99, 235),
-                Location = new Point(820, 62),
-                Name = "_expiryBatchesLink",
-                Text = "Xem lô cận hạn / hết hạn →",
-                Visible = false
-            };
-            _expiryBatchesLink.LinkClicked += (sender, args) =>
-                ExpiryBatchesRequested?.Invoke(this, EventArgs.Empty);
-            _headerPanel.Controls.Add(_expiryBatchesLink);
-            _expiryBatchesLink.BringToFront();
+            ExpiryBatchesRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void ConfigureDashboardLayout(bool isSalesStaffDashboard, bool showActivities)
@@ -252,211 +217,6 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             {
                 _contentLayout.ResumeLayout(true);
             }
-        }
-
-        private void ConfigureRevenueSummaryChart()
-        {
-            _contentLayout.RowCount = 3;
-            _contentLayout.RowStyles.Clear();
-            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 128F));
-            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 260F));
-            _contentLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _contentLayout.SetRow(_activityCard, 2);
-
-            _revenueSummaryPanel = new Panel
-            {
-                BackColor = Color.White,
-                Dock = DockStyle.Fill,
-                Margin = new Padding(0, 14, 0, 0),
-                Padding = new Padding(18),
-                Name = "_revenueSummaryPanel"
-            };
-            _revenueSummaryPanel.Paint += DrawCardBorder;
-            var chartLayout = new TableLayoutPanel
-            {
-                ColumnCount = 1,
-                Dock = DockStyle.Fill,
-                RowCount = 3
-            };
-            chartLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
-            chartLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
-            chartLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            _revenueSummaryLayout = chartLayout;
-
-            _chartTitleLabel = new Label
-            {
-                AutoSize = true,
-                Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(15, 23, 42),
-                Text = "Doanh thu 7 ngày gần nhất",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-
-            var chartArea = new ChartArea("RevenueSummaryArea");
-            chartArea.BackColor = Color.White;
-            chartArea.AxisX.LabelStyle.ForeColor = Color.FromArgb(100, 116, 139);
-            chartArea.AxisX.MajorGrid.Enabled = false;
-            chartArea.AxisX.LineColor = Color.FromArgb(226, 232, 240);
-            chartArea.AxisY.LabelStyle.ForeColor = Color.FromArgb(100, 116, 139);
-            chartArea.AxisY.LabelStyle.Format = "N0";
-            chartArea.AxisY.MajorGrid.LineColor = Color.FromArgb(226, 232, 240);
-            chartArea.AxisY.LineColor = Color.Transparent;
-            chartArea.AxisY.Minimum = 0;
-
-            _revenueSummaryChart = new Chart
-            {
-                BackColor = Color.White,
-                Dock = DockStyle.Fill,
-                Name = "_revenueSummaryChart"
-            };
-            _revenueSummaryChart.ChartAreas.Add(chartArea);
-            _revenueSummaryChart.Series.Add(new Series("Doanh thu")
-            {
-                ChartArea = chartArea.Name,
-                ChartType = SeriesChartType.Column,
-                Color = Color.FromArgb(59, 130, 246),
-                BorderColor = Color.FromArgb(37, 99, 235),
-                BorderWidth = 1,
-                IsValueShownAsLabel = false
-            });
-            _revenueSummaryChart.Series["Doanh thu"]["PointWidth"] = "0.55";
-
-            chartLayout.Controls.Add(_chartTitleLabel, 0, 0);
-            chartLayout.Controls.Add(_revenueSummaryChart, 0, 2);
-            _revenueSummaryPanel.Controls.Add(chartLayout);
-            _contentLayout.Controls.Add(_revenueSummaryPanel, 0, 1);
-        }
-
-        private void ConfigureRevenuePeriodFilter()
-        {
-            _revenuePeriodFilter = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = new Font("Segoe UI", 9F),
-                Location = new Point(0, 2),
-                Size = new Size(78, 26),
-                TabIndex = 0
-            };
-            _revenuePeriodFilter.Items.AddRange(new object[] { "Ngày", "Tuần", "Tháng", "Năm" });
-            _revenuePeriodFilter.SelectedIndex = 1;
-
-            _revenueDatePicker = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Custom,
-                CustomFormat = "dd/MM/yyyy",
-                Font = new Font("Segoe UI", 9F),
-                Location = new Point(84, 2),
-                Size = new Size(112, 26),
-                TabIndex = 1,
-                Value = DateTime.Today
-            };
-
-            var applyRevenueFilterButton = new Button
-            {
-                Location = new Point(202, 1),
-                Name = "_applyRevenueFilterButton",
-                Size = new Size(54, 28),
-                TabIndex = 2,
-                Text = "Lọc",
-                UseVisualStyleBackColor = true
-            };
-
-            _revenueFilterPanel = new Panel
-            {
-                BackColor = Color.White,
-                Dock = DockStyle.Fill,
-                Name = "_revenueFilterPanel"
-            };
-            var filterLabel = new Label
-            {
-                AutoSize = false,
-                Font = new Font("Segoe UI", 9F),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                Location = new Point(0, 3),
-                Name = "_revenueFilterLabel",
-                Size = new Size(42, 24),
-                Text = "Lọc:",
-                TextAlign = ContentAlignment.MiddleLeft,
-                UseMnemonic = false
-            };
-            _revenuePeriodFilter.Location = new Point(42, 2);
-            _revenueDatePicker.Location = new Point(126, 2);
-            applyRevenueFilterButton.Location = new Point(244, 1);
-            _revenueFilterPanel.Controls.Add(filterLabel);
-            _revenueFilterPanel.Controls.Add(_revenuePeriodFilter);
-            _revenueFilterPanel.Controls.Add(_revenueDatePicker);
-            _revenueFilterPanel.Controls.Add(applyRevenueFilterButton);
-            _revenueSummaryLayout.Controls.Add(_revenueFilterPanel, 0, 1);
-
-            applyRevenueFilterButton.Click += OnApplyRevenueFilterClick;
-        }
-
-        private void ConfigureRecentInvoiceFilter()
-        {
-            const int filterPanelWidth = 350;
-            _invoicePeriodFilter = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = new Font("Segoe UI", 9F),
-                Location = new Point(64, 2),
-                Size = new Size(88, 26),
-                TabIndex = 0
-            };
-            _invoicePeriodFilter.Items.AddRange(new object[] { "Tất cả", "Ngày", "Tuần", "Tháng", "Năm" });
-            _invoicePeriodFilter.SelectedIndex = 0;
-
-            _invoiceDatePicker = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Custom,
-                CustomFormat = "dd/MM/yyyy",
-                Font = new Font("Segoe UI", 9F),
-                Location = new Point(158, 2),
-                Size = new Size(112, 26),
-                TabIndex = 1,
-                Value = DateTime.Today
-            };
-
-            _applyInvoiceFilterButton = new Button
-            {
-                Location = new Point(276, 1),
-                Name = "_applyInvoiceFilterButton",
-                Size = new Size(66, 28),
-                TabIndex = 2,
-                Text = "Lọc",
-                UseVisualStyleBackColor = true
-            };
-            _invoiceFilterPanel = new Panel
-            {
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                BackColor = Color.White,
-                Location = new Point(Math.Max(18, _activityCard.ClientSize.Width - 18 - filterPanelWidth), 14),
-                Name = "_invoiceFilterPanel",
-                Size = new Size(filterPanelWidth, 32),
-                Visible = false
-            };
-            var filterLabel = new Label
-            {
-                AutoSize = false,
-                Font = new Font("Segoe UI", 9F),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                Location = new Point(0, 3),
-                Name = "_invoiceFilterLabel",
-                Size = new Size(60, 24),
-                Text = "Lọc theo:",
-                TextAlign = ContentAlignment.MiddleLeft,
-                UseMnemonic = false
-            };
-            _invoiceFilterPanel.Controls.Add(filterLabel);
-            _invoiceFilterPanel.Controls.Add(_invoicePeriodFilter);
-            _invoiceFilterPanel.Controls.Add(_invoiceDatePicker);
-            _invoiceFilterPanel.Controls.Add(_applyInvoiceFilterButton);
-            _activityCard.Controls.Add(_invoiceFilterPanel);
-            _invoiceFilterPanel.BringToFront();
-
-            _applyInvoiceFilterButton.Click += OnApplyInvoiceFilterClick;
-            _activityCard.SizeChanged += OnActivityCardSizeChanged;
         }
 
         private void OnActivityCardSizeChanged(object sender, EventArgs e)
@@ -624,7 +384,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             }
         }
 
-        private static void DrawCardBorder(object sender, PaintEventArgs e)
+        private void DrawCardBorder(object sender, PaintEventArgs e)
         {
             var panel = sender as Panel;
             if (panel == null || panel.Width < 2 || panel.Height < 2)

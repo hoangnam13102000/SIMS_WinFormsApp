@@ -36,9 +36,6 @@ namespace SIMS_WinFormsApp.Views.Shell
         private bool _notificationsEnabled;
         private bool _sidebarCollapsed;
         private int _expandedSidebarWidth = 240;
-        private ToolStripMenuItem _accountNameMenuItem;
-        private ToolStripMenuItem _accountEmailMenuItem;
-        private ToolStripMenuItem _notificationsClearItem;
         private SettingsQuickPopup _settingsPopup;
         private System.Media.SoundPlayer _notificationSoundPlayer;
 
@@ -76,25 +73,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             _navigationTree.AfterSelect += NavigationTree_AfterSelect;
             _navigationTree.DrawNode += NavigationTree_DrawNode;
             _navigationTree.NodeMouseClick += NavigationTree_NodeMouseClick;
-            _notificationsButton.Click += (sender, args) =>
-                _notificationsContextMenu.Show(_notificationsButton, new Point(0, _notificationsButton.Height));
-            ConfigureNotificationActions();
-            _avatarControl.Click += (sender, args) => ShowAccountMenu();
-            _userNameLabel.Click += (sender, args) => ShowAccountMenu();
-            _userEmailLabel.Click += (sender, args) => ShowAccountMenu();
-            _profileButton.Click += (sender, args) => ShowAccountMenu();
             ConfigureAccountMenu();
-            _accountContextMenu.ItemClicked += (sender, args) =>
-            {
-                if (ReferenceEquals(args.ClickedItem, _profileMenuItem))
-                    ProfileRequested?.Invoke(this, EventArgs.Empty);
-                else if (ReferenceEquals(args.ClickedItem, _logoutMenuItem))
-                    LogoutRequested?.Invoke(this, EventArgs.Empty);
-            };
-            _chatbotButton.Click += (sender, args) => AiChatRequested?.Invoke(this, EventArgs.Empty);
             ConfigureSettingsMenu();
-            _settingsButton.Click += (sender, args) => ToggleSettingsPopup();
-            _sidebarToggleButton.Click += (sender, args) => SetSidebarCollapsed(!_sidebarCollapsed);
             _navigationTree.NodeMouseDoubleClick += (sender, args) =>
             {
                 if (args.Node != null && args.Node.Tag is string)
@@ -113,19 +93,46 @@ namespace SIMS_WinFormsApp.Views.Shell
             ConfigureFloatingButton(_settingsButton, IconChar.Gear);
         }
 
-        private void ConfigureNotificationActions()
+        private void NotificationsButton_Click(object sender, EventArgs e)
         {
-            _notificationsClearItem = new ToolStripMenuItem("Xóa tất cả")
-            {
-                Image = IconBitmapCache.Get(IconChar.Trash, AppColors.Error, new Size(16, 16)),
-                Visible = false,
-                Enabled = false
-            };
-            _notificationsClearItem.Click += (sender, args) =>
-                NotificationsClearRequested?.Invoke(GetVisibleNotificationIds());
-            _notificationsContextMenu.Items.Insert(
-                _notificationsContextMenu.Items.IndexOf(_notificationsEmptyMenuItem),
-                _notificationsClearItem);
+            _notificationsContextMenu.Show(
+                _notificationsButton,
+                new Point(0, _notificationsButton.Height));
+        }
+
+        private void AccountMenuTarget_Click(object sender, EventArgs e)
+        {
+            ShowAccountMenu();
+        }
+
+        private void ProfileMenuItem_Click(object sender, EventArgs e)
+        {
+            ProfileRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void LogoutMenuItem_Click(object sender, EventArgs e)
+        {
+            LogoutRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NotificationsClearItem_Click(object sender, EventArgs e)
+        {
+            NotificationsClearRequested?.Invoke(GetVisibleNotificationIds());
+        }
+
+        private void ChatbotButton_Click(object sender, EventArgs e)
+        {
+            AiChatRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SettingsButton_Click(object sender, EventArgs e)
+        {
+            ToggleSettingsPopup();
+        }
+
+        private void SidebarToggleButton_Click(object sender, EventArgs e)
+        {
+            SetSidebarCollapsed(!_sidebarCollapsed);
         }
 
         private IReadOnlyList<string> GetVisibleNotificationIds()
@@ -324,50 +331,11 @@ namespace SIMS_WinFormsApp.Views.Shell
 
         private void ConfigureAccountMenu()
         {
-            _accountNameMenuItem = new ToolStripMenuItem
-            {
-                Enabled = false,
-                AutoSize = false,
-                Size = new Size(250, 32),
-                Padding = new Padding(12, 8, 12, 2),
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                Text = _userNameLabel.Text
-            };
-            _accountEmailMenuItem = new ToolStripMenuItem
-            {
-                Enabled = false,
-                AutoSize = false,
-                Size = new Size(250, 28),
-                Padding = new Padding(12, 0, 12, 8),
-                Font = new Font("Segoe UI", 8F),
-                Text = _userEmailLabel.Text
-            };
-
-            _accountContextMenu.Items.Clear();
-            _accountContextMenu.Items.AddRange(new ToolStripItem[]
-            {
-                _accountNameMenuItem,
-                _accountEmailMenuItem,
-                new ToolStripSeparator(),
-                _profileMenuItem,
-                new ToolStripSeparator(),
-                _logoutMenuItem
-            });
-            _accountContextMenu.AutoSize = true;
-            _accountContextMenu.MinimumSize = new Size(266, 0);
-            _accountContextMenu.Padding = new Padding(5);
-            _accountContextMenu.ShowImageMargin = true;
+            _accountNameMenuItem.Text = _userNameLabel.Text;
+            _accountEmailMenuItem.Text = _userEmailLabel.Text;
             _accountContextMenu.ImageScalingSize = new Size(18, 18);
             _accountContextMenu.Renderer = new AccountMenuRenderer(_logoutMenuItem);
-            _profileMenuItem.AutoSize = false;
-            _profileMenuItem.Size = new Size(254, 42);
-            _profileMenuItem.Padding = new Padding(10, 4, 10, 4);
-            _profileMenuItem.Font = new Font("Segoe UI", 9F);
             _profileMenuItem.Image = IconBitmapCache.Get(IconChar.User, AppColors.Accent, new Size(18, 18));
-            _logoutMenuItem.AutoSize = false;
-            _logoutMenuItem.Size = new Size(254, 42);
-            _logoutMenuItem.Padding = new Padding(10, 4, 10, 4);
-            _logoutMenuItem.Font = new Font("Segoe UI", 9F);
             _logoutMenuItem.Image = IconBitmapCache.Get(IconChar.SignOutAlt, AppColors.Error, new Size(18, 18));
             UpdateAccountMenuAppearance();
         }
@@ -588,6 +556,7 @@ namespace SIMS_WinFormsApp.Views.Shell
                     Text = GetNotificationKindLabel(notification.Kind) + " • " +
                         notification.CreatedAt.ToString("dd/MM/yyyy HH:mm")
                 };
+                // One delete button is created for each notification row.
                 _deleteButton = new IconButton
                 {
                     AccessibleName = "Xóa thông báo",
@@ -880,6 +849,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         {
             private readonly Func<Control> _createPage;
             private bool _created;
+            private PageCreationErrorControl _creationErrorView;
 
             public LazyPageHost(Func<Control> createPage)
             {
@@ -935,40 +905,31 @@ namespace SIMS_WinFormsApp.Views.Shell
             private void ShowCreationError(Exception exception)
             {
                 Controls.Clear();
-                var errorLabel = new Label
+                if (_creationErrorView != null)
                 {
-                    AutoSize = false,
-                    Dock = DockStyle.Top,
-                    Height = 56,
-                    Padding = new Padding(20),
-                    ForeColor = Color.FromArgb(153, 27, 27),
-                    Text = "Không thể mở trang này.\r\n" + exception.Message
-                };
-                var errorDetails = new TextBox
+                    _creationErrorView.RetryRequested -= CreationErrorView_RetryRequested;
+                    _creationErrorView.Dispose();
+                }
+
+                _creationErrorView = new PageCreationErrorControl();
+                _creationErrorView.SetException(exception);
+                _creationErrorView.Dock = DockStyle.Fill;
+                _creationErrorView.RetryRequested += CreationErrorView_RetryRequested;
+                Controls.Add(_creationErrorView);
+            }
+
+            private void CreationErrorView_RetryRequested(object sender, EventArgs e)
+            {
+                PageCreationErrorControl errorView = _creationErrorView;
+                _creationErrorView = null;
+                if (errorView != null)
                 {
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    Location = new Point(20, 62),
-                    Multiline = true,
-                    ReadOnly = true,
-                    ScrollBars = ScrollBars.Both,
-                    Size = new Size(Math.Max(300, ClientSize.Width - 40), 220),
-                    Text = exception.ToString(),
-                    WordWrap = false
-                };
-                var retryButton = new Button
-                {
-                    AutoSize = true,
-                    Text = "Thử lại",
-                    Location = new Point(20, errorDetails.Bottom + 8)
-                };
-                retryButton.Click += (sender, args) =>
-                {
-                    Controls.Clear();
-                    EnsurePageCreated();
-                };
-                Controls.Add(errorLabel);
-                Controls.Add(errorDetails);
-                Controls.Add(retryButton);
+                    errorView.RetryRequested -= CreationErrorView_RetryRequested;
+                    Controls.Remove(errorView);
+                    errorView.Dispose();
+                }
+
+                EnsurePageCreated();
             }
         }
 

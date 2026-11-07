@@ -147,6 +147,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
                             row.IsActive ? AppColors.Error : AppColors.Success));
                 }
 
+                _categoriesGrid.ClearSelection();
+                _categoriesGrid.CurrentCell = null;
+
+
                 if (_pageIndex >= PageCount)
                 {
                     _pageIndex = PageCount - 1;
@@ -163,6 +167,50 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 {
                     _categoriesGrid.ResumeLayout();
                 }
+        }
+
+        private CategoryRowDto SelectedCategory()
+        {
+            if (_presenter == null || _categoriesGrid.SelectedRows.Count == 0)
+                return null;
+
+            int rowIndex = _categoriesGrid.SelectedRows[0].Index;
+            return rowIndex >= 0 && rowIndex < _presenter.CurrentRows.Count
+                ? _presenter.CurrentRows[rowIndex]
+                : null;
+        }
+
+        private void ViewSelectedCategory()
+        {
+            CategoryRowDto row = SelectedCategory();
+            if (row == null) return;
+
+            EditCategory(_presenter.Get(row.CategoryId), true);
+        }
+
+        // Edit: mở form sửa -> Presenter.Save -> Service.SaveCategory -> Repository.UpdateCategory.
+        private void EditSelectedCategory()
+        {
+            CategoryRowDto row = SelectedCategory();
+            if (row == null || !_canEditCategories) return;
+
+            EditCategory(_presenter.Get(row.CategoryId));
+        }
+
+        private void SetSelectedCategoryActive()
+        {
+            CategoryRowDto row = SelectedCategory();
+            if (row == null || !_canEditCategories) return;
+
+            bool enable = !row.IsActive;
+            string verb = enable ? "mở lại" : "vô hiệu hóa";
+            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
+                "Bạn có chắc muốn " + verb + " danh mục '" + row.Name + "' không?"))
+                return;
+
+            CatalogSaveResult result = _presenter.SetActive(row.CategoryId, enable);
+            Notify(result);
+            if (result != null && result.Success) LoadPage();
         }
 
         private void UpdatePaging()
@@ -185,30 +233,21 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     e.RowIndex >= _presenter.CurrentRows.Count)
                     return;
 
-                if (e.ColumnIndex != Actions.Index) return;
-                var row = _presenter.CurrentRows[e.RowIndex];
+                if (e.ColumnIndex != _actionsColumn.Index) return;
+                _categoriesGrid.CurrentCell = _categoriesGrid.Rows[e.RowIndex].Cells[0];
+                _categoriesGrid.Rows[e.RowIndex].Selected = true;
                 const int iconSize = 24;
                 const int gap = 8;
                 int stripWidth = iconSize * 3 + gap * 2;
-                int offset = e.X - (Actions.Width - stripWidth) / 2;
+                int offset = e.X - (_actionsColumn.Width - stripWidth) / 2;
                 int actionIndex = offset / (iconSize + gap);
                 if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
                 if (actionIndex == 0)
-                    EditCategory(_presenter.Get(row.CategoryId), true);
-            else if (_canEditCategories && actionIndex == 1)
-                    EditCategory(_presenter.Get(row.CategoryId), false);
-            else if (_canEditCategories && actionIndex == 2)
-            {
-                bool enable = !row.IsActive;
-                string verb = enable ? "mở lại" : "vô hiệu hóa";
-                if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
-                    "Bạn có chắc muốn " + verb + " danh mục '" + row.Name + "' không?"))
-                    return;
-
-                var result = _presenter.SetActive(row.CategoryId, enable);
-                Notify(result);
-                if (result != null && result.Success) LoadPage();
-            }
+                    ViewSelectedCategory();
+                else if (_canEditCategories && actionIndex == 1)
+                    EditSelectedCategory();
+                else if (_canEditCategories && actionIndex == 2)
+                    SetSelectedCategoryActive();
         }
 
         private void EditCategory(CategoryEditDto draft, bool readOnly = false)

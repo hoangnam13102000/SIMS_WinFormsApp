@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using FontAwesome.Sharp;
 
 namespace SIMS_WinFormsApp.Views.Dashboard
@@ -13,8 +14,18 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private IconPictureBox _headerIcon;
         private Label _titleLabel;
         private Label _welcomeLabel;
+        private LinkLabel _expiryBatchesLink;
         private TableLayoutPanel _contentLayout;
         private TableLayoutPanel _statsLayout;
+        private Panel _revenueSummaryPanel;
+        private TableLayoutPanel _revenueSummaryLayout;
+        private Label _chartTitleLabel;
+        private Chart _revenueSummaryChart;
+        private Panel _revenueFilterPanel;
+        private Label _revenueFilterLabel;
+        private ComboBox _revenuePeriodFilter;
+        private DateTimePicker _revenueDatePicker;
+        private Button _applyRevenueFilterButton;
         private Panel _revenueCard;
         private Panel _ordersCard;
         private Panel _stockCard;
@@ -31,6 +42,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
         private Label _activityTitle;
         private Label _activitySubtitle;
         private DataGridView _activityGrid;
+        private Panel _invoiceFilterPanel;
+        private Label _invoiceFilterLabel;
+        private ComboBox _invoicePeriodFilter;
+        private DateTimePicker _invoiceDatePicker;
+        private Button _applyInvoiceFilterButton;
         protected override void Dispose(bool disposing)
         {
             if (disposing && components != null)
@@ -44,10 +60,20 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._headerPanel = new System.Windows.Forms.Panel();
             this._welcomeLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
+            this._expiryBatchesLink = new System.Windows.Forms.LinkLabel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._contentLayout = new System.Windows.Forms.TableLayoutPanel();
             this._statsLayout = new System.Windows.Forms.TableLayoutPanel();
+            this._revenueSummaryPanel = new System.Windows.Forms.Panel();
+            this._revenueSummaryLayout = new System.Windows.Forms.TableLayoutPanel();
+            this._chartTitleLabel = new System.Windows.Forms.Label();
+            this._revenueSummaryChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this._revenueFilterPanel = new System.Windows.Forms.Panel();
+            this._revenueFilterLabel = new System.Windows.Forms.Label();
+            this._revenuePeriodFilter = new System.Windows.Forms.ComboBox();
+            this._revenueDatePicker = new System.Windows.Forms.DateTimePicker();
+            this._applyRevenueFilterButton = new System.Windows.Forms.Button();
             this._revenueCard = new System.Windows.Forms.Panel();
             this._revenueCaption = new System.Windows.Forms.Label();
             this._revenueValue = new System.Windows.Forms.Label();
@@ -61,6 +87,11 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._customersCaption = new System.Windows.Forms.Label();
             this._customersValue = new System.Windows.Forms.Label();
             this._activityCard = new System.Windows.Forms.Panel();
+            this._invoiceFilterPanel = new System.Windows.Forms.Panel();
+            this._invoiceFilterLabel = new System.Windows.Forms.Label();
+            this._invoicePeriodFilter = new System.Windows.Forms.ComboBox();
+            this._invoiceDatePicker = new System.Windows.Forms.DateTimePicker();
+            this._applyInvoiceFilterButton = new System.Windows.Forms.Button();
             this._activityGrid = new System.Windows.Forms.DataGridView();
             this._activity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._user_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -74,11 +105,16 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._contentLayout.SuspendLayout();
             this._statsLayout.SuspendLayout();
+            this._revenueSummaryPanel.SuspendLayout();
+            this._revenueSummaryLayout.SuspendLayout();
+            this._revenueFilterPanel.SuspendLayout();
             this._revenueCard.SuspendLayout();
             this._ordersCard.SuspendLayout();
             this._stockCard.SuspendLayout();
             this._customersCard.SuspendLayout();
             this._activityCard.SuspendLayout();
+            this._invoiceFilterPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._revenueSummaryChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._activityGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,11 +141,23 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._headerPanel.Controls.Add(this._welcomeLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
             this._headerPanel.Controls.Add(this._headerIconPanel);
+            this._headerPanel.Controls.Add(this._expiryBatchesLink);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerPanel.Location = new System.Drawing.Point(23, 19);
             this._headerPanel.Name = "_headerPanel";
             this._headerPanel.Size = new System.Drawing.Size(1205, 88);
             this._headerPanel.TabIndex = 0;
+            //
+            // _expiryBatchesLink
+            //
+            this._expiryBatchesLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._expiryBatchesLink.AutoSize = true;
+            this._expiryBatchesLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._expiryBatchesLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._expiryBatchesLink.Location = new System.Drawing.Point(820, 62);
+            this._expiryBatchesLink.Name = "_expiryBatchesLink";
+            this._expiryBatchesLink.Text = "Xem lô cận hạn / hết hạn →";
+            this._expiryBatchesLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ExpiryBatchesLink_LinkClicked);
             // 
             // _welcomeLabel
             // 
@@ -169,15 +217,137 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._contentLayout.ColumnCount = 1;
             this._contentLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._contentLayout.Controls.Add(this._statsLayout, 0, 0);
-            this._contentLayout.Controls.Add(this._activityCard, 0, 1);
+            this._contentLayout.Controls.Add(this._revenueSummaryPanel, 0, 1);
+            this._contentLayout.Controls.Add(this._activityCard, 0, 2);
             this._contentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._contentLayout.Location = new System.Drawing.Point(23, 113);
             this._contentLayout.Name = "_contentLayout";
-            this._contentLayout.RowCount = 2;
+            this._contentLayout.RowCount = 3;
             this._contentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 128F));
+            this._contentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 260F));
             this._contentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._contentLayout.Size = new System.Drawing.Size(1205, 721);
             this._contentLayout.TabIndex = 1;
+            //
+            // _revenueSummaryPanel
+            //
+            this._revenueSummaryPanel.BackColor = System.Drawing.Color.White;
+            this._revenueSummaryPanel.Controls.Add(this._revenueSummaryLayout);
+            this._revenueSummaryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueSummaryPanel.Margin = new System.Windows.Forms.Padding(0, 14, 0, 0);
+            this._revenueSummaryPanel.Name = "_revenueSummaryPanel";
+            this._revenueSummaryPanel.Padding = new System.Windows.Forms.Padding(18);
+            this._revenueSummaryPanel.Size = new System.Drawing.Size(1205, 246);
+            this._revenueSummaryPanel.TabIndex = 1;
+            this._revenueSummaryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
+            //
+            // _revenueSummaryLayout
+            //
+            this._revenueSummaryLayout.ColumnCount = 1;
+            this._revenueSummaryLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._revenueSummaryLayout.Controls.Add(this._chartTitleLabel, 0, 0);
+            this._revenueSummaryLayout.Controls.Add(this._revenueFilterPanel, 0, 1);
+            this._revenueSummaryLayout.Controls.Add(this._revenueSummaryChart, 0, 2);
+            this._revenueSummaryLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueSummaryLayout.Name = "_revenueSummaryLayout";
+            this._revenueSummaryLayout.RowCount = 3;
+            this._revenueSummaryLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._revenueSummaryLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
+            this._revenueSummaryLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._revenueSummaryLayout.TabIndex = 0;
+            //
+            // _chartTitleLabel
+            //
+            this._chartTitleLabel.AutoSize = true;
+            this._chartTitleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._chartTitleLabel.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold);
+            this._chartTitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this._chartTitleLabel.Name = "_chartTitleLabel";
+            this._chartTitleLabel.Text = "Doanh thu 7 ngày gần nhất";
+            this._chartTitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // _revenueSummaryChart
+            //
+            this._revenueSummaryChart.BackColor = System.Drawing.Color.White;
+            this._revenueSummaryChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueSummaryChart.Name = "_revenueSummaryChart";
+            this._revenueSummaryChart.ChartAreas.Add(new System.Windows.Forms.DataVisualization.Charting.ChartArea("RevenueSummaryArea"));
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].BackColor = System.Drawing.Color.White;
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisX.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisX.MajorGrid.Enabled = false;
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisY.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisY.LabelStyle.Format = "N0";
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisY.LineColor = System.Drawing.Color.Transparent;
+            this._revenueSummaryChart.ChartAreas["RevenueSummaryArea"].AxisY.Minimum = 0D;
+            this._revenueSummaryChart.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series("Doanh thu")
+            {
+                ChartArea = "RevenueSummaryArea",
+                ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Column,
+                Color = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246))))),
+                BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235))))),
+                BorderWidth = 1,
+                IsValueShownAsLabel = false,
+                CustomProperties = "PointWidth=0.55"
+            });
+            //
+            // _revenueFilterPanel
+            //
+            this._revenueFilterPanel.BackColor = System.Drawing.Color.White;
+            this._revenueFilterPanel.Controls.Add(this._revenueFilterLabel);
+            this._revenueFilterPanel.Controls.Add(this._revenuePeriodFilter);
+            this._revenueFilterPanel.Controls.Add(this._revenueDatePicker);
+            this._revenueFilterPanel.Controls.Add(this._applyRevenueFilterButton);
+            this._revenueFilterPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._revenueFilterPanel.Name = "_revenueFilterPanel";
+            this._revenueFilterPanel.TabIndex = 0;
+            //
+            // _revenueFilterLabel
+            //
+            this._revenueFilterLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._revenueFilterLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueFilterLabel.Location = new System.Drawing.Point(0, 3);
+            this._revenueFilterLabel.Name = "_revenueFilterLabel";
+            this._revenueFilterLabel.Size = new System.Drawing.Size(42, 24);
+            this._revenueFilterLabel.Text = "Lọc:";
+            this._revenueFilterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._revenueFilterLabel.UseMnemonic = false;
+            //
+            // _revenuePeriodFilter
+            //
+            this._revenuePeriodFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._revenuePeriodFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._revenuePeriodFilter.Items.AddRange(new object[] {
+            "Ngày",
+            "Tuần",
+            "Tháng",
+            "Năm"});
+            this._revenuePeriodFilter.Location = new System.Drawing.Point(42, 2);
+            this._revenuePeriodFilter.Name = "_revenuePeriodFilter";
+            this._revenuePeriodFilter.Size = new System.Drawing.Size(78, 26);
+            this._revenuePeriodFilter.TabIndex = 0;
+            this._revenuePeriodFilter.SelectedIndex = 1;
+            //
+            // _revenueDatePicker
+            //
+            this._revenueDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._revenueDatePicker.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._revenueDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this._revenueDatePicker.Location = new System.Drawing.Point(126, 2);
+            this._revenueDatePicker.Name = "_revenueDatePicker";
+            this._revenueDatePicker.Size = new System.Drawing.Size(112, 26);
+            this._revenueDatePicker.TabIndex = 1;
+            //
+            // _applyRevenueFilterButton
+            //
+            this._applyRevenueFilterButton.Location = new System.Drawing.Point(244, 1);
+            this._applyRevenueFilterButton.Name = "_applyRevenueFilterButton";
+            this._applyRevenueFilterButton.Size = new System.Drawing.Size(54, 28);
+            this._applyRevenueFilterButton.TabIndex = 2;
+            this._applyRevenueFilterButton.Text = "Lọc";
+            this._applyRevenueFilterButton.UseVisualStyleBackColor = true;
+            this._applyRevenueFilterButton.Click += new System.EventHandler(this.OnApplyRevenueFilterClick);
             // 
             // _statsLayout
             // 
@@ -208,6 +378,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._revenueCard.Padding = new System.Windows.Forms.Padding(16);
             this._revenueCard.Size = new System.Drawing.Size(289, 122);
             this._revenueCard.TabIndex = 0;
+            this._revenueCard.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
             // 
             // _revenueCaption
             // 
@@ -242,6 +413,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._ordersCard.Padding = new System.Windows.Forms.Padding(16);
             this._ordersCard.Size = new System.Drawing.Size(289, 122);
             this._ordersCard.TabIndex = 1;
+            this._ordersCard.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
             // 
             // _ordersCaption
             // 
@@ -276,6 +448,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockCard.Padding = new System.Windows.Forms.Padding(16);
             this._stockCard.Size = new System.Drawing.Size(289, 122);
             this._stockCard.TabIndex = 2;
+            this._stockCard.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
             // 
             // _stockCaption
             // 
@@ -310,6 +483,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._customersCard.Padding = new System.Windows.Forms.Padding(16);
             this._customersCard.Size = new System.Drawing.Size(292, 122);
             this._customersCard.TabIndex = 3;
+            this._customersCard.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
             // 
             // _customersCaption
             // 
@@ -338,6 +512,7 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityCard.Controls.Add(this._activityGrid);
             this._activityCard.Controls.Add(this._activitySubtitle);
             this._activityCard.Controls.Add(this._activityTitle);
+            this._activityCard.Controls.Add(this._invoiceFilterPanel);
             this._activityCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this._activityCard.Location = new System.Drawing.Point(0, 142);
             this._activityCard.Margin = new System.Windows.Forms.Padding(0, 14, 0, 0);
@@ -345,6 +520,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityCard.Padding = new System.Windows.Forms.Padding(18);
             this._activityCard.Size = new System.Drawing.Size(1205, 579);
             this._activityCard.TabIndex = 1;
+            this._activityCard.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawCardBorder);
+            this._activityCard.SizeChanged += new System.EventHandler(this.OnActivityCardSizeChanged);
             // 
             // _activityGrid
             // 
@@ -420,6 +597,67 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._activityTitle.Size = new System.Drawing.Size(250, 36);
             this._activityTitle.TabIndex = 2;
             this._activityTitle.Text = "Hoạt động gần đây";
+            //
+            // _invoiceFilterPanel
+            //
+            this._invoiceFilterPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._invoiceFilterPanel.BackColor = System.Drawing.Color.White;
+            this._invoiceFilterPanel.Controls.Add(this._invoiceFilterLabel);
+            this._invoiceFilterPanel.Controls.Add(this._invoicePeriodFilter);
+            this._invoiceFilterPanel.Controls.Add(this._invoiceDatePicker);
+            this._invoiceFilterPanel.Controls.Add(this._applyInvoiceFilterButton);
+            this._invoiceFilterPanel.Location = new System.Drawing.Point(837, 14);
+            this._invoiceFilterPanel.Name = "_invoiceFilterPanel";
+            this._invoiceFilterPanel.Size = new System.Drawing.Size(350, 32);
+            this._invoiceFilterPanel.TabIndex = 3;
+            this._invoiceFilterPanel.Visible = true;
+            //
+            // _invoiceFilterLabel
+            //
+            this._invoiceFilterLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._invoiceFilterLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._invoiceFilterLabel.Location = new System.Drawing.Point(0, 3);
+            this._invoiceFilterLabel.Name = "_invoiceFilterLabel";
+            this._invoiceFilterLabel.Size = new System.Drawing.Size(60, 24);
+            this._invoiceFilterLabel.Text = "Lọc theo:";
+            this._invoiceFilterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._invoiceFilterLabel.UseMnemonic = false;
+            //
+            // _invoicePeriodFilter
+            //
+            this._invoicePeriodFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._invoicePeriodFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._invoicePeriodFilter.Items.AddRange(new object[] {
+            "Tất cả",
+            "Ngày",
+            "Tuần",
+            "Tháng",
+            "Năm"});
+            this._invoicePeriodFilter.Location = new System.Drawing.Point(64, 2);
+            this._invoicePeriodFilter.Name = "_invoicePeriodFilter";
+            this._invoicePeriodFilter.Size = new System.Drawing.Size(88, 26);
+            this._invoicePeriodFilter.TabIndex = 0;
+            this._invoicePeriodFilter.SelectedIndex = 0;
+            //
+            // _invoiceDatePicker
+            //
+            this._invoiceDatePicker.CustomFormat = "dd/MM/yyyy";
+            this._invoiceDatePicker.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._invoiceDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this._invoiceDatePicker.Location = new System.Drawing.Point(158, 2);
+            this._invoiceDatePicker.Name = "_invoiceDatePicker";
+            this._invoiceDatePicker.Size = new System.Drawing.Size(112, 26);
+            this._invoiceDatePicker.TabIndex = 1;
+            //
+            // _applyInvoiceFilterButton
+            //
+            this._applyInvoiceFilterButton.Location = new System.Drawing.Point(276, 1);
+            this._applyInvoiceFilterButton.Name = "_applyInvoiceFilterButton";
+            this._applyInvoiceFilterButton.Size = new System.Drawing.Size(66, 28);
+            this._applyInvoiceFilterButton.TabIndex = 2;
+            this._applyInvoiceFilterButton.Text = "Lọc";
+            this._applyInvoiceFilterButton.UseVisualStyleBackColor = true;
+            this._applyInvoiceFilterButton.Click += new System.EventHandler(this.OnApplyInvoiceFilterClick);
             // 
             // ucDashboard
             // 
@@ -430,6 +668,8 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "ucDashboard";
             this.Size = new System.Drawing.Size(1251, 857);
+            this.Load += new System.EventHandler(this.Dashboard_Load);
+            this.VisibleChanged += new System.EventHandler(this.Dashboard_VisibleChanged);
             this._root.ResumeLayout(false);
             this._headerPanel.ResumeLayout(false);
             this._headerIconPanel.ResumeLayout(false);
@@ -444,8 +684,13 @@ namespace SIMS_WinFormsApp.Views.Dashboard
             this._stockCard.PerformLayout();
             this._customersCard.ResumeLayout(false);
             this._customersCard.PerformLayout();
+            this._revenueFilterPanel.ResumeLayout(false);
+            this._revenueSummaryLayout.ResumeLayout(false);
+            this._revenueSummaryPanel.ResumeLayout(false);
             this._activityCard.ResumeLayout(false);
             this._activityCard.PerformLayout();
+            this._invoiceFilterPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._revenueSummaryChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._activityGrid)).EndInit();
             this.ResumeLayout(false);
 

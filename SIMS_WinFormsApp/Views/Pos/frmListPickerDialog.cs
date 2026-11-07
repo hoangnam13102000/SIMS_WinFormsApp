@@ -11,36 +11,34 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 {
     internal sealed partial class frmListPickerDialog : BaseFormDialogForm
     {
-        private ListBox _listBox;
         private object _selected;
+        private IEnumerable _items;
+        private Func<object, string> _textSelector;
 
         public frmListPickerDialog()
         {
             InitializeComponent();
             HeaderTitle = "Chọn mục";
             SetHeaderIcon(IconChar.List, AppColors.Accent);
-            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
         }
 
         private frmListPickerDialog(IWin32Window owner, string title, IEnumerable items, Func<object, string> textSelector)
             : base(owner)
         {
             InitializeComponent();
-            Size = new System.Drawing.Size(420, 480);
+            _items = items;
+            _textSelector = textSelector;
             HeaderTitle = title;
             SetHeaderIcon(IconChar.List, AppColors.Accent);
+        }
 
-            _listBox.Dock = DockStyle.Fill;
+        private void frmListPickerDialog_Load(object sender, EventArgs e)
+        {
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+
             _listBox.Items.Clear();
-            foreach (var item in items)
-                _listBox.Items.Add(new PickerItem(item, textSelector(item)));
-            ContentHost.Controls.Add(_listBox);
-
-            _listBox.DoubleClick += ListBox_DoubleClick;
-
-            AddFooterButton("Hủy", false, CancelButton_Click);
-            AddFooterButton("Chọn", true, ConfirmButton_Click);
-            CloseRequested += CloseRequestedHandler;
+            foreach (var item in _items)
+                _listBox.Items.Add(new PickerItem(item, _textSelector(item)));
         }
 
         private void ListBox_DoubleClick(object sender, EventArgs e) => ConfirmSelection();

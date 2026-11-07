@@ -73,8 +73,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._salesChartTitle = new System.Windows.Forms.Label();
             this._topProductsGrid = new System.Windows.Forms.DataGridView();
             this._topProductNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._topQuantityColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._topAmountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -112,7 +112,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._root.TabIndex = 0;
             //
             // _header
-            // 
+            //
             this._header.BackColor = System.Drawing.Color.White;
             this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Controls.Add(this._headerIconPanel);
@@ -158,7 +158,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._subtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._subtitle.Location = new System.Drawing.Point(80, 52);
             this._subtitle.Name = "_subtitle";
-            this._subtitle.Size = new System.Drawing.Size(850, 20);
+            this._subtitle.Size = new System.Drawing.Size(864, 20);
             this._subtitle.TabIndex = 0;
             this._subtitle.Text = "Tổng quan doanh thu, đơn hàng và sản phẩm bán chạy";
             this._subtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -173,11 +173,12 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this._title.Location = new System.Drawing.Point(80, 12);
             this._title.Name = "_title";
-            this._title.Size = new System.Drawing.Size(850, 36);
+            this._title.Size = new System.Drawing.Size(864, 36);
             this._title.TabIndex = 1;
             this._title.Text = "Báo cáo doanh thu";
             this._title.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._title.UseMnemonic = false;
+            //
             // _viewRevenueRdlc
             //
             this._viewRevenueRdlc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -187,12 +188,14 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._viewRevenueRdlc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._viewRevenueRdlc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._viewRevenueRdlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._viewRevenueRdlc.Location = new System.Drawing.Point(630, 22);
+            this._viewRevenueRdlc.Location = new System.Drawing.Point(960, 22);
             this._viewRevenueRdlc.Name = "_viewRevenueRdlc";
             this._viewRevenueRdlc.Size = new System.Drawing.Size(150, 38);
             this._viewRevenueRdlc.TabIndex = 3;
             this._viewRevenueRdlc.Text = "Báo cáo doanh thu";
             this._viewRevenueRdlc.UseVisualStyleBackColor = false;
+            this._viewRevenueRdlc.Click += new System.EventHandler(this.ViewRevenueRdlc_Click);
+            //
             // _filters
             // 
             this._filters.Controls.Add(this._fromLabel);
@@ -249,11 +252,12 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._periodFilter.Items.AddRange(new object[] {
             "Theo ngày",
             "Theo tháng",
-            "Theo năm"});
+            "Theo quý"});
             this._periodFilter.Location = new System.Drawing.Point(425, 3);
             this._periodFilter.Name = "_periodFilter";
             this._periodFilter.Size = new System.Drawing.Size(130, 28);
             this._periodFilter.TabIndex = 4;
+            this._periodFilter.SelectedIndex = 0;
             // 
             // _applyFilter
             // 
@@ -263,6 +267,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._applyFilter.TabIndex = 5;
             this._applyFilter.Text = "Áp dụng";
             this._applyFilter.UseVisualStyleBackColor = true;
+            this._applyFilter.Click += new System.EventHandler(this.ApplyFilter_Click);
             // 
             // _summary
             // 
@@ -289,7 +294,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._revenueCard.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this._revenueCard.Name = "_revenueCard";
             this._revenueCard.Padding = new System.Windows.Forms.Padding(16);
-            this._revenueCard.Size = new System.Drawing.Size(271, 90);
+            this._revenueCard.Size = new System.Drawing.Size(365, 90);
             this._revenueCard.TabIndex = 0;
             this._revenueCard.Text = "TỔNG DOANH THU\r\n—";
             // 
@@ -299,11 +304,11 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._orderCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this._orderCard.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this._orderCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._orderCard.Location = new System.Drawing.Point(286, 0);
+            this._orderCard.Location = new System.Drawing.Point(380, 0);
             this._orderCard.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this._orderCard.Name = "_orderCard";
             this._orderCard.Padding = new System.Windows.Forms.Padding(16);
-            this._orderCard.Size = new System.Drawing.Size(271, 90);
+            this._orderCard.Size = new System.Drawing.Size(365, 90);
             this._orderCard.TabIndex = 1;
             this._orderCard.Text = "SỐ ĐƠN HÀNG\r\n—";
             // 
@@ -313,14 +318,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._averageCard.Dock = System.Windows.Forms.DockStyle.Fill;
             this._averageCard.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this._averageCard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._averageCard.Location = new System.Drawing.Point(572, 0);
+            this._averageCard.Location = new System.Drawing.Point(760, 0);
             this._averageCard.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this._averageCard.Name = "_averageCard";
             this._averageCard.Padding = new System.Windows.Forms.Padding(16);
-            this._averageCard.Size = new System.Drawing.Size(271, 90);
+            this._averageCard.Size = new System.Drawing.Size(366, 90);
             this._averageCard.TabIndex = 2;
             this._averageCard.Text = "GIÁ TRỊ TRUNG BÌNH\r\n—";
-            // 
             // 
             // _charts
             // 
@@ -359,6 +363,57 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._revenueTrendChart.Size = new System.Drawing.Size(666, 290);
             this._revenueTrendChart.TabIndex = 1;
             this._revenueTrendChart.Text = "Xu hướng doanh thu";
+            this._revenueTrendChart.ChartAreas.Add(new System.Windows.Forms.DataVisualization.Charting.ChartArea("RevenueArea"));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].BackColor = System.Drawing.Color.White;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisX.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisX.MajorGrid.Enabled = false;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisX.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.LabelStyle.Format = "N0";
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.Title = "Doanh thu (₫)";
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.TitleForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.LineColor = System.Drawing.Color.Transparent;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY.Minimum = 0D;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.Title = "Số đơn";
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.TitleForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(88)))), ((int)(((byte)(12)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(88)))), ((int)(((byte)(12)))));
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.LabelStyle.Format = "N0";
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.MajorGrid.Enabled = false;
+            this._revenueTrendChart.ChartAreas["RevenueArea"].AxisY2.Minimum = 0D;
+            this._revenueTrendChart.Legends.Add(new System.Windows.Forms.DataVisualization.Charting.Legend("Legend1")
+            {
+                Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom,
+                Alignment = System.Drawing.StringAlignment.Center,
+                Font = new System.Drawing.Font("Segoe UI", 8F),
+                ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))))
+            });
+            this._revenueTrendChart.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series("Doanh thu")
+            {
+                ChartArea = "RevenueArea",
+                ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Column,
+                Color = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246))))),
+                BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235))))),
+                BorderWidth = 1,
+                Legend = "Legend1",
+                IsValueShownAsLabel = false,
+                ToolTip = "#VALX: #VAL{N0} ₫",
+                CustomProperties = "PointWidth=0.4"
+            });
+            this._revenueTrendChart.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series("Số đơn")
+            {
+                ChartArea = "RevenueArea",
+                ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline,
+                YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary,
+                BorderWidth = 3,
+                Color = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(88)))), ((int)(((byte)(12))))),
+                MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle,
+                MarkerSize = 7,
+                MarkerColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(88)))), ((int)(((byte)(12))))),
+                Legend = "Legend1",
+                ToolTip = "#VALX: #VAL đơn"
+            });
             // 
             // _revenueChartTitle
             // 
@@ -394,6 +449,29 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._categoryChart.Size = new System.Drawing.Size(398, 284);
             this._categoryChart.TabIndex = 1;
             this._categoryChart.Text = "Cơ cấu doanh thu";
+            this._categoryChart.ChartAreas.Add(new System.Windows.Forms.DataVisualization.Charting.ChartArea("CategoryArea"));
+            this._categoryChart.ChartAreas["CategoryArea"].BackColor = System.Drawing.Color.White;
+            this._categoryChart.ChartAreas["CategoryArea"].AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            this._categoryChart.ChartAreas["CategoryArea"].AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+            this._categoryChart.Legends.Add(new System.Windows.Forms.DataVisualization.Charting.Legend("Legend1")
+            {
+                Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Right,
+                Alignment = System.Drawing.StringAlignment.Center,
+                Font = new System.Drawing.Font("Segoe UI", 8F),
+                ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105))))),
+                IsDockedInsideChartArea = false
+            });
+            this._categoryChart.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series("Danh mục")
+            {
+                ChartArea = "CategoryArea",
+                ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Doughnut,
+                BorderWidth = 2,
+                BorderColor = System.Drawing.Color.White,
+                Legend = "Legend1",
+                IsValueShownAsLabel = false,
+                ToolTip = "#VALX: #VAL{N0} ₫ (#PERCENT{P0})",
+                CustomProperties = "DoughnutRadius=58"
+            });
             // 
             // _salesChartTitle
             // 
@@ -426,8 +504,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._topProductsGrid.ColumnHeadersHeight = 32;
             this._topProductsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._topProductNameColumn,
-            this.Quantity,
-            this.Amount});
+            this._topQuantityColumn,
+            this._topAmountColumn});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
@@ -451,22 +529,22 @@ namespace SIMS_WinFormsApp.Views.Reports
             // 
             this._topProductNameColumn.HeaderText = "Sản phẩm bán chạy";
             this._topProductNameColumn.MinimumWidth = 8;
-            this._topProductNameColumn.Name = "ProductName";
+            this._topProductNameColumn.Name = "_topProductNameColumn";
             this._topProductNameColumn.ReadOnly = true;
             // 
-            // Quantity
+            // _topQuantityColumn
             // 
-            this.Quantity.HeaderText = "Số lượng";
-            this.Quantity.MinimumWidth = 8;
-            this.Quantity.Name = "Quantity";
-            this.Quantity.ReadOnly = true;
+            this._topQuantityColumn.HeaderText = "Số lượng";
+            this._topQuantityColumn.MinimumWidth = 8;
+            this._topQuantityColumn.Name = "_topQuantityColumn";
+            this._topQuantityColumn.ReadOnly = true;
             // 
-            // Amount
+            // _topAmountColumn
             // 
-            this.Amount.HeaderText = "Doanh thu";
-            this.Amount.MinimumWidth = 8;
-            this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
+            this._topAmountColumn.HeaderText = "Doanh thu";
+            this._topAmountColumn.MinimumWidth = 8;
+            this._topAmountColumn.Name = "_topAmountColumn";
+            this._topAmountColumn.ReadOnly = true;
             // 
             // frmChartDashboard
             // 
@@ -478,6 +556,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this.MinimumSize = new System.Drawing.Size(900, 650);
             this.Name = "frmChartDashboard";
             this.Text = "Báo cáo doanh thu";
+            this.Load += new System.EventHandler(this.frmChartDashboard_Load);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._headerIconPanel.ResumeLayout(false);
@@ -498,7 +577,7 @@ namespace SIMS_WinFormsApp.Views.Reports
         }
 
         private DataGridViewTextBoxColumn _topProductNameColumn;
-        private DataGridViewTextBoxColumn Quantity;
-        private DataGridViewTextBoxColumn Amount;
+        private DataGridViewTextBoxColumn _topQuantityColumn;
+        private DataGridViewTextBoxColumn _topAmountColumn;
     }
 }

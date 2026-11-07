@@ -15,6 +15,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private ComboBox _categoryFilter;
         private Button _loadButton;
         private DataGridView _stockGrid;
+        private TextBox _countEditor;
         private DataGridViewTextBoxColumn _productIdColumn;
         private DataGridViewTextBoxColumn _statusColumn;
         private DataGridViewTextBoxColumn _noteColumn;
@@ -45,6 +46,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._categoryFilter = new System.Windows.Forms.ComboBox();
             this._loadButton = new System.Windows.Forms.Button();
             this._stockGrid = new System.Windows.Forms.DataGridView();
+            this._countEditor = new System.Windows.Forms.TextBox();
             this._productIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._sku_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._product_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -134,6 +136,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(330, 22);
             this._searchBox.TabIndex = 0;
+            this._searchBox.Enter += new System.EventHandler(this.SearchBox_Enter);
+            this._searchBox.Leave += new System.EventHandler(this.SearchBox_Leave);
+            this._searchBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnSearchBoxKeyDown);
             // 
             // _categoryFilter
             // 
@@ -155,6 +160,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._loadButton.TabIndex = 2;
             this._loadButton.Text = "Tải danh sách";
             this._loadButton.UseVisualStyleBackColor = true;
+            this._loadButton.Click += new System.EventHandler(this._loadButton_Click);
             // 
             // _stockGrid
             // 
@@ -180,6 +186,27 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._stockGrid.RowHeadersWidth = 51;
             this._stockGrid.Size = new System.Drawing.Size(1146, 526);
             this._stockGrid.TabIndex = 2;
+            this._stockGrid.Controls.Add(this._countEditor);
+            this._stockGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnStockGridCellClick);
+            this._stockGrid.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnStockGridScroll);
+            this._stockGrid.SizeChanged += new System.EventHandler(this.OnStockGridSizeChanged);
+            this._stockGrid.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.OnStockGridColumnWidthChanged);
+            this._stockGrid.RowHeightChanged += new System.Windows.Forms.DataGridViewRowEventHandler(this.OnStockGridRowHeightChanged);
+            //
+            // _countEditor
+            //
+            this._countEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._countEditor.Location = new System.Drawing.Point(0, 0);
+            this._countEditor.MaxLength = 10;
+            this._countEditor.Name = "_countEditor";
+            this._countEditor.Size = new System.Drawing.Size(100, 22);
+            this._countEditor.TabIndex = 0;
+            this._countEditor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this._countEditor.Visible = false;
+            this._countEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnCountEditorKeyPress);
+            this._countEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnCountEditorKeyDown);
+            this._countEditor.TextChanged += new System.EventHandler(this.OnCountEditorTextChanged);
+            this._countEditor.Leave += new System.EventHandler(this.OnCountEditorLeave);
             // 
             // _productIdColumn
             // 
@@ -227,6 +254,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._count_quantity_column.HeaderText = "Số lượng thực tế";
             this._count_quantity_column.MinimumWidth = 6;
             this._count_quantity_column.Name = "CountQuantity";
+            this._count_quantity_column.ReadOnly = true;
             // 
             // Difference
             // 
@@ -276,6 +304,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportButton.TabIndex = 1;
             this._exportButton.Text = "Xuất kiểm kê";
             this._exportButton.UseVisualStyleBackColor = true;
+            this._exportButton.Click += new System.EventHandler(this._exportButton_Click);
             // 
             // _countLabel
             // 
@@ -299,6 +328,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "frmStockReconciliation";
             this.Text = "Kiểm kê tồn kho";
+            this.Load += new System.EventHandler(this.frmStockReconciliation_Load);
+            this.VisibleChanged += new System.EventHandler(this.OnStockReconciliationVisibleChanged);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._header.PerformLayout();

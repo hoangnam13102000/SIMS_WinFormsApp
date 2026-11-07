@@ -7,6 +7,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
     partial class frmEmployeeManagement
     {
         private System.ComponentModel.IContainer components = null;
+        private ContextMenuStrip _rowMenu;
+        private ToolStripMenuItem _viewDetailsMenuItem;
+        private ToolStripMenuItem _editUserMenuItem;
+        private ToolStripMenuItem _toggleLockMenuItem;
+        private ContextMenuStrip _optionsMenu;
+        private ToolStripMenuItem _exportCsvMenuItem;
+        private ToolStripMenuItem _exportExcelMenuItem;
+        private ToolStripMenuItem _importMenuItem;
         private Panel _surface;
         private TableLayoutPanel _contentLayout;
         private Panel _headerPanel;
@@ -19,6 +27,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private TextBox _searchBox;
         private Label _statusLabel;
         private ComboBox _statusFilter;
+        private Button _lockButton;
         private Button _addButton;
         private Button _optionsButton;
         private Button _refreshButton;
@@ -34,6 +43,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this._rowMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._viewDetailsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._editUserMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._toggleLockMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -44,6 +61,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitleLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
+            this._lockButton = new System.Windows.Forms.Button();
             this._addButton = new System.Windows.Forms.Button();
             this._optionsButton = new System.Windows.Forms.Button();
             this._refreshButton = new System.Windows.Forms.Button();
@@ -69,6 +87,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._toolbar.SuspendLayout();
             this._gridCard.SuspendLayout();
+            this._rowMenu.SuspendLayout();
+            this._optionsMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._usersGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -108,6 +128,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._headerPanel.Controls.Add(this._headerIconPanel);
             this._headerPanel.Controls.Add(this._subtitleLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
+            this._headerPanel.Controls.Add(this._lockButton);
             this._headerPanel.Controls.Add(this._addButton);
             this._headerPanel.Controls.Add(this._optionsButton);
             this._headerPanel.Controls.Add(this._refreshButton);
@@ -163,6 +184,23 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._titleLabel.TabIndex = 2;
             this._titleLabel.Text = "Quản lý nhân viên";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._titleLabel.AutoEllipsis = true;
+            // _lockButton
+            //
+            this._lockButton.BackColor = System.Drawing.Color.White;
+            this._lockButton.Enabled = false;
+            this._lockButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._lockButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._lockButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._lockButton.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lockButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(83)))), ((int)(((byte)(9)))));
+            this._lockButton.Location = new System.Drawing.Point(608, 29);
+            this._lockButton.Name = "_lockButton";
+            this._lockButton.Size = new System.Drawing.Size(110, 38);
+            this._lockButton.TabIndex = 8;
+            this._lockButton.Text = "Khóa";
+            this._lockButton.Click += new System.EventHandler(this.LockButton_Click);
+            this._lockButton.UseVisualStyleBackColor = false;
             // 
             // _addButton
             // 
@@ -177,6 +215,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._addButton.Size = new System.Drawing.Size(150, 38);
             this._addButton.TabIndex = 3;
             this._addButton.Text = "+ Thêm nhân viên";
+            this._addButton.Click += new System.EventHandler(this.AddButton_Click);
             this._addButton.UseVisualStyleBackColor = false;
             // 
             // _optionsButton
@@ -192,6 +231,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._optionsButton.Size = new System.Drawing.Size(110, 38);
             this._optionsButton.TabIndex = 4;
             this._optionsButton.Text = "Tùy chọn";
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             this._optionsButton.UseVisualStyleBackColor = false;
             // 
             // _refreshButton
@@ -206,6 +246,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._refreshButton.Size = new System.Drawing.Size(92, 38);
             this._refreshButton.TabIndex = 5;
             this._refreshButton.Text = "Làm mới";
+            this._refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             this._refreshButton.UseVisualStyleBackColor = false;
             // 
             // _toolbar
@@ -321,6 +362,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid.MultiSelect = false;
             this._usersGrid.Name = "_usersGrid";
             this._usersGrid.ReadOnly = true;
+            this._usersGrid.ContextMenuStrip = this._rowMenu;
+            this._usersGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.UsersGrid_CellDoubleClick);
+            this._usersGrid.SelectionChanged += new System.EventHandler(this.UsersGrid_SelectionChanged);
             this._usersGrid.RowHeadersVisible = false;
             this._usersGrid.RowHeadersWidth = 62;
             this._usersGrid.RowTemplate.Height = 38;
@@ -392,6 +436,66 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._actions_column.ReadOnly = true;
             this._actions_column.ToolTipText = "Xem, sửa hoặc khóa / mở khóa";
             this._actions_column.Width = 120;
+            //
+            // _viewDetailsMenuItem
+            //
+            this._viewDetailsMenuItem.AutoSize = true;
+            this._viewDetailsMenuItem.Name = "_viewDetailsMenuItem";
+            this._viewDetailsMenuItem.Text = "Xem chi tiết";
+            this._viewDetailsMenuItem.Click += new System.EventHandler(this.ViewDetailsMenuItem_Click);
+            //
+            // _editUserMenuItem
+            //
+            this._editUserMenuItem.AutoSize = true;
+            this._editUserMenuItem.Name = "_editUserMenuItem";
+            this._editUserMenuItem.Text = "Sửa tài khoản";
+            this._editUserMenuItem.Click += new System.EventHandler(this.EditUserMenuItem_Click);
+            //
+            // _toggleLockMenuItem
+            //
+            this._toggleLockMenuItem.AutoSize = true;
+            this._toggleLockMenuItem.Name = "_toggleLockMenuItem";
+            this._toggleLockMenuItem.Text = "Khóa / mở khóa";
+            this._toggleLockMenuItem.Click += new System.EventHandler(this.ToggleLockMenuItem_Click);
+            //
+            // _rowMenu
+            //
+            this._rowMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._viewDetailsMenuItem,
+            this._editUserMenuItem,
+            this._toggleLockMenuItem});
+            this._rowMenu.Name = "_rowMenu";
+            this._rowMenu.ResumeLayout(false);
+            //
+            // _exportCsvMenuItem
+            //
+            this._exportCsvMenuItem.AutoSize = true;
+            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
+            this._exportCsvMenuItem.Text = "Xuất CSV";
+            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
+            //
+            // _exportExcelMenuItem
+            //
+            this._exportExcelMenuItem.AutoSize = true;
+            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
+            this._exportExcelMenuItem.Text = "Xuất Excel";
+            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
+            //
+            // _importMenuItem
+            //
+            this._importMenuItem.AutoSize = true;
+            this._importMenuItem.Name = "_importMenuItem";
+            this._importMenuItem.Text = "Nhập dữ liệu";
+            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
+            //
+            // _optionsMenu
+            //
+            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._exportCsvMenuItem,
+            this._exportExcelMenuItem,
+            this._importMenuItem});
+            this._optionsMenu.Name = "_optionsMenu";
+            this._optionsMenu.ResumeLayout(false);
             // 
             // frmEmployeeManagement
             // 

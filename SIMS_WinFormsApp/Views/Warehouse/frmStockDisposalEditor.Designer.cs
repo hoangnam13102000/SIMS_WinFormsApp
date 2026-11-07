@@ -19,8 +19,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this._headerPanel = new System.Windows.Forms.Panel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
@@ -103,7 +109,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._headerIcon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
             this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.TrashCan;
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.TrashAlt;
             this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._headerIcon.IconSize = 22;
@@ -116,12 +122,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _titleLabel
             // 
-            this._titleLabel.AutoSize = false;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._titleLabel.Location = new System.Drawing.Point(92, 18);
+            this._titleLabel.Location = new System.Drawing.Point(92, 8);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(600, 32);
+            this._titleLabel.Size = new System.Drawing.Size(600, 42);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Lập phiếu tiêu hủy hàng";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -129,7 +134,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _subtitleLabel
             // 
-            this._subtitleLabel.AutoSize = false;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._subtitleLabel.Location = new System.Drawing.Point(92, 52);
@@ -144,9 +148,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._headerLine.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
             this._headerLine.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._headerLine.Location = new System.Drawing.Point(0, 91);
+            this._headerLine.Location = new System.Drawing.Point(0, 89);
             this._headerLine.Name = "_headerLine";
-            this._headerLine.Size = new System.Drawing.Size(1004, 1);
+            this._headerLine.Size = new System.Drawing.Size(1002, 1);
             this._headerLine.TabIndex = 3;
             // 
             // _footerPanel
@@ -170,13 +174,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._totalCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._totalCaptionLabel.Location = new System.Drawing.Point(28, 14);
             this._totalCaptionLabel.Name = "_totalCaptionLabel";
-            this._totalCaptionLabel.Size = new System.Drawing.Size(111, 13);
+            this._totalCaptionLabel.Size = new System.Drawing.Size(149, 23);
             this._totalCaptionLabel.TabIndex = 0;
             this._totalCaptionLabel.Text = "TỔNG TỔN THẤT";
             // 
             // _totalValueLabel
             // 
-            this._totalValueLabel.AutoSize = false;
             this._totalValueLabel.Font = new System.Drawing.Font("Segoe UI", 16.5F, System.Drawing.FontStyle.Bold);
             this._totalValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._totalValueLabel.Location = new System.Drawing.Point(26, 32);
@@ -188,7 +191,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // _cancelButton
             // 
-            this._cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._cancelButton.BackColor = System.Drawing.Color.White;
             this._cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
@@ -196,7 +199,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._cancelButton.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._cancelButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._cancelButton.IconChar = FontAwesome.Sharp.IconChar.Xmark;
+            this._cancelButton.IconChar = FontAwesome.Sharp.IconChar.Remove;
             this._cancelButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._cancelButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._cancelButton.IconSize = 14;
@@ -207,11 +210,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._cancelButton.TabIndex = 2;
             this._cancelButton.Text = "Hủy";
             this._cancelButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             this._cancelButton.UseVisualStyleBackColor = false;
             // 
             // _saveButton
             // 
-            this._saveButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._saveButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this._saveButton.FlatAppearance.BorderSize = 0;
@@ -266,9 +270,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._linesCard.Controls.Add(this._linesGrid);
             this._linesCard.Controls.Add(this._emptyLabel);
             this._linesCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._linesCard.Location = new System.Drawing.Point(24, 302);
+            this._linesCard.Location = new System.Drawing.Point(24, 286);
             this._linesCard.Name = "_linesCard";
-            this._linesCard.Size = new System.Drawing.Size(956, 290);
+            this._linesCard.Size = new System.Drawing.Size(956, 195);
             this._linesCard.TabIndex = 0;
             // 
             // _linesIcon
@@ -293,14 +297,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._linesTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this._linesTitle.Location = new System.Drawing.Point(42, 13);
             this._linesTitle.Name = "_linesTitle";
-            this._linesTitle.Size = new System.Drawing.Size(161, 19);
+            this._linesTitle.Size = new System.Drawing.Size(247, 30);
             this._linesTitle.TabIndex = 1;
             this._linesTitle.Text = "Danh sách lô trên phiếu";
             // 
             // _lineCountLabel
             // 
-            this._lineCountLabel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this._lineCountLabel.AutoSize = false;
+            this._lineCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._lineCountLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._lineCountLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._lineCountLabel.Location = new System.Drawing.Point(836, 15);
@@ -315,15 +318,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._linesGrid.AllowUserToAddRows = false;
             this._linesGrid.AllowUserToDeleteRows = false;
             this._linesGrid.AllowUserToResizeRows = false;
-            this._linesGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this._linesGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._linesGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._linesGrid.BackgroundColor = System.Drawing.Color.White;
             this._linesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this._linesGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Single;
             this._linesGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
@@ -339,15 +343,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colUnitCost,
             this.colLoss,
             this.colRemove});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._linesGrid.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle9.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._linesGrid.DefaultCellStyle = dataGridViewCellStyle9;
             this._linesGrid.EnableHeadersVisualStyles = false;
             this._linesGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
             this._linesGrid.Location = new System.Drawing.Point(18, 46);
@@ -355,18 +359,20 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._linesGrid.Name = "_linesGrid";
             this._linesGrid.ReadOnly = true;
             this._linesGrid.RowHeadersVisible = false;
+            this._linesGrid.RowHeadersWidth = 62;
             this._linesGrid.RowTemplate.Height = 34;
             this._linesGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._linesGrid.Size = new System.Drawing.Size(918, 230);
+            this._linesGrid.Size = new System.Drawing.Size(918, 135);
             this._linesGrid.TabIndex = 3;
             // 
             // colBatchCode
             // 
             this.colBatchCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colBatchCode.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colBatchCode.DefaultCellStyle = dataGridViewCellStyle2;
             this.colBatchCode.FillWeight = 14F;
-            this.colBatchCode.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colBatchCode.HeaderText = "Mã lô";
+            this.colBatchCode.MinimumWidth = 8;
             this.colBatchCode.Name = "colBatchCode";
             this.colBatchCode.ReadOnly = true;
             this.colBatchCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -374,9 +380,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colProduct
             // 
             this.colProduct.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colProduct.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.colProduct.DefaultCellStyle = dataGridViewCellStyle3;
             this.colProduct.FillWeight = 28F;
             this.colProduct.HeaderText = "Sản phẩm";
+            this.colProduct.MinimumWidth = 8;
             this.colProduct.Name = "colProduct";
             this.colProduct.ReadOnly = true;
             this.colProduct.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -384,10 +392,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colExpiry
             // 
             this.colExpiry.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colExpiry.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colExpiry.DefaultCellStyle = dataGridViewCellStyle4;
             this.colExpiry.FillWeight = 11F;
-            this.colExpiry.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colExpiry.HeaderText = "HSD";
+            this.colExpiry.MinimumWidth = 8;
             this.colExpiry.Name = "colExpiry";
             this.colExpiry.ReadOnly = true;
             this.colExpiry.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -395,10 +404,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colQuantity
             // 
             this.colQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colQuantity.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colQuantity.DefaultCellStyle = dataGridViewCellStyle5;
             this.colQuantity.FillWeight = 9F;
-            this.colQuantity.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.colQuantity.HeaderText = "SL hủy";
+            this.colQuantity.MinimumWidth = 8;
             this.colQuantity.Name = "colQuantity";
             this.colQuantity.ReadOnly = true;
             this.colQuantity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -406,10 +416,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colUnitCost
             // 
             this.colUnitCost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colUnitCost.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colUnitCost.DefaultCellStyle = dataGridViewCellStyle6;
             this.colUnitCost.FillWeight = 13F;
-            this.colUnitCost.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colUnitCost.HeaderText = "Giá vốn";
+            this.colUnitCost.MinimumWidth = 8;
             this.colUnitCost.Name = "colUnitCost";
             this.colUnitCost.ReadOnly = true;
             this.colUnitCost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -417,10 +428,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colLoss
             // 
             this.colLoss.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colLoss.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colLoss.DefaultCellStyle = dataGridViewCellStyle7;
             this.colLoss.FillWeight = 14F;
-            this.colLoss.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colLoss.HeaderText = "Tổn thất";
+            this.colLoss.MinimumWidth = 8;
             this.colLoss.Name = "colLoss";
             this.colLoss.ReadOnly = true;
             this.colLoss.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -428,36 +440,35 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colRemove
             // 
             this.colRemove.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colRemove.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colRemove.DefaultCellStyle.NullValue = null;
-            this.colRemove.HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.NullValue = null;
+            this.colRemove.DefaultCellStyle = dataGridViewCellStyle8;
             this.colRemove.HeaderText = "";
-            this.colRemove.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Normal;
+            this.colRemove.MinimumWidth = 8;
             this.colRemove.Name = "colRemove";
             this.colRemove.ReadOnly = true;
-            this.colRemove.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.colRemove.Width = 46;
             // 
             // _emptyLabel
             // 
-            this._emptyLabel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this._emptyLabel.AutoSize = false;
+            this._emptyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._emptyLabel.BackColor = System.Drawing.Color.White;
             this._emptyLabel.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._emptyLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._emptyLabel.Location = new System.Drawing.Point(18, 82);
             this._emptyLabel.Name = "_emptyLabel";
-            this._emptyLabel.Size = new System.Drawing.Size(918, 194);
+            this._emptyLabel.Size = new System.Drawing.Size(918, 99);
             this._emptyLabel.TabIndex = 4;
             this._emptyLabel.Text = "Chưa có lô — dùng form phía trên để thêm dòng";
             this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this._emptyLabel.Visible = true;
             // 
             // _gap2
             // 
             this._gap2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._gap2.Dock = System.Windows.Forms.DockStyle.Top;
-            this._gap2.Location = new System.Drawing.Point(24, 290);
+            this._gap2.Location = new System.Drawing.Point(24, 274);
             this._gap2.Name = "_gap2";
             this._gap2.Size = new System.Drawing.Size(956, 12);
             this._gap2.TabIndex = 1;
@@ -475,7 +486,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._entryCard.Controls.Add(this._addLineButton);
             this._entryCard.Controls.Add(this._remainHintLabel);
             this._entryCard.Dock = System.Windows.Forms.DockStyle.Top;
-            this._entryCard.Location = new System.Drawing.Point(24, 148);
+            this._entryCard.Location = new System.Drawing.Point(24, 132);
             this._entryCard.Name = "_entryCard";
             this._entryCard.Size = new System.Drawing.Size(956, 142);
             this._entryCard.TabIndex = 2;
@@ -484,7 +495,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._entryIcon.BackColor = System.Drawing.Color.White;
             this._entryIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._entryIcon.IconChar = FontAwesome.Sharp.IconChar.CirclePlus;
+            this._entryIcon.IconChar = FontAwesome.Sharp.IconChar.PlusCircle;
             this._entryIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._entryIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._entryIcon.IconSize = 18;
@@ -502,7 +513,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._entryTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this._entryTitle.Location = new System.Drawing.Point(42, 13);
             this._entryTitle.Name = "_entryTitle";
-            this._entryTitle.Size = new System.Drawing.Size(151, 19);
+            this._entryTitle.Size = new System.Drawing.Size(220, 30);
             this._entryTitle.TabIndex = 1;
             this._entryTitle.Text = "Thêm lô cần tiêu hủy";
             // 
@@ -513,47 +524,48 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._batchLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._batchLabel.Location = new System.Drawing.Point(18, 48);
             this._batchLabel.Name = "_batchLabel";
-            this._batchLabel.Size = new System.Drawing.Size(55, 15);
+            this._batchLabel.Size = new System.Drawing.Size(89, 25);
             this._batchLabel.TabIndex = 2;
             this._batchLabel.Text = "Lô hàng *";
             // 
             // _batchComboBox
             // 
-            this._batchComboBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this._batchComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._batchComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._batchComboBox.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._batchComboBox.FormattingEnabled = true;
             this._batchComboBox.Location = new System.Drawing.Point(18, 70);
             this._batchComboBox.Name = "_batchComboBox";
-            this._batchComboBox.Size = new System.Drawing.Size(588, 25);
+            this._batchComboBox.Size = new System.Drawing.Size(588, 36);
             this._batchComboBox.TabIndex = 3;
             // 
             // _quantityLabel
             // 
-            this._quantityLabel.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._quantityLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._quantityLabel.AutoSize = true;
             this._quantityLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._quantityLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._quantityLabel.Location = new System.Drawing.Point(620, 48);
             this._quantityLabel.Name = "_quantityLabel";
-            this._quantityLabel.Size = new System.Drawing.Size(62, 15);
+            this._quantityLabel.Size = new System.Drawing.Size(98, 25);
             this._quantityLabel.TabIndex = 4;
             this._quantityLabel.Text = "Số lượng *";
             // 
             // _quantityTextBox
             // 
-            this._quantityTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._quantityTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._quantityTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._quantityTextBox.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._quantityTextBox.Location = new System.Drawing.Point(620, 70);
             this._quantityTextBox.Name = "_quantityTextBox";
-            this._quantityTextBox.Size = new System.Drawing.Size(124, 25);
+            this._quantityTextBox.Size = new System.Drawing.Size(124, 33);
             this._quantityTextBox.TabIndex = 5;
             this._quantityTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // _addLineButton
             // 
-            this._addLineButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this._addLineButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._addLineButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._addLineButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this._addLineButton.FlatAppearance.BorderSize = 0;
@@ -571,25 +583,24 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._addLineButton.TabIndex = 6;
             this._addLineButton.Text = "Thêm dòng";
             this._addLineButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this._addLineButton.Click += new System.EventHandler(this.AddLineButton_Click);
             this._addLineButton.UseVisualStyleBackColor = false;
             // 
             // _remainHintLabel
             // 
-            this._remainHintLabel.AutoSize = false;
             this._remainHintLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._remainHintLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._remainHintLabel.Location = new System.Drawing.Point(18, 104);
             this._remainHintLabel.Name = "_remainHintLabel";
             this._remainHintLabel.Size = new System.Drawing.Size(588, 20);
             this._remainHintLabel.TabIndex = 7;
-            this._remainHintLabel.Text = "";
             this._remainHintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _gap1
             // 
             this._gap1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._gap1.Dock = System.Windows.Forms.DockStyle.Top;
-            this._gap1.Location = new System.Drawing.Point(24, 136);
+            this._gap1.Location = new System.Drawing.Point(24, 120);
             this._gap1.Name = "_gap1";
             this._gap1.Size = new System.Drawing.Size(956, 12);
             this._gap1.TabIndex = 3;
@@ -615,7 +626,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._reasonLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._reasonLabel.Location = new System.Drawing.Point(18, 12);
             this._reasonLabel.Name = "_reasonLabel";
-            this._reasonLabel.Size = new System.Drawing.Size(48, 15);
+            this._reasonLabel.Size = new System.Drawing.Size(68, 25);
             this._reasonLabel.TabIndex = 0;
             this._reasonLabel.Text = "Lý do *";
             // 
@@ -631,7 +642,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             "Khác"});
             this._reasonComboBox.Location = new System.Drawing.Point(18, 34);
             this._reasonComboBox.Name = "_reasonComboBox";
-            this._reasonComboBox.Size = new System.Drawing.Size(306, 25);
+            this._reasonComboBox.Size = new System.Drawing.Size(306, 36);
             this._reasonComboBox.TabIndex = 1;
             // 
             // _noteLabel
@@ -641,13 +652,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._noteLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._noteLabel.Location = new System.Drawing.Point(336, 12);
             this._noteLabel.Name = "_noteLabel";
-            this._noteLabel.Size = new System.Drawing.Size(46, 15);
+            this._noteLabel.Size = new System.Drawing.Size(71, 25);
             this._noteLabel.TabIndex = 2;
             this._noteLabel.Text = "Ghi chú";
             // 
             // _noteTextBox
             // 
-            this._noteTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this._noteTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._noteTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._noteTextBox.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._noteTextBox.Location = new System.Drawing.Point(336, 34);
@@ -660,7 +672,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             // frmStockDisposalEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.CancelButton = this._cancelButton;
@@ -682,6 +694,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._footerPanel.PerformLayout();
             this._bodyPanel.ResumeLayout(false);
             this._linesCard.ResumeLayout(false);
+            this._linesCard.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._linesIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._linesGrid)).EndInit();
             this._entryCard.ResumeLayout(false);
@@ -690,6 +703,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._reasonCard.ResumeLayout(false);
             this._reasonCard.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         private Panel _headerPanel;

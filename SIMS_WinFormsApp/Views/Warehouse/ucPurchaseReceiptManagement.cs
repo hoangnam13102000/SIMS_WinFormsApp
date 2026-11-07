@@ -29,7 +29,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly IInventoryService _service;
         private readonly PurchaseReceiptListPresenter _presenter;
         private readonly Timer _searchTimer;
-        private readonly ContextMenuStrip _optionsMenu;
         private bool _initialized;
         private bool _suppressDateEvents;
         private int _lastVisibleRowCapacity;
@@ -65,38 +64,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (_searchBox.IsHandleCreated)
                 ApplySearchPlaceholder();
             _searchBox.TextChanged += OnSearchTextChanged;
-            _clearSearchButton.Click += (sender, args) =>
-            {
-                _searchBox.Clear();
-                _searchBox.Focus();
-            };
 
             _fromDate.ValueChanged += OnDateValueChanged;
             _toDate.ValueChanged += OnDateValueChanged;
-            _clearDateLink.Click += (sender, args) => ClearDatesRequested?.Invoke(this, EventArgs.Empty);
             _pageSizeCombo.SelectedIndexChanged += (sender, args) =>
                 PageSizeChanged?.Invoke(this, EventArgs.Empty);
-            _prevButton.Click += (sender, args) => PreviousPageRequested?.Invoke(this, EventArgs.Empty);
-            _nextButton.Click += (sender, args) => NextPageRequested?.Invoke(this, EventArgs.Empty);
-            _createButton.Click += (sender, args) => CreateRequested?.Invoke(this, EventArgs.Empty);
-
-            _optionsMenu = new ContextMenuStrip(components);
-            _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất CSV",
-                IconBitmapCache.Get(IconChar.FileCsv, AppColors.TableViewAction, new Size(18, 18)),
-                (sender, args) => CsvExportRequested?.Invoke(this, EventArgs.Empty)));
-            _optionsMenu.Items.Add(new ToolStripMenuItem("Xuất Excel",
-                IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new Size(18, 18)),
-                (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty)));
-            _optionsMenu.Items.Add(new ToolStripSeparator());
-            _optionsMenu.Items.Add(new ToolStripMenuItem("Nhập dữ liệu",
-                IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new Size(18, 18)),
-                (sender, args) => ImportReceipts()));
-            _optionsButton.Click += (sender, args) =>
-                _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
 
             _grid.CellPainting += Grid_CellPainting;
             _grid.CellClick += Grid_CellClick;
-            _grid.CellDoubleClick += Grid_CellDoubleClick;
             _grid.CellToolTipTextNeeded += Grid_CellToolTipTextNeeded;
             _grid.CellMouseMove += Grid_CellMouseMove;
             _grid.MouseLeave += (sender, args) => _grid.Cursor = Cursors.Default;
@@ -253,6 +228,52 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
         }
 
+        private void ClearSearchButton_Click(object sender, EventArgs e)
+        {
+            _searchBox.Clear();
+            _searchBox.Focus();
+        }
+
+        private void ClearDateLink_Click(object sender, EventArgs e)
+        {
+            ClearDatesRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PreviousButton_Click(object sender, EventArgs e)
+        {
+            PreviousPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NextButton_Click(object sender, EventArgs e)
+        {
+            NextPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void CreateButton_Click(object sender, EventArgs e)
+        {
+            CreateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OptionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void ExportCsvMenuItem_Click(object sender, EventArgs e)
+        {
+            CsvExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ExportExcelMenuItem_Click(object sender, EventArgs e)
+        {
+            ExcelExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ImportMenuItem_Click(object sender, EventArgs e)
+        {
+            ImportReceipts();
+        }
+
         private void ImportReceipts()
         {
             var importer = new PurchaseReceiptImportRowHandler(_service, UserSession.Instance);
@@ -402,12 +423,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
                 return;
 
-            int receiptId = Convert.ToInt32(_grid.Rows[e.RowIndex].Tag, CultureInfo.InvariantCulture);
             if (e.ColumnIndex == _codeColumn.Index)
                 ReceiptCodeCopyRequested?.Invoke(Convert.ToString(
                     _grid.Rows[e.RowIndex].Cells[_codeColumn.Index].Value, CultureInfo.CurrentCulture));
             else if (e.ColumnIndex == _actionColumn.Index)
-                DetailRequested?.Invoke(receiptId);
+            {
+                SelectReceiptRow(e.RowIndex);
+                ViewSelectedReceipt();
+            }
         }
 
         private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -415,8 +438,28 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
                 return;
 
-            int receiptId = Convert.ToInt32(_grid.Rows[e.RowIndex].Tag, CultureInfo.InvariantCulture);
-            DetailRequested?.Invoke(receiptId);
+            SelectReceiptRow(e.RowIndex);
+            ViewSelectedReceipt();
+        }
+
+        private void ViewSelectedReceipt()
+        {
+            if (_grid.SelectedRows.Count == 0)
+                return;
+
+            object tag = _grid.SelectedRows[0].Tag;
+            if (tag is int)
+            {
+                // Read: selected receipt -> list presenter -> detail service -> detail dialog.
+                DetailRequested?.Invoke((int)tag);
+            }
+        }
+
+        private void SelectReceiptRow(int rowIndex)
+        {
+            _grid.ClearSelection();
+            _grid.CurrentCell = _grid.Rows[rowIndex].Cells[_codeColumn.Index];
+            _grid.Rows[rowIndex].Selected = true;
         }
 
         private void Grid_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)

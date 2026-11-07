@@ -65,9 +65,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._gridCard = new System.Windows.Forms.Panel();
             this._categoriesGrid = new System.Windows.Forms.DataGridView();
             this._nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ProductCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Actions = new System.Windows.Forms.DataGridViewImageColumn();
+            this._productCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this._paging = new System.Windows.Forms.TableLayoutPanel();
             this._pagingInfo = new System.Windows.Forms.FlowLayoutPanel();
             this._resultsLabel = new System.Windows.Forms.Label();
@@ -250,7 +250,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
             this._searchTextBox.Location = new System.Drawing.Point(16, 31);
             this._searchTextBox.Name = "_searchTextBox";
-            this._searchTextBox.Size = new System.Drawing.Size(500, 34);
+            this._searchTextBox.Size = new System.Drawing.Size(420, 34);
             this._searchTextBox.TabIndex = 1;
             // 
             // _statusLabel
@@ -258,7 +258,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._statusLabel.AutoSize = true;
             this._statusLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._statusLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._statusLabel.Location = new System.Drawing.Point(540, 8);
+            this._statusLabel.Location = new System.Drawing.Point(460, 8);
             this._statusLabel.Name = "_statusLabel";
             this._statusLabel.Size = new System.Drawing.Size(92, 23);
             this._statusLabel.TabIndex = 2;
@@ -272,9 +272,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             "Tất cả trạng thái",
             "Đang hoạt động",
             "Vô hiệu hóa"});
-            this._statusComboBox.Location = new System.Drawing.Point(540, 31);
+            this._statusComboBox.Location = new System.Drawing.Point(460, 31);
             this._statusComboBox.Name = "_statusComboBox";
-            this._statusComboBox.Size = new System.Drawing.Size(300, 36);
+            this._statusComboBox.Size = new System.Drawing.Size(230, 36);
             this._statusComboBox.TabIndex = 3;
             // 
             // _gridCard
@@ -309,9 +309,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._categoriesGrid.ColumnHeadersHeight = 40;
             this._categoriesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._nameColumn,
-            this.ProductCount,
-            this.Status,
-            this.Actions});
+            this._productCountColumn,
+            this._statusColumn,
+            this._actionsColumn});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -340,34 +340,34 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nameColumn.FillWeight = 44F;
             this._nameColumn.HeaderText = "Tên danh mục";
             this._nameColumn.MinimumWidth = 8;
-            this._nameColumn.Name = "Name";
+            this._nameColumn.Name = "_nameColumn";
             this._nameColumn.ReadOnly = true;
             // 
             // ProductCount
             // 
-            this.ProductCount.FillWeight = 18F;
-            this.ProductCount.HeaderText = "Số sản phẩm";
-            this.ProductCount.MinimumWidth = 8;
-            this.ProductCount.Name = "ProductCount";
-            this.ProductCount.ReadOnly = true;
+            this._productCountColumn.FillWeight = 18F;
+            this._productCountColumn.HeaderText = "Số sản phẩm";
+            this._productCountColumn.MinimumWidth = 8;
+            this._productCountColumn.Name = "_productCountColumn";
+            this._productCountColumn.ReadOnly = true;
             // 
             // Status
             // 
-            this.Status.FillWeight = 20F;
-            this.Status.HeaderText = "Trạng thái";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this._statusColumn.FillWeight = 20F;
+            this._statusColumn.HeaderText = "Trạng thái";
+            this._statusColumn.MinimumWidth = 8;
+            this._statusColumn.Name = "_statusColumn";
+            this._statusColumn.ReadOnly = true;
             // 
             // Actions
             // 
-            this.Actions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Actions.HeaderText = "Thao tác";
-            this.Actions.MinimumWidth = 8;
-            this.Actions.Name = "Actions";
-            this.Actions.ReadOnly = true;
-            this.Actions.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
-            this.Actions.Width = 120;
+            this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this._actionsColumn.HeaderText = "Thao tác";
+            this._actionsColumn.MinimumWidth = 8;
+            this._actionsColumn.Name = "_actionsColumn";
+            this._actionsColumn.ReadOnly = true;
+            this._actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái danh mục";
+            this._actionsColumn.Width = 120;
             // 
             // _paging
             // 
@@ -541,8 +541,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
         }
 
         private DataGridViewTextBoxColumn _nameColumn;
-        private DataGridViewTextBoxColumn ProductCount;
-        private DataGridViewTextBoxColumn Status;
-        private DataGridViewImageColumn Actions;
+        private DataGridViewTextBoxColumn _productCountColumn;
+        private DataGridViewTextBoxColumn _statusColumn;
+        private DataGridViewImageColumn _actionsColumn;
     }
 }

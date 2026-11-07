@@ -68,15 +68,6 @@ namespace SIMS_WinFormsApp.Views.Sales
                 LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
                 _languageSubscribed = true;
                 Load += (sender, args) => ReloadRequested?.Invoke(this, EventArgs.Empty);
-                _grid.SelectionChanged += (sender, args) => LoadSelected();
-                _grid.CellDoubleClick += (sender, args) =>
-                {
-                    if (args.RowIndex >= 0)
-                    {
-                        _grid.CurrentCell = _grid.Rows[args.RowIndex].Cells["Code"];
-                        ViewPromotionRequested?.Invoke(this, EventArgs.Empty);
-                    }
-                };
                 _grid.CellMouseClick += Grid_CellMouseClick;
                 _pager.PageChanged += (sender, args) => ReloadRequested?.Invoke(this, EventArgs.Empty);
                 _search.TextChanged += (sender, args) => RequestReload(true);
@@ -110,6 +101,20 @@ namespace SIMS_WinFormsApp.Views.Sales
         {
             // Presenter.OnNewPromotionRequested sẽ xử lý.
             NewPromotionRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Grid_SelectionChanged(object sender, EventArgs e)
+        {
+            LoadSelected();
+        }
+
+        private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count)
+                return;
+
+            SelectPromotionRow(e.RowIndex);
+            RequestViewSelected();
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
@@ -179,6 +184,9 @@ namespace SIMS_WinFormsApp.Views.Sales
             _currentRows.AddRange(page.Rows);
             var rows = _currentRows.Select(ToRow).ToList();
             _grid.DataSource = rows;
+            _grid.ClearSelection();
+            _grid.CurrentCell = null;
+            LoadSelected();
             return false;
         }
 
@@ -194,10 +202,16 @@ namespace SIMS_WinFormsApp.Views.Sales
 
         private void LoadSelected()
         {
-            int rowIndex = _grid.CurrentRow == null ? -1 : _grid.CurrentRow.Index;
+            int rowIndex = _grid.SelectedRows.Count == 0 ? -1 : _grid.SelectedRows[0].Index;
             _selectedId = rowIndex >= 0 && rowIndex < _currentRows.Count
                 ? _currentRows[rowIndex].PromotionId
                 : 0;
+        }
+
+        private void SelectPromotionRow(int rowIndex)
+        {
+            _grid.CurrentCell = _grid.Rows[rowIndex].Cells["Code"];
+            _grid.Rows[rowIndex].Selected = true;
         }
 
         private void Grid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -207,7 +221,7 @@ namespace SIMS_WinFormsApp.Views.Sales
                 _grid.Columns[e.ColumnIndex].Name != "Actions")
                 return;
 
-            _grid.CurrentCell = _grid.Rows[e.RowIndex].Cells["Code"];
+            SelectPromotionRow(e.RowIndex);
             const int iconSize = 24;
             const int gap = 8;
             int stripWidth = iconSize * 3 + gap * 2;
@@ -239,6 +253,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             }
         }
 
+        // Edit: View request -> Presenter.OnEditPromotionRequested -> ShowEditor -> SaveRequested -> Service.Save.
         private void RequestEditSelected()
         {
             EditPromotionRequested?.Invoke(this, EventArgs.Empty);
@@ -300,6 +315,7 @@ namespace SIMS_WinFormsApp.Views.Sales
             _editorDialog?.Close();
         }
 
+        // Delete: View request -> Presenter.OnDeletePromotionRequested -> confirm -> Service.Delete -> Repository.SoftDelete.
         private void DeleteSelected()
         {
             DeletePromotionRequested?.Invoke(this, EventArgs.Empty);
@@ -324,6 +340,7 @@ namespace SIMS_WinFormsApp.Views.Sales
         {
             _selectedId = 0;
             _grid.ClearSelection();
+            _grid.CurrentCell = null;
         }
 
         public void ShowInfo(string message) => AppToast.Info(this, message);

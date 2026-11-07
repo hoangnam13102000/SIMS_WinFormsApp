@@ -221,6 +221,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._cancelButton.Size = new System.Drawing.Size(92, 34);
             this._cancelButton.TabIndex = 0;
             this._cancelButton.Text = "Hủy";
+            this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // _saveButton
             // 

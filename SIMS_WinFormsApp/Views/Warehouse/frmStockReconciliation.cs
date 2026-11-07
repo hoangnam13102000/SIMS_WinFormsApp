@@ -23,7 +23,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private const string SearchPlaceholder = "Tìm tên hoặc mã sản phẩm...";
         private StockReconciliationPresenter _presenter;
         private bool _searchPlaceholderActive;
-        private readonly TextBox _countEditor = new TextBox();
         private int _editingCountRow = -1;
         private string _lastValidCountText = string.Empty;
         private bool _settingCountEditorText;
@@ -45,30 +44,18 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
 
             _presenter = new StockReconciliationPresenter(this, service, session);
+        }
+
+        private void frmStockReconciliation_Load(object sender, EventArgs e)
+        {
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            {
+                return;
+            }
+
             DataGridViewCodeCopy.Attach(_stockGrid, "Sku");
-            _loadButton.Click += (sender, args) => RaiseLoadRequested();
-            _exportButton.Click += (sender, args) => ExportStock();
-            _searchBox.Enter += (sender, args) => HideSearchPlaceholder();
-            _searchBox.Leave += (sender, args) => ShowSearchPlaceholder();
-            _searchBox.KeyDown += OnSearchBoxKeyDown;
-            _stockGrid.Columns["CountQuantity"].ReadOnly = true;
-            _stockGrid.Controls.Add(_countEditor);
-            _countEditor.BorderStyle = BorderStyle.FixedSingle;
-            _countEditor.MaxLength = 10;
-            _countEditor.TextAlign = HorizontalAlignment.Right;
             NumberInputFormatter.Attach(_countEditor);
             NumberInputFormatter.SetMaximumDigits(_countEditor, 10);
-            _countEditor.Visible = false;
-            _countEditor.KeyPress += OnCountEditorKeyPress;
-            _countEditor.KeyDown += OnCountEditorKeyDown;
-            _countEditor.TextChanged += OnCountEditorTextChanged;
-            _countEditor.Leave += OnCountEditorLeave;
-            _stockGrid.CellClick += OnStockGridCellClick;
-            _stockGrid.Scroll += OnStockGridScroll;
-            _stockGrid.SizeChanged += OnStockGridSizeChanged;
-            _stockGrid.ColumnWidthChanged += OnStockGridColumnWidthChanged;
-            _stockGrid.RowHeightChanged += OnStockGridRowHeightChanged;
-            VisibleChanged += OnStockReconciliationVisibleChanged;
             ShowSearchPlaceholder();
             _presenter.Initialize();
         }
@@ -183,6 +170,26 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;
             RaiseLoadRequested();
+        }
+
+        private void _loadButton_Click(object sender, EventArgs e)
+        {
+            RaiseLoadRequested();
+        }
+
+        private void _exportButton_Click(object sender, EventArgs e)
+        {
+            ExportStock();
+        }
+
+        private void SearchBox_Enter(object sender, EventArgs e)
+        {
+            HideSearchPlaceholder();
+        }
+
+        private void SearchBox_Leave(object sender, EventArgs e)
+        {
+            ShowSearchPlaceholder();
         }
 
         private void RaiseLoadRequested()

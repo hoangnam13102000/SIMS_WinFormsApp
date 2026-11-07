@@ -188,7 +188,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnitPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StockValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._disposalPanel = new System.Windows.Forms.Panel();
             this._disposalLayout = new System.Windows.Forms.TableLayoutPanel();
             this._disposalSummary = new System.Windows.Forms.Label();
@@ -768,7 +768,7 @@ namespace SIMS_WinFormsApp.Views.Reports
             this.Quantity,
             this.UnitPrice,
             this.StockValue,
-            this.Status});
+            this._statusColumn});
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.Location = new System.Drawing.Point(0, 261);
             this._grid.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
@@ -828,13 +828,13 @@ namespace SIMS_WinFormsApp.Views.Reports
             this.StockValue.Name = "StockValue";
             this.StockValue.ReadOnly = true;
             // 
-            // Status
+            // _statusColumn
             // 
-            this.Status.FillWeight = 27F;
-            this.Status.HeaderText = "Tình trạng";
-            this.Status.MinimumWidth = 8;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this._statusColumn.FillWeight = 27F;
+            this._statusColumn.HeaderText = "Tình trạng";
+            this._statusColumn.MinimumWidth = 8;
+            this._statusColumn.Name = "_statusColumn";
+            this._statusColumn.ReadOnly = true;
             // 
             // _disposalPanel
             // 
@@ -1777,6 +1777,17 @@ namespace SIMS_WinFormsApp.Views.Reports
             this._historyFilters.PerformLayout();
             this._exportMenu.ResumeLayout(false);
             this._historyExportMenu.ResumeLayout(false);
+            this._apply.Click += new System.EventHandler(this.Apply_Click);
+            this._viewRdlc.Click += new System.EventHandler(this.ViewRdlc_Click);
+            this._exportOptions.Click += new System.EventHandler(this.ExportOptions_Click);
+            this._exportCategoryCsv.Click += new System.EventHandler(this.ExportCategoryCsv_Click);
+            this._trendApply.Click += new System.EventHandler(this.TrendApply_Click);
+            this._historySearchButton.Click += new System.EventHandler(this.HistorySearchButton_Click);
+            this._historyClear.Click += new System.EventHandler(this.HistoryClear_Click);
+            this._historyPrev.Click += new System.EventHandler(this.HistoryPrev_Click);
+            this._historyNext.Click += new System.EventHandler(this.HistoryNext_Click);
+            this._historyExport.Click += new System.EventHandler(this.HistoryExport_Click);
+            this._historyExportCsv.Click += new System.EventHandler(this.HistoryExportCsv_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1788,7 +1799,7 @@ namespace SIMS_WinFormsApp.Views.Reports
         private DataGridViewTextBoxColumn Quantity;
         private DataGridViewTextBoxColumn UnitPrice;
         private DataGridViewTextBoxColumn StockValue;
-        private DataGridViewTextBoxColumn Status;
+        private DataGridViewTextBoxColumn _statusColumn;
         private DataGridViewTextBoxColumn DisposalProduct;
         private DataGridViewTextBoxColumn DisposalQuantity;
         private DataGridViewTextBoxColumn DisposalLoss;

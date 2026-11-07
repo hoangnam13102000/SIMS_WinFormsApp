@@ -130,6 +130,12 @@
     <Compile Include="Views\Sales\ucReturnManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Sales\frmReturnRejectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Sales\frmReturnRejectDialog.Designer.cs">
+      <DependentUpon>frmReturnRejectDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Sales\PromotionManagementPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -808,6 +814,9 @@
     <Compile Include="Views\Warehouse\ucExpiredBatchDisposal.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Warehouse\ucExpiredBatchDisposal.Designer.cs">
+      <DependentUpon>ucExpiredBatchDisposal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Warehouse\ucExpiryBatchManagement.Designer.cs">
       <DependentUpon>ucExpiryBatchManagement.cs</DependentUpon>
     </Compile>
@@ -854,6 +863,9 @@
     <Compile Include="Views\Pagination\PaginationControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Pagination\PaginationControl.Designer.cs">
+      <DependentUpon>PaginationControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pagination\PaginationPresenter.cs" />
     <Compile Include="UI\Controls\BaseButton.cs">
       <SubType>Component</SubType>
@@ -874,6 +886,12 @@
     </Compile>
     <Compile Include="Views\Shell\MainLayoutControl.Designer.cs">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Shell\PageCreationErrorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Shell\PageCreationErrorControl.Designer.cs">
+      <DependentUpon>PageCreationErrorControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell\SettingsQuickPopup.cs">
       <SubType>Form</SubType>

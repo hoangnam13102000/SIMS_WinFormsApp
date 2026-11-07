@@ -9,133 +9,30 @@ using SIMS_WinFormsApp.Services.Session;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
-    public sealed class ucExpiredBatchDisposal : UserControl
+    public sealed partial class ucExpiredBatchDisposal : UserControl
     {
         private static readonly CultureInfo VietnameseCulture = CultureInfo.GetCultureInfo("vi-VN");
         private readonly ExpiryBatchManagementService _service;
-        private readonly Label _statusLabel;
-        private readonly Label _productValue;
-        private readonly Label _batchValue;
-        private readonly Label _expiryValue;
-        private readonly Label _quantityValue;
-        private readonly Label _lossValue;
-        private readonly Button _confirmButton;
         private ExpiryBatchDto _batch;
 
         public event EventHandler ReturnRequested;
         public event EventHandler DisposalCompleted;
 
-        public ucExpiredBatchDisposal(ExpiryBatchManagementService service)
+        public ucExpiredBatchDisposal()
+        {
+            InitializeComponent();
+        }
+
+        public ucExpiredBatchDisposal(ExpiryBatchManagementService service) : this()
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
-            BackColor = Color.FromArgb(244, 247, 250);
-            Padding = new Padding(28);
-
-            var root = new TableLayoutPanel
-            {
-                ColumnCount = 1,
-                RowCount = 4,
-                Dock = DockStyle.Fill,
-                BackColor = Color.Transparent
-            };
-            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 54F));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 290F));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            Controls.Add(root);
-
-            var title = new Label
-            {
-                Text = "Lập phiếu tiêu hủy hàng hết hạn",
-                AutoSize = true,
-                Font = new Font("Segoe UI", 21F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(15, 23, 42),
-                Location = new Point(0, 0)
-            };
-            var subtitle = new Label
-            {
-                Text = "Kiểm tra đúng lô và số lượng trước khi xác nhận trừ tồn kho.",
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9.5F),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                Location = new Point(2, 50)
-            };
-            var header = new Panel { Dock = DockStyle.Fill };
-            header.Controls.Add(title);
-            header.Controls.Add(subtitle);
-            root.Controls.Add(header, 0, 0);
-
-            _statusLabel = new Label
-            {
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(153, 27, 27),
-                Text = "Đang tải thông tin lô..."
-            };
-            root.Controls.Add(_statusLabel, 0, 1);
-
-            var details = new TableLayoutPanel
-            {
-                ColumnCount = 2,
-                RowCount = 5,
-                Dock = DockStyle.Top,
-                Height = 260,
-                BackColor = Color.White,
-                Padding = new Padding(18),
-                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
-            };
-            details.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 32F));
-            details.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 68F));
-            for (int i = 0; i < 5; i++)
-                details.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-
-            _productValue = AddDetailRow(details, 0, "Sản phẩm");
-            _batchValue = AddDetailRow(details, 1, "Mã lô");
-            _expiryValue = AddDetailRow(details, 2, "Hạn sử dụng");
-            _quantityValue = AddDetailRow(details, 3, "Số lượng tiêu hủy");
-            _lossValue = AddDetailRow(details, 4, "Giá trị thiệt hại");
-            root.Controls.Add(details, 0, 2);
-
-            var buttons = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Top,
-                FlowDirection = FlowDirection.RightToLeft,
-                WrapContents = false,
-                Padding = new Padding(0, 16, 0, 0)
-            };
-            _confirmButton = new Button
-            {
-                Text = "Xác nhận lập phiếu",
-                Width = 180,
-                Height = 40,
-                Enabled = false,
-                BackColor = Color.FromArgb(220, 38, 38),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Margin = new Padding(8, 0, 0, 0)
-            };
-            _confirmButton.FlatAppearance.BorderSize = 0;
-            _confirmButton.Click += async (sender, args) => await CreateDisposalAsync();
-            var cancelButton = new Button
-            {
-                Text = "Quay lại danh sách lô",
-                Width = 180,
-                Height = 40,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9F),
-                Margin = new Padding(8, 0, 0, 0)
-            };
-            cancelButton.Click += (sender, args) => ReturnRequested?.Invoke(this, EventArgs.Empty);
-            buttons.Controls.Add(_confirmButton);
-            buttons.Controls.Add(cancelButton);
-            root.Controls.Add(buttons, 0, 3);
         }
 
         public async Task LoadBatchAsync(int batchId)
         {
+            if (_service == null)
+                throw new InvalidOperationException("An expiry batch service is required to load a batch.");
+
             _batch = null;
             _confirmButton.Enabled = false;
             _statusLabel.ForeColor = Color.FromArgb(100, 116, 139);
@@ -210,29 +107,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
         }
 
-        private static Label AddDetailRow(TableLayoutPanel table, int row, string caption)
+        private async void ConfirmButton_Click(object sender, EventArgs e)
         {
-            table.Controls.Add(new Label
-            {
-                Text = caption,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(71, 85, 105),
-                Padding = new Padding(4, 0, 0, 0)
-            }, 0, row);
-            var value = new Label
-            {
-                Text = "—",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Segoe UI", 10F),
-                ForeColor = Color.FromArgb(15, 23, 42),
-                Padding = new Padding(8, 0, 0, 0),
-                AutoEllipsis = true
-            };
-            table.Controls.Add(value, 1, row);
-            return value;
+            await CreateDisposalAsync();
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            ReturnRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void ClearDetails()

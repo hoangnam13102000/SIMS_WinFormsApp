@@ -45,10 +45,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             _category.DisplayMember = nameof(InventoryReportCategory.Name);
             _category.ValueMember = nameof(InventoryReportCategory.CategoryId);
             _header.SizeChanged += (s, e) => LayoutReportHeader();
-            _apply.Click += Apply_Click;
-            _viewRdlc.Click += ViewRdlc_Click;
-            _exportOptions.Click += (s, e) => _exportMenu.Show(_exportOptions, 0, _exportOptions.Height);
-            _exportCategoryCsv.Click += (s, e) => ExportCategoryBreakdown(new CsvTableExporter());
             LayoutReportHeader();
             ConfigureImportChart();
             ConfigureCategoryChart();
@@ -60,7 +56,6 @@ namespace SIMS_WinFormsApp.Views.Reports
             _trendPreset.SelectedIndex = 1;
             ApplyTrendPreset();
             _trendPreset.SelectedIndexChanged += TrendPreset_Changed;
-            _trendApply.Click += (s, e) => LoadTrend();
             _reportRefreshTimer = new System.Windows.Forms.Timer(components)
             {
                 Interval = ReportRefreshIntervalMilliseconds
@@ -68,16 +63,63 @@ namespace SIMS_WinFormsApp.Views.Reports
             _reportRefreshTimer.Tick += ReportRefreshTimer_Tick;
             VisibleChanged += InventoryReport_VisibleChanged;
             _importChart.Resize += ImportChart_Resize;
-            _historySearchButton.Click += (s, e) => LoadHistory();
             _historySearch.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; LoadHistory(); } };
-            _historyClear.Click += (s, e) => { _historySearch.Clear(); _historyFrom.Checked = false; _historyTo.Checked = false; LoadHistory(); };
-            _historyPrev.Click += (s, e) => { if (_historyPage > 1) { _historyPage--; RenderHistoryPage(); } };
-            _historyNext.Click += (s, e) => { _historyPage++; RenderHistoryPage(); };
-            _historyExport.Click += (s, e) => _historyExportMenu.Show(_historyExport, 0, _historyExport.Height);
-            _historyExportCsv.Click += (s, e) => ExportHistory(new CsvTableExporter());
             LoadReport();
             LoadTrend();
             LoadHistory();
+        }
+
+        private void ExportOptions_Click(object sender, EventArgs e)
+        {
+            _exportMenu.Show(_exportOptions, 0, _exportOptions.Height);
+        }
+
+        private void ExportCategoryCsv_Click(object sender, EventArgs e)
+        {
+            ExportCategoryBreakdown(new CsvTableExporter());
+        }
+
+        private void TrendApply_Click(object sender, EventArgs e)
+        {
+            LoadTrend();
+        }
+
+        private void HistorySearchButton_Click(object sender, EventArgs e)
+        {
+            LoadHistory();
+        }
+
+        private void HistoryClear_Click(object sender, EventArgs e)
+        {
+            _historySearch.Clear();
+            _historyFrom.Checked = false;
+            _historyTo.Checked = false;
+            LoadHistory();
+        }
+
+        private void HistoryPrev_Click(object sender, EventArgs e)
+        {
+            if (_historyPage > 1)
+            {
+                _historyPage--;
+                RenderHistoryPage();
+            }
+        }
+
+        private void HistoryNext_Click(object sender, EventArgs e)
+        {
+            _historyPage++;
+            RenderHistoryPage();
+        }
+
+        private void HistoryExport_Click(object sender, EventArgs e)
+        {
+            _historyExportMenu.Show(_historyExport, 0, _historyExport.Height);
+        }
+
+        private void HistoryExportCsv_Click(object sender, EventArgs e)
+        {
+            ExportHistory(new CsvTableExporter());
         }
 
         private void LayoutReportHeader()

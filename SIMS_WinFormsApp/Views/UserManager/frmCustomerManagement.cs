@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,7 +20,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
     public partial class frmCustomerManagement : Form
     {
         private readonly List<UserManagementRowDto> _currentRows = new List<UserManagementRowDto>();
-        private readonly ContextMenuStrip _rowMenu;
         private readonly UserManagementPager _pager;
         private IUserManagementService _service;
         private bool _canEdit;
@@ -29,17 +29,22 @@ namespace SIMS_WinFormsApp.Views.UserManager
         public frmCustomerManagement()
         {
             InitializeComponent();
+            if (!DesignMode && LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+            {
+                _viewDetailsMenuItem.Visible = false;
+                _editUserMenuItem.Visible = false;
+                _toggleLockMenuItem.Visible = false;
+            }
             _pager = new UserManagementPager();
             _contentLayout.Controls.Add(_pager, 0, 3);
             _headerPanel.SizeChanged += (sender, args) => LayoutHeader();
             _toolbar.SizeChanged += (sender, args) => LayoutFilters();
-            _refreshButton.Click += (sender, args) => ReloadUsers(true);
             LayoutHeader();
             LayoutFilters();
             _pager.PageChanged += (sender, args) => ReloadUsers();
-            _rowMenu = new ContextMenuStrip(components);
             _statusFilter.SelectedIndex = 0;
             AddUserRow("customer01", "Khách hàng mẫu", "customer@example.com", "Khách hàng", "Đang hoạt động", false);
+            ClearUserSelection();
             _searchBox.TextChanged += (sender, args) => ReloadUsers(true);
             _statusFilter.SelectedIndexChanged += (sender, args) => ReloadUsers(true);
             VisibleChanged += (sender, args) =>
@@ -47,16 +52,57 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 if (Visible)
                     ReloadUsers();
             };
-            _usersGrid.CellDoubleClick += (sender, args) => { if (args.RowIndex >= 0) ShowSelectedUser(args.RowIndex); };
             _usersGrid.CellMouseClick += UsersGrid_CellMouseClick;
             _usersGrid.CellMouseDown += UsersGrid_CellMouseDown;
-            _usersGrid.ContextMenuStrip = _rowMenu;
+        }
+
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            ReloadUsers(true);
+        }
+
+        private void _lockButton_Click(object sender, EventArgs e)
+        {
+            ToggleSelectedUserLock();
+        }
+
+        private void UsersGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateActionButtons();
+        }
+
+        private void UsersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count)
+                return;
+
+            SelectUserRow(e.RowIndex);
+            ViewSelectedUser();
+        }
+
+        private void ViewDetailsMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowSelectedUser();
+        }
+
+        private void EditUserMenuItem_Click(object sender, EventArgs e)
+        {
+            EditSelectedUser();
+        }
+
+        private void ToggleLockMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleSelectedUserLock();
         }
 
         private void LayoutHeader()
         {
             _refreshButton.Location = new Point(_headerPanel.ClientSize.Width - 146, 28);
-            _titleLabel.Width = Math.Max(180, _refreshButton.Left - _titleLabel.Left - 16);
+            int right = _refreshButton.Left - 8;
+            _lockButton.Location = new Point(right - _lockButton.Width, 28);
+            _titleLabel.Width = Math.Max(180, _lockButton.Left - _titleLabel.Left - 16);
+            _lockButton.BringToFront();
+            _refreshButton.BringToFront();
         }
 
         private void LayoutFilters()
@@ -90,11 +136,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
             actionsColumn.ToolTipText = _canManage
                 ? "Xem, sửa hoặc khóa / mở khóa"
                 : _canEdit ? "Xem hoặc sửa" : "Xem chi tiết";
-            _rowMenu.Items.Insert(0, new ToolStripMenuItem("Xem chi tiết", null, (sender, args) => ShowSelectedUser()));
-            if (_canEdit)
-                _rowMenu.Items.Add("Sửa tài khoản", null, (sender, args) => EditSelectedUser());
-            if (_canManage)
-                _rowMenu.Items.Add("Khóa / mở khóa", null, (sender, args) => ToggleSelectedUserLock());
+            _viewDetailsMenuItem.Visible = true;
+            _editUserMenuItem.Visible = _canEdit;
+            _toggleLockMenuItem.Visible = _canManage;
+            UpdateActionButtons();
         }
 
         private async void ReloadUsers(bool resetPage = false)
@@ -128,6 +173,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
                         string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase) ? "Đang hoạt động" : "Vô hiệu hóa",
                         user.IsLocked);
                 }
+                ClearUserSelection();
             }
             catch (Exception ex)
             {
@@ -147,8 +193,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void UsersGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left || e.RowIndex < 0 || e.RowIndex >= _currentRows.Count ||
+                e.ColumnIndex < 0 ||
                 _usersGrid.Columns[e.ColumnIndex].Name != "Actions" || (!_canEdit && !_canManage)) return;
-            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells[0];
+            SelectUserRow(e.RowIndex);
             const int iconSize = 24;
             const int gap = 8;
             int stripWidth = iconSize * 3 + gap * 2;
@@ -156,11 +203,32 @@ namespace SIMS_WinFormsApp.Views.UserManager
             int actionIndex = offset / (iconSize + gap);
             if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
             if (actionIndex == 0)
-                ShowSelectedUser(e.RowIndex);
+                ViewSelectedUser();
             else if (actionIndex == 1 && _canEdit)
                 EditSelectedUser();
             else if (actionIndex == 2 && _canManage)
                 ToggleSelectedUserLock();
+        }
+
+        private void SelectUserRow(int rowIndex)
+        {
+            _usersGrid.CurrentCell = _usersGrid.Rows[rowIndex].Cells[0];
+            _usersGrid.Rows[rowIndex].Selected = true;
+        }
+
+        private void ClearUserSelection()
+        {
+            _usersGrid.ClearSelection();
+            _usersGrid.CurrentCell = null;
+            UpdateActionButtons();
+        }
+
+        private void UpdateActionButtons()
+        {
+            UserManagementRowDto user = SelectedUser();
+            bool hasSelection = user != null;
+            _lockButton.Enabled = hasSelection && _canManage;
+            _lockButton.Text = user == null || !user.IsLocked ? "Khóa" : "Mở khóa";
         }
 
         private void AddUserRow(string username, string fullName, string email, string role, string status, bool isLocked)
@@ -177,19 +245,20 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
         private UserManagementRowDto SelectedUser()
         {
-            int index = _usersGrid.CurrentRow == null ? -1 : _usersGrid.CurrentRow.Index;
+            int index = _usersGrid.SelectedRows.Count == 0 ? -1 : _usersGrid.SelectedRows[0].Index;
             return index >= 0 && index < _currentRows.Count ? _currentRows[index] : null;
         }
 
         private void ShowSelectedUser()
         {
-            if (_usersGrid.CurrentRow != null) ShowSelectedUser(_usersGrid.CurrentRow.Index);
+            UserManagementRowDto user = SelectedUser();
+            if (_service != null && user != null)
+                frmUserAccountDetail.Show(this, UserDetailMapper.FromRow(user), _service);
         }
 
-        private void ShowSelectedUser(int index)
+        private void ViewSelectedUser()
         {
-            if (_service != null && index >= 0 && index < _currentRows.Count)
-                frmUserAccountDetail.Show(this, UserDetailMapper.FromRow(_currentRows[index]), _service);
+            ShowSelectedUser();
         }
 
         private void EditSelectedUser()

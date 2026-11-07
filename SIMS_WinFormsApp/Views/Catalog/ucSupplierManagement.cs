@@ -22,7 +22,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly SupplierManagementPresenter _presenter;
         private readonly ICatalogAdminService _service;
         private readonly Timer _searchTimer;
-        private readonly ContextMenuStrip _optionsMenu;
         private int _pageIndex;
         private int _pageSize = 10;
         private int _totalCount;
@@ -36,12 +35,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             InitializeComponent();
             _header.SizeChanged += (sender, args) => LayoutHeader();
             LayoutHeader();
-            _refreshButton.Click += (sender, args) => LoadPage();
-            _optionsMenu = new ContextMenuStrip(components);
-            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportSuppliers(new CsvTableExporter()));
-            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportSuppliers(new ExcelTableExporter()));
-            _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportSuppliers());
-            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
             if (service == null) return;
 
             _service = service;
@@ -65,22 +58,56 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 _pageIndex = 0;
                 LoadPage();
             };
-            _previousButton.Click += (sender, args) =>
-            {
-                if (_pageIndex <= 0) return;
-                _pageIndex--;
-                LoadPage();
-            };
-            _nextButton.Click += (sender, args) =>
-            {
-                if (_pageIndex + 1 >= PageCount) return;
-                _pageIndex++;
-                LoadPage();
-            };
-            _addButton.Click += (sender, args) => EditSupplier(_presenter.NewDraft());
             _suppliersGrid.CellMouseClick += OnGridCellMouseClick;
             Load += (sender, args) => LoadPage();
             Disposed += (sender, args) => _searchTimer.Dispose();
+        }
+
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            if (_presenter == null) return;
+            EditSupplier(_presenter.NewDraft());
+        }
+
+        private void OptionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            LoadPage();
+        }
+
+        private void PreviousButton_Click(object sender, EventArgs e)
+        {
+            if (_presenter == null) return;
+            if (_pageIndex <= 0) return;
+            _pageIndex--;
+            LoadPage();
+        }
+
+        private void NextButton_Click(object sender, EventArgs e)
+        {
+            if (_presenter == null) return;
+            if (_pageIndex + 1 >= PageCount) return;
+            _pageIndex++;
+            LoadPage();
+        }
+
+        private void ExportCsvMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportSuppliers(new CsvTableExporter());
+        }
+
+        private void ExportExcelMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportSuppliers(new ExcelTableExporter());
+        }
+
+        private void ImportMenuItem_Click(object sender, EventArgs e)
+        {
+            ImportSuppliers();
         }
 
         private void LayoutHeader()
@@ -126,11 +153,53 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 }
 
                 UpdatePaging();
+                _suppliersGrid.ClearSelection();
+                _suppliersGrid.CurrentCell = null;
             }
             catch (Exception ex)
             {
                 DialogHelper.ShowError(this, "Lỗi tải dữ liệu", "Không thể tải nhà cung cấp: " + ex.Message);
             }
+        }
+
+        private SupplierRowDto SelectedSupplier()
+        {
+            if (_presenter == null || _suppliersGrid.SelectedRows.Count == 0)
+                return null;
+
+            int rowIndex = _suppliersGrid.SelectedRows[0].Index;
+            return rowIndex >= 0 && rowIndex < _presenter.CurrentRows.Count
+                ? _presenter.CurrentRows[rowIndex]
+                : null;
+        }
+
+        private void ViewSelectedSupplier()
+        {
+            SupplierRowDto row = SelectedSupplier();
+            if (row == null) return;
+
+            EditSupplier(_presenter.Get(row.SupplierId), true);
+        }
+
+        // Edit: mở form sửa -> Presenter.Save -> Service.SaveSupplier -> Repository.UpdateSupplier.
+        private void EditSelectedSupplier()
+        {
+            SupplierRowDto row = SelectedSupplier();
+            if (row == null) return;
+
+            EditSupplier(_presenter.Get(row.SupplierId));
+        }
+
+        // Delete: xác nhận -> Presenter.Delete -> Service.DeleteSupplier -> Repository.SoftDeleteSupplier.
+        private void DeleteSelectedSupplier()
+        {
+            SupplierRowDto row = SelectedSupplier();
+            if (row == null || !DialogHelper.ConfirmDelete(this, "nhà cung cấp", row.Name))
+                return;
+
+            CatalogSaveResult result = _presenter.Delete(row.SupplierId);
+            Notify(result);
+            if (result != null && result.Success) LoadPage();
         }
 
         private void UpdatePaging()
@@ -154,7 +223,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 return;
 
             if (e.ColumnIndex != _actionsColumn.Index) return;
-            SupplierRowDto row = _presenter.CurrentRows[e.RowIndex];
+            _suppliersGrid.CurrentCell = _suppliersGrid.Rows[e.RowIndex].Cells[0];
+            _suppliersGrid.Rows[e.RowIndex].Selected = true;
             const int iconSize = 24;
             const int gap = 8;
             int stripWidth = iconSize * 3 + gap * 2;
@@ -162,16 +232,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             int actionIndex = offset / (iconSize + gap);
             if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
             if (actionIndex == 0)
-                EditSupplier(_presenter.Get(row.SupplierId), true);
+                ViewSelectedSupplier();
             else if (actionIndex == 1)
-                EditSupplier(_presenter.Get(row.SupplierId));
-            else
-            {
-                if (!DialogHelper.ConfirmDelete(this, "nhà cung cấp", row.Name)) return;
-                CatalogSaveResult result = _presenter.Delete(row.SupplierId);
-                Notify(result);
-                if (result != null && result.Success) LoadPage();
-            }
+                EditSelectedSupplier();
+            else if (actionIndex == 2)
+                DeleteSelectedSupplier();
         }
 
         private void EditSupplier(SupplierEditDto draft, bool readOnly = false)

@@ -156,43 +156,18 @@ namespace SIMS_WinFormsApp.Views.Sales
 
         private void RejectRequest(int returnId)
         {
-            using (var prompt = new Form
+            using (var prompt = new frmReturnRejectDialog())
             {
-                Text = "Từ chối yêu cầu trả",
-                StartPosition = FormStartPosition.CenterParent,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MinimizeBox = false,
-                MaximizeBox = false,
-                ClientSize = new System.Drawing.Size(420, 150)
-            })
-            {
-                var textBox = new TextBox
-                {
-                    Multiline = true,
-                    MaxLength = 500,
-                    Location = new System.Drawing.Point(12, 12),
-                    Size = new System.Drawing.Size(396, 76)
-                };
-                var rejectButton = new Button
-                {
-                    Text = "Từ chối yêu cầu",
-                    DialogResult = DialogResult.OK,
-                    Location = new System.Drawing.Point(264, 104),
-                    Size = new System.Drawing.Size(144, 32)
-                };
-                prompt.Controls.Add(textBox);
-                prompt.Controls.Add(rejectButton);
-                prompt.AcceptButton = rejectButton;
                 if (prompt.ShowDialog(FindForm()) != DialogResult.OK)
                     return;
 
-                if (string.IsNullOrWhiteSpace(textBox.Text))
+                if (string.IsNullOrWhiteSpace(prompt.RejectionReason))
                 {
                     AppToast.Warning(this, "Thiếu lý do", "Nhập lý do từ chối để tiếp tục.");
                     return;
                 }
 
-                UpdateStatus(returnId, false, textBox.Text.Trim());
+                UpdateStatus(returnId, false, prompt.RejectionReason.Trim());
             }
         }
 

@@ -82,18 +82,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _toDatePicker.ValueChanged += DatePicker_ValueChanged;
             _fromDatePicker.CloseUp += DatePicker_CloseUp;
             _toDatePicker.CloseUp += DatePicker_CloseUp;
-            _fromDateIcon.Click += (sender, args) => OpenCalendar(_fromDatePicker);
-            _toDateIcon.Click += (sender, args) => OpenCalendar(_toDatePicker);
-            _clearDateLink.Click += (sender, args) => ClearDatesRequested?.Invoke(this, EventArgs.Empty);
-
-            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
-            _exportCsvItem.Click += (sender, args) => CsvExportRequested?.Invoke(this, EventArgs.Empty);
-            _exportExcelItem.Click += (sender, args) => ExcelExportRequested?.Invoke(this, EventArgs.Empty);
-            _importItem.Click += (sender, args) => ImportRequested?.Invoke(this, EventArgs.Empty);
-            _syncButton.Click += (sender, args) => SyncRequested?.Invoke(this, EventArgs.Empty);
-
-            _prevButton.Click += (sender, args) => PreviousPageRequested?.Invoke(this, EventArgs.Empty);
-            _nextButton.Click += (sender, args) => NextPageRequested?.Invoke(this, EventArgs.Empty);
             _pageSizeCombo.SelectedIndexChanged += (sender, args) => PageSizeChanged?.Invoke(this, EventArgs.Empty);
 
             _grid.CellClick += Grid_CellClick;
@@ -113,6 +101,56 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 if (Visible)
                     ViewShown?.Invoke(this, EventArgs.Empty);
             };
+        }
+
+        private void FromDateIcon_Click(object sender, EventArgs e)
+        {
+            OpenCalendar(_fromDatePicker);
+        }
+
+        private void ToDateIcon_Click(object sender, EventArgs e)
+        {
+            OpenCalendar(_toDatePicker);
+        }
+
+        private void ClearDateLink_Click(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ClearDatesRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OptionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void ExportCsvItem_Click(object sender, EventArgs e)
+        {
+            CsvExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ExportExcelItem_Click(object sender, EventArgs e)
+        {
+            ExcelExportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ImportItem_Click(object sender, EventArgs e)
+        {
+            ImportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SyncButton_Click(object sender, EventArgs e)
+        {
+            SyncRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PreviousButton_Click(object sender, EventArgs e)
+        {
+            PreviousPageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NextButton_Click(object sender, EventArgs e)
+        {
+            NextPageRequested?.Invoke(this, EventArgs.Empty);
         }
 
         public event EventHandler ViewShown;

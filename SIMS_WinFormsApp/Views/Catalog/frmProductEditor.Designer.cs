@@ -597,6 +597,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._saveButton.Text = "Lưu thay đổi";
             this._saveButton.UseVisualStyleBackColor = false;
             this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
+            this._uploadImageButton.Click += new System.EventHandler(this.UploadImage_Click);
+            this._clearImageButton.Click += new System.EventHandler(this.ClearImage_Click);
+            this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // frmProductEditor
             // 

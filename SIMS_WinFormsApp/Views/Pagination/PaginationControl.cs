@@ -9,7 +9,7 @@ using SIMS_WinFormsApp.UI.Theme;
 namespace SIMS_WinFormsApp.Views.Pagination
 {
 
-    public sealed class PaginationControl : UserControl, IPaginationView
+    public sealed partial class PaginationControl : UserControl, IPaginationView
     {
         public event EventHandler<int> PageRequested;
         public event EventHandler<int> PageSizeRequested;
@@ -18,55 +18,11 @@ namespace SIMS_WinFormsApp.Views.Pagination
         private static readonly Font PageFont = new Font(AppFonts.BodyBold.FontFamily, 12.5f, FontStyle.Bold);
         private static readonly Font InfoFont = new Font(AppFonts.Body.FontFamily, 11.5f, FontStyle.Regular);
 
-        private readonly Panel _centerContainer;
-        private readonly FlowLayoutPanel _leftFlow;
-        private readonly FlowLayoutPanel _pagesFlow;
-        private readonly Label _pageLabel;
-        private readonly ComboBox _pageSizeBox;
         private bool _suppressPageSizeEvent;
 
         public PaginationControl()
         {
-            AutoScaleMode = AutoScaleMode.None;
-            Dock = DockStyle.Fill;
-            BackColor = AppColors.White;
-
-            _pagesFlow = new FlowLayoutPanel
-            {
-                AutoSize = true,
-                WrapContents = false,
-                FlowDirection = FlowDirection.LeftToRight,
-                Margin = Padding.Empty
-            };
-
-            _pageLabel = new Label
-            {
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = InfoFont,
-                ForeColor = AppColors.TextMuted,
-                Margin = new Padding(14, 12, 0, 0)
-            };
-
-            _leftFlow = new FlowLayoutPanel
-            {
-                AutoSize = true,
-                WrapContents = false,
-                FlowDirection = FlowDirection.LeftToRight,
-                Margin = Padding.Empty
-            };
-            _leftFlow.Controls.Add(_pagesFlow);
-            _leftFlow.Controls.Add(_pageLabel);
-
-            _centerContainer = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty };
-            _centerContainer.Controls.Add(_leftFlow);
-            _centerContainer.Resize += (_, __) => CenterLeftFlow();
-            _leftFlow.SizeChanged += (_, __) => CenterLeftFlow();
-
-            var rightPanel = CreatePageSizePanel(out _pageSizeBox);
-
-            Controls.Add(_centerContainer);
-            Controls.Add(rightPanel);
+            InitializeComponent();
             ThemeManager.Instance.ThemeChanged += OnThemeChanged;
         }
 
@@ -86,55 +42,11 @@ namespace SIMS_WinFormsApp.Views.Pagination
                 Render(_lastState);
         }
 
-        private Panel CreatePageSizePanel(out ComboBox pageSizeBox)
+        private void PageSizeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var rightPanel = new Panel { Dock = DockStyle.Right, AutoSize = true, Margin = Padding.Empty, Padding = new Padding(0, 4, 0, 0) };
-            var flow = new FlowLayoutPanel
-            {
-                AutoSize = true,
-                WrapContents = false,
-                FlowDirection = FlowDirection.LeftToRight,
-                Margin = Padding.Empty
-            };
-
-            var pageSizeLabel = new Label
-            {
-                AutoSize = true,
-                Text = "Hiển thị:",
-                Font = InfoFont,
-                ForeColor = AppColors.TextMuted,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Margin = new Padding(0, 8, 8, 0)
-            };
-            pageSizeBox = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = AppFonts.Input,
-                Size = new Size(76, 32),
-                Margin = new Padding(0, 2, 8, 0)
-            };
-            var box = pageSizeBox;
-            box.SelectedIndexChanged += (_, __) =>
-            {
-                if (_suppressPageSizeEvent) return;
-                if (box.SelectedItem is int size)
-                    PageSizeRequested?.Invoke(this, size);
-            };
-            var unitLabel = new Label
-            {
-                AutoSize = true,
-                Text = "dòng",
-                Font = InfoFont,
-                ForeColor = AppColors.TextMuted,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Margin = new Padding(0, 8, 0, 0)
-            };
-
-            flow.Controls.Add(pageSizeLabel);
-            flow.Controls.Add(pageSizeBox);
-            flow.Controls.Add(unitLabel);
-            rightPanel.Controls.Add(flow);
-            return rightPanel;
+            if (_suppressPageSizeEvent) return;
+            if (_pageSizeBox.SelectedItem is int size)
+                PageSizeRequested?.Invoke(this, size);
         }
 
         private void CenterLeftFlow()
@@ -142,6 +54,16 @@ namespace SIMS_WinFormsApp.Views.Pagination
             int x = Math.Max(0, (_centerContainer.ClientSize.Width - _leftFlow.Width) / 2);
             int y = Math.Max(0, (_centerContainer.ClientSize.Height - _leftFlow.Height) / 2);
             _leftFlow.Location = new Point(x, y);
+        }
+
+        private void CenterContainer_Resize(object sender, EventArgs e)
+        {
+            CenterLeftFlow();
+        }
+
+        private void LeftFlow_SizeChanged(object sender, EventArgs e)
+        {
+            CenterLeftFlow();
         }
 
         public void Render(PaginationState state)
@@ -177,6 +99,7 @@ namespace SIMS_WinFormsApp.Views.Pagination
 
         private void RenderPageButtons(PaginationState state)
         {
+            // These buttons are generated from the current page state and page count.
             _pagesFlow.SuspendLayout();
             _pagesFlow.Controls.Clear();
 

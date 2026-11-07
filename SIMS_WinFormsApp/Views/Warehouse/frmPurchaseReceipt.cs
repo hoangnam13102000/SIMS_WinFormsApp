@@ -60,18 +60,32 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             NumberInputFormatter.SetMaximumDigits(_priceTextBox, 18);
             ConfigureEntryControls();
 
-            _demoButton.Click += (sender, args) => FillDemoData();
-            _addLineButton.Click += (sender, args) => AddLineFromInputs();
             _linesGrid.CellClick += LinesGrid_CellClick;
             _linesGrid.CellPainting += LinesGrid_CellPainting;
             _linesGrid.CellToolTipTextNeeded += LinesGrid_CellToolTipTextNeeded;
-            _saveButton.Click += (sender, args) => SaveReceipt();
-            _cancelButton.Click += (sender, args) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
             _presenter.Initialize();
+        }
+
+        private void DemoButton_Click(object sender, EventArgs e)
+        {
+            FillDemoData();
+        }
+
+        private void AddLineButton_Click(object sender, EventArgs e)
+        {
+            AddLineFromInputs();
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            // Create: validate the form -> PurchaseReceiptPresenter -> CreatePurchaseReceipt service.
+            SaveReceipt();
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         public int SelectedSupplierId

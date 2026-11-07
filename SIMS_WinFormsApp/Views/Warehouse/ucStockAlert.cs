@@ -58,13 +58,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _categoryCombo.SelectedIndexChanged += new EventHandler(this.FilterControl_Changed);
             _fromDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
             _toDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
-            _clearFilterLink.LinkClicked += new LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
             _pageSizeCombo.SelectedIndexChanged += new EventHandler(this.PageSizeCombo_SelectedIndexChanged);
-            _prevButton.Click += new EventHandler(this.PreviousButton_Click);
-            _nextButton.Click += new EventHandler(this.NextButton_Click);
-            _optionsButton.Click += new EventHandler(this.OptionsButton_Click);
-            _exportCsvItem.Click += new EventHandler(this.ExportCsvItem_Click);
-            _exportExcelItem.Click += new EventHandler(this.ExportExcelItem_Click);
             _grid.CellClick += new DataGridViewCellEventHandler(this.Grid_CellClick);
             _grid.CellMouseClick += new DataGridViewCellMouseEventHandler(this.Grid_CellMouseClick);
             _grid.CellMouseEnter += new DataGridViewCellEventHandler(this.Grid_CellMouseEnter);

@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.UserManager
@@ -15,6 +16,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private Label _lblSelectedRoleDescription;
         private Panel _separator;
         private Panel _permissionListPanel;
+        private PrimaryButton _footerCloseButton;
 
         private void InitializeComponent()
         {
@@ -27,9 +29,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _lblSelectedRoleDescription = new Label();
             _separator = new Panel();
             _permissionListPanel = new Panel();
+            _footerCloseButton = new PrimaryButton();
 
             SuspendLayout();
             ContentHost.SuspendLayout();
+            FooterHost.SuspendLayout();
             _roleLayout.SuspendLayout();
             _rolesColumn.SuspendLayout();
             _permissionsColumn.SuspendLayout();
@@ -99,6 +103,17 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _permissionListPanel.Dock = DockStyle.Fill;
             _permissionListPanel.Name = "permissionListPanel";
 
+            _footerCloseButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _footerCloseButton.CornerRadius = AppRadius.Medium;
+            _footerCloseButton.Font = AppFonts.Button;
+            _footerCloseButton.IsPrimary = true;
+            _footerCloseButton.Location = new Point(484, 22);
+            _footerCloseButton.Name = "_footerCloseButton";
+            _footerCloseButton.Size = new Size(112, 44);
+            _footerCloseButton.Text = "Đóng";
+            _footerCloseButton.Click += new System.EventHandler(FooterCloseButton_Click);
+            FooterHost.Controls.Add(_footerCloseButton);
+
             _permissionsColumn.Controls.Add(_permissionListPanel);
             _permissionsColumn.Controls.Add(_separator);
             _permissionsColumn.Controls.Add(_lblSelectedRoleDescription);
@@ -106,6 +121,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
             ContentHost.Controls.Add(_roleLayout);
             ContentHost.ResumeLayout(false);
+            FooterHost.ResumeLayout(true);
             _permissionsColumn.ResumeLayout(false);
             _rolesColumn.ResumeLayout(false);
             _roleLayout.ResumeLayout(false);

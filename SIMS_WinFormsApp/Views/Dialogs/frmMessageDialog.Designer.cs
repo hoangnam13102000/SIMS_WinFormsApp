@@ -13,6 +13,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         private Panel pnlFooter;
         private Button btnPrimary;
         private Button btnSecondary;
+        private Button _tertiaryButton;
 
         private void InitializeComponent()
         {
@@ -24,6 +25,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             pnlFooter = new Panel();
             btnPrimary = new Button();
             btnSecondary = new Button();
+            _tertiaryButton = new Button();
             pnlIcon.SuspendLayout();
             pnlFooter.SuspendLayout();
             SuspendLayout();
@@ -80,6 +82,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             pnlFooter.BackColor = Color.FromArgb(248, 250, 252);
             pnlFooter.Controls.Add(btnSecondary);
             pnlFooter.Controls.Add(btnPrimary);
+            pnlFooter.Controls.Add(_tertiaryButton);
             pnlFooter.Dock = DockStyle.Bottom;
             pnlFooter.Location = new Point(0, 164);
             pnlFooter.Name = "pnlFooter";
@@ -99,6 +102,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             btnPrimary.TabIndex = 0;
             btnPrimary.Text = "Đóng";
             btnPrimary.UseVisualStyleBackColor = false;
+            btnPrimary.Click += btnPrimary_Click;
 
             btnSecondary.BackColor = Color.White;
             btnSecondary.DialogResult = DialogResult.Cancel;
@@ -113,6 +117,19 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             btnSecondary.Text = "Hủy";
             btnSecondary.UseVisualStyleBackColor = false;
             btnSecondary.Visible = true;
+
+            _tertiaryButton.BackColor = Color.White;
+            _tertiaryButton.FlatAppearance.BorderColor = btnSecondary.FlatAppearance.BorderColor;
+            _tertiaryButton.FlatStyle = FlatStyle.Flat;
+            _tertiaryButton.Font = btnSecondary.Font;
+            _tertiaryButton.ForeColor = btnSecondary.ForeColor;
+            _tertiaryButton.Location = new Point(104, btnSecondary.Location.Y);
+            _tertiaryButton.Name = "btnTertiary";
+            _tertiaryButton.Size = btnSecondary.Size;
+            _tertiaryButton.TabIndex = 2;
+            _tertiaryButton.UseVisualStyleBackColor = false;
+            _tertiaryButton.Click += _tertiaryButton_Click;
+            btnSecondary.Click += btnSecondary_Click;
 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;

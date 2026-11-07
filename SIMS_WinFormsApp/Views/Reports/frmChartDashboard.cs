@@ -15,42 +15,26 @@ namespace SIMS_WinFormsApp.Views.Reports
 {
     public partial class frmChartDashboard : Form
     {
-        private readonly RevenueReportService _reportService;
+        private RevenueReportService _reportService;
 
         public frmChartDashboard()
         {
             InitializeComponent();
+        }
+
+        private void frmChartDashboard_Load(object sender, EventArgs e)
+        {
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
                 return;
             }
 
             _reportService = AppComposition.CreateRevenueReportService();
-            _subtitle.Text = "Tổng quan doanh thu, đơn hàng và sản phẩm bán chạy";
-            _periodFilter.Items.Clear();
-            _periodFilter.Items.AddRange(new object[] { "Theo ngày", "Theo tháng", "Theo quý" });
-            _periodFilter.SelectedIndex = (int)RevenueReportPeriod.Week;
             _fromDate.Value = DateTime.Today.AddDays(-6);
             _toDate.Value = DateTime.Today;
-            _applyFilter.Click += ApplyFilter_Click;
-            _viewRevenueRdlc.Click += ViewRevenueRdlc_Click;
-            _header.SizeChanged += (s, e) => LayoutReportHeader();
-            LayoutReportHeader();
-
-            ConfigureRevenueChart();
-            ConfigureCategoryChart();
             if (!SetInitialDateRange())
                 return;
             UpdateReport();
-        }
-
-        private void LayoutReportHeader()
-        {
-            int right = _header.ClientSize.Width - 16;
-            _viewRevenueRdlc.Location = new Point(right - _viewRevenueRdlc.Width, 22);
-            int textWidth = Math.Max(160, _viewRevenueRdlc.Left - _title.Left - 16);
-            _title.Width = textWidth;
-            _subtitle.Width = textWidth;
         }
 
         private void ViewRevenueRdlc_Click(object sender, EventArgs e)
@@ -150,92 +134,6 @@ namespace SIMS_WinFormsApp.Views.Reports
         {
             var user = SIMS_WinFormsApp.Services.Session.UserSession.Instance.CurrentUser;
             return user == null ? "Hệ thống" : user.FullName;
-        }
-
-        private void ConfigureRevenueChart()
-        {
-            var area = new ChartArea("RevenueArea");
-            area.BackColor = Color.White;
-            area.AxisX.LabelStyle.ForeColor = Color.FromArgb(100, 116, 139);
-            area.AxisX.MajorGrid.Enabled = false;
-            area.AxisX.LineColor = Color.FromArgb(226, 232, 240);
-            area.AxisY.LabelStyle.ForeColor = Color.FromArgb(100, 116, 139);
-            area.AxisY.LabelStyle.Format = "N0";
-            area.AxisY.Title = "Doanh thu (₫)";
-            area.AxisY.TitleForeColor = Color.FromArgb(100, 116, 139);
-            area.AxisY.MajorGrid.LineColor = Color.FromArgb(226, 232, 240);
-            area.AxisY.LineColor = Color.Transparent;
-            area.AxisY.Minimum = 0;
-            area.AxisY2.Enabled = AxisEnabled.True;
-            area.AxisY2.Title = "Số đơn";
-            area.AxisY2.TitleForeColor = Color.FromArgb(234, 88, 12);
-            area.AxisY2.LabelStyle.ForeColor = Color.FromArgb(234, 88, 12);
-            area.AxisY2.LabelStyle.Format = "N0";
-            area.AxisY2.MajorGrid.Enabled = false;
-            area.AxisY2.Minimum = 0;
-            _revenueTrendChart.ChartAreas.Add(area);
-            _revenueTrendChart.Legends.Add(new Legend
-            {
-                Docking = Docking.Bottom,
-                Alignment = StringAlignment.Center,
-                Font = new Font("Segoe UI", 8F),
-                ForeColor = Color.FromArgb(71, 85, 105)
-            });
-
-            _revenueTrendChart.Series.Add(new Series("Doanh thu")
-            {
-                ChartArea = area.Name,
-                ChartType = SeriesChartType.Column,
-                Color = Color.FromArgb(59, 130, 246),
-                BorderColor = Color.FromArgb(37, 99, 235),
-                BorderWidth = 1,
-                Legend = _revenueTrendChart.Legends[0].Name,
-                IsValueShownAsLabel = false,
-                ToolTip = "#VALX: #VAL{N0} ₫"
-            });
-            _revenueTrendChart.Series["Doanh thu"]["PointWidth"] = "0.4";
-
-            _revenueTrendChart.Series.Add(new Series("Số đơn")
-            {
-                ChartArea = area.Name,
-                ChartType = SeriesChartType.Spline,
-                YAxisType = AxisType.Secondary,
-                BorderWidth = 3,
-                Color = Color.FromArgb(234, 88, 12),
-                MarkerStyle = MarkerStyle.Circle,
-                MarkerSize = 7,
-                MarkerColor = Color.FromArgb(234, 88, 12),
-                Legend = _revenueTrendChart.Legends[0].Name,
-                ToolTip = "#VALX: #VAL đơn"
-            });
-        }
-
-        private void ConfigureCategoryChart()
-        {
-            var area = new ChartArea("CategoryArea");
-            area.BackColor = Color.White;
-            area.AxisX.Enabled = AxisEnabled.False;
-            area.AxisY.Enabled = AxisEnabled.False;
-            _categoryChart.ChartAreas.Add(area);
-            _categoryChart.Legends.Add(new Legend
-            {
-                Docking = Docking.Right,
-                Alignment = StringAlignment.Center,
-                Font = new Font("Segoe UI", 8F),
-                ForeColor = Color.FromArgb(71, 85, 105),
-                IsDockedInsideChartArea = false
-            });
-            _categoryChart.Series.Add(new Series("Danh mục")
-            {
-                ChartArea = area.Name,
-                ChartType = SeriesChartType.Doughnut,
-                BorderWidth = 2,
-                BorderColor = Color.White,
-                Legend = _categoryChart.Legends[0].Name,
-                IsValueShownAsLabel = false,
-                ToolTip = "#VALX: #VAL{N0} ₫ (#PERCENT{P0})"
-            });
-            _categoryChart.Series["Danh mục"]["DoughnutRadius"] = "58";
         }
 
         private void ApplyFilter_Click(object sender, EventArgs e)

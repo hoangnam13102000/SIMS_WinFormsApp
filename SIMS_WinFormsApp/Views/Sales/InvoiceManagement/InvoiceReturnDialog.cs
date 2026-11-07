@@ -24,7 +24,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private readonly TextBox _reasonDetails;
         private readonly Label _summaryLabel;
         private readonly Label _policyLabel;
-        private readonly Button _submitButton;
         private readonly List<ReturnableLine> _lines = new List<ReturnableLine>();
         private decimal _approvalThreshold;
         private int _returnPolicyDays = 7;
@@ -262,33 +261,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             };
             footer.Controls.Add(_summaryLabel, 0, 1);
 
-            var buttons = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.RightToLeft,
-                WrapContents = false
-            };
-            var cancelButton = new Button
-            {
-                Text = "Hủy",
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(78, 34),
-                Margin = new Padding(8, 2, 0, 0),
-                DialogResult = DialogResult.Cancel
-            };
-            _submitButton = new Button
-            {
-                Text = "Gửi yêu cầu",
-                FlatStyle = FlatStyle.Flat,
-                BackColor = AppColors.Accent,
-                ForeColor = Color.White,
-                Size = new Size(124, 34),
-                Margin = new Padding(8, 2, 0, 0)
-            };
-            _submitButton.Click += SubmitButton_Click;
-            buttons.Controls.Add(cancelButton);
-            buttons.Controls.Add(_submitButton);
-            footer.Controls.Add(buttons, 1, 1);
+            _actionButtonsPanel.Dock = DockStyle.Fill;
+            footer.Controls.Add(_actionButtonsPanel, 1, 1);
 
             var note = new Label
             {
@@ -300,7 +274,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             };
             footer.Controls.Add(note, 0, 2);
             footer.SetColumnSpan(note, 2);
-            CancelButton = cancelButton;
 
             LoadReturnableLines();
         }

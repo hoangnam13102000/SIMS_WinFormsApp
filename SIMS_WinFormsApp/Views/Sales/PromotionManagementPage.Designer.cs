@@ -237,6 +237,8 @@ namespace SIMS_WinFormsApp.Views.Sales
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 62;
             this._grid.RowTemplate.Height = 38;
+            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
+            this._grid.SelectionChanged += new System.EventHandler(this.Grid_SelectionChanged);
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1244, 609);
             this._grid.TabIndex = 0;

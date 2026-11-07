@@ -63,7 +63,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             }
 
             CloseRequested += FrmRoleManagement_CloseRequested;
-            AddFooterButton("Đóng", isPrimary: true, onClick: FooterCloseButton_Click);
 
             _presenter = new RoleManagementPresenter(
                 this,
@@ -231,6 +230,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
             bool isChecked = granted;
             bool isHovered = false;
+            // Each permission row gets its own data-driven toggle.
             var toggle = new Panel
             {
                 BackColor = Color.Transparent,

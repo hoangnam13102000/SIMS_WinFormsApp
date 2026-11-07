@@ -1,12 +1,17 @@
 using System.Drawing;
 using System.Windows.Forms;
+using SIMS_WinFormsApp.UI.Controls;
+using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.UI.Controls.Barcode
 {
     partial class frmBarcodeScannerDialog
     {
+        private PrimaryButton _cancelButton;
+
         private void InitializeComponent()
         {
+            this._cancelButton = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this._instructionLabel = new System.Windows.Forms.Label();
             this._videoHolder = new System.Windows.Forms.Panel();
             this._errorLabel = new System.Windows.Forms.Label();
@@ -14,7 +19,21 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this._statusLabel = new System.Windows.Forms.Label();
             this._videoHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._videoBox)).BeginInit();
+            this.FooterHost.SuspendLayout();
             this.SuspendLayout();
+            //
+            // _cancelButton
+            //
+            this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._cancelButton.CornerRadius = AppRadius.Medium;
+            this._cancelButton.Font = AppFonts.Button;
+            this._cancelButton.IsPrimary = false;
+            this._cancelButton.Location = new System.Drawing.Point(484, 22);
+            this._cancelButton.Name = "_cancelButton";
+            this._cancelButton.Size = new System.Drawing.Size(112, 44);
+            this._cancelButton.Text = "Hủy";
+            this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.FooterHost.Controls.Add(this._cancelButton);
             //
             // _instructionLabel
             //
@@ -75,6 +94,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             this.MinimumSize = new System.Drawing.Size(560, 560);
             this.Name = "frmBarcodeScannerDialog";
             this.Text = "Quét mã vạch";
+            this.FooterHost.ResumeLayout(true);
             this._videoHolder.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._videoBox)).EndInit();
             this.ResumeLayout(false);

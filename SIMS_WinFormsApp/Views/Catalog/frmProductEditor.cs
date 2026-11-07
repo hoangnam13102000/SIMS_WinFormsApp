@@ -49,14 +49,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             PopulateModel();
             SetReadOnly(readOnly);
 
-            _uploadImageButton.Click += UploadImage_Click;
-            _clearImageButton.Click += ClearImage_Click;
             _closeButton.Text = readOnly ? "Đóng" : "Hủy";
-            _closeButton.Click += (sender, args) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
         }
 
         private void ConfigureNumericInputs()
@@ -330,6 +323,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
         {
             _model.ImagePath = null;
             ShowPreview(null);
+        }
+
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void ShowPreview(string path)

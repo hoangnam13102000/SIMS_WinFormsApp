@@ -142,6 +142,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerChooseAvatarButton.Size = new System.Drawing.Size(136, 36);
             this._designerChooseAvatarButton.TabIndex = 1;
             this._designerChooseAvatarButton.Text = "Chọn ảnh";
+            this._designerChooseAvatarButton.Click += new System.EventHandler(this.ChooseAvatarButton_Click);
             this._designerChooseAvatarButton.UseVisualStyleBackColor = true;
             // 
             // _designerAvatarHint
@@ -373,6 +374,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerCancelButton.Size = new System.Drawing.Size(112, 40);
             this._designerCancelButton.TabIndex = 0;
             this._designerCancelButton.Text = "Hủy";
+            this._designerCancelButton.Click += new System.EventHandler(this.DesignerCancelButton_Click);
             this._designerCancelButton.UseVisualStyleBackColor = true;
             // 
             // _designerSaveButton
@@ -385,6 +387,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerSaveButton.Size = new System.Drawing.Size(112, 40);
             this._designerSaveButton.TabIndex = 1;
             this._designerSaveButton.Text = "Thêm mới";
+            this._designerSaveButton.Click += new System.EventHandler(this.DesignerSaveButton_Click);
             this._designerSaveButton.UseVisualStyleBackColor = false;
             // 
             // frmAddEmployee

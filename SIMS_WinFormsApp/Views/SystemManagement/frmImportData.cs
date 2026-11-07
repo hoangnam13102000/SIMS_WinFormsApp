@@ -22,8 +22,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private bool _hasAnySuccess;
 
         private Label _lblFileName;
-        private PrimaryButton _btnChooseFile;
-        private PrimaryButton _btnStart;
         private TextBox _txtResult;
 
         public frmImportData()
@@ -98,8 +96,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             _txtResult = resultBox;
 
-            AddFooterButton("Đóng", false, (s, e) => RaiseCloseRequested());
-            _btnStart = AddFooterButton("Bắt đầu nhập", true, (s, e) => StartImportRequested?.Invoke(this, EventArgs.Empty));
             _btnStart.Enabled = false;
         }
 
@@ -147,17 +143,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         {
             var panel = new Panel { Dock = DockStyle.Top, Height = 46, Margin = new Padding(0, 0, 0, 16) };
 
-            _btnChooseFile = new PrimaryButton
-            {
-                Text = "Chọn file...",
-                IsPrimary = false,
-                Size = new Size(140, 42),
-                CornerRadius = AppRadius.Medium,
-                Font = AppFonts.Button,
-                Location = new Point(0, 0)
-            };
-            _btnChooseFile.Click += (s, e) => ChooseFile();
-
             _lblFileName = new Label
             {
                 AutoSize = false,
@@ -200,6 +185,21 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 FileChosen?.Invoke(this, dialog.FileName);
             }
         }
+
+        private void ChooseFileButton_Click(object sender, EventArgs e)
+        {
+            ChooseFile();
+        }
+
+        private void CloseImportButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
+        }
+
+        private void StartImportButton_Click(object sender, EventArgs e)
+        {
+            StartImportRequested?.Invoke(this, EventArgs.Empty);
+        }
         #endregion
 
         #region IImportDataView
@@ -218,7 +218,8 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         public void SetBusy(bool isBusy, string message)
         {
-            SetFooterButtonsEnabled(!isBusy);
+            _btnClose.Enabled = !isBusy;
+            _btnStart.Enabled = !isBusy;
             _btnStart.Text = isBusy ? (message ?? "Đang xử lý...") : "Bắt đầu nhập";
             Cursor = isBusy ? Cursors.WaitCursor : Cursors.Default;
         }

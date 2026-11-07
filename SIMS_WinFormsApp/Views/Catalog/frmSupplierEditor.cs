@@ -41,11 +41,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _itemsTextBox.ReadOnly = readOnly;
             _saveButton.Visible = !readOnly;
             _cancelButton.Text = readOnly ? "Đóng" : "Hủy";
-            _cancelButton.Click += (sender, args) =>
-            {
-                DialogResult = DialogResult.Cancel;
-                Close();
-            };
         }
 
         public static bool TryEdit(
@@ -80,6 +75,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (_model.Name.Trim().Length > 150)
             {
                 MessageBox.Show(this, "Tên nhà cung cấp tối đa 150 ký tự.", "Thông tin chưa hợp lệ",
@@ -115,6 +111,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             }
 
             DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void CancelButton_Click(object sender, System.EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

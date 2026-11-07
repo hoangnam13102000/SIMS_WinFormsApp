@@ -35,10 +35,10 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             InitializeComponent();
             ContentHost.Controls.Clear();
             Size = DialogSize;
+            _closeButton.Text = Lang.Get("common.close");
             BuildContent(detail);
 
             CloseRequested += CloseRequestedHandler;
-            AddFooterButton(Lang.Get("common.close"), isPrimary: true, onClick: CloseButton_Click);
         }
 
         private void CloseRequestedHandler(object sender, EventArgs e) => Close();

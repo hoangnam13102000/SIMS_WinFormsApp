@@ -35,8 +35,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             _repository = repository ?? AppComposition.CreateStoreConfigRepository();
             _presenter = new SystemSettingsPresenter(this, _repository);
-            _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
             VisibleChanged += OnVisibleChanged;
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void PositionSaveButton()

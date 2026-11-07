@@ -206,6 +206,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _demoButton.Size = new Size(180, 38);
             _demoButton.TabIndex = 3;
             _demoButton.Text = "⚡ Điền dữ liệu Demo";
+            _demoButton.Click += DemoButton_Click;
             _demoButton.UseVisualStyleBackColor = false;
             _headerDivider.BackColor = Color.FromArgb(226, 232, 240);
             _headerDivider.Dock = DockStyle.Bottom;
@@ -375,6 +376,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _addLineButton.Name = "_addLineButton";
             _addLineButton.Size = new Size(238, 40);
             _addLineButton.Text = "+ Thêm dòng";
+            _addLineButton.Click += AddLineButton_Click;
             _addLineButton.UseVisualStyleBackColor = false;
             _entryCard.Controls.Add(_entryIcon);
             _entryCard.Controls.Add(_entryTitle);
@@ -614,6 +616,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _saveButton.Size = new Size(210, 46);
             _saveButton.Text = "Lưu phiếu nhập";
             _saveButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            _saveButton.Click += SaveButton_Click;
             _saveButton.UseVisualStyleBackColor = false;
             _cancelButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _cancelButton.AutoSize = false;
@@ -633,6 +636,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _cancelButton.Size = new Size(100, 46);
             _cancelButton.Text = "Hủy";
             _cancelButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            _cancelButton.Click += CancelButton_Click;
             _cancelButton.UseVisualStyleBackColor = false;
             _footerPanel.Controls.Add(_totalCaptionLabel);
             _footerPanel.Controls.Add(_totalValueLabel);

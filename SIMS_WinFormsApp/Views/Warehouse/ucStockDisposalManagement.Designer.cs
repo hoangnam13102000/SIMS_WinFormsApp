@@ -105,6 +105,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearDateLink.TabStop = true;
             this._clearDateLink.Text = "Xoá lọc";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
+            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
             this._clearDateLink.Visible = false;
             // 
             // _headerCard
@@ -156,7 +157,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this._titleLabel.Location = new System.Drawing.Point(80, 12);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(544, 36);
+            this._titleLabel.Size = new System.Drawing.Size(420, 36);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Tiêu hủy hàng";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -171,7 +172,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._subtitleLabel.Location = new System.Drawing.Point(80, 52);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(544, 20);
+            this._subtitleLabel.Size = new System.Drawing.Size(420, 20);
             this._subtitleLabel.TabIndex = 2;
             this._subtitleLabel.Text = "Hủy hàng theo lô và ghi nhận tổn thất";
             this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -197,8 +198,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             this._optionsButton.UseVisualStyleBackColor = false;
-            // 
+            //
             // _createButton
             // 
             this._createButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -219,6 +221,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.TabIndex = 4;
             this._createButton.Text = "Lập phiếu tiêu hủy";
             this._createButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             this._createButton.UseVisualStyleBackColor = false;
             // 
             // _headerLine
@@ -406,6 +409,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(930, 302);
             this._grid.TabIndex = 0;
+            this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
             // 
             // colDisposalId
             // 
@@ -600,6 +604,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.Name = "_prevButton";
             this._prevButton.Size = new System.Drawing.Size(32, 32);
             this._prevButton.TabIndex = 0;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             this._prevButton.UseVisualStyleBackColor = false;
             // 
             // _pageLabel
@@ -627,6 +632,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.Name = "_nextButton";
             this._nextButton.Size = new System.Drawing.Size(32, 32);
             this._nextButton.TabIndex = 2;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             this._nextButton.UseVisualStyleBackColor = false;
             // 
             // _pagerLine1
@@ -713,12 +719,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem.Name = "_exportCsvItem";
             this._exportCsvItem.Size = new System.Drawing.Size(179, 28);
             this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
             this._exportExcelItem.Size = new System.Drawing.Size(179, 28);
             this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _menuSeparator
             // 
@@ -730,6 +738,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._importItem.Name = "_importItem";
             this._importItem.Size = new System.Drawing.Size(179, 28);
             this._importItem.Text = "Nhập dữ liệu";
+            this._importItem.Click += new System.EventHandler(this.ImportItem_Click);
             // 
             // ucStockDisposalManagement
             // 

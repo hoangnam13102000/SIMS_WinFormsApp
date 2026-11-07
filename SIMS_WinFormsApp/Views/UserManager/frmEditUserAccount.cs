@@ -76,11 +76,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _designerBirthDate.Checked = false;
             _designerHireDate.MaxDate = DateTime.Today.AddYears(1);
             NumberInputFormatter.Attach(_designerSalary);
-            _designerChooseAvatarButton.Click += ChooseAvatarButton_Click;
-            _designerCancelButton.Click += (s, e) => RaiseCloseRequested();
             _designerFullName.TextChanged += (s, e) => UpdateAvatarInitial();
             _designerAvatarCircle.Resize += AvatarCircle_Resize;
             ApplyAvatarCircleRegion();
+        }
+
+        private void DesignerCancelButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
         }
 
         private void DisplayUser(UserDetailDto user)

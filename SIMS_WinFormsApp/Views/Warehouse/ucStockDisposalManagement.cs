@@ -53,18 +53,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _searchBox.TextChanged += new EventHandler(this.SearchBox_TextChanged);
             _fromDatePicker.ValueChanged += new EventHandler(this.DatePicker_ValueChanged);
             _toDatePicker.ValueChanged += new EventHandler(this.DatePicker_ValueChanged);
-            _clearDateLink.LinkClicked += new LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
             _pageSizeCombo.SelectedIndexChanged += new EventHandler(this.PageSizeCombo_SelectedIndexChanged);
-            _prevButton.Click += new EventHandler(this.PreviousButton_Click);
-            _nextButton.Click += new EventHandler(this.NextButton_Click);
-            _createButton.Click += new EventHandler(this.CreateButton_Click);
-            _optionsButton.Click += new EventHandler(this.OptionsButton_Click);
-            _exportCsvItem.Click += new EventHandler(this.ExportCsvItem_Click);
-            _exportExcelItem.Click += new EventHandler(this.ExportExcelItem_Click);
             _importItem.Image = IconBitmapCache.Get(IconChar.FileImport, Color.FromArgb(37, 99, 235), new Size(18, 18));
-            _importItem.Click += (sender, args) => ImportRequested?.Invoke(this, EventArgs.Empty);
             _grid.CellClick += new DataGridViewCellEventHandler(this.Grid_CellClick);
-            _grid.CellDoubleClick += new DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
             _grid.CellMouseMove += new DataGridViewCellMouseEventHandler(this.Grid_CellMouseMove);
             _grid.MouseLeave += new EventHandler(this.Grid_MouseLeave);
             _grid.CellToolTipTextNeeded += new DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
@@ -324,6 +315,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ExcelExportRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        private void ImportItem_Click(object sender, EventArgs e)
+        {
+            ImportRequested?.Invoke(this, EventArgs.Empty);
+        }
+
         private void Grid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
@@ -336,7 +332,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.ColumnIndex == colCode.Index || e.ColumnIndex == colCopy.Index)
                 DisposalCodeCopyRequested?.Invoke(disposal.DisposalCode);
             else if (e.ColumnIndex == colDetail.Index)
-                DetailRequested?.Invoke(disposal.DisposalId);
+            {
+                SelectDisposalRow(e.RowIndex);
+                ViewSelectedDisposal();
+            }
         }
 
         private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -344,9 +343,32 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
                 return;
 
-            StockDisposalListItemDto disposal = _grid.Rows[e.RowIndex].Tag as StockDisposalListItemDto;
-            if (disposal != null)
-                DetailRequested?.Invoke(disposal.DisposalId);
+            SelectDisposalRow(e.RowIndex);
+            ViewSelectedDisposal();
+        }
+
+        private StockDisposalListItemDto SelectedDisposal()
+        {
+            return _grid.SelectedRows.Count == 0
+                ? null
+                : _grid.SelectedRows[0].Tag as StockDisposalListItemDto;
+        }
+
+        private void ViewSelectedDisposal()
+        {
+            StockDisposalListItemDto disposal = SelectedDisposal();
+            if (disposal == null)
+                return;
+
+            // Read: selected row -> list presenter -> detail service -> detail dialog.
+            DetailRequested?.Invoke(disposal.DisposalId);
+        }
+
+        private void SelectDisposalRow(int rowIndex)
+        {
+            _grid.ClearSelection();
+            _grid.CurrentCell = _grid.Rows[rowIndex].Cells[colCode.Index];
+            _grid.Rows[rowIndex].Selected = true;
         }
 
         private void Grid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)

@@ -111,12 +111,19 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 _designerGender.Items.Add(option);
             _designerGender.SelectedIndex = -1;
             NumberInputFormatter.Attach(_designerSalary);
-            _designerChooseAvatarButton.Click += ChooseAvatarButton_Click;
-            _designerCancelButton.Click += (s, e) => RaiseCloseRequested();
-            _designerSaveButton.Click += (s, e) => RaiseSaveRequested();
             _designerFullName.TextChanged += (s, e) => UpdateAvatarInitial();
             _designerAvatarCircle.Resize += AvatarCircle_Resize;
             ApplyAvatarCircleRegion();
+        }
+
+        private void DesignerCancelButton_Click(object sender, EventArgs e)
+        {
+            RaiseCloseRequested();
+        }
+
+        private void DesignerSaveButton_Click(object sender, EventArgs e)
+        {
+            RaiseSaveRequested();
         }
 
         protected override void OnShown(EventArgs e)

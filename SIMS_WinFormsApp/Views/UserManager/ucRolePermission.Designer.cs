@@ -130,6 +130,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _saveButton.Margin = new Padding(0, 0, 10, 0);
             _saveButton.Size = new Size(132, 40);
             _saveButton.Text = "Lưu thay đổi";
+            _resetButton.Click += new System.EventHandler(ResetButton_Click);
+            _saveButton.Click += new System.EventHandler(SaveButton_Click);
 
             _content.ColumnCount = 2;
             _content.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 370F));

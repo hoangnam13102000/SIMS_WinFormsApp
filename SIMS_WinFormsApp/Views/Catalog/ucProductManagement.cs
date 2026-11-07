@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -27,7 +28,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private readonly bool _canEditProducts;
         private readonly bool _canManageProducts;
         private readonly Timer _searchTimer;
-        private readonly ContextMenuStrip _optionsMenu;
         private readonly Action<int> _showExpiredBatches;
         private readonly LocalProductImageStore _imageStore = new LocalProductImageStore();
         private readonly Dictionary<string, Image> _imageCache = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
@@ -54,91 +54,127 @@ namespace SIMS_WinFormsApp.Views.Catalog
             Action<int> showExpiredBatches = null)
         {
             InitializeComponent();
-            _header.SizeChanged += (sender, args) => LayoutHeader();
-            LayoutHeader();
-            _previousButton.Text = string.Empty;
-            _nextButton.Text = string.Empty;
-            _previousButton.Paint += (sender, args) =>
-                DrawPagingArrow(args.Graphics, _previousButton.ClientRectangle, false, _previousButton.Enabled);
-            _nextButton.Paint += (sender, args) =>
-                DrawPagingArrow(args.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
-            _refreshButton.Click += (sender, args) => LoadPage();
+            if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+                return;
+
             _canEditProducts = canEditProducts || canManageProducts;
             _canManageProducts = canManageProducts;
             _showExpiredBatches = showExpiredBatches;
             _expiredBatchesColumn.Visible = _showExpiredBatches != null;
-            _optionsMenu = new ContextMenuStrip(components);
-            _optionsMenu.Items.Add("Xuất CSV", null, (sender, args) => ExportProducts(new CsvTableExporter()));
-            _optionsMenu.Items.Add("Xuất Excel", null, (sender, args) => ExportProducts(new ExcelTableExporter()));
-            if (_canManageProducts)
-                _optionsMenu.Items.Add("Nhập dữ liệu", null, (sender, args) => ImportProducts());
-            _optionsMenu.Items.Add("Làm mới", null, (sender, args) => LoadPage());
-            _optionsButton.Click += (sender, args) => _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+            _importMenuItem.Visible = _canManageProducts;
             _addButton.Enabled = _canManageProducts;
             if (service == null) return;
 
             _service = service;
             _presenter = new ProductManagementPresenter(service);
-            _searchTimer = new Timer { Interval = 350 };
-            _searchTimer.Tick += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                _pageIndex = 0;
-                LoadPage();
-            };
-            _categoryComboBox.SelectedIndexChanged += (sender, args) =>
-            {
-                if (_isBindingCategoryFilter) return;
-                _pageIndex = 0;
-                LoadPage();
-            };
-            _searchTextBox.TextChanged += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                _searchTimer.Start();
-            };
-            _statusComboBox.SelectedIndexChanged += (sender, args) =>
-            {
-                _pageIndex = 0;
-                LoadPage();
-            };
-            _pageSizeComboBox.SelectedIndexChanged += (sender, args) =>
-            {
-                _pageSize = _pageSizeComboBox.SelectedIndex == 1 ? 20 :
-                    (_pageSizeComboBox.SelectedIndex == 2 ? 50 : 10);
-                _pageIndex = 0;
-                LoadPage();
-            };
-            _previousButton.Click += (sender, args) =>
-            {
-                if (_pageIndex <= 0) return;
-                _pageIndex--;
-                LoadPage();
-            };
-            _nextButton.Click += (sender, args) =>
-            {
-                if (_pageIndex + 1 >= PageCount) return;
-                _pageIndex++;
-                LoadPage();
-            };
-            _productsGrid.CellMouseClick += OnGridCellMouseClick;
-            DataGridViewCodeCopy.Attach(_productsGrid, "Code");
-            Load += (sender, args) =>
-            {
-                LoadPage();
-                _loadedOnce = true;
-            };
-            VisibleChanged += (sender, args) =>
-            {
-                if (Visible && _loadedOnce)
-                    LoadPage();
-            };
+            _searchTimer = new Timer(components) { Interval = 350 };
+            _searchTimer.Tick += SearchTimer_Tick;
+            DataGridViewCodeCopy.Attach(_productsGrid, "_codeColumn");
             Disposed += (sender, args) =>
             {
-                _searchTimer.Dispose();
                 foreach (Image image in _imageCache.Values) image.Dispose();
                 _imageCache.Clear();
             };
+        }
+
+        private void SearchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+            _pageIndex = 0;
+            LoadPage();
+        }
+
+        private void CategoryComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isBindingCategoryFilter) return;
+            _pageIndex = 0;
+            LoadPage();
+        }
+
+        private void SearchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            _searchTimer?.Stop();
+            _searchTimer?.Start();
+        }
+
+        private void StatusComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _pageIndex = 0;
+            LoadPage();
+        }
+
+        private void PageSizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _pageSize = _pageSizeComboBox.SelectedIndex == 1 ? 20 :
+                (_pageSizeComboBox.SelectedIndex == 2 ? 50 : 10);
+            _pageIndex = 0;
+            LoadPage();
+        }
+
+        private void ProductManagement_Load(object sender, EventArgs e)
+        {
+            LoadPage();
+            _loadedOnce = true;
+        }
+
+        private void ProductManagement_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible && _loadedOnce)
+                LoadPage();
+        }
+
+        private void PreviousButton_Paint(object sender, PaintEventArgs e)
+        {
+            DrawPagingArrow(e.Graphics, _previousButton.ClientRectangle, false, _previousButton.Enabled);
+        }
+
+        private void NextButton_Paint(object sender, PaintEventArgs e)
+        {
+            DrawPagingArrow(e.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
+        }
+
+        private void OptionsButton_Click(object sender, EventArgs e)
+        {
+            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
+        }
+
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            LoadPage();
+        }
+
+        private void PreviousButton_Click(object sender, EventArgs e)
+        {
+            if (_presenter == null || _pageIndex <= 0) return;
+            _pageIndex--;
+            LoadPage();
+        }
+
+        private void NextButton_Click(object sender, EventArgs e)
+        {
+            if (_presenter == null || _pageIndex + 1 >= PageCount) return;
+            _pageIndex++;
+            LoadPage();
+        }
+
+        private void ExportCsvMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportProducts(new CsvTableExporter());
+        }
+
+        private void ExportExcelMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportProducts(new ExcelTableExporter());
+        }
+
+        private void ImportMenuItem_Click(object sender, EventArgs e)
+        {
+            ImportProducts();
+        }
+
+        private void RefreshMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPage();
         }
 
         private int PageCount => Math.Max(1, (int)Math.Ceiling(_totalCount / (double)_pageSize));
@@ -158,20 +194,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 graphics.DrawLine(pen, centerX + direction * 2, centerY, centerX - direction * 3, centerY + 5);
             }
             graphics.SmoothingMode = previousSmoothingMode;
-        }
-
-        private void LayoutHeader()
-        {
-            int right = _header.ClientSize.Width - 16;
-            _refreshButton.Location = new Point(right - _refreshButton.Width, 29);
-            right = _refreshButton.Left - 8;
-            _optionsButton.Location = new Point(right - _optionsButton.Width, 29);
-            right = _optionsButton.Left - 8;
-            _addButton.Location = new Point(right - _addButton.Width, 29);
-            _titleLabel.Width = Math.Max(180, _addButton.Left - _titleLabel.Left - 16);
-            _addButton.BringToFront();
-            _optionsButton.BringToFront();
-            _refreshButton.BringToFront();
         }
 
         private void LoadPage()
@@ -249,6 +271,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     }
                 }
 
+                _productsGrid.ClearSelection();
+                _productsGrid.CurrentCell = null;
+
                 UpdatePaging();
             }
             catch (Exception ex)
@@ -296,6 +321,50 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _nextButton.BackColor = _nextButton.Enabled
                 ? Color.White
                 : Color.FromArgb(248, 250, 252);
+        }
+
+        private ProductRowDto SelectedProduct()
+        {
+            if (_presenter == null || _productsGrid.SelectedRows.Count == 0)
+                return null;
+
+            int rowIndex = _productsGrid.SelectedRows[0].Index;
+            return rowIndex >= 0 && rowIndex < _presenter.CurrentRows.Count
+                ? _presenter.CurrentRows[rowIndex]
+                : null;
+        }
+
+        private void ViewSelectedProduct()
+        {
+            ProductRowDto row = SelectedProduct();
+            if (row == null) return;
+
+            EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
+        }
+
+        // Edit: mở form sửa -> Presenter.Save -> Service.SaveProduct -> Repository.UpdateProduct.
+        private void EditSelectedProduct()
+        {
+            ProductRowDto row = SelectedProduct();
+            if (row == null || !_canEditProducts) return;
+
+            EditProduct(_presenter.Get(row.ProductId), false, row.CategoryName);
+        }
+
+        private void SetSelectedProductActive()
+        {
+            ProductRowDto row = SelectedProduct();
+            if (row == null || !_canEditProducts) return;
+
+            bool activate = !row.IsActive;
+            string action = activate ? "mở bán lại" : "ngừng bán";
+            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
+                "Bạn có chắc muốn " + action + " sản phẩm '" + row.Name + "' không?"))
+                return;
+
+            CatalogSaveResult result = _presenter.SetActive(row.ProductId, activate);
+            Notify(result);
+            if (result != null && result.Success) LoadPage();
         }
 
         private Image GetProductThumbnail(string imagePath, out bool unavailable)
@@ -354,9 +423,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             }
             if (e.ColumnIndex != _actionsColumn.Index) return;
 
+            _productsGrid.CurrentCell = _productsGrid.Rows[e.RowIndex].Cells[0];
+            _productsGrid.Rows[e.RowIndex].Selected = true;
             if (!_canEditProducts)
             {
-                EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
+                ViewSelectedProduct();
                 return;
             }
 
@@ -368,22 +439,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
 
             if (actionIndex == 0)
-                EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
+                ViewSelectedProduct();
             else if (actionIndex == 1)
-                EditProduct(_presenter.Get(row.ProductId), false, row.CategoryName);
-            else
-            {
-                if (!_canEditProducts) return;
-                bool activate = !row.IsActive;
-                string action = activate ? "mở bán lại" : "ngừng bán";
-                if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
-                    "Bạn có chắc muốn " + action + " sản phẩm '" + row.Name + "' không?"))
-                    return;
-
-                CatalogSaveResult result = _presenter.SetActive(row.ProductId, activate);
-                Notify(result);
-                if (result != null && result.Success) LoadPage();
-            }
+                EditSelectedProduct();
+            else if (actionIndex == 2)
+                SetSelectedProductActive();
         }
 
         private void EditProduct(ProductEditDto draft, bool readOnly = false, string categoryName = null)

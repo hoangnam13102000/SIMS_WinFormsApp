@@ -21,10 +21,15 @@ namespace SIMS_WinFormsApp.Views.Shell
         private AvatarControl _avatarControl;
         private IconButton _profileButton;
         private ContextMenuStrip _accountContextMenu;
+        private ToolStripMenuItem _accountNameMenuItem;
+        private ToolStripMenuItem _accountEmailMenuItem;
+        private ToolStripSeparator _accountSeparator1;
         private ToolStripMenuItem _profileMenuItem;
+        private ToolStripSeparator _accountSeparator2;
         private ToolStripMenuItem _logoutMenuItem;
         private ContextMenuStrip _notificationsContextMenu;
         private ToolStripMenuItem _notificationsTitleMenuItem;
+        private ToolStripMenuItem _notificationsClearItem;
         private ToolStripMenuItem _notificationsEmptyMenuItem;
         private Panel _sidebarPanel;
         private Label _menuLabel;
@@ -70,10 +75,15 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._footerPanel = new System.Windows.Forms.Panel();
             this._footerStatusLabel = new System.Windows.Forms.Label();
             this._accountContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._accountNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._accountEmailMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._accountSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._profileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._accountSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this._logoutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._notificationsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._notificationsTitleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._notificationsClearItem = new System.Windows.Forms.ToolStripMenuItem();
             this._notificationsEmptyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._settingsButton = new FontAwesome.Sharp.IconButton();
             this._chatbotButton = new FontAwesome.Sharp.IconButton();
@@ -141,6 +151,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._profileButton.Size = new System.Drawing.Size(30, 42);
             this._profileButton.TabIndex = 0;
             this._profileButton.UseVisualStyleBackColor = false;
+            this._profileButton.Click += new System.EventHandler(this.AccountMenuTarget_Click);
             // 
             // _avatarControl
             // 
@@ -155,6 +166,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._avatarControl.RingWidth = 2;
             this._avatarControl.Size = new System.Drawing.Size(42, 42);
             this._avatarControl.TabIndex = 1;
+            this._avatarControl.Click += new System.EventHandler(this.AccountMenuTarget_Click);
             // 
             // _userEmailLabel
             // 
@@ -168,6 +180,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._userEmailLabel.TabIndex = 3;
             this._userEmailLabel.Text = "admin@sims.local";
             this._userEmailLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this._userEmailLabel.Click += new System.EventHandler(this.AccountMenuTarget_Click);
             // 
             // _userNameLabel
             // 
@@ -181,6 +194,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._userNameLabel.TabIndex = 4;
             this._userNameLabel.Text = "Admin";
             this._userNameLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this._userNameLabel.Click += new System.EventHandler(this.AccountMenuTarget_Click);
             // 
             // _notificationsButton
             // 
@@ -193,6 +207,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsButton.Name = "_notificationsButton";
             this._notificationsButton.Size = new System.Drawing.Size(52, 52);
             this._notificationsButton.TabIndex = 5;
+            this._notificationsButton.Click += new System.EventHandler(this.NotificationsButton_Click);
             // 
             // _subtitleLabel
             // 
@@ -277,6 +292,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._sidebarToggleButton.Size = new System.Drawing.Size(42, 36);
             this._sidebarToggleButton.TabIndex = 1;
             this._sidebarToggleButton.UseVisualStyleBackColor = false;
+            this._sidebarToggleButton.Click += new System.EventHandler(this.SidebarToggleButton_Click);
             // 
             // _menuLabel
             // 
@@ -326,28 +342,75 @@ namespace SIMS_WinFormsApp.Views.Shell
             // 
             this._accountContextMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._accountContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._accountNameMenuItem,
+            this._accountEmailMenuItem,
+            this._accountSeparator1,
             this._profileMenuItem,
+            this._accountSeparator2,
             this._logoutMenuItem});
+            this._accountContextMenu.AutoSize = true;
+            this._accountContextMenu.MinimumSize = new System.Drawing.Size(266, 0);
             this._accountContextMenu.Name = "_accountContextMenu";
-            this._accountContextMenu.Size = new System.Drawing.Size(199, 68);
+            this._accountContextMenu.Padding = new System.Windows.Forms.Padding(5);
+            this._accountContextMenu.ShowImageMargin = true;
+            this._accountContextMenu.Size = new System.Drawing.Size(266, 0);
+            //
+            // _accountNameMenuItem
+            //
+            this._accountNameMenuItem.AutoSize = false;
+            this._accountNameMenuItem.Enabled = false;
+            this._accountNameMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this._accountNameMenuItem.Name = "_accountNameMenuItem";
+            this._accountNameMenuItem.Padding = new System.Windows.Forms.Padding(12, 8, 12, 2);
+            this._accountNameMenuItem.Size = new System.Drawing.Size(250, 32);
+            this._accountNameMenuItem.Text = "Admin";
+            //
+            // _accountEmailMenuItem
+            //
+            this._accountEmailMenuItem.AutoSize = false;
+            this._accountEmailMenuItem.Enabled = false;
+            this._accountEmailMenuItem.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this._accountEmailMenuItem.Name = "_accountEmailMenuItem";
+            this._accountEmailMenuItem.Padding = new System.Windows.Forms.Padding(12, 0, 12, 8);
+            this._accountEmailMenuItem.Size = new System.Drawing.Size(250, 28);
+            this._accountEmailMenuItem.Text = "admin@sims.local";
+            //
+            // _accountSeparator1
+            //
+            this._accountSeparator1.Name = "_accountSeparator1";
+            this._accountSeparator1.Size = new System.Drawing.Size(247, 6);
             // 
             // _profileMenuItem
             // 
+            this._profileMenuItem.AutoSize = false;
+            this._profileMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._profileMenuItem.Name = "_profileMenuItem";
-            this._profileMenuItem.Size = new System.Drawing.Size(198, 32);
+            this._profileMenuItem.Padding = new System.Windows.Forms.Padding(10, 4, 10, 4);
+            this._profileMenuItem.Size = new System.Drawing.Size(254, 42);
             this._profileMenuItem.Text = "Hồ sơ cá nhân";
+            this._profileMenuItem.Click += new System.EventHandler(this.ProfileMenuItem_Click);
+            //
+            // _accountSeparator2
+            //
+            this._accountSeparator2.Name = "_accountSeparator2";
+            this._accountSeparator2.Size = new System.Drawing.Size(247, 6);
             // 
             // _logoutMenuItem
             // 
+            this._logoutMenuItem.AutoSize = false;
+            this._logoutMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._logoutMenuItem.Name = "_logoutMenuItem";
-            this._logoutMenuItem.Size = new System.Drawing.Size(198, 32);
+            this._logoutMenuItem.Padding = new System.Windows.Forms.Padding(10, 4, 10, 4);
+            this._logoutMenuItem.Size = new System.Drawing.Size(254, 42);
             this._logoutMenuItem.Text = "Đăng xuất";
+            this._logoutMenuItem.Click += new System.EventHandler(this.LogoutMenuItem_Click);
             // 
             // _notificationsContextMenu
             // 
             this._notificationsContextMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             this._notificationsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._notificationsTitleMenuItem,
+            this._notificationsClearItem,
             this._notificationsEmptyMenuItem});
             this._notificationsContextMenu.Name = "_notificationsContextMenu";
             this._notificationsContextMenu.Size = new System.Drawing.Size(286, 68);
@@ -358,7 +421,17 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsTitleMenuItem.Name = "_notificationsTitleMenuItem";
             this._notificationsTitleMenuItem.Size = new System.Drawing.Size(285, 32);
             this._notificationsTitleMenuItem.Text = "Thông báo";
-            // 
+            //
+            // _notificationsClearItem
+            //
+            this._notificationsClearItem.Enabled = false;
+            this._notificationsClearItem.Image = IconBitmapCache.Get(FontAwesome.Sharp.IconChar.Trash, AppColors.Error, new System.Drawing.Size(16, 16));
+            this._notificationsClearItem.Name = "_notificationsClearItem";
+            this._notificationsClearItem.Size = new System.Drawing.Size(285, 32);
+            this._notificationsClearItem.Text = "Xóa tất cả";
+            this._notificationsClearItem.Visible = false;
+            this._notificationsClearItem.Click += new System.EventHandler(this.NotificationsClearItem_Click);
+            //
             // _notificationsEmptyMenuItem
             // 
             this._notificationsEmptyMenuItem.Enabled = false;
@@ -377,6 +450,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._settingsButton.Size = new System.Drawing.Size(48, 48);
             this._settingsButton.TabIndex = 2;
             this._settingsButton.UseVisualStyleBackColor = false;
+            this._settingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             // 
             // _chatbotButton
             // 
@@ -389,6 +463,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._chatbotButton.Size = new System.Drawing.Size(48, 48);
             this._chatbotButton.TabIndex = 1;
             this._chatbotButton.UseVisualStyleBackColor = false;
+            this._chatbotButton.Click += new System.EventHandler(this.ChatbotButton_Click);
             // 
             // MainLayoutControl
             // 

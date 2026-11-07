@@ -7,6 +7,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
     partial class ucSupplierManagement
     {
         private System.ComponentModel.IContainer components = null;
+        private ContextMenuStrip _optionsMenu;
+        private ToolStripMenuItem _exportCsvMenuItem;
+        private ToolStripMenuItem _exportExcelMenuItem;
+        private ToolStripMenuItem _importMenuItem;
         private TableLayoutPanel _root;
         private Panel _header;
         private Panel _headerIconPanel;
@@ -45,9 +49,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
@@ -76,6 +84,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton = new System.Windows.Forms.Button();
             this._pageLabel = new System.Windows.Forms.Label();
             this._previousButton = new System.Windows.Forms.Button();
+            this._optionsMenu.SuspendLayout();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -87,6 +96,37 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._pagingInfo.SuspendLayout();
             this._pagingNavigation.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // _optionsMenu
+            // 
+            this._optionsMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._exportCsvMenuItem,
+            this._exportExcelMenuItem,
+            this._importMenuItem});
+            this._optionsMenu.Name = "_optionsMenu";
+            this._optionsMenu.Size = new System.Drawing.Size(187, 100);
+            // 
+            // _exportCsvMenuItem
+            // 
+            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
+            this._exportCsvMenuItem.Size = new System.Drawing.Size(186, 32);
+            this._exportCsvMenuItem.Text = "Xuất CSV";
+            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
+            // 
+            // _exportExcelMenuItem
+            // 
+            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
+            this._exportExcelMenuItem.Size = new System.Drawing.Size(186, 32);
+            this._exportExcelMenuItem.Text = "Xuất Excel";
+            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
+            // 
+            // _importMenuItem
+            // 
+            this._importMenuItem.Name = "_importMenuItem";
+            this._importMenuItem.Size = new System.Drawing.Size(186, 32);
+            this._importMenuItem.Text = "Nhập dữ liệu";
+            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
             // 
             // _root
             // 
@@ -186,6 +226,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._addButton.TabIndex = 3;
             this._addButton.Text = "Thêm nhà cung cấp";
             this._addButton.UseVisualStyleBackColor = false;
+            this._addButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
             // _optionsButton
             // 
@@ -195,9 +236,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._optionsButton.Location = new System.Drawing.Point(826, 29);
             this._optionsButton.Name = "_optionsButton";
             this._optionsButton.Size = new System.Drawing.Size(110, 38);
-            this._optionsButton.TabIndex = 4;
+            this._optionsButton.TabIndex = 7;
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             // 
             // _refreshButton
             // 
@@ -207,9 +249,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._refreshButton.Location = new System.Drawing.Point(944, 29);
             this._refreshButton.Name = "_refreshButton";
             this._refreshButton.Size = new System.Drawing.Size(92, 38);
-            this._refreshButton.TabIndex = 5;
+            this._refreshButton.TabIndex = 8;
             this._refreshButton.Text = "Làm mới";
             this._refreshButton.UseVisualStyleBackColor = false;
+            this._refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             // 
             // _toolbar
             // 
@@ -262,19 +305,19 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._suppliersGrid.AllowUserToAddRows = false;
             this._suppliersGrid.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._suppliersGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._suppliersGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._suppliersGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._suppliersGrid.BackgroundColor = System.Drawing.Color.White;
             this._suppliersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._suppliersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._suppliersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this._suppliersGrid.ColumnHeadersHeight = 40;
             this._suppliersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._nameColumn,
@@ -283,14 +326,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._addressColumn,
             this._itemsColumn,
             this._actionsColumn});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._suppliersGrid.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._suppliersGrid.DefaultCellStyle = dataGridViewCellStyle3;
             this._suppliersGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._suppliersGrid.EnableHeadersVisualStyles = false;
             this._suppliersGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -306,52 +349,52 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._suppliersGrid.Size = new System.Drawing.Size(1050, 436);
             this._suppliersGrid.TabIndex = 0;
             // 
-            // _nameColumn
+            // Name
             // 
             this._nameColumn.FillWeight = 16F;
             this._nameColumn.HeaderText = "Tên nhà cung cấp";
             this._nameColumn.MinimumWidth = 8;
-            this._nameColumn.Name = "Name";
+            this._nameColumn.Name = "_nameColumn";
             this._nameColumn.ReadOnly = true;
             // 
-            // _phoneColumn
+            // Phone
             // 
             this._phoneColumn.FillWeight = 10F;
             this._phoneColumn.HeaderText = "Điện thoại";
             this._phoneColumn.MinimumWidth = 8;
-            this._phoneColumn.Name = "Phone";
+            this._phoneColumn.Name = "_phoneColumn";
             this._phoneColumn.ReadOnly = true;
             // 
-            // _emailColumn
+            // Email
             // 
             this._emailColumn.FillWeight = 14F;
             this._emailColumn.HeaderText = "Email";
             this._emailColumn.MinimumWidth = 8;
-            this._emailColumn.Name = "Email";
+            this._emailColumn.Name = "_emailColumn";
             this._emailColumn.ReadOnly = true;
             // 
-            // _addressColumn
+            // Address
             // 
             this._addressColumn.FillWeight = 16F;
             this._addressColumn.HeaderText = "Địa chỉ";
             this._addressColumn.MinimumWidth = 8;
-            this._addressColumn.Name = "Address";
+            this._addressColumn.Name = "_addressColumn";
             this._addressColumn.ReadOnly = true;
             // 
-            // _itemsColumn
+            // Items
             // 
             this._itemsColumn.FillWeight = 15F;
             this._itemsColumn.HeaderText = "Mặt hàng cung cấp";
             this._itemsColumn.MinimumWidth = 8;
-            this._itemsColumn.Name = "Items";
+            this._itemsColumn.Name = "_itemsColumn";
             this._itemsColumn.ReadOnly = true;
             // 
-            // _actionsColumn
+            // Actions
             // 
             this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this._actionsColumn.HeaderText = "Thao tác";
             this._actionsColumn.MinimumWidth = 8;
-            this._actionsColumn.Name = "Actions";
+            this._actionsColumn.Name = "_actionsColumn";
             this._actionsColumn.ReadOnly = true;
             this._actionsColumn.ToolTipText = "Xem, sửa hoặc xóa nhà cung cấp";
             this._actionsColumn.Width = 120;
@@ -440,6 +483,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton.TabIndex = 0;
             this._nextButton.Text = "›";
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pageLabel
             // 
@@ -470,6 +514,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._previousButton.TabIndex = 2;
             this._previousButton.Text = "‹";
             this._previousButton.UseVisualStyleBackColor = false;
+            this._previousButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // ucSupplierManagement
             // 
@@ -479,6 +524,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this.Controls.Add(this._root);
             this.Name = "ucSupplierManagement";
             this.Size = new System.Drawing.Size(1100, 720);
+            this._optionsMenu.ResumeLayout(false);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._header.PerformLayout();
@@ -494,5 +540,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this.ResumeLayout(false);
 
         }
+
     }
 }

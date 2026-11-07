@@ -7,8 +7,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
 {
     public partial class frmMessageDialog : Form
     {
-        private Button _tertiaryButton;
-
         public frmMessageDialog()
         {
             InitializeComponent();
@@ -59,8 +57,9 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             {
                 btnPrimary,
                 btnSecondary,
-                buttonTexts.Length == 3 ? GetTertiaryButton() : null
+                buttonTexts.Length == 3 ? _tertiaryButton : null
             };
+            _tertiaryButton.Visible = buttonTexts.Length == 3;
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i] == null) continue;
@@ -81,27 +80,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             CancelButton = btnClose;
             _closeResult = closeResult;
             PositionButtons(buttons, buttonTexts.Length);
-        }
-
-        private Button GetTertiaryButton()
-        {
-            if (_tertiaryButton != null) return _tertiaryButton;
-
-            _tertiaryButton = new Button
-            {
-                BackColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = btnSecondary.Font,
-                ForeColor = btnSecondary.ForeColor,
-                Location = new Point(104, btnSecondary.Location.Y),
-                Name = "btnTertiary",
-                Size = btnSecondary.Size,
-                TabIndex = 2,
-                UseVisualStyleBackColor = false
-            };
-            _tertiaryButton.FlatAppearance.BorderColor = btnSecondary.FlatAppearance.BorderColor;
-            pnlFooter.Controls.Add(_tertiaryButton);
-            return _tertiaryButton;
         }
 
         private DialogResult _closeResult = DialogResult.Cancel;
@@ -126,6 +104,21 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         {
             DialogResult = _closeResult;
             Close();
+        }
+
+        private void btnPrimary_Click(object sender, EventArgs e)
+        {
+            DialogResult = btnPrimary.DialogResult;
+        }
+
+        private void btnSecondary_Click(object sender, EventArgs e)
+        {
+            DialogResult = btnSecondary.DialogResult;
+        }
+
+        private void _tertiaryButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = _tertiaryButton.DialogResult;
         }
     }
 }

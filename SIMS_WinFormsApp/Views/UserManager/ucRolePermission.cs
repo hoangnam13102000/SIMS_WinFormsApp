@@ -47,10 +47,18 @@ namespace SIMS_WinFormsApp.Views.UserManager
                     _permissionsGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
             };
             _permissionsGrid.CellValueChanged += OnPermissionCellValueChanged;
-            _saveButton.Click += (sender, args) => SaveRequested?.Invoke(this, EventArgs.Empty);
-            _resetButton.Click += (sender, args) => ResetRequested?.Invoke(this, EventArgs.Empty);
             Load += (sender, args) => ViewReady?.Invoke(this, EventArgs.Empty);
             Disposed += (sender, args) => _presenter.Dispose();
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            ResetRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void LayoutHeaderActions()

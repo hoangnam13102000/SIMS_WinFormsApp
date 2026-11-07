@@ -58,7 +58,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             HeaderTitle = dialogTitle;
             SetHeaderIcon(IconChar.Barcode, AppColors.Accent);
             _instructionLabel.Text = instructionText;
-            AddFooterButton("Hủy", false, CancelButton_Click);
             CloseRequested += CloseRequestedHandler;
 
             _presenter = new BarcodeScannerPresenter(this, this, captureSession, engine);

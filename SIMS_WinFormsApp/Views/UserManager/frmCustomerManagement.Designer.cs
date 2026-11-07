@@ -7,6 +7,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
     partial class frmCustomerManagement
     {
         private System.ComponentModel.IContainer components = null;
+        private ContextMenuStrip _rowMenu;
+        private ToolStripMenuItem _viewDetailsMenuItem;
+        private ToolStripMenuItem _editUserMenuItem;
+        private ToolStripMenuItem _toggleLockMenuItem;
         private Panel _surface;
         private TableLayoutPanel _contentLayout;
         private Panel _headerPanel;
@@ -19,6 +23,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private TextBox _searchBox;
         private Label _statusLabel;
         private ComboBox _statusFilter;
+        private Button _lockButton;
         private Button _refreshButton;
         private Panel _gridCard;
         private DataGridView _usersGrid;
@@ -40,6 +45,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this._rowMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._viewDetailsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._editUserMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._toggleLockMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._surface = new System.Windows.Forms.Panel();
             this._contentLayout = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
@@ -48,6 +57,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._toolbar = new System.Windows.Forms.Panel();
             this._searchLabel = new System.Windows.Forms.Label();
             this._statusLabel = new System.Windows.Forms.Label();
+            this._lockButton = new System.Windows.Forms.Button();
             this._refreshButton = new System.Windows.Forms.Button();
             this._gridCard = new System.Windows.Forms.Panel();
             this._usersGrid = new System.Windows.Forms.DataGridView();
@@ -69,6 +79,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._toolbar.SuspendLayout();
             this._gridCard.SuspendLayout();
+            this._rowMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._usersGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,6 +116,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._headerPanel.Controls.Add(this._headerIconPanel);
             this._headerPanel.Controls.Add(this._subtitleLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
+            this._headerPanel.Controls.Add(this._lockButton);
             this._headerPanel.Controls.Add(this._refreshButton);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerPanel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
@@ -190,6 +202,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._statusColumn,
             this._lockColumn,
             this._actionsColumn});
+            this._usersGrid.ContextMenuStrip = this._rowMenu;
+            this._usersGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.UsersGrid_CellDoubleClick);
+            this._usersGrid.SelectionChanged += new System.EventHandler(this.UsersGrid_SelectionChanged);
             this._usersGrid.Name = "_usersGrid";
             this._usersGrid.ReadOnly = true;
             this._usersGrid.RowHeadersVisible = false;
@@ -256,6 +271,36 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._actionsColumn.ReadOnly = true;
             this._actionsColumn.ToolTipText = "Xem, sửa hoặc khóa / mở khóa";
             this._actionsColumn.Width = 120;
+            //
+            // _viewDetailsMenuItem
+            //
+            this._viewDetailsMenuItem.AutoSize = true;
+            this._viewDetailsMenuItem.Name = "_viewDetailsMenuItem";
+            this._viewDetailsMenuItem.Text = "Xem chi tiết";
+            this._viewDetailsMenuItem.Click += new System.EventHandler(this.ViewDetailsMenuItem_Click);
+            //
+            // _editUserMenuItem
+            //
+            this._editUserMenuItem.AutoSize = true;
+            this._editUserMenuItem.Name = "_editUserMenuItem";
+            this._editUserMenuItem.Text = "Sửa tài khoản";
+            this._editUserMenuItem.Click += new System.EventHandler(this.EditUserMenuItem_Click);
+            //
+            // _toggleLockMenuItem
+            //
+            this._toggleLockMenuItem.AutoSize = true;
+            this._toggleLockMenuItem.Name = "_toggleLockMenuItem";
+            this._toggleLockMenuItem.Text = "Khóa / mở khóa";
+            this._toggleLockMenuItem.Click += new System.EventHandler(this.ToggleLockMenuItem_Click);
+            //
+            // _rowMenu
+            //
+            this._rowMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._viewDetailsMenuItem,
+            this._editUserMenuItem,
+            this._toggleLockMenuItem});
+            this._rowMenu.Name = "_rowMenu";
+            this._rowMenu.ResumeLayout(false);
             // 
             // _statusFilter
             // 
@@ -304,6 +349,22 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._titleLabel.TabIndex = 4;
             this._titleLabel.Text = "Quản lý khách hàng";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // _lockButton
+            //
+            this._lockButton.BackColor = System.Drawing.Color.White;
+            this._lockButton.Enabled = false;
+            this._lockButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(203, 213, 225);
+            this._lockButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(248, 250, 252);
+            this._lockButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._lockButton.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this._lockButton.ForeColor = System.Drawing.Color.FromArgb(180, 83, 9);
+            this._lockButton.Location = new System.Drawing.Point(536, 28);
+            this._lockButton.Name = "_lockButton";
+            this._lockButton.Size = new System.Drawing.Size(110, 38);
+            this._lockButton.TabIndex = 7;
+            this._lockButton.Text = "Khóa";
+            this._lockButton.Click += new System.EventHandler(this._lockButton_Click);
+            this._lockButton.UseVisualStyleBackColor = false;
             //
             // _refreshButton
             //
@@ -319,6 +380,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._refreshButton.Size = new System.Drawing.Size(126, 38);
             this._refreshButton.TabIndex = 2;
             this._refreshButton.Text = "Làm mới";
+            this._refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             this._refreshButton.UseVisualStyleBackColor = false;
             //
             // _gridCard

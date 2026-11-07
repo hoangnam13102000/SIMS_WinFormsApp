@@ -174,6 +174,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerChooseAvatarButton.Size = new System.Drawing.Size(136, 41);
             this._designerChooseAvatarButton.TabIndex = 1;
             this._designerChooseAvatarButton.Text = "Chọn ảnh";
+            this._designerChooseAvatarButton.Click += new System.EventHandler(this.ChooseAvatarButton_Click);
             // 
             // _designerAvatarHint
             // 
@@ -453,6 +454,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._designerCancelButton.Size = new System.Drawing.Size(112, 40);
             this._designerCancelButton.TabIndex = 0;
             this._designerCancelButton.Text = "Hủy";
+            this._designerCancelButton.Click += new System.EventHandler(this.DesignerCancelButton_Click);
             // 
             // _designerSaveButton
             // 
