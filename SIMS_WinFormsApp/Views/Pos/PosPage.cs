@@ -20,7 +20,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 AppComposition.CreateCustomerLookupService(),
                 AppComposition.CreateInvoiceService(),
                 AppComposition.CreateInventoryService(),
-                AppComposition.CreatePromotionService(),
                 AppComposition.CreateBarcodeScannerLauncher(),
                 new HeldCartStore(),
                 () => view.FindForm() ?? (IWin32Window)view,

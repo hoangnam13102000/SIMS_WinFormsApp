@@ -201,7 +201,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                             PointsShare = pointsShare,
                             RequiresApproval = requiresApproval,
                             Status = "PENDING",
-                            CreatedBy = currentUserId
+                            CreatedBy = currentUserId,
+                            CreatedAt = DateTime.Now
                         };
                         db.ReturnExchanges.InsertOnSubmit(requestEntity);
                         db.SubmitChanges();

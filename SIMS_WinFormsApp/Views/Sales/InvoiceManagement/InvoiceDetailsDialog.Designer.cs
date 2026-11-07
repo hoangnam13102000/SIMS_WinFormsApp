@@ -22,7 +22,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private Label _paymentCaption;
         private Label _subtotalCaption;
         private Label _discountCaption;
-        private Label _promotionCaption;
         private Label _pointsCaption;
         private Label _invoiceCodeValue;
         private Label _dateValue;
@@ -33,7 +32,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private Label _discountValue;
         private Label _vatLabel;
         private Label _vatValue;
-        private Label _promotionValue;
         private Label _pointsValue;
         private Label _statusValue;
         private Label _totalValue;
@@ -84,8 +82,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._discountValue = new System.Windows.Forms.Label();
             this._vatLabel = new System.Windows.Forms.Label();
             this._vatValue = new System.Windows.Forms.Label();
-            this._promotionCaption = new System.Windows.Forms.Label();
-            this._promotionValue = new System.Windows.Forms.Label();
             this._pointsCaption = new System.Windows.Forms.Label();
             this._pointsValue = new System.Windows.Forms.Label();
             this._linesGrid = new System.Windows.Forms.DataGridView();
@@ -218,15 +214,12 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._infoLayout.Controls.Add(this._discountValue, 1, 6);
             this._infoLayout.Controls.Add(this._vatLabel, 0, 7);
             this._infoLayout.Controls.Add(this._vatValue, 1, 7);
-            this._infoLayout.Controls.Add(this._promotionCaption, 0, 8);
-            this._infoLayout.Controls.Add(this._promotionValue, 1, 8);
-            this._infoLayout.Controls.Add(this._pointsCaption, 0, 9);
-            this._infoLayout.Controls.Add(this._pointsValue, 1, 9);
+            this._infoLayout.Controls.Add(this._pointsCaption, 0, 8);
+            this._infoLayout.Controls.Add(this._pointsValue, 1, 8);
             this._infoLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._infoLayout.Location = new System.Drawing.Point(3, 3);
             this._infoLayout.Name = "_infoLayout";
-            this._infoLayout.RowCount = 10;
-            this._infoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._infoLayout.RowCount = 9;
             this._infoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this._infoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this._infoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -423,35 +416,12 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._vatValue.TabIndex = 15;
             this._vatValue.Text = "19.200 đ";
             // 
-            // _promotionCaption
-            // 
-            this._promotionCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promotionCaption.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._promotionCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._promotionCaption.Location = new System.Drawing.Point(3, 240);
-            this._promotionCaption.Name = "_promotionCaption";
-            this._promotionCaption.Size = new System.Drawing.Size(183, 30);
-            this._promotionCaption.TabIndex = 16;
-            this._promotionCaption.Text = "Mã khuyến mãi";
-            this._promotionCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _promotionValue
-            // 
-            this._promotionValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promotionValue.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._promotionValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._promotionValue.Location = new System.Drawing.Point(192, 240);
-            this._promotionValue.Name = "_promotionValue";
-            this._promotionValue.Size = new System.Drawing.Size(330, 30);
-            this._promotionValue.TabIndex = 17;
-            this._promotionValue.Text = "WELCOME10";
-            // 
             // _pointsCaption
             // 
             this._pointsCaption.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pointsCaption.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._pointsCaption.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._pointsCaption.Location = new System.Drawing.Point(3, 270);
+            this._pointsCaption.Location = new System.Drawing.Point(3, 240);
             this._pointsCaption.Name = "_pointsCaption";
             this._pointsCaption.Size = new System.Drawing.Size(183, 30);
             this._pointsCaption.TabIndex = 18;
@@ -463,7 +433,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._pointsValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pointsValue.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._pointsValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._pointsValue.Location = new System.Drawing.Point(192, 270);
+            this._pointsValue.Location = new System.Drawing.Point(192, 240);
             this._pointsValue.Name = "_pointsValue";
             this._pointsValue.Size = new System.Drawing.Size(330, 30);
             this._pointsValue.TabIndex = 19;

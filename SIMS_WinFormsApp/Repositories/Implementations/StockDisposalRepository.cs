@@ -32,11 +32,21 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             DateTime? toExclusive = toDate.HasValue ? toDate.Value.Date.AddDays(1) : (DateTime?)null;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                return (from disposal in db.StockDisposals
+                IQueryable<StockDisposalEntity> disposals = db.StockDisposals;
+                if (fromDateTime.HasValue)
+                {
+                    DateTime start = fromDateTime.Value;
+                    disposals = disposals.Where(disposal => disposal.CreatedAt >= start);
+                }
+                if (toExclusive.HasValue)
+                {
+                    DateTime end = toExclusive.Value;
+                    disposals = disposals.Where(disposal => disposal.CreatedAt < end);
+                }
+
+                return (from disposal in disposals
                     join user in db.Users on disposal.CreatedBy equals user.UserID
-                    where (!fromDateTime.HasValue || disposal.CreatedAt >= fromDateTime.Value)
-                        && (!toExclusive.HasValue || disposal.CreatedAt < toExclusive.Value)
-                        && (normalizedKeyword.Length == 0
+                    where (normalizedKeyword.Length == 0
                             || SqlMethods.Like(disposal.DisposalCode, pattern)
                             || SqlMethods.Like(user.FullName, pattern)
                             || SqlMethods.Like(disposal.Note, pattern)

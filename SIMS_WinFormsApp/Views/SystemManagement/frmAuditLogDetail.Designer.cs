@@ -30,7 +30,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _closeButton.Name = "_closeButton";
             _closeButton.Size = new Size(112, 44);
             _closeButton.Text = "Đóng";
-            _closeButton.Click += new System.EventHandler(CloseButton_Click);
+            this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
             FooterHost.Controls.Add(_closeButton);
 
             _detailInfoGrid.AutoSize = true;

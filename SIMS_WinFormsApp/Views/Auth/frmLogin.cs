@@ -143,11 +143,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             AlignOptionsRow();
         }
 
-        private void LnkForgotPassword_TextChanged(object sender, EventArgs e)
-        {
-            FitForgotPasswordLink();
-        }
-
         private void PnlRight_Resize(object sender, EventArgs e)
         {
             LayoutLoginPanels();
@@ -168,15 +163,6 @@ namespace SIMS_WinFormsApp.Views.Auth
 
             int checkY = Math.Max(0, (pnlOptionsRow.Height - chkRemember.Height) / 2);
             chkRemember.Location = new Point(0, checkY);
-        }
-
-        private void FitForgotPasswordLink()
-        {
-            if (lnkForgotPassword == null) return;
-
-            int neededWidth = lnkForgotPassword.GetPreferredSize(Size.Empty).Width + 4;
-            if (neededWidth > lnkForgotPassword.Width)
-                lnkForgotPassword.Width = neededWidth;
         }
 
         private void CenterFormCard()

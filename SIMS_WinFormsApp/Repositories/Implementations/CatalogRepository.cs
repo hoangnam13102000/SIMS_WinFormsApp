@@ -57,7 +57,10 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                                     .Sum() ?? 0
                             };
                 if (categoryId.HasValue)
-                    query = query.Where(row => row.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    query = query.Where(row => row.CategoryID == selectedCategoryId);
+                }
 
                 int count = query.Count();
                 var rows = query.OrderBy(row => row.ProductName).Skip(checked(pageIndex * pageSize)).Take(pageSize)
@@ -91,8 +94,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     Code = product.ProductCode,
                     Name = product.ProductName,
                     CategoryId = product.CategoryID,
-                    SupplierId = db.SupplierProducts.Where(sp => sp.ProductID == productId && sp.IsPreferred)
-                        .Select(sp => (int?)sp.SupplierID).FirstOrDefault(),
                     Brand = product.Brand,
                     Unit = product.Unit,
                     WeightVolume = product.WeightVolume,
@@ -114,6 +115,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 var product = new ProductEntity();
                 ApplyProduct(product, dto);
                 product.Stock = dto.Stock;
+                product.CreatedAt = DateTime.Now;
                 db.Products.InsertOnSubmit(product);
                 db.SubmitChanges();
                 return product.ProductID;
@@ -140,36 +142,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 product.Status = active ? "ACTIVE" : "DISABLED";
                 product.UpdatedAt = DateTime.Now;
                 db.SubmitChanges();
-            }
-        }
-
-        public void SetPreferredSupplier(int productId, int? supplierId)
-        {
-            using (var db = _connections.CreateDataContext())
-            {
-                db.Connection.Open();
-                using (var transaction = db.Connection.BeginTransaction(System.Data.IsolationLevel.Serializable))
-                {
-                    db.Transaction = transaction;
-                    var links = db.SupplierProducts.Where(sp => sp.ProductID == productId).ToList();
-                    foreach (SupplierProductEntity link in links)
-                        link.IsPreferred = false;
-                    if (supplierId.HasValue)
-                    {
-                        SupplierProductEntity selected = links.FirstOrDefault(link => link.SupplierID == supplierId.Value);
-                        if (selected == null)
-                            db.SupplierProducts.InsertOnSubmit(new SupplierProductEntity
-                            {
-                                SupplierID = supplierId.Value,
-                                ProductID = productId,
-                                IsPreferred = true
-                            });
-                        else
-                            selected.IsPreferred = true;
-                    }
-                    db.SubmitChanges();
-                    transaction.Commit();
-                }
             }
         }
 
@@ -302,13 +274,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     }).ToList();
                 return new CatalogPage<SupplierRowDto> { TotalCount = count, Rows = rows };
             }
-        }
-
-        public IReadOnlyList<LookupItem> GetActiveSuppliers()
-        {
-            using (var db = _connections.CreateDataContext())
-                return db.Suppliers.Where(s => !s.IsDeleted).OrderBy(s => s.SupplierName)
-                    .Select(s => new LookupItem { Id = s.SupplierID, Name = s.SupplierName }).ToList();
         }
 
         public SupplierEditDto GetSupplier(int supplierId)

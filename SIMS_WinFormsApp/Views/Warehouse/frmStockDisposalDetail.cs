@@ -29,7 +29,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _lines = lines ?? new List<StockDisposalDetailLineDto>();
             DataGridViewCodeCopy.Attach(_grid, "colProductCode", "colBatchCode");
             ShowDisposal();
-            _closeButton.Click += new EventHandler(_closeButton_Click);
         }
 
         private void ShowDisposal()
@@ -118,6 +117,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void _closeButton_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

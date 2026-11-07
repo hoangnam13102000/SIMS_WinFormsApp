@@ -38,17 +38,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private CheckBox _usePointsCheckBox;
         private Label _cartLabel;
         private DataGridView _cartGrid;
-        private TableLayoutPanel _promoLayout;
-        private Label _promoLabel;
-        private ComboBox _promoTextBox;
-        private IconButton _promoDropdownButton;
-        private Panel _applyPromoButtonBorder;
-        private Button _applyPromoButton;
         private TableLayoutPanel _totalsLayout;
         private Label _subtotalCaption;
         private Label _subtotalValue;
-        private Label _discountCaption;
-        private Label _discountValue;
         private Label _vatCaption;
         private Label _vatValue;
         private Label _pointsCaption;
@@ -101,24 +93,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartAreaLayout = new System.Windows.Forms.TableLayoutPanel();
             this._cartLabel = new System.Windows.Forms.Label();
             this._cartGrid = new System.Windows.Forms.DataGridView();
-            this._cart_product_name_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._cart_unit_price_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._cart_quantity_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._cart_line_total_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._cart_remove_column = new System.Windows.Forms.DataGridViewImageColumn();
+            this.CartProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CartUnitPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CartQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CartLineTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CartRemove = new System.Windows.Forms.DataGridViewImageColumn();
             this._checkoutScrollPanel = new System.Windows.Forms.Panel();
             this._checkoutLayout = new System.Windows.Forms.TableLayoutPanel();
-            this._promoLayout = new System.Windows.Forms.TableLayoutPanel();
-            this._promoLabel = new System.Windows.Forms.Label();
-            this._promoTextBox = new System.Windows.Forms.ComboBox();
-            this._promoDropdownButton = new FontAwesome.Sharp.IconButton();
-            this._applyPromoButtonBorder = new System.Windows.Forms.Panel();
-            this._applyPromoButton = new System.Windows.Forms.Button();
             this._totalsLayout = new System.Windows.Forms.TableLayoutPanel();
             this._subtotalCaption = new System.Windows.Forms.Label();
             this._subtotalValue = new System.Windows.Forms.Label();
-            this._discountCaption = new System.Windows.Forms.Label();
-            this._discountValue = new System.Windows.Forms.Label();
             this._vatCaption = new System.Windows.Forms.Label();
             this._vatValue = new System.Windows.Forms.Label();
             this._pointsCaption = new System.Windows.Forms.Label();
@@ -154,15 +138,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             ((System.ComponentModel.ISupportInitialize)(this._cartGrid)).BeginInit();
             this._checkoutScrollPanel.SuspendLayout();
             this._checkoutLayout.SuspendLayout();
-            this._promoLayout.SuspendLayout();
-            this._applyPromoButtonBorder.SuspendLayout();
             this._totalsLayout.SuspendLayout();
             this._paymentLayout.SuspendLayout();
             this._actionsLayout.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // _root
-            //
+            // 
             this._root.ColumnCount = 1;
             this._root.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._root.Controls.Add(this._header, 0, 0);
@@ -191,27 +173,30 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._header.Name = "_header";
             this._header.Size = new System.Drawing.Size(1132, 96);
             this._header.TabIndex = 0;
-            //
+            this._header.SizeChanged += new System.EventHandler(this._header_SizeChanged);
+            // 
             // _headerIconPanel
-            //
-            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(232, 240, 254);
+            // 
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
             this._headerIconPanel.Controls.Add(this._headerIcon);
             this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
             this._headerIconPanel.Name = "_headerIconPanel";
             this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
-            //
+            this._headerIconPanel.TabIndex = 0;
+            // 
             // _headerIcon
-            //
+            // 
             this._headerIcon.BackColor = System.Drawing.Color.Transparent;
-            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.CartShopping;
-            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._headerIcon.IconSize = 28;
             this._headerIcon.Location = new System.Drawing.Point(14, 14);
             this._headerIcon.Name = "_headerIcon";
             this._headerIcon.Size = new System.Drawing.Size(28, 28);
             this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabIndex = 0;
             this._headerIcon.TabStop = false;
             // 
             // _cashierNameLabel
@@ -227,31 +212,31 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             // _pageTitle
             // 
-            this._pageTitle.AutoSize = false;
             this._pageTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this._pageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._pageTitle.Location = new System.Drawing.Point(96, 18);
+            this._pageTitle.Location = new System.Drawing.Point(96, 0);
             this._pageTitle.Name = "_pageTitle";
-            this._pageTitle.Size = new System.Drawing.Size(600, 34);
+            this._pageTitle.Size = new System.Drawing.Size(600, 52);
             this._pageTitle.TabIndex = 1;
             this._pageTitle.Text = "Bán hàng tại quầy";
             this._pageTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // _pageSubtitle
-            //
+            // 
             this._pageSubtitle.AutoSize = true;
             this._pageSubtitle.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this._pageSubtitle.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
+            this._pageSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._pageSubtitle.Location = new System.Drawing.Point(96, 56);
             this._pageSubtitle.Name = "_pageSubtitle";
-            this._pageSubtitle.Size = new System.Drawing.Size(333, 25);
+            this._pageSubtitle.Size = new System.Drawing.Size(412, 25);
+            this._pageSubtitle.TabIndex = 2;
             this._pageSubtitle.Text = "Quét sản phẩm, quản lý giỏ hàng và thanh toán";
             // 
             // _body
             // 
             this._body.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this._body.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._body.Location = new System.Drawing.Point(20, 110);
+            this._body.Location = new System.Drawing.Point(24, 132);
             this._body.Margin = new System.Windows.Forms.Padding(0);
             this._body.Name = "_body";
             // 
@@ -264,8 +249,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             this._body.Panel2.Controls.Add(this._saleCard);
             this._body.Panel2MinSize = 320;
-            this._body.Size = new System.Drawing.Size(1140, 630);
-            this._body.SplitterDistance = 720;
+            this._body.Size = new System.Drawing.Size(1132, 604);
+            this._body.SplitterDistance = 714;
             this._body.SplitterWidth = 8;
             this._body.TabIndex = 1;
             this._body.TabStop = false;
@@ -280,7 +265,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._catalogCard.Margin = new System.Windows.Forms.Padding(0);
             this._catalogCard.Name = "_catalogCard";
             this._catalogCard.Padding = new System.Windows.Forms.Padding(12);
-            this._catalogCard.Size = new System.Drawing.Size(720, 630);
+            this._catalogCard.Size = new System.Drawing.Size(714, 604);
             this._catalogCard.TabIndex = 0;
             // 
             // _catalogLayout
@@ -297,7 +282,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._catalogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this._catalogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
             this._catalogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._catalogLayout.Size = new System.Drawing.Size(694, 604);
+            this._catalogLayout.Size = new System.Drawing.Size(688, 578);
             this._catalogLayout.TabIndex = 0;
             // 
             // _catalogTitle
@@ -306,7 +291,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._catalogTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this._catalogTitle.Location = new System.Drawing.Point(3, 0);
             this._catalogTitle.Name = "_catalogTitle";
-            this._catalogTitle.Size = new System.Drawing.Size(688, 28);
+            this._catalogTitle.Size = new System.Drawing.Size(682, 28);
             this._catalogTitle.TabIndex = 0;
             this._catalogTitle.Text = "Danh sách sản phẩm";
             this._catalogTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -325,7 +310,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._searchLayout.Name = "_searchLayout";
             this._searchLayout.RowCount = 1;
             this._searchLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._searchLayout.Size = new System.Drawing.Size(688, 38);
+            this._searchLayout.Size = new System.Drawing.Size(682, 38);
             this._searchLayout.TabIndex = 1;
             // 
             // _productSearch
@@ -335,8 +320,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._productSearch.Location = new System.Drawing.Point(0, 4);
             this._productSearch.Margin = new System.Windows.Forms.Padding(0, 4, 8, 4);
             this._productSearch.Name = "_productSearch";
-            this._productSearch.Size = new System.Drawing.Size(408, 26);
+            this._productSearch.Size = new System.Drawing.Size(402, 26);
             this._productSearch.TabIndex = 0;
+            this._productSearch.TextChanged += new System.EventHandler(this._productSearch_TextChanged);
             // 
             // _productCategory
             // 
@@ -344,11 +330,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._productCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._productCategory.Items.AddRange(new object[] {
             "Tất cả danh mục"});
-            this._productCategory.Location = new System.Drawing.Point(416, 4);
+            this._productCategory.Location = new System.Drawing.Point(410, 4);
             this._productCategory.Margin = new System.Windows.Forms.Padding(0, 4, 8, 4);
             this._productCategory.Name = "_productCategory";
             this._productCategory.Size = new System.Drawing.Size(172, 28);
             this._productCategory.TabIndex = 1;
+            this._productCategory.SelectedIndexChanged += new System.EventHandler(this._productCategory_SelectedIndexChanged);
             // 
             // _scanBarcodeButton
             // 
@@ -356,13 +343,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._scanBarcodeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._scanBarcodeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._scanBarcodeButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._scanBarcodeButton.Location = new System.Drawing.Point(596, 4);
+            this._scanBarcodeButton.Location = new System.Drawing.Point(590, 4);
             this._scanBarcodeButton.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this._scanBarcodeButton.Name = "_scanBarcodeButton";
             this._scanBarcodeButton.Size = new System.Drawing.Size(92, 30);
             this._scanBarcodeButton.TabIndex = 2;
             this._scanBarcodeButton.Text = "Quét mã";
             this._scanBarcodeButton.UseVisualStyleBackColor = true;
+            this._scanBarcodeButton.Click += new System.EventHandler(this._scanBarcodeButton_Click);
             // 
             // _productCardsPanel
             // 
@@ -372,7 +360,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._productCardsPanel.Location = new System.Drawing.Point(3, 75);
             this._productCardsPanel.Name = "_productCardsPanel";
             this._productCardsPanel.Padding = new System.Windows.Forms.Padding(8);
-            this._productCardsPanel.Size = new System.Drawing.Size(688, 526);
+            this._productCardsPanel.Size = new System.Drawing.Size(682, 500);
             this._productCardsPanel.TabIndex = 2;
             // 
             // _saleCard
@@ -385,7 +373,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._saleCard.Margin = new System.Windows.Forms.Padding(0);
             this._saleCard.Name = "_saleCard";
             this._saleCard.Padding = new System.Windows.Forms.Padding(12);
-            this._saleCard.Size = new System.Drawing.Size(412, 630);
+            this._saleCard.Size = new System.Drawing.Size(410, 604);
             this._saleCard.TabIndex = 0;
             // 
             // _saleLayout
@@ -400,7 +388,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._saleLayout.RowCount = 2;
             this._saleLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 88F));
             this._saleLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._saleLayout.Size = new System.Drawing.Size(386, 604);
+            this._saleLayout.Size = new System.Drawing.Size(384, 578);
             this._saleLayout.TabIndex = 0;
             // 
             // _customerLayout
@@ -423,7 +411,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this._customerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this._customerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._customerLayout.Size = new System.Drawing.Size(380, 82);
+            this._customerLayout.Size = new System.Drawing.Size(378, 82);
             this._customerLayout.TabIndex = 0;
             // 
             // _customerLabel
@@ -433,7 +421,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._customerLabel.Location = new System.Drawing.Point(3, 0);
             this._customerLabel.Name = "_customerLabel";
-            this._customerLabel.Size = new System.Drawing.Size(290, 22);
+            this._customerLabel.Size = new System.Drawing.Size(246, 22);
             this._customerLabel.TabIndex = 0;
             this._customerLabel.Text = "Khách hàng";
             // 
@@ -443,8 +431,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerTextBox.Location = new System.Drawing.Point(0, 24);
             this._customerTextBox.Margin = new System.Windows.Forms.Padding(0, 2, 6, 2);
             this._customerTextBox.Name = "_customerTextBox";
-            this._customerTextBox.Size = new System.Drawing.Size(290, 26);
+            this._customerTextBox.Size = new System.Drawing.Size(246, 26);
             this._customerTextBox.TabIndex = 1;
+            this._customerTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._customerTextBox_KeyDown);
             // 
             // _customerSearchButton
             // 
@@ -456,15 +445,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerSearchButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._customerSearchButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
             this._customerSearchButton.IconSize = 16;
-            this._customerSearchButton.Location = new System.Drawing.Point(296, 24);
+            this._customerSearchButton.Location = new System.Drawing.Point(252, 24);
             this._customerSearchButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 2);
             this._customerSearchButton.Name = "_customerSearchButton";
             this._customerSearchButton.Size = new System.Drawing.Size(38, 26);
             this._customerSearchButton.TabIndex = 2;
             this._customerSearchButton.UseVisualStyleBackColor = false;
+            this._customerSearchButton.Click += new System.EventHandler(this._customerSearchButton_Click);
             // 
             // _customerScanButton
-            //
+            // 
             this._customerScanButton.AccessibleName = "Quét mã khách hàng";
             this._customerScanButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._customerScanButton.FlatAppearance.BorderSize = 0;
@@ -473,15 +463,16 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerScanButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._customerScanButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
             this._customerScanButton.IconSize = 16;
-            this._customerScanButton.Location = new System.Drawing.Point(338, 24);
+            this._customerScanButton.Location = new System.Drawing.Point(294, 24);
             this._customerScanButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 2);
             this._customerScanButton.Name = "_customerScanButton";
             this._customerScanButton.Size = new System.Drawing.Size(38, 26);
             this._customerScanButton.TabIndex = 3;
             this._customerScanButton.UseVisualStyleBackColor = false;
+            this._customerScanButton.Click += new System.EventHandler(this._customerScanButton_Click);
             // 
             // _clearCustomerButton
-            //
+            // 
             this._clearCustomerButton.AccessibleName = "Xóa khách hàng đang chọn";
             this._clearCustomerButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._clearCustomerButton.FlatAppearance.BorderSize = 0;
@@ -490,12 +481,13 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._clearCustomerButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._clearCustomerButton.IconFont = FontAwesome.Sharp.IconFont.Solid;
             this._clearCustomerButton.IconSize = 16;
-            this._clearCustomerButton.Location = new System.Drawing.Point(380, 24);
+            this._clearCustomerButton.Location = new System.Drawing.Point(336, 24);
             this._clearCustomerButton.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this._clearCustomerButton.Name = "_clearCustomerButton";
             this._clearCustomerButton.Size = new System.Drawing.Size(42, 26);
             this._clearCustomerButton.TabIndex = 4;
             this._clearCustomerButton.UseVisualStyleBackColor = false;
+            this._clearCustomerButton.Click += new System.EventHandler(this._clearCustomerButton_Click);
             // 
             // _usePointsCheckBox
             // 
@@ -504,10 +496,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._usePointsCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._usePointsCheckBox.Location = new System.Drawing.Point(3, 55);
             this._usePointsCheckBox.Name = "_usePointsCheckBox";
-            this._usePointsCheckBox.Size = new System.Drawing.Size(374, 24);
+            this._usePointsCheckBox.Size = new System.Drawing.Size(330, 24);
             this._usePointsCheckBox.TabIndex = 5;
             this._usePointsCheckBox.Text = "Dùng điểm thưởng";
             this._usePointsCheckBox.Visible = false;
+            this._usePointsCheckBox.CheckedChanged += new System.EventHandler(this._usePointsCheckBox_CheckedChanged);
             // 
             // _cartCheckoutSplit
             // 
@@ -527,10 +520,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             this._cartCheckoutSplit.Panel2.Controls.Add(this._checkoutScrollPanel);
             this._cartCheckoutSplit.Panel2MinSize = 100;
-            this._cartCheckoutSplit.Size = new System.Drawing.Size(380, 510);
-            this._cartCheckoutSplit.SplitterDistance = 189;
+            this._cartCheckoutSplit.Size = new System.Drawing.Size(378, 484);
+            this._cartCheckoutSplit.SplitterDistance = 179;
             this._cartCheckoutSplit.SplitterWidth = 10;
             this._cartCheckoutSplit.TabIndex = 1;
+            this._cartCheckoutSplit.SplitterMoving += new System.Windows.Forms.SplitterCancelEventHandler(this._cartCheckoutSplit_SplitterMoving);
             // 
             // _cartAreaLayout
             // 
@@ -544,7 +538,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartAreaLayout.RowCount = 2;
             this._cartAreaLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this._cartAreaLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._cartAreaLayout.Size = new System.Drawing.Size(380, 189);
+            this._cartAreaLayout.Size = new System.Drawing.Size(378, 179);
             this._cartAreaLayout.TabIndex = 0;
             // 
             // _cartLabel
@@ -555,7 +549,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartLabel.Location = new System.Drawing.Point(3, 0);
             this._cartLabel.Name = "_cartLabel";
             this._cartLabel.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this._cartLabel.Size = new System.Drawing.Size(374, 30);
+            this._cartLabel.Size = new System.Drawing.Size(372, 30);
             this._cartLabel.TabIndex = 0;
             this._cartLabel.Text = "Giỏ hàng";
             // 
@@ -568,11 +562,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._cartGrid.ColumnHeadersHeight = 34;
             this._cartGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this._cart_product_name_column,
-            this._cart_unit_price_column,
-            this._cart_quantity_column,
-            this._cart_line_total_column,
-            this._cart_remove_column});
+            this.CartProductName,
+            this.CartUnitPrice,
+            this.CartQuantity,
+            this.CartLineTotal,
+            this.CartRemove});
             this._cartGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._cartGrid.Location = new System.Drawing.Point(0, 30);
             this._cartGrid.Margin = new System.Windows.Forms.Padding(0);
@@ -581,161 +575,82 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cartGrid.RowHeadersVisible = false;
             this._cartGrid.RowHeadersWidth = 62;
             this._cartGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._cartGrid.Size = new System.Drawing.Size(380, 159);
+            this._cartGrid.Size = new System.Drawing.Size(378, 149);
             this._cartGrid.TabIndex = 1;
+            this._cartGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._cartGrid_CellClick);
+            this._cartGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this._cartGrid_CellEndEdit);
+            this._cartGrid.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this._cartGrid_CellValidating);
+            this._cartGrid.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this._cartGrid_EditingControlShowing);
             // 
             // CartProductName
             // 
-            this._cart_product_name_column.FillWeight = 30F;
-            this._cart_product_name_column.HeaderText = "Sản phẩm";
-            this._cart_product_name_column.MinimumWidth = 8;
-            this._cart_product_name_column.Name = "CartProductName";
-            this._cart_product_name_column.ReadOnly = true;
+            this.CartProductName.FillWeight = 30F;
+            this.CartProductName.HeaderText = "Sản phẩm";
+            this.CartProductName.MinimumWidth = 8;
+            this.CartProductName.Name = "CartProductName";
+            this.CartProductName.ReadOnly = true;
             // 
             // CartUnitPrice
             // 
-            this._cart_unit_price_column.FillWeight = 20F;
-            this._cart_unit_price_column.HeaderText = "Đơn giá";
-            this._cart_unit_price_column.MinimumWidth = 8;
-            this._cart_unit_price_column.Name = "CartUnitPrice";
-            this._cart_unit_price_column.ReadOnly = true;
+            this.CartUnitPrice.FillWeight = 20F;
+            this.CartUnitPrice.HeaderText = "Đơn giá";
+            this.CartUnitPrice.MinimumWidth = 8;
+            this.CartUnitPrice.Name = "CartUnitPrice";
+            this.CartUnitPrice.ReadOnly = true;
             // 
             // CartQuantity
             // 
-            this._cart_quantity_column.FillWeight = 12F;
-            this._cart_quantity_column.HeaderText = "SL";
-            this._cart_quantity_column.MinimumWidth = 8;
-            this._cart_quantity_column.Name = "CartQuantity";
+            this.CartQuantity.FillWeight = 12F;
+            this.CartQuantity.HeaderText = "SL";
+            this.CartQuantity.MinimumWidth = 8;
+            this.CartQuantity.Name = "CartQuantity";
             // 
             // CartLineTotal
             // 
-            this._cart_line_total_column.FillWeight = 22F;
-            this._cart_line_total_column.HeaderText = "Thành tiền";
-            this._cart_line_total_column.MinimumWidth = 8;
-            this._cart_line_total_column.Name = "CartLineTotal";
-            this._cart_line_total_column.ReadOnly = true;
+            this.CartLineTotal.FillWeight = 22F;
+            this.CartLineTotal.HeaderText = "Thành tiền";
+            this.CartLineTotal.MinimumWidth = 8;
+            this.CartLineTotal.Name = "CartLineTotal";
+            this.CartLineTotal.ReadOnly = true;
             // 
             // CartRemove
             // 
-            this._cart_remove_column.FillWeight = 10F;
-            this._cart_remove_column.HeaderText = "";
-            this._cart_remove_column.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this._cart_remove_column.MinimumWidth = 32;
-            this._cart_remove_column.Name = "CartRemove";
+            this.CartRemove.FillWeight = 10F;
+            this.CartRemove.HeaderText = "";
+            this.CartRemove.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.CartRemove.MinimumWidth = 32;
+            this.CartRemove.Name = "CartRemove";
             // 
             // _checkoutScrollPanel
             // 
             this._checkoutScrollPanel.AutoScroll = true;
-            this._checkoutScrollPanel.AutoScrollMinSize = new System.Drawing.Size(0, 322);
+            this._checkoutScrollPanel.AutoScrollMinSize = new System.Drawing.Size(0, 272);
             this._checkoutScrollPanel.BackColor = System.Drawing.Color.White;
             this._checkoutScrollPanel.Controls.Add(this._checkoutLayout);
             this._checkoutScrollPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._checkoutScrollPanel.Location = new System.Drawing.Point(0, 0);
             this._checkoutScrollPanel.Name = "_checkoutScrollPanel";
-            this._checkoutScrollPanel.Size = new System.Drawing.Size(380, 311);
+            this._checkoutScrollPanel.Size = new System.Drawing.Size(378, 295);
             this._checkoutScrollPanel.TabIndex = 0;
             // 
             // _checkoutLayout
             // 
             this._checkoutLayout.ColumnCount = 1;
             this._checkoutLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._checkoutLayout.Controls.Add(this._promoLayout, 0, 0);
-            this._checkoutLayout.Controls.Add(this._totalsLayout, 0, 1);
-            this._checkoutLayout.Controls.Add(this._paymentLayout, 0, 2);
-            this._checkoutLayout.Controls.Add(this._actionsLayout, 0, 3);
+            this._checkoutLayout.Controls.Add(this._totalsLayout, 0, 0);
+            this._checkoutLayout.Controls.Add(this._paymentLayout, 0, 1);
+            this._checkoutLayout.Controls.Add(this._actionsLayout, 0, 2);
             this._checkoutLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this._checkoutLayout.Location = new System.Drawing.Point(0, 0);
             this._checkoutLayout.Margin = new System.Windows.Forms.Padding(0);
-            this._checkoutLayout.MinimumSize = new System.Drawing.Size(0, 322);
+            this._checkoutLayout.MinimumSize = new System.Drawing.Size(0, 272);
             this._checkoutLayout.Name = "_checkoutLayout";
-            this._checkoutLayout.RowCount = 4;
-            this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this._checkoutLayout.RowCount = 3;
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this._checkoutLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
-            this._checkoutLayout.Size = new System.Drawing.Size(354, 322);
+            this._checkoutLayout.Size = new System.Drawing.Size(378, 272);
             this._checkoutLayout.TabIndex = 0;
-            // 
-            // _promoLayout
-            // 
-            this._promoLayout.ColumnCount = 4;
-            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this._promoLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
-            this._promoLayout.Controls.Add(this._promoLabel, 0, 0);
-            this._promoLayout.Controls.Add(this._promoTextBox, 1, 0);
-            this._promoLayout.Controls.Add(this._promoDropdownButton, 2, 0);
-            this._promoLayout.Controls.Add(this._applyPromoButtonBorder, 3, 0);
-            this._promoLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promoLayout.Location = new System.Drawing.Point(3, 3);
-            this._promoLayout.Name = "_promoLayout";
-            this._promoLayout.RowCount = 1;
-            this._promoLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._promoLayout.Size = new System.Drawing.Size(348, 44);
-            this._promoLayout.TabIndex = 0;
-            // 
-            // _promoLabel
-            // 
-            this._promoLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promoLabel.Location = new System.Drawing.Point(3, 0);
-            this._promoLabel.Name = "_promoLabel";
-            this._promoLabel.Size = new System.Drawing.Size(58, 44);
-            this._promoLabel.TabIndex = 0;
-            this._promoLabel.Text = "Mã KM";
-            this._promoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _promoTextBox
-            // 
-            this._promoTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promoTextBox.Location = new System.Drawing.Point(64, 4);
-            this._promoTextBox.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this._promoTextBox.Name = "_promoTextBox";
-            this._promoTextBox.Size = new System.Drawing.Size(130, 28);
-            this._promoTextBox.TabIndex = 1;
-            // 
-            // _promoDropdownButton
-            // 
-            this._promoDropdownButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._promoDropdownButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._promoDropdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._promoDropdownButton.IconChar = FontAwesome.Sharp.IconChar.ChevronDown;
-            this._promoDropdownButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._promoDropdownButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._promoDropdownButton.IconSize = 14;
-            this._promoDropdownButton.Location = new System.Drawing.Point(194, 4);
-            this._promoDropdownButton.Margin = new System.Windows.Forms.Padding(0, 4, 6, 4);
-            this._promoDropdownButton.Name = "_promoDropdownButton";
-            this._promoDropdownButton.Size = new System.Drawing.Size(28, 36);
-            this._promoDropdownButton.TabIndex = 2;
-            this._promoDropdownButton.UseVisualStyleBackColor = true;
-            // 
-            // _applyPromoButtonBorder
-            // 
-            this._applyPromoButtonBorder.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._applyPromoButtonBorder.Controls.Add(this._applyPromoButton);
-            this._applyPromoButtonBorder.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._applyPromoButtonBorder.Location = new System.Drawing.Point(228, 2);
-            this._applyPromoButtonBorder.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
-            this._applyPromoButtonBorder.Name = "_applyPromoButtonBorder";
-            this._applyPromoButtonBorder.Padding = new System.Windows.Forms.Padding(1);
-            this._applyPromoButtonBorder.Size = new System.Drawing.Size(120, 40);
-            this._applyPromoButtonBorder.TabIndex = 3;
-            // 
-            // _applyPromoButton
-            // 
-            this._applyPromoButton.BackColor = System.Drawing.Color.White;
-            this._applyPromoButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._applyPromoButton.FlatAppearance.BorderSize = 0;
-            this._applyPromoButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._applyPromoButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._applyPromoButton.Location = new System.Drawing.Point(1, 1);
-            this._applyPromoButton.Margin = new System.Windows.Forms.Padding(0);
-            this._applyPromoButton.Name = "_applyPromoButton";
-            this._applyPromoButton.Size = new System.Drawing.Size(118, 38);
-            this._applyPromoButton.TabIndex = 3;
-            this._applyPromoButton.Text = "ÁP DỤNG";
-            this._applyPromoButton.UseVisualStyleBackColor = false;
             // 
             // _totalsLayout
             // 
@@ -744,24 +659,21 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._totalsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
             this._totalsLayout.Controls.Add(this._subtotalCaption, 0, 0);
             this._totalsLayout.Controls.Add(this._subtotalValue, 1, 0);
-            this._totalsLayout.Controls.Add(this._discountCaption, 0, 1);
-            this._totalsLayout.Controls.Add(this._discountValue, 1, 1);
-            this._totalsLayout.Controls.Add(this._vatCaption, 0, 2);
-            this._totalsLayout.Controls.Add(this._vatValue, 1, 2);
-            this._totalsLayout.Controls.Add(this._pointsCaption, 0, 3);
-            this._totalsLayout.Controls.Add(this._pointsValue, 1, 3);
-            this._totalsLayout.Controls.Add(this._grandTotalCaption, 0, 4);
-            this._totalsLayout.Controls.Add(this._grandTotalValue, 1, 4);
+            this._totalsLayout.Controls.Add(this._vatCaption, 0, 1);
+            this._totalsLayout.Controls.Add(this._vatValue, 1, 1);
+            this._totalsLayout.Controls.Add(this._pointsCaption, 0, 2);
+            this._totalsLayout.Controls.Add(this._pointsValue, 1, 2);
+            this._totalsLayout.Controls.Add(this._grandTotalCaption, 0, 3);
+            this._totalsLayout.Controls.Add(this._grandTotalValue, 1, 3);
             this._totalsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._totalsLayout.Location = new System.Drawing.Point(3, 53);
+            this._totalsLayout.Location = new System.Drawing.Point(3, 3);
             this._totalsLayout.Name = "_totalsLayout";
-            this._totalsLayout.RowCount = 5;
-            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this._totalsLayout.Size = new System.Drawing.Size(348, 122);
+            this._totalsLayout.RowCount = 4;
+            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this._totalsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this._totalsLayout.Size = new System.Drawing.Size(372, 122);
             this._totalsLayout.TabIndex = 1;
             // 
             // _subtotalCaption
@@ -769,7 +681,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._subtotalCaption.Dock = System.Windows.Forms.DockStyle.Fill;
             this._subtotalCaption.Location = new System.Drawing.Point(3, 0);
             this._subtotalCaption.Name = "_subtotalCaption";
-            this._subtotalCaption.Size = new System.Drawing.Size(185, 24);
+            this._subtotalCaption.Size = new System.Drawing.Size(198, 30);
             this._subtotalCaption.TabIndex = 0;
             this._subtotalCaption.Text = "Tạm tính";
             this._subtotalCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -777,70 +689,50 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // _subtotalValue
             // 
             this._subtotalValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._subtotalValue.Location = new System.Drawing.Point(194, 0);
+            this._subtotalValue.Location = new System.Drawing.Point(207, 0);
             this._subtotalValue.Name = "_subtotalValue";
-            this._subtotalValue.Size = new System.Drawing.Size(151, 24);
+            this._subtotalValue.Size = new System.Drawing.Size(162, 30);
             this._subtotalValue.TabIndex = 1;
             this._subtotalValue.Text = "0 VNĐ";
             this._subtotalValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // _discountCaption
-            // 
-            this._discountCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._discountCaption.Location = new System.Drawing.Point(3, 24);
-            this._discountCaption.Name = "_discountCaption";
-            this._discountCaption.Size = new System.Drawing.Size(185, 24);
-            this._discountCaption.TabIndex = 2;
-            this._discountCaption.Text = "Giảm giá";
-            this._discountCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _discountValue
-            // 
-            this._discountValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._discountValue.Location = new System.Drawing.Point(194, 24);
-            this._discountValue.Name = "_discountValue";
-            this._discountValue.Size = new System.Drawing.Size(151, 24);
-            this._discountValue.TabIndex = 3;
-            this._discountValue.Text = "0 VNĐ";
-            this._discountValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // _vatCaption
             // 
             this._vatCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._vatCaption.Location = new System.Drawing.Point(3, 48);
+            this._vatCaption.Location = new System.Drawing.Point(3, 30);
             this._vatCaption.Name = "_vatCaption";
-            this._vatCaption.Size = new System.Drawing.Size(185, 24);
-            this._vatCaption.TabIndex = 4;
+            this._vatCaption.Size = new System.Drawing.Size(198, 30);
+            this._vatCaption.TabIndex = 2;
             this._vatCaption.Text = "VAT";
             this._vatCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _vatValue
             // 
             this._vatValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._vatValue.Location = new System.Drawing.Point(194, 48);
+            this._vatValue.Location = new System.Drawing.Point(207, 30);
             this._vatValue.Name = "_vatValue";
-            this._vatValue.Size = new System.Drawing.Size(151, 24);
-            this._vatValue.TabIndex = 5;
+            this._vatValue.Size = new System.Drawing.Size(162, 30);
+            this._vatValue.TabIndex = 3;
             this._vatValue.Text = "0 VNĐ";
             this._vatValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // _pointsCaption
             // 
             this._pointsCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._pointsCaption.Location = new System.Drawing.Point(3, 72);
+            this._pointsCaption.Location = new System.Drawing.Point(3, 60);
             this._pointsCaption.Name = "_pointsCaption";
-            this._pointsCaption.Size = new System.Drawing.Size(185, 24);
-            this._pointsCaption.TabIndex = 6;
+            this._pointsCaption.Size = new System.Drawing.Size(198, 30);
+            this._pointsCaption.TabIndex = 4;
             this._pointsCaption.Text = "Trừ điểm";
             this._pointsCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _pointsValue
             // 
             this._pointsValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._pointsValue.Location = new System.Drawing.Point(194, 72);
+            this._pointsValue.Location = new System.Drawing.Point(207, 60);
             this._pointsValue.Name = "_pointsValue";
-            this._pointsValue.Size = new System.Drawing.Size(151, 24);
-            this._pointsValue.TabIndex = 7;
+            this._pointsValue.Size = new System.Drawing.Size(162, 30);
+            this._pointsValue.TabIndex = 5;
             this._pointsValue.Text = "0 VNĐ";
             this._pointsValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -848,10 +740,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             // 
             this._grandTotalCaption.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grandTotalCaption.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this._grandTotalCaption.Location = new System.Drawing.Point(3, 96);
+            this._grandTotalCaption.Location = new System.Drawing.Point(3, 90);
             this._grandTotalCaption.Name = "_grandTotalCaption";
-            this._grandTotalCaption.Size = new System.Drawing.Size(185, 26);
-            this._grandTotalCaption.TabIndex = 8;
+            this._grandTotalCaption.Size = new System.Drawing.Size(198, 32);
+            this._grandTotalCaption.TabIndex = 6;
             this._grandTotalCaption.Text = "Tổng cộng";
             this._grandTotalCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -860,10 +752,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._grandTotalValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grandTotalValue.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this._grandTotalValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._grandTotalValue.Location = new System.Drawing.Point(194, 96);
+            this._grandTotalValue.Location = new System.Drawing.Point(207, 90);
             this._grandTotalValue.Name = "_grandTotalValue";
-            this._grandTotalValue.Size = new System.Drawing.Size(151, 26);
-            this._grandTotalValue.TabIndex = 9;
+            this._grandTotalValue.Size = new System.Drawing.Size(162, 32);
+            this._grandTotalValue.TabIndex = 7;
             this._grandTotalValue.Text = "0 VNĐ";
             this._grandTotalValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -875,11 +767,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._paymentLayout.Controls.Add(this._paymentCaption, 0, 0);
             this._paymentLayout.Controls.Add(this._paymentMethod, 1, 0);
             this._paymentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._paymentLayout.Location = new System.Drawing.Point(3, 181);
+            this._paymentLayout.Location = new System.Drawing.Point(3, 131);
             this._paymentLayout.Name = "_paymentLayout";
             this._paymentLayout.RowCount = 1;
             this._paymentLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._paymentLayout.Size = new System.Drawing.Size(348, 52);
+            this._paymentLayout.Size = new System.Drawing.Size(372, 52);
             this._paymentLayout.TabIndex = 2;
             // 
             // _paymentCaption
@@ -899,7 +791,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._paymentMethod.Location = new System.Drawing.Point(160, 14);
             this._paymentMethod.Margin = new System.Windows.Forms.Padding(0, 14, 0, 14);
             this._paymentMethod.Name = "_paymentMethod";
-            this._paymentMethod.Size = new System.Drawing.Size(188, 28);
+            this._paymentMethod.Size = new System.Drawing.Size(212, 28);
             this._paymentMethod.TabIndex = 1;
             // 
             // _actionsLayout
@@ -911,12 +803,12 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._actionsLayout.Controls.Add(this._heldCartsButton, 1, 0);
             this._actionsLayout.Controls.Add(this._checkoutButton, 0, 1);
             this._actionsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._actionsLayout.Location = new System.Drawing.Point(3, 239);
+            this._actionsLayout.Location = new System.Drawing.Point(3, 189);
             this._actionsLayout.Name = "_actionsLayout";
             this._actionsLayout.RowCount = 2;
             this._actionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 46F));
             this._actionsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 54F));
-            this._actionsLayout.Size = new System.Drawing.Size(348, 80);
+            this._actionsLayout.Size = new System.Drawing.Size(372, 80);
             this._actionsLayout.TabIndex = 3;
             // 
             // _holdButton
@@ -926,20 +818,22 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._holdButton.Location = new System.Drawing.Point(0, 2);
             this._holdButton.Margin = new System.Windows.Forms.Padding(0, 2, 4, 4);
             this._holdButton.Name = "_holdButton";
-            this._holdButton.Size = new System.Drawing.Size(170, 30);
+            this._holdButton.Size = new System.Drawing.Size(182, 30);
             this._holdButton.TabIndex = 0;
             this._holdButton.Text = "Tạm giữ";
+            this._holdButton.Click += new System.EventHandler(this._holdButton_Click);
             // 
             // _heldCartsButton
             // 
             this._heldCartsButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this._heldCartsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._heldCartsButton.Location = new System.Drawing.Point(178, 2);
+            this._heldCartsButton.Location = new System.Drawing.Point(190, 2);
             this._heldCartsButton.Margin = new System.Windows.Forms.Padding(4, 2, 0, 4);
             this._heldCartsButton.Name = "_heldCartsButton";
-            this._heldCartsButton.Size = new System.Drawing.Size(170, 30);
+            this._heldCartsButton.Size = new System.Drawing.Size(182, 30);
             this._heldCartsButton.TabIndex = 1;
             this._heldCartsButton.Text = "Giỏ đã giữ";
+            this._heldCartsButton.Click += new System.EventHandler(this._heldCartsButton_Click);
             // 
             // _checkoutButton
             // 
@@ -952,10 +846,11 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutButton.Location = new System.Drawing.Point(0, 38);
             this._checkoutButton.Margin = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this._checkoutButton.Name = "_checkoutButton";
-            this._checkoutButton.Size = new System.Drawing.Size(348, 42);
+            this._checkoutButton.Size = new System.Drawing.Size(372, 42);
             this._checkoutButton.TabIndex = 2;
             this._checkoutButton.Text = "Thanh toán";
             this._checkoutButton.UseVisualStyleBackColor = false;
+            this._checkoutButton.Click += new System.EventHandler(this._checkoutButton_Click);
             // 
             // PosPageControl
             // 
@@ -965,6 +860,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this.Controls.Add(this._root);
             this.Name = "PosPageControl";
             this.Size = new System.Drawing.Size(1180, 760);
+            this.Load += new System.EventHandler(this.PosPageControl_Load);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._header.PerformLayout();
@@ -991,8 +887,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             ((System.ComponentModel.ISupportInitialize)(this._cartGrid)).EndInit();
             this._checkoutScrollPanel.ResumeLayout(false);
             this._checkoutLayout.ResumeLayout(false);
-            this._promoLayout.ResumeLayout(false);
-            this._applyPromoButtonBorder.ResumeLayout(false);
             this._totalsLayout.ResumeLayout(false);
             this._paymentLayout.ResumeLayout(false);
             this._actionsLayout.ResumeLayout(false);
@@ -1000,10 +894,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         }
 
-        private DataGridViewTextBoxColumn _cart_product_name_column;
-        private DataGridViewTextBoxColumn _cart_unit_price_column;
-        private DataGridViewTextBoxColumn _cart_quantity_column;
-        private DataGridViewTextBoxColumn _cart_line_total_column;
-        private DataGridViewImageColumn _cart_remove_column;
+        private DataGridViewTextBoxColumn CartProductName;
+        private DataGridViewTextBoxColumn CartUnitPrice;
+        private DataGridViewTextBoxColumn CartLineTotal;
+        private DataGridViewTextBoxColumn CartQuantity;
+        private DataGridViewImageColumn CartRemove;
     }
 }

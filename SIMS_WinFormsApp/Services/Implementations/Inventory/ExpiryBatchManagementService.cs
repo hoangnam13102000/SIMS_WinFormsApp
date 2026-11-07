@@ -33,14 +33,20 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
             DateTime today = DateTime.Today;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                var batches = (from batch in db.InventoryBatches
+                IQueryable<InventoryBatchEntity> batchQuery = db.InventoryBatches
+                    .Where(batch => batch.Status == "ACTIVE"
+                        && batch.ExpiryDate.HasValue
+                        && batch.RemainingQty > 0);
+                if (productId.HasValue)
+                {
+                    int selectedProductId = productId.Value;
+                    batchQuery = batchQuery.Where(batch => batch.ProductID == selectedProductId);
+                }
+
+                var batches = (from batch in batchQuery
                                join product in db.Products on batch.ProductID equals product.ProductID
                                join supplier in db.Suppliers on batch.SupplierID equals supplier.SupplierID
-                               where batch.Status == "ACTIVE"
-                                   && batch.ExpiryDate.HasValue
-                                   && batch.RemainingQty > 0
-                                   && (!productId.HasValue || batch.ProductID == productId.Value)
-                                   && (filter == ExpiryBatchFilter.All
+                               where (filter == ExpiryBatchFilter.All
                                        || (filter == ExpiryBatchFilter.NearExpiry
                                            && batch.ExpiryDate >= today
                                            && batch.ExpiryDate < today.AddDays(31))
@@ -134,6 +140,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                             throw new InvalidOperationException("Lô hàng này không còn số lượng để xử lý.");
 
                         decimal lossAmount = quantity * unitCost;
+                        DateTime now = DateTime.Now;
                         string disposalNote = "Tiêu hủy toàn bộ số lượng còn lại của lô " + batchId
                             + " đã hết hạn ngày " + expiryDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
                         var disposal = new StockDisposalEntity
@@ -142,7 +149,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                             Status = "COMPLETED",
                             TotalLossAmount = lossAmount,
                             Note = disposalNote,
-                            CreatedBy = userId
+                            CreatedBy = userId,
+                            CreatedAt = now
                         };
                         db.StockDisposals.InsertOnSubmit(disposal);
                         db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
@@ -175,6 +183,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Inventory
                             RefTable = "StockDisposals",
                             RefID = disposal.DisposalID,
                             CreatedBy = userId,
+                            CreatedAt = now,
                             Note = "Tiêu hủy lô hết hạn của " + productName
                         });
                         db.AuditLogs.InsertOnSubmit(new AuditLogEntity

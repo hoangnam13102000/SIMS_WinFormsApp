@@ -38,6 +38,8 @@ namespace SIMS_WinFormsApp.DAL.Linq
 
         public override void SubmitChanges(ConflictMode failureMode)
         {
+            EnsureCreatedAtForPendingInserts();
+
             if (_writingAuditLogs)
             {
                 base.SubmitChanges(failureMode);
@@ -87,6 +89,22 @@ namespace SIMS_WinFormsApp.DAL.Linq
             }
         }
 
+        private void EnsureCreatedAtForPendingInserts()
+        {
+            DateTime now = DateTime.Now;
+            foreach (object entity in GetChangeSet().Inserts)
+            {
+                PropertyInfo createdAtProperty = entity.GetType().GetProperty("CreatedAt");
+                if (createdAtProperty == null
+                    || createdAtProperty.PropertyType != typeof(DateTime)
+                    || !createdAtProperty.CanWrite)
+                    continue;
+
+                if ((DateTime)createdAtProperty.GetValue(entity, null) == default(DateTime))
+                    createdAtProperty.SetValue(entity, now, null);
+            }
+        }
+
         private List<TrackedChange> GetTrackedChanges()
         {
             if (UserSession.Instance.CurrentUser == null)
@@ -111,11 +129,9 @@ namespace SIMS_WinFormsApp.DAL.Linq
                 Type entityType = entity.GetType();
                 TableAttribute table = Attribute.GetCustomAttribute(entityType, typeof(TableAttribute))
                     as TableAttribute;
-                if (table == null
-                    || string.Equals(table.Name, "AuditLogs", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(table.Name, "ChatMessages", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(table.Name, "ChatConversations", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                    if (table == null
+                        || string.Equals(table.Name, "AuditLogs", StringComparison.OrdinalIgnoreCase))
+                        continue;
 
                 object original = action == "DATA_UPDATE"
                     ? GetTable(entityType).GetOriginalEntityState(entity)

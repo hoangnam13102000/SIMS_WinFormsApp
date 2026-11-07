@@ -83,7 +83,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 PaymentMethod = "CASH",
                 Subtotal = 250000m,
                 DiscountAmount = 10000m,
-                PromotionCode = "WELCOME10",
                 VatRate = 8m,
                 VatAmount = 19200m,
                 TotalAmount = 259200m
@@ -109,9 +108,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _discountValue.Text = FormatMoney(_invoice.DiscountAmount + _invoice.PointsDiscountAmount);
             _vatLabel.Text = "VAT (" + _invoice.VatRate.ToString("0.##") + "%)";
             _vatValue.Text = FormatMoney(_invoice.VatAmount);
-            _promotionValue.Text = string.IsNullOrWhiteSpace(_invoice.PromotionCode)
-                ? "Không áp dụng"
-                : _invoice.PromotionCode;
             _pointsValue.Text = _invoice.PointsUsed.ToString("N0");
             _statusValue.Text = _invoice.IsCancelled
                 ? "ĐÃ HỦY" +

@@ -359,13 +359,6 @@
         <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 62.6354077148438); (10 : 62.6354077148438); (10 : 45.0304182942708)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/PromotionEntity/PromotionEntity_InvoiceEntity" />
-      <nodes>
-        <classShapeMoniker Id="0bd1cfea-7875-4369-ae05-94abc5a4d353" />
-        <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
-      </nodes>
-    </associationConnector>
     <associationConnector edgePoints="[(15 : 46.8181469726563); (15.75 : 46.8181469726563)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/SimsDataContext/CategoryEntity/CategoryEntity_ProductEntity" />
       <nodes>

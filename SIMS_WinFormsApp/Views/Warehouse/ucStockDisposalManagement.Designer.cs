@@ -100,13 +100,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearDateLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._clearDateLink.Location = new System.Drawing.Point(756, 0);
             this._clearDateLink.Name = "_clearDateLink";
-            this._clearDateLink.Size = new System.Drawing.Size(68, 23);
+            this._clearDateLink.Size = new System.Drawing.Size(82, 28);
             this._clearDateLink.TabIndex = 5;
             this._clearDateLink.TabStop = true;
             this._clearDateLink.Text = "Xoá lọc";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
-            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
             this._clearDateLink.Visible = false;
+            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_LinkClicked);
             // 
             // _headerCard
             // 
@@ -198,9 +198,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             this._optionsButton.UseVisualStyleBackColor = false;
-            //
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
+            // 
             // _createButton
             // 
             this._createButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -221,8 +221,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.TabIndex = 4;
             this._createButton.Text = "Lập phiếu tiêu hủy";
             this._createButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             this._createButton.UseVisualStyleBackColor = false;
+            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             // 
             // _headerLine
             // 
@@ -285,7 +285,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._searchBox.Location = new System.Drawing.Point(34, 8);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(254, 22);
+            this._searchBox.Size = new System.Drawing.Size(254, 26);
             this._searchBox.TabIndex = 1;
             // 
             // _fromDateLabel
@@ -295,7 +295,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._fromDateLabel.Location = new System.Drawing.Point(347, 26);
             this._fromDateLabel.Name = "_fromDateLabel";
-            this._fromDateLabel.Size = new System.Drawing.Size(29, 23);
+            this._fromDateLabel.Size = new System.Drawing.Size(34, 28);
             this._fromDateLabel.TabIndex = 1;
             this._fromDateLabel.Text = "Từ";
             // 
@@ -307,7 +307,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._fromDatePicker.Location = new System.Drawing.Point(389, 23);
             this._fromDatePicker.Name = "_fromDatePicker";
-            this._fromDatePicker.Size = new System.Drawing.Size(146, 29);
+            this._fromDatePicker.Size = new System.Drawing.Size(146, 33);
             this._fromDatePicker.TabIndex = 2;
             // 
             // _toDateLabel
@@ -317,7 +317,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._toDateLabel.Location = new System.Drawing.Point(551, 26);
             this._toDateLabel.Name = "_toDateLabel";
-            this._toDateLabel.Size = new System.Drawing.Size(41, 23);
+            this._toDateLabel.Size = new System.Drawing.Size(47, 28);
             this._toDateLabel.TabIndex = 3;
             this._toDateLabel.Text = "Đến";
             // 
@@ -329,7 +329,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._toDatePicker.Location = new System.Drawing.Point(600, 23);
             this._toDatePicker.Name = "_toDatePicker";
-            this._toDatePicker.Size = new System.Drawing.Size(146, 29);
+            this._toDatePicker.Size = new System.Drawing.Size(146, 33);
             this._toDatePicker.TabIndex = 4;
             // 
             // _totalLabel
@@ -604,8 +604,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.Name = "_prevButton";
             this._prevButton.Size = new System.Drawing.Size(32, 32);
             this._prevButton.TabIndex = 0;
-            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             this._prevButton.UseVisualStyleBackColor = false;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageLabel
             // 
@@ -632,8 +632,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.Name = "_nextButton";
             this._nextButton.Size = new System.Drawing.Size(32, 32);
             this._nextButton.TabIndex = 2;
-            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pagerLine1
             // 
@@ -683,7 +683,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             50});
             this._pageSizeCombo.Location = new System.Drawing.Point(292, 5);
             this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(60, 29);
+            this._pageSizeCombo.Size = new System.Drawing.Size(60, 36);
             this._pageSizeCombo.TabIndex = 7;
             // 
             // _rowsLabel
@@ -712,37 +712,37 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._menuSeparator,
             this._importItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(180, 94);
+            this._optionsMenu.Size = new System.Drawing.Size(198, 112);
             // 
             // _exportCsvItem
             // 
             this._exportCsvItem.Name = "_exportCsvItem";
-            this._exportCsvItem.Size = new System.Drawing.Size(179, 28);
+            this._exportCsvItem.Size = new System.Drawing.Size(197, 34);
             this._exportCsvItem.Text = "Xuất CSV";
             this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
-            this._exportExcelItem.Size = new System.Drawing.Size(179, 28);
+            this._exportExcelItem.Size = new System.Drawing.Size(197, 34);
             this._exportExcelItem.Text = "Xuất Excel";
             this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _menuSeparator
             // 
             this._menuSeparator.Name = "_menuSeparator";
-            this._menuSeparator.Size = new System.Drawing.Size(176, 6);
+            this._menuSeparator.Size = new System.Drawing.Size(194, 6);
             // 
             // _importItem
             // 
             this._importItem.Name = "_importItem";
-            this._importItem.Size = new System.Drawing.Size(179, 28);
+            this._importItem.Size = new System.Drawing.Size(197, 34);
             this._importItem.Text = "Nhập dữ liệu";
             this._importItem.Click += new System.EventHandler(this.ImportItem_Click);
             // 
             // ucStockDisposalManagement
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.Controls.Add(this._gridCard);

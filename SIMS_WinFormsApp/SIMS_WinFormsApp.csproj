@@ -50,6 +50,9 @@
     <EmbeddedResource Include="Views\Catalog\ucSupplierManagement.resx">
       <DependentUpon>ucSupplierManagement.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Dialogs\frmMessageDialog.resx">
+      <DependentUpon>frmMessageDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Reports\ucInventoryReport.resx">
       <DependentUpon>ucInventoryReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,24 +99,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Services\Interfaces\IStockReconciliationService.cs" />
-    <Compile Include="Views\Chat\ucChat.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Chat\ucChat.Designer.cs">
-      <DependentUpon>ucChat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Chat\ucAiChat.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Chat\ucAiChat.Designer.cs">
-      <DependentUpon>ucAiChat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Chat\AiChatPopupForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Chat\AiChatPopupForm.Designer.cs">
-      <DependentUpon>AiChatPopupForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\Interfaces\IStockReconciliationListView.cs" />
     <Compile Include="Views\Profile\ucMyProfile.cs">
       <SubType>UserControl</SubType>
@@ -129,25 +114,6 @@
     </Compile>
     <Compile Include="Views\Sales\frmReturnRejectDialog.Designer.cs">
       <DependentUpon>frmReturnRejectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Sales\PromotionManagementPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Interfaces\IPromotionManagementView.cs" />
-    <Compile Include="Views\Sales\PromotionManagementPage.Designer.cs">
-      <DependentUpon>PromotionManagementPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Sales\PromotionDetailsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Sales\PromotionDetailsDialog.Designer.cs">
-      <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Sales\PromotionEditorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Sales\PromotionEditorDialog.Designer.cs">
-      <DependentUpon>PromotionEditorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Sales\ucReturnManagement.Designer.cs">
       <DependentUpon>ucReturnManagement.cs</DependentUpon>
@@ -207,15 +173,9 @@
     <Compile Include="Views\UserManager\ucShiftManagement.Designer.cs">
       <DependentUpon>ucShiftManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\Chat\ChatMessageDto.cs" />
-    <Compile Include="Models\AI\AiFunctionCall.cs" />
-    <Compile Include="Models\AI\AiLlmResponse.cs" />
-    <Compile Include="Models\AI\AiToolDefinition.cs" />
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
     <Compile Include="Models\DTOs\Dashboard\DashboardDataDto.cs" />
     <Compile Include="Models\DTOs\DateRange.cs" />
-    <Compile Include="Models\DTOs\Backup\BackupQuery.cs" />
-    <Compile Include="Models\DTOs\Backup\BackupRowDto.cs" />
     <Compile Include="Models\DTOs\CreateEmployeeRequestDto.cs" />
     <Compile Include="Models\DTOs\EmployeeProfileDto.cs" />
     <Compile Include="Models\DTOs\NewEmployeeDto.cs" />
@@ -231,7 +191,6 @@
     <Compile Include="Models\DTOs\Pos\CustomerLookupDto.cs" />
     <Compile Include="Models\DTOs\Pos\HeldCartDto.cs" />
     <Compile Include="Models\DTOs\Pos\ProductCatalogItemDto.cs" />
-    <Compile Include="Models\DTOs\Pos\PromotionResultDto.cs" />
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\StoreSettingsDto.cs" />
     <Compile Include="Models\DTOs\TablePageResult.cs" />
@@ -252,9 +211,6 @@
     <Compile Include="Models\Permission\RolePermissionDefaults.cs" />
     <Compile Include="MVP\Presenters\AddEmployeePresenter.cs" />
     <Compile Include="MVP\Presenters\AuditLogPresenter.cs" />
-    <Compile Include="MVP\Presenters\BackupRecoveryPresenter.cs" />
-    <Compile Include="MVP\Presenters\ChatPresenter.cs" />
-    <Compile Include="MVP\Presenters\AI\AiChatPresenter.cs" />
     <Compile Include="MVP\Presenters\EditUserAccountPresenter.cs" />
     <Compile Include="MVP\Presenters\Pos\CartCalculator.cs" />
     <Compile Include="MVP\Presenters\Pos\HeldCartStore.cs" />
@@ -266,7 +222,6 @@
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
     <!-- MỚI: Presenter dùng chung cho popup "Nhập dữ liệu" -->
     <Compile Include="MVP\Presenters\ImportDataPresenter.cs" />
-    <Compile Include="MVP\Presenters\PromotionManagementPresenter.cs" />
     <Compile Include="MVP\ViewModels\AccountStatusDisplay.cs" />
     <Compile Include="MVP\ViewModels\UserAccountDetailViewModel.cs" />
     <!-- MỚI: Header -->
@@ -281,21 +236,6 @@
     <Compile Include="Repositories\Interfaces\IRolePermissionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoleRepository.cs" />
     <Compile Include="Repositories\Interfaces\IStoreConfigRepository.cs" />
-    <Compile Include="Services\Backup\BackupException.cs" />
-    <Compile Include="Services\Backup\BackupFormat.cs" />
-    <Compile Include="Services\Backup\BackupManager.cs" />
-    <Compile Include="Services\Backup\DailyBackupScheduler.cs" />
-    <Compile Include="Services\Backup\BackupResult.cs" />
-    <Compile Include="Services\Backup\BackupStorage.cs" />
-    <Compile Include="Services\Backup\CloudinaryBackupUploadListener.cs" />
-    <Compile Include="Services\Backup\CloudinaryConfig.cs" />
-    <Compile Include="Services\Backup\CloudinaryUploader.cs" />
-    <Compile Include="Services\Backup\CloudinaryUploadException.cs" />
-    <Compile Include="Services\Backup\IBackupListener.cs" />
-    <Compile Include="Services\Backup\IBackupStrategy.cs" />
-    <Compile Include="Services\Backup\ICloudinaryUploader.cs" />
-    <Compile Include="Services\Backup\IRestoreStrategy.cs" />
-    <Compile Include="Services\Backup\SqlServerNativeBackupStrategy.cs" />
     <Compile Include="Services\Barcode\AForgeWebcamCaptureSession.cs" />
     <Compile Include="Services\Barcode\BarcodeScanEngine.cs" />
     <Compile Include="Services\Barcode\IWebcamCaptureSession.cs" />
@@ -303,13 +243,11 @@
     <Compile Include="Services\Implementations\Pos\SqlProductCatalogService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlCustomerLookupService.cs" />
     <Compile Include="Services\Implementations\Pos\SqlInvoiceService.cs" />
-    <Compile Include="Services\Implementations\Pos\DemoPromotionService.cs" />
     <Compile Include="Services\Implementations\UserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\IUserAccountDetailViewModelBuilder.cs" />
     <Compile Include="Services\Interfaces\Pos\ICustomerLookupService.cs" />
     <Compile Include="Services\Interfaces\Pos\IInvoiceService.cs" />
     <Compile Include="Services\Interfaces\Pos\IProductCatalogService.cs" />
-    <Compile Include="Services\Interfaces\Pos\IPromotionService.cs" />
     <Compile Include="Services\Validation\InputValidators.cs" />
     <!-- MỚI: interface + implementation cơ chế Export -->
     <Compile Include="Services\Interfaces\ITableDataExporter.cs" />
@@ -395,10 +333,6 @@
     </Compile>
     <Compile Include="UI\Controls\Catalog\CatalogPages.cs" />
     <!-- MỚI: View interface cho popup "Nhập dữ liệu" -->
-    <Compile Include="Views\Backup\BackupPage.cs" />
-    <Compile Include="Views\Backup\BackupRecoveryPageControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="UI\Controls\Barcode\BarcodeScannerLauncher.cs" />
     <Compile Include="UI\Controls\Barcode\BarcodeScannerPresenter.cs" />
     <Compile Include="Views\Barcode\frmBarcodeScannerDialog.cs">
@@ -458,7 +392,6 @@
     <Compile Include="Views\Toast\ToastService.cs" />
     <Compile Include="UI\Theme\DropdownPalette.cs" />
     <Compile Include="Views\Interfaces\IAuditLogView.cs" />
-    <Compile Include="Views\Interfaces\IBackupRecoveryView.cs" />
     <Compile Include="Views\Interfaces\IImportDataView.cs" />
     <Compile Include="Views\Dialogs\BaseFormDialogForm.cs">
       <SubType>Form</SubType>
@@ -505,35 +438,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
-    <Compile Include="Views\Interfaces\IChatView.cs" />
-    <Compile Include="Views\Interfaces\IAiChatView.cs" />
     <Compile Include="Views\Interfaces\IDashboardView.cs" />
-    <Compile Include="Services\Chat\ChatClientService.cs" />
-    <Compile Include="Services\Chat\ChatServerHost.cs" />
-    <Compile Include="Services\Chat\ChatWsConfig.cs" />
-    <Compile Include="Services\Chat\IChatClientService.cs" />
-    <Compile Include="Services\AI\AiChatException.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiChatService.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiPromptBuilder.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiRateLimiter.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiTool.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiToolPermissionPolicy.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiToolDispatcher.cs" />
-    <Compile Include="Services\AI\Interfaces\IAiToolRegistry.cs" />
-    <Compile Include="Services\AI\Interfaces\ILlmClient.cs" />
-    <Compile Include="Services\AI\Implementations\AiChatService.cs" />
-    <Compile Include="Services\AI\Implementations\AiPromptBuilder.cs" />
-    <Compile Include="Services\AI\Implementations\AiRateLimiter.cs" />
-    <Compile Include="Services\AI\Implementations\AiToolArgumentValidator.cs" />
-    <Compile Include="Services\AI\Implementations\AiToolBase.cs" />
-    <Compile Include="Services\AI\Implementations\AiToolDispatcher.cs" />
-    <Compile Include="Services\AI\Implementations\AiToolRegistry.cs" />
-    <Compile Include="Services\AI\Implementations\AiToolPermissionPolicy.cs" />
-    <Compile Include="Services\AI\Implementations\GeminiClient.cs" />
-    <Compile Include="Services\AI\Implementations\Tools\GetProductDetailTool.cs" />
-    <Compile Include="Services\AI\Implementations\Tools\GetStockStatusTool.cs" />
-    <Compile Include="Services\AI\Implementations\Tools\ListCategoriesTool.cs" />
-    <Compile Include="Services\AI\Implementations\Tools\SearchProductsTool.cs" />
     <Compile Include="MVP\Presenters\DateRangeFilterPresenter.cs" />
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
     <Compile Include="Views\Interfaces\IDateRangeFilterView.cs" />
@@ -552,9 +457,6 @@
     </Reference>
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
-    </Reference>
-    <Reference Include="Fleck, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fleck.1.2.0\lib\net45\Fleck.dll</HintPath>
     </Reference>
     <Reference Include="FontAwesome.Sharp, Version=6.6.0.0, Culture=neutral, PublicKeyToken=d16d1e4e568ec10f, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.Sharp.6.6.0\lib\net472\FontAwesome.Sharp.dll</HintPath>
@@ -640,12 +542,12 @@
       <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.1016.290\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
       <Private>true</Private>
     </Reference>
-    <Compile Include="Repositories\Implementations\ChatRepository.cs" />
     <Compile Include="Infrastructure\Configuration\IConnectionStringProvider.cs" />
     <Compile Include="Infrastructure\Configuration\ConnectionStringProvider.cs" />
     <Compile Include="Infrastructure\Configuration\IDbConnectionFactory.cs" />
     <Compile Include="Infrastructure\Configuration\DbConnectionFactory.cs" />
     <Compile Include="DAL\Linq\SimsDataContext.cs" />
+    <Compile Include="DAL\Linq\TriggerInsertExecutor.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\UserRepository.cs" />
     <Compile Include="Views\Auth\frmChangePassword.cs">
@@ -659,9 +561,6 @@
     </Compile>
     <Compile Include="Views\Dashboard\ucDashboard.Designer.cs">
       <DependentUpon>ucDashboard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Backup\BackupRecoveryPageControl.Designer.cs">
-      <DependentUpon>BackupRecoveryPageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Auth\frmForgotPassword.cs">
       <SubType>Form</SubType>
@@ -811,8 +710,6 @@
     <Compile Include="Infrastructure\Configuration\ConnectionConfigurationService.cs" />
     <Compile Include="Infrastructure\Configuration\IConnectionConfigurationService.cs" />
     <Compile Include="Infrastructure\Composition\AppComposition.cs" />
-    <Compile Include="Infrastructure\Security\AppConfig.cs" />
-    <Compile Include="Infrastructure\Security\SecureConfigFile.cs" />
     <Compile Include="Infrastructure\SecureConfigStore.cs" />
     <Compile Include="Models\DTOs\LoginRequestDto.cs" />
     <Compile Include="Models\DTOs\UserManagementPageDto.cs" />
@@ -830,7 +727,6 @@
     <Compile Include="Views\Interfaces\ILoginView.cs" />
     <Compile Include="Views\Interfaces\IMainView.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Repositories\Interfaces\IChatRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
@@ -920,9 +816,6 @@
     <EmbeddedResource Include="Views\Catalog\ucProductManagement.resx">
       <DependentUpon>ucProductManagement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Chat\ucChat.resx">
-      <DependentUpon>ucChat.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\Dashboard\ucDashboard.resx">
       <DependentUpon>ucDashboard.cs</DependentUpon>
     </EmbeddedResource>
@@ -940,15 +833,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.resx">
       <DependentUpon>InvoiceReturnDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Sales\PromotionDetailsDialog.resx">
-      <DependentUpon>PromotionDetailsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Sales\PromotionEditorDialog.resx">
-      <DependentUpon>PromotionEditorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Sales\PromotionManagementPage.resx">
-      <DependentUpon>PromotionManagementPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
@@ -1013,6 +897,9 @@
     <EmbeddedResource Include="Views\Warehouse\frmStockDisposalEditor.resx">
       <DependentUpon>frmStockDisposalEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucExpiredBatchDisposal.resx">
+      <DependentUpon>ucExpiredBatchDisposal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockDisposalManagement.resx">
       <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
     </EmbeddedResource>
@@ -1030,11 +917,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Models\DTOs\PromotionDtos.cs" />
-    <Compile Include="Repositories\Interfaces\IPromotionRepository.cs" />
-    <Compile Include="Repositories\Implementations\PromotionRepository.cs" />
-    <Compile Include="Services\Interfaces\IPromotionManagementService.cs" />
-    <Compile Include="Services\Implementations\Pos\SqlPromotionService.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>

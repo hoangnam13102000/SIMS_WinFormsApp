@@ -89,7 +89,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _selectAllCheckBox.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             _selectAllCheckBox.Location = new Point(590, 43);
             _selectAllCheckBox.Text = "Chọn toàn bộ hóa đơn";
-            _selectAllCheckBox.CheckedChanged += new EventHandler(this.SelectAllCheckBox_CheckedChanged);
+            this._selectAllCheckBox.CheckedChanged += new System.EventHandler(this.SelectAllCheckBox_CheckedChanged);
 
             _linesGrid.AllowUserToAddRows = false;
             _linesGrid.AllowUserToDeleteRows = false;
@@ -103,11 +103,11 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _linesGrid.RowHeadersVisible = false;
             _linesGrid.SelectionMode = DataGridViewSelectionMode.CellSelect;
             _linesGrid.MultiSelect = false;
-            _linesGrid.CurrentCellDirtyStateChanged += new EventHandler(this.LinesGrid_CurrentCellDirtyStateChanged);
-            _linesGrid.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(this.OnLinesGridEditingControlShowing);
-            _linesGrid.CellValueChanged += new DataGridViewCellEventHandler(this.LinesGrid_CellValueChanged);
-            _linesGrid.CellEndEdit += new DataGridViewCellEventHandler(this.LinesGrid_CellEndEdit);
-            _linesGrid.DataError += new DataGridViewDataErrorEventHandler(this.LinesGrid_DataError);
+            this._linesGrid.CurrentCellDirtyStateChanged += new System.EventHandler(this.LinesGrid_CurrentCellDirtyStateChanged);
+            this._linesGrid.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.OnLinesGridEditingControlShowing);
+            this._linesGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.LinesGrid_CellValueChanged);
+            this._linesGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.LinesGrid_CellEndEdit);
+            this._linesGrid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.LinesGrid_DataError);
             _linesGrid.Columns.Add(new DataGridViewCheckBoxColumn
             {
                 Name = "Selected",
@@ -226,7 +226,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _cancelButton.Name = "_cancelButton";
             _cancelButton.Size = new Size(78, 34);
             _cancelButton.Text = "Hủy";
-            _cancelButton.Click += new EventHandler(this.CancelButton_Click);
+            this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
 
             _submitButton.BackColor = AppColors.Accent;
             _submitButton.FlatStyle = FlatStyle.Flat;
@@ -235,7 +235,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _submitButton.Name = "_submitButton";
             _submitButton.Size = new Size(124, 34);
             _submitButton.Text = "Gửi yêu cầu";
-            _submitButton.Click += new EventHandler(this.SubmitButton_Click);
+            this._submitButton.Click += new System.EventHandler(this.SubmitButton_Click);
 
             _rootLayout.Controls.Add(_headerPanel, 0, 0);
             _rootLayout.Controls.Add(_linesGrid, 0, 1);

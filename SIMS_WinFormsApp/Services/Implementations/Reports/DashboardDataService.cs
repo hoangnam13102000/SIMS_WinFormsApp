@@ -188,9 +188,15 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
         {
             var invoices = db.Invoices.Where(invoice => invoice.CreatedBy == userId);
             if (periodStart.HasValue)
-                invoices = invoices.Where(invoice => invoice.CreatedAt >= periodStart.Value);
+            {
+                DateTime start = periodStart.Value;
+                invoices = invoices.Where(invoice => invoice.CreatedAt >= start);
+            }
             if (periodEnd.HasValue)
-                invoices = invoices.Where(invoice => invoice.CreatedAt < periodEnd.Value);
+            {
+                DateTime end = periodEnd.Value;
+                invoices = invoices.Where(invoice => invoice.CreatedAt < end);
+            }
 
             var recentInvoices = invoices
                 .OrderByDescending(invoice => invoice.CreatedAt)

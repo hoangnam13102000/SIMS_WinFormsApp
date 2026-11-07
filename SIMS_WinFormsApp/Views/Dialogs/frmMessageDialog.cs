@@ -77,12 +77,22 @@ namespace SIMS_WinFormsApp.Views.Dialogs
 
             int safeDefaultIndex = Math.Max(0, Math.Min(defaultButtonIndex, buttonTexts.Length - 1));
             AcceptButton = buttons[safeDefaultIndex];
-            CancelButton = btnClose;
             _closeResult = closeResult;
             PositionButtons(buttons, buttonTexts.Length);
         }
 
         private DialogResult _closeResult = DialogResult.Cancel;
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                DialogResult = _closeResult;
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         private void PositionButtons(Button[] buttons, int visibleCount)
         {
@@ -100,24 +110,21 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            DialogResult = _closeResult;
-            Close();
-        }
-
         private void btnPrimary_Click(object sender, EventArgs e)
         {
+            // Trả kết quả đã gán trong Configure; WinForms tự đóng dialog.
             DialogResult = btnPrimary.DialogResult;
         }
 
         private void btnSecondary_Click(object sender, EventArgs e)
         {
+            // Trả kết quả đã gán trong Configure; WinForms tự đóng dialog.
             DialogResult = btnSecondary.DialogResult;
         }
 
         private void _tertiaryButton_Click(object sender, EventArgs e)
         {
+            // Trả kết quả đã gán trong Configure; WinForms tự đóng dialog.
             DialogResult = _tertiaryButton.DialogResult;
         }
     }

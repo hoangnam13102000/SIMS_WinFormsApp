@@ -83,7 +83,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                                     .Sum() ?? 0
                             };
                 if (categoryId.HasValue)
-                    query = query.Where(row => row.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    query = query.Where(row => row.CategoryID == selectedCategoryId);
+                }
 
                 return query.ToList().Select(row => MapProduct(
                     row.ProductID, row.ProductCode, row.ProductName, row.CategoryID, row.CategoryName,

@@ -24,7 +24,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             MarkRequired(_nameLabel);
             MarkRequired(_categoryLabel);
             Text = "Sản phẩm";
-            PopulateLookups(Array.Empty<LookupItem>(), Array.Empty<LookupItem>());
+            PopulateLookups(Array.Empty<LookupItem>());
             PopulatePreviewValues();
         }
 
@@ -32,7 +32,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             IWin32Window owner,
             ProductEditDto model,
             IReadOnlyList<LookupItem> categories,
-            IReadOnlyList<LookupItem> suppliers,
             bool readOnly)
         {
             InitializeComponent();
@@ -45,7 +44,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                 ? "Chi tiết sản phẩm"
                 : (_model.ProductId > 0 ? "Sửa sản phẩm" : "Thêm sản phẩm");
 
-            PopulateLookups(categories, suppliers);
+            PopulateLookups(categories);
             PopulateModel();
             SetReadOnly(readOnly);
 
@@ -93,12 +92,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             IWin32Window owner,
             ProductEditDto model,
             IReadOnlyList<LookupItem> categories,
-            IReadOnlyList<LookupItem> suppliers,
             bool readOnly,
             out ProductEditDto result)
         {
             result = null;
-            using (var dialog = new frmProductEditor(owner, model.Copy(), categories, suppliers, readOnly))
+            using (var dialog = new frmProductEditor(owner, model.Copy(), categories, readOnly))
             {
                 if (dialog.ShowDialog(owner) != DialogResult.OK) return false;
                 result = dialog._model;
@@ -121,22 +119,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             base.Dispose(disposing);
         }
 
-        private void PopulateLookups(
-            IReadOnlyList<LookupItem> categories,
-            IReadOnlyList<LookupItem> suppliers)
+        private void PopulateLookups(IReadOnlyList<LookupItem> categories)
         {
             _categoryComboBox.DisplayMember = nameof(LookupItem.Name);
             _categoryComboBox.ValueMember = nameof(LookupItem.Id);
             _categoryComboBox.DataSource = (categories ?? Array.Empty<LookupItem>()).ToList();
-
-            var supplierItems = new List<LookupItem>
-            {
-                new LookupItem { Id = 0, Name = "(Không chọn)" }
-            };
-            supplierItems.AddRange(suppliers ?? Array.Empty<LookupItem>());
-            _supplierComboBox.DisplayMember = nameof(LookupItem.Name);
-            _supplierComboBox.ValueMember = nameof(LookupItem.Id);
-            _supplierComboBox.DataSource = supplierItems;
 
             _statusComboBox.Items.Clear();
             _statusComboBox.Items.AddRange(new object[] { "Đang bán", "Ngừng bán" });
@@ -156,7 +143,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _stockTextBox.Text = _model.Stock.ToString(CultureInfo.InvariantCulture);
             _minStockTextBox.Text = _model.MinStock.ToString(CultureInfo.InvariantCulture);
             SelectLookup(_categoryComboBox, _model.CategoryId);
-            SelectLookup(_supplierComboBox, _model.SupplierId ?? 0);
             _statusComboBox.SelectedIndex = _model.IsActive ? 0 : 1;
             ShowPreview(_model.ImagePath);
             UpdateDetailSummary();
@@ -167,7 +153,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _codeLabel.Text = "Mã sản phẩm";
             _statusComboBox.SelectedIndex = 0;
             _categoryComboBox.SelectedIndex = -1;
-            _supplierComboBox.SelectedIndex = 0;
             _detailSummaryLabel.Text = "Thông tin tồn kho và trạng thái sẽ hiển thị ở đây.";
         }
 
@@ -183,7 +168,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _stockTextBox.ReadOnly = readOnly || _model.ProductId > 0;
             _minStockTextBox.ReadOnly = readOnly;
             _categoryComboBox.Enabled = !readOnly;
-            _supplierComboBox.Enabled = !readOnly;
             _statusComboBox.Enabled = !readOnly;
             _uploadImageButton.Enabled = !readOnly;
             _clearImageButton.Enabled = !readOnly;
@@ -268,7 +252,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             }
 
             var category = _categoryComboBox.SelectedItem as LookupItem;
-            var supplier = _supplierComboBox.SelectedItem as LookupItem;
             if (category == null)
             {
                 DialogHelper.ShowWarning(this, "Dữ liệu không hợp lệ", "Vui lòng chọn danh mục sản phẩm.");
@@ -277,7 +260,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
             _model.Name = _nameTextBox.Text.Trim();
             _model.CategoryId = category.Id;
-            _model.SupplierId = supplier == null || supplier.Id <= 0 ? (int?)null : supplier.Id;
             _model.Brand = _brandTextBox.Text;
             _model.Unit = _unitTextBox.Text;
             _model.WeightVolume = _weightTextBox.Text;

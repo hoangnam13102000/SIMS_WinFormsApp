@@ -25,13 +25,12 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
             int? customerId,
             string paymentMethod,
             CartTotalsDto totals,
-            int? promotionId,
-            string promotionCode,
             IReadOnlyList<CartLineDto> lines)
         {
             ValidateRequest(createdBy, paymentMethod, totals, lines);
             List<CartLineDto> orderedLines = lines.OrderBy(line => line.ProductId).ToList();
-            string invoiceCode = "HD-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" +
+            DateTime now = DateTime.Now;
+            string invoiceCode = "HD-" + now.ToString("yyyyMMdd-HHmmss") + "-" +
                                  Guid.NewGuid().ToString("N").Substring(0, 8).ToUpperInvariant();
 
             using (SimsDataContext db = _connectionFactory.CreateDataContext())
@@ -53,29 +52,24 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                         CustomerID = customerId,
                         SubTotal = totals.Subtotal,
                         DiscountAmount = totals.DiscountAmount,
-                        PromotionID = promotionId,
-                        PromotionCode = string.IsNullOrWhiteSpace(promotionCode) ? null : promotionCode,
                         VATRate = vatRate,
                         TotalAmount = totals.GrandTotal,
                         PaymentMethod = paymentMethod,
                         PointsUsed = GetPointsUsed(totals),
                         PointsDiscountAmount = totals.PointsDiscountAmount,
+                        CreatedAt = now,
                         Status = "ACTIVE"
                     };
                     db.Invoices.InsertOnSubmit(invoice);
                     db.SubmitChanges();
 
-                    ConsumePromotion(db, promotionId);
                     foreach (CartLineDto line in orderedLines)
-                    {
-                        db.InvoiceDetails.InsertOnSubmit(new InvoiceDetailEntity
-                        {
-                            InvoiceID = invoice.InvoiceID,
-                            ProductID = line.ProductId,
-                            Quantity = line.Quantity,
-                            UnitPrice = line.UnitPrice
-                        });
-                    }
+                        TriggerInsertExecutor.InsertInvoiceDetail(
+                            db,
+                            invoice.InvoiceID,
+                            line.ProductId,
+                            line.Quantity,
+                            line.UnitPrice);
                     DeductLoyaltyPoints(db, customerId, totals);
                     db.SubmitChanges();
                     transaction.Commit();
@@ -107,18 +101,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Pos
                     throw new InvalidOperationException(
                         "Tồn kho không đủ cho sản phẩm \"" + line.ProductName + "\".");
             }
-        }
-
-        private static void ConsumePromotion(SimsDataContext db, int? promotionId)
-        {
-            if (!promotionId.HasValue) return;
-            PromotionEntity promotion = db.Promotions.SingleOrDefault(item =>
-                item.PromotionID == promotionId.Value && !item.IsDeleted && item.IsActive);
-            DateTime today = DateTime.Today;
-            if (promotion == null || promotion.StartDate.Date > today || promotion.EndDate.Date < today
-                || (promotion.UsageLimit.HasValue && promotion.UsedCount >= promotion.UsageLimit.Value))
-                throw new InvalidOperationException("Mã giảm giá vừa hết lượt sử dụng hoặc không còn hiệu lực.");
-            promotion.UsedCount++;
         }
 
         private static void DeductLoyaltyPoints(SimsDataContext db, int? customerId, CartTotalsDto totals)

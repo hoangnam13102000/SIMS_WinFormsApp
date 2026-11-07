@@ -98,30 +98,33 @@
             this._menuSeparator,
             this._importItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(180, 94);
+            this._optionsMenu.Size = new System.Drawing.Size(198, 112);
             // 
             // _exportCsvItem
             // 
             this._exportCsvItem.Name = "_exportCsvItem";
-            this._exportCsvItem.Size = new System.Drawing.Size(179, 28);
+            this._exportCsvItem.Size = new System.Drawing.Size(197, 34);
             this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
-            this._exportExcelItem.Size = new System.Drawing.Size(179, 28);
+            this._exportExcelItem.Size = new System.Drawing.Size(197, 34);
             this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _menuSeparator
             // 
             this._menuSeparator.Name = "_menuSeparator";
-            this._menuSeparator.Size = new System.Drawing.Size(176, 6);
+            this._menuSeparator.Size = new System.Drawing.Size(194, 6);
             // 
             // _importItem
             // 
             this._importItem.Name = "_importItem";
-            this._importItem.Size = new System.Drawing.Size(179, 28);
+            this._importItem.Size = new System.Drawing.Size(197, 34);
             this._importItem.Text = "Nhập dữ liệu";
+            this._importItem.Click += new System.EventHandler(this.ImportItem_Click);
             // 
             // _clearDateLink
             // 
@@ -132,12 +135,13 @@
             this._clearDateLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._clearDateLink.Location = new System.Drawing.Point(725, 24);
             this._clearDateLink.Name = "_clearDateLink";
-            this._clearDateLink.Size = new System.Drawing.Size(68, 23);
+            this._clearDateLink.Size = new System.Drawing.Size(82, 28);
             this._clearDateLink.TabIndex = 6;
             this._clearDateLink.TabStop = true;
             this._clearDateLink.Text = "Xoá lọc";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
             this._clearDateLink.Visible = false;
+            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_Click);
             // 
             // _searchTimer
             // 
@@ -183,6 +187,7 @@
             this._syncButton.Text = "Đồng bộ SP hôm nay";
             this._syncButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this._syncButton.UseVisualStyleBackColor = false;
+            this._syncButton.Click += new System.EventHandler(this.SyncButton_Click);
             // 
             // _optionsButton
             // 
@@ -204,6 +209,7 @@
             this._optionsButton.Text = "Tùy chọn";
             this._optionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             // 
             // _subtitleLabel
             // 
@@ -306,7 +312,7 @@
             this._searchBox.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this._searchBox.Location = new System.Drawing.Point(34, 8);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(256, 22);
+            this._searchBox.Size = new System.Drawing.Size(256, 26);
             this._searchBox.TabIndex = 1;
             // 
             // _searchIcon
@@ -330,7 +336,7 @@
             this._fromDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._fromDateLabel.Location = new System.Drawing.Point(338, 25);
             this._fromDateLabel.Name = "_fromDateLabel";
-            this._fromDateLabel.Size = new System.Drawing.Size(29, 23);
+            this._fromDateLabel.Size = new System.Drawing.Size(34, 28);
             this._fromDateLabel.TabIndex = 1;
             this._fromDateLabel.Text = "Từ";
             // 
@@ -341,7 +347,7 @@
             this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._fromDatePicker.Location = new System.Drawing.Point(394, 20);
             this._fromDatePicker.Name = "_fromDatePicker";
-            this._fromDatePicker.Size = new System.Drawing.Size(124, 29);
+            this._fromDatePicker.Size = new System.Drawing.Size(124, 33);
             this._fromDatePicker.TabIndex = 2;
             this._fromDatePicker.Value = new System.DateTime(2026, 11, 1, 2, 5, 1, 526);
             // 
@@ -360,6 +366,7 @@
             this._fromDateIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._fromDateIcon.TabIndex = 3;
             this._fromDateIcon.TabStop = false;
+            this._fromDateIcon.Click += new System.EventHandler(this.FromDateIcon_Click);
             // 
             // _toDateLabel
             // 
@@ -367,7 +374,7 @@
             this._toDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this._toDateLabel.Location = new System.Drawing.Point(530, 25);
             this._toDateLabel.Name = "_toDateLabel";
-            this._toDateLabel.Size = new System.Drawing.Size(41, 23);
+            this._toDateLabel.Size = new System.Drawing.Size(47, 28);
             this._toDateLabel.TabIndex = 4;
             this._toDateLabel.Text = "Đến";
             // 
@@ -377,7 +384,7 @@
             this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._toDatePicker.Location = new System.Drawing.Point(592, 20);
             this._toDatePicker.Name = "_toDatePicker";
-            this._toDatePicker.Size = new System.Drawing.Size(124, 29);
+            this._toDatePicker.Size = new System.Drawing.Size(124, 33);
             this._toDatePicker.TabIndex = 5;
             // 
             // _toDateIcon
@@ -395,6 +402,7 @@
             this._toDateIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._toDateIcon.TabIndex = 6;
             this._toDateIcon.TabStop = false;
+            this._toDateIcon.Click += new System.EventHandler(this.ToDateIcon_Click);
             // 
             // _totalLabel
             // 
@@ -652,6 +660,7 @@
             this._prevButton.Size = new System.Drawing.Size(32, 32);
             this._prevButton.TabIndex = 0;
             this._prevButton.UseVisualStyleBackColor = false;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageLabel
             // 
@@ -679,6 +688,7 @@
             this._nextButton.Size = new System.Drawing.Size(32, 32);
             this._nextButton.TabIndex = 2;
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pageInfoLabel
             // 
@@ -703,12 +713,12 @@
             "100"});
             this._pageSizeCombo.Location = new System.Drawing.Point(286, 4);
             this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(104, 29);
+            this._pageSizeCombo.Size = new System.Drawing.Size(104, 36);
             this._pageSizeCombo.TabIndex = 4;
             // 
             // ucStockReconciliation
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.Controls.Add(this._pagerCard);
@@ -737,16 +747,6 @@
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this._pagerCard.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
-            this._fromDateIcon.Click += new System.EventHandler(this.FromDateIcon_Click);
-            this._toDateIcon.Click += new System.EventHandler(this.ToDateIcon_Click);
-            this._clearDateLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearDateLink_Click);
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
-            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
-            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
-            this._importItem.Click += new System.EventHandler(this.ImportItem_Click);
-            this._syncButton.Click += new System.EventHandler(this.SyncButton_Click);
-            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
-            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             this.ResumeLayout(false);
 
         }

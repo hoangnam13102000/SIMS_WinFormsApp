@@ -113,7 +113,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _saveButton.Size = new Size(138, 40);
             _saveButton.Text = "Lưu thay đổi";
             _saveButton.UseVisualStyleBackColor = false;
-            _saveButton.Click += new System.EventHandler(SaveButton_Click);
+            this._saveButton.Click += new System.EventHandler(this.SaveButton_Click);
 
             _storeCard.BackColor = Color.White;
             _storeCard.BorderStyle = BorderStyle.FixedSingle;

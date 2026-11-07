@@ -1,7 +1,7 @@
 /*
    Reconcile the current carrot stock shown in the product catalog.
    Run Trigger_SIMS.sql first so the reconciliation trigger can reduce
-   active batch quantities and record each adjustment.
+   active batch quantities in FEFO order.
 
    Products.Stock is the physical count (248 in the reported example).
    When batch stock is higher, expired batches are reduced first, then
@@ -16,9 +16,6 @@ SET XACT_ABORT ON;
 
 IF OBJECT_ID('dbo.trg_StockReconciliation_Apply', 'TR') IS NULL
     THROW 51101, N'Hay chay Trigger_SIMS.sql truoc khi doi soat.', 1;
-IF OBJECT_ID('dbo.StockReconciliationBatchAdjustments', 'U') IS NULL
-    THROW 51102, N'Thieu bang chi tiet dieu chinh lo. Hay chay Trigger_SIMS.sql truoc.', 1;
-
 DECLARE @ProductCode VARCHAR(50) = 'SP_0004';
 DECLARE @ProductID INT;
 DECLARE @Stock INT;
@@ -98,17 +95,4 @@ LEFT JOIN dbo.InventoryBatch b ON b.ProductID = p.ProductID
 WHERE p.ProductID = @ProductID
 GROUP BY p.ProductCode, p.ProductName, p.Stock;
 
-SELECT
-    r.ReconciliationID,
-    b.BatchCode,
-    b.ExpiryDate,
-    a.Quantity AS AdjustedQuantity,
-    a.BatchStockBefore,
-    a.BatchStockAfter
-FROM dbo.StockReconciliation r
-JOIN dbo.StockReconciliationBatchAdjustments a
-    ON a.ReconciliationID = r.ReconciliationID
-JOIN dbo.InventoryBatch b ON b.BatchID = a.BatchID
-WHERE r.ProductID = @ProductID
-ORDER BY a.ReconciliationBatchAdjustmentID DESC;
 GO

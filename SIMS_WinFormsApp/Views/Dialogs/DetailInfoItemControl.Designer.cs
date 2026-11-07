@@ -28,7 +28,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
                 Location = new Point(0, 0),
                 BackColor = Color.Transparent
             };
-            _iconBox.Paint += IconBox_Paint;
+            this._iconBox.Paint += new System.Windows.Forms.PaintEventHandler(this.IconBox_Paint);
             this.Controls.Add(_iconBox);
 
             _iconGlyph = new IconPictureBox

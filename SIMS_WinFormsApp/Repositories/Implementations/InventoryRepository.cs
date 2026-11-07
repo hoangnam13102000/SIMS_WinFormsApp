@@ -185,12 +185,22 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 : (DateTime?)null;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                return (from receipt in db.PurchaseReceipts
+                IQueryable<PurchaseReceiptEntity> receipts = db.PurchaseReceipts;
+                if (fromDateTime.HasValue)
+                {
+                    DateTime start = fromDateTime.Value;
+                    receipts = receipts.Where(receipt => receipt.CreatedAt >= start);
+                }
+                if (toExclusive.HasValue)
+                {
+                    DateTime end = toExclusive.Value;
+                    receipts = receipts.Where(receipt => receipt.CreatedAt < end);
+                }
+
+                return (from receipt in receipts
                         join supplier in db.Suppliers on receipt.SupplierID equals supplier.SupplierID
                         join user in db.Users on receipt.CreatedBy equals user.UserID
-                        where (!fromDateTime.HasValue || receipt.CreatedAt >= fromDateTime.Value)
-                            && (!toExclusive.HasValue || receipt.CreatedAt < toExclusive.Value)
-                            && (normalizedKeyword.Length == 0
+                        where (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(receipt.ReceiptCode, pattern)
                                 || SqlMethods.Like(supplier.SupplierName, pattern)
                                 || SqlMethods.Like(user.FullName, pattern)
@@ -290,12 +300,18 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             string pattern = "%" + normalizedKeyword + "%";
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                return (from product in db.Products
+                IQueryable<ProductEntity> products = db.Products
+                    .Where(product => product.Status == "ACTIVE");
+                if (categoryId.HasValue)
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(product => product.CategoryID == selectedCategoryId);
+                }
+
+                return (from product in products
                         join category in db.Categories
                             on product.CategoryID equals category.CategoryID
-                        where product.Status == "ACTIVE"
-                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
-                            && (normalizedKeyword.Length == 0
+                        where (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(product.ProductName, pattern)
                                 || SqlMethods.Like(product.ProductCode, pattern))
                         orderby (product.Stock <= product.MinStock ? 0 : 1), product.ProductName
@@ -320,8 +336,27 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             DateTime? toExclusive = to.HasValue ? to.Value.Date.AddDays(1) : (DateTime?)null;
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                return (from alert in db.StockAlerts
-                        join product in db.Products on alert.ProductID equals product.ProductID
+                IQueryable<StockAlertEntity> alerts = db.StockAlerts;
+                if (fromDate.HasValue)
+                {
+                    DateTime start = fromDate.Value;
+                    alerts = alerts.Where(alert => alert.CreatedAt >= start);
+                }
+                if (toExclusive.HasValue)
+                {
+                    DateTime end = toExclusive.Value;
+                    alerts = alerts.Where(alert => alert.CreatedAt < end);
+                }
+
+                IQueryable<ProductEntity> products = db.Products;
+                if (categoryId.HasValue)
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(product => product.CategoryID == selectedCategoryId);
+                }
+
+                return (from alert in alerts
+                        join product in products on alert.ProductID equals product.ProductID
                         join reporter in db.Users on alert.ReportedBy equals reporter.UserID into reporters
                         from reportedBy in reporters.DefaultIfEmpty()
                         join resolver in db.Users on alert.ResolvedBy equals resolver.UserID into resolvers
@@ -329,9 +364,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                         where (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(product.ProductName, pattern)
                                 || SqlMethods.Like(product.ProductCode, pattern))
-                            && (!categoryId.HasValue || product.CategoryID == categoryId.Value)
-                            && (!fromDate.HasValue || alert.CreatedAt >= fromDate.Value)
-                            && (!toExclusive.HasValue || alert.CreatedAt < toExclusive.Value)
                         orderby alert.CreatedAt descending, alert.AlertID descending
                         select new StockAlertListItemDto
                         {
@@ -536,15 +568,14 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                             if (count == null)
                                 throw new ArgumentException("Dòng kiểm kê không được null.", nameof(counts));
 
-                            db.StockReconciliation.InsertOnSubmit(new StockReconciliationEntity
-                            {
-                                ProductID = count.ProductId,
-                                SystemStock = count.SystemStock,
-                                ActualStock = count.ActualStock,
-                                Note = count.Note,
-                                CreatedBy = createdBy,
-                                CreatedAt = DateTime.Now
-                            });
+                            TriggerInsertExecutor.InsertStockReconciliation(
+                                db,
+                                count.ProductId,
+                                count.SystemStock,
+                                count.ActualStock,
+                                count.Note,
+                                createdBy,
+                                DateTime.Now);
                             WriteAuditLog(
                                 db,
                                 createdBy,

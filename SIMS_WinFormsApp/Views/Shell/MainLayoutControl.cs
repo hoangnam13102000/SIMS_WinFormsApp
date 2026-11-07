@@ -41,13 +41,11 @@ namespace SIMS_WinFormsApp.Views.Shell
 
         public Panel ContentHost => _contentHost;
         public string CurrentPageKey => _currentPageKey;
-        public Control ChatbotButton => _chatbotButton;
         public bool NotificationsEnabled => _notificationsEnabled;
 
         public event EventHandler LogoutRequested;
         public event EventHandler ProfileRequested;
         public event EventHandler<string> PageChanged;
-        public event EventHandler AiChatRequested;
         public event Action<NotificationDto> NotificationReadRequested;
         public event Action<string> NotificationDeleteRequested;
         public event Action<IReadOnlyList<string>> NotificationsClearRequested;
@@ -63,9 +61,8 @@ namespace SIMS_WinFormsApp.Views.Shell
                 Application.StartupPath, "Resources", "Media", "doorbell.wav");
             _notificationSoundPlayer = new System.Media.SoundPlayer(notificationSoundPath);
             _notificationSoundPlayer.Load();
-            ConfigureFloatingButtons();
+            ConfigureSettingsButton();
             _settingsButton.BringToFront();
-            _chatbotButton.BringToFront();
             _notificationsEnabled = ReadNotificationsEnabled();
             _sidebarToolTip = new ToolTip(components);
             _sidebarToolTip.SetToolTip(_sidebarToggleButton, Lang.Get("sidebar.toggle.tooltip"));
@@ -87,9 +84,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             ApplyAppearance();
         }
 
-        private void ConfigureFloatingButtons()
+        private void ConfigureSettingsButton()
         {
-            ConfigureFloatingButton(_chatbotButton, IconChar.Robot);
             ConfigureFloatingButton(_settingsButton, IconChar.Gear);
         }
 
@@ -118,11 +114,6 @@ namespace SIMS_WinFormsApp.Views.Shell
         private void NotificationsClearItem_Click(object sender, EventArgs e)
         {
             NotificationsClearRequested?.Invoke(GetVisibleNotificationIds());
-        }
-
-        private void ChatbotButton_Click(object sender, EventArgs e)
-        {
-            AiChatRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void SettingsButton_Click(object sender, EventArgs e)

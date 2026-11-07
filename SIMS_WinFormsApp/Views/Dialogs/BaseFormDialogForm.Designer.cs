@@ -30,7 +30,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             _headerIconHolder.Location = new Point(20, 12);
             _headerIconHolder.Name = "headerIconHolder";
             _headerIconHolder.Size = new Size(40, 40);
-            _headerIconHolder.Paint += new PaintEventHandler(HeaderIconHolder_Paint);
+            this._headerIconHolder.Paint += new System.Windows.Forms.PaintEventHandler(this.HeaderIconHolder_Paint);
 
             _headerIconBox.BackColor = Color.Transparent;
             _headerIconBox.IconChar = IconChar.UserPen;
@@ -56,7 +56,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             _closeButton.Location = new Point(564, 12);
             _closeButton.Name = "closeButton";
             _closeButton.Size = new Size(40, 40);
-            _closeButton.Click += new System.EventHandler(CloseButton_Click);
+            this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
             _headerPanel.Controls.Add(_closeButton);
             _headerPanel.Controls.Add(_headerIconHolder);
 
@@ -70,7 +70,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             _footerPanel.Dock = DockStyle.Bottom;
             _footerPanel.Height = 76;
             _footerPanel.Name = "footerPanel";
-            _footerPanel.Paint += new PaintEventHandler(FooterPanel_Paint);
+            this._footerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.FooterPanel_Paint);
 
             Controls.Add(_bodyScrollPanel);
             Controls.Add(_footerPanel);

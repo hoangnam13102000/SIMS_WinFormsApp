@@ -11,8 +11,6 @@ namespace SIMS_WinFormsApp.Services.Interfaces
         CatalogSaveResult SetProductActive(int productId, bool active);
         IReadOnlyList<LookupItem> GetCategoryOptions();
         IReadOnlyList<LookupItem> GetAllCategoryOptions();
-        IReadOnlyList<LookupItem> GetSupplierOptions();
-
         CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status);
         CategoryEditDto GetCategory(int categoryId);
         CatalogSaveResult SaveCategory(CategoryEditDto dto);

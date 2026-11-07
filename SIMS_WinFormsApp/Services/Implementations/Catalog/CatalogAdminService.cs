@@ -47,12 +47,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
                 if (dto.ProductId <= 0)
                 {
                     int id = _repository.InsertProduct(dto);
-                    _repository.SetPreferredSupplier(id, dto.SupplierId);
                     return CatalogSaveResult.Ok(id, "Đã thêm sản phẩm.");
                 }
 
                 _repository.UpdateProduct(dto);
-                _repository.SetPreferredSupplier(dto.ProductId, dto.SupplierId);
                 return CatalogSaveResult.Ok(dto.ProductId, "Đã cập nhật sản phẩm.");
             }
             catch (Exception ex)
@@ -76,8 +74,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Catalog
 
         public IReadOnlyList<LookupItem> GetCategoryOptions() => _repository.GetActiveCategories();
         public IReadOnlyList<LookupItem> GetAllCategoryOptions() => _repository.GetAllCategories();
-        public IReadOnlyList<LookupItem> GetSupplierOptions() => _repository.GetActiveSuppliers();
-
         public CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status) =>
             _repository.GetCategories(pageIndex, pageSize, keyword, status);
 

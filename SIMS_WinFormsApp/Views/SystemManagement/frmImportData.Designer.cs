@@ -56,7 +56,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _btnChooseFile.Name = "_btnChooseFile";
             _btnChooseFile.Size = new Size(140, 42);
             _btnChooseFile.Text = "Chọn file...";
-            _btnChooseFile.Click += new System.EventHandler(ChooseFileButton_Click);
+            this._btnChooseFile.Click += new System.EventHandler(this.ChooseFileButton_Click);
             _designerFileName.AutoSize = false;
             _designerFileName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             _designerFileName.Location = new Point(152, 0);
@@ -86,7 +86,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _btnClose.Name = "_btnClose";
             _btnClose.Size = new Size(112, 44);
             _btnClose.Text = "Đóng";
-            _btnClose.Click += new System.EventHandler(CloseImportButton_Click);
+            this._btnClose.Click += new System.EventHandler(this.CloseImportButton_Click);
 
             _btnStart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _btnStart.CornerRadius = AppRadius.Medium;
@@ -97,7 +97,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _btnStart.Name = "_btnStart";
             _btnStart.Size = new Size(170, 44);
             _btnStart.Text = "Bắt đầu nhập";
-            _btnStart.Click += new System.EventHandler(StartImportButton_Click);
+            this._btnStart.Click += new System.EventHandler(this.StartImportButton_Click);
 
             ContentHost.Controls.Add(_designerResult);
             ContentHost.Controls.Add(_designerFilePanel);

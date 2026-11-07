@@ -4,7 +4,7 @@ using SIMS_WinFormsApp.Models.DTOs.Pos;
 namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 {
     /// <summary>
-    /// Tính "Tạm tính / Giảm giá / VAT (8%) / Trừ điểm / Tổng cộng" từ giỏ hàng - tách riêng
+    /// Tính "Tạm tính / VAT (8%) / Trừ điểm / Tổng cộng" từ giỏ hàng - tách riêng
     /// khỏi PosCart (chỉ lo danh sách dòng hàng) và khỏi PosPresenter (chỉ lo điều phối UI),
     /// đúng Single Responsibility: đây là hàm thuần túy, không phụ thuộc DB/UI nên dễ unit-test
     /// và dễ chỉnh khi có quy tắc thuế/điểm thưởng thật từ StoreConfig sau này.
@@ -17,10 +17,9 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         /// StoreConfigDAO.getPointRedeemRate(), project C# chưa có bảng cấu hình cửa hàng).</summary>
         public const decimal PointRedeemRateVnd = 1000m;
 
-        public CartTotalsDto Calculate(decimal subtotal, decimal promotionDiscount, int pointsToRedeem)
+        public CartTotalsDto Calculate(decimal subtotal, int pointsToRedeem)
         {
-            decimal discount = Clamp(promotionDiscount, 0m, subtotal);
-            decimal taxable = Math.Max(0m, subtotal - discount);
+            decimal taxable = Math.Max(0m, subtotal);
             decimal vat = Math.Round(taxable * VatRate, 0, MidpointRounding.AwayFromZero);
 
             decimal beforePoints = taxable + vat;
@@ -31,7 +30,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             return new CartTotalsDto
             {
                 Subtotal = subtotal,
-                DiscountAmount = discount,
+                DiscountAmount = 0m,
                 VatAmount = vat,
                 PointsDiscountAmount = pointsDiscount,
                 GrandTotal = grandTotal

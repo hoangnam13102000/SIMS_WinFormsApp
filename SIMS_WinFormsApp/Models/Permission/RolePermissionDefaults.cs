@@ -38,9 +38,7 @@ namespace SIMS_WinFormsApp.Models.Permission
                 AppPermission.RETURN_EXCHANGE_APPROVE,
                 AppPermission.SHIFT_VIEW_ALL,
                 AppPermission.SHIFT_APPROVE,
-                AppPermission.EXCEPTION_REPORT_HANDLE,
-                AppPermission.STOCK_DISPOSE_VIEW,
-                AppPermission.PROMOTION_MANAGE
+                AppPermission.STOCK_DISPOSE_VIEW
             });
 
             DefaultMap[RoleCodes.InventoryManager] = new HashSet<AppPermission>(new[]
@@ -53,8 +51,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 AppPermission.STOCK_DISPOSE,
                 AppPermission.STOCK_DISPOSE_VIEW,
                 AppPermission.STOCK_ALERT_VIEW,
-                AppPermission.SUPPLIER_RETURN_CREATE,
-                AppPermission.SUPPLIER_RETURN_VIEW,
                 AppPermission.STOCK_REPORT_VIEW
             });
 
@@ -69,7 +65,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 AppPermission.SHIFT_OPERATE,
                 AppPermission.INVOICE_CANCEL_REQUEST,
                 AppPermission.RETURN_EXCHANGE_CREATE,
-                AppPermission.EXCEPTION_REPORT_CREATE,
                 AppPermission.POS_CART_HOLD,
                 AppPermission.POS_CART_RESTORE
             });

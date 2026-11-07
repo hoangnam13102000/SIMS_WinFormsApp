@@ -53,13 +53,13 @@ namespace SIMS_WinFormsApp.Views.Pagination
             _leftFlow.Margin = Padding.Empty;
             _leftFlow.Name = "_leftFlow";
             _leftFlow.WrapContents = false;
-            _leftFlow.SizeChanged += LeftFlow_SizeChanged;
+            this._leftFlow.SizeChanged += new System.EventHandler(this.LeftFlow_SizeChanged);
 
             _centerContainer.Controls.Add(_leftFlow);
             _centerContainer.Dock = DockStyle.Fill;
             _centerContainer.Margin = Padding.Empty;
             _centerContainer.Name = "_centerContainer";
-            _centerContainer.Resize += CenterContainer_Resize;
+            this._centerContainer.Resize += new System.EventHandler(this.CenterContainer_Resize);
 
             _pageSizeLabel.AutoSize = true;
             _pageSizeLabel.Font = InfoFont;
@@ -74,7 +74,7 @@ namespace SIMS_WinFormsApp.Views.Pagination
             _pageSizeBox.Margin = new Padding(0, 2, 8, 0);
             _pageSizeBox.Name = "_pageSizeBox";
             _pageSizeBox.Size = new Size(76, 32);
-            _pageSizeBox.SelectedIndexChanged += PageSizeBox_SelectedIndexChanged;
+            this._pageSizeBox.SelectedIndexChanged += new System.EventHandler(this.PageSizeBox_SelectedIndexChanged);
 
             _unitLabel.AutoSize = true;
             _unitLabel.Font = InfoFont;

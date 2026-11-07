@@ -29,7 +29,6 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         void SetLocked(int userId, bool isLocked);
         IReadOnlyList<User> GetPage(int pageIndex, int pageSize, string searchTerm = null);
         IReadOnlyDictionary<string, int> CountUsersByRole();
-        IReadOnlyList<User> GetActiveStaffExcept(int excludeUserId);
         UserManagementPageDto GetManagementPage(
             int pageIndex,
             int pageSize,

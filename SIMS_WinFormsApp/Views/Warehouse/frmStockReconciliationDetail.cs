@@ -66,5 +66,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         {
             return string.IsNullOrWhiteSpace(text) ? "—" : text;
         }
+
+        private void _closeButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
     }
 }

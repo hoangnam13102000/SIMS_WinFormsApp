@@ -23,7 +23,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private readonly ICustomerLookupService _customerService;
         private readonly IInvoiceService _invoiceService;
         private readonly IInventoryService _inventoryService;
-        private readonly IPromotionService _promotionService;
         private readonly IBarcodeScannerLauncher _scannerLauncher;
         private readonly HeldCartStore _heldCartStore;
         private readonly Func<IWin32Window> _ownerWindowProvider;
@@ -37,9 +36,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private int? _selectedCategoryId;
         private string _searchKeyword = string.Empty;
         private CustomerLookupDto _selectedCustomer;
-        private decimal _promotionDiscount;
-        private int? _promotionId;
-        private string _promotionCode;
         private bool _usePoints;
         private int _pointsToUse;
         private string _lastScannedBarcode;
@@ -51,7 +47,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             ICustomerLookupService customerService,
             IInvoiceService invoiceService,
             IInventoryService inventoryService,
-            IPromotionService promotionService,
             IBarcodeScannerLauncher scannerLauncher,
             HeldCartStore heldCartStore,
             Func<IWin32Window> ownerWindowProvider,
@@ -64,7 +59,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _invoiceService = invoiceService ?? throw new ArgumentNullException(nameof(invoiceService));
             _inventoryService = inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
-            _promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
             _scannerLauncher = scannerLauncher ?? throw new ArgumentNullException(nameof(scannerLauncher));
             _heldCartStore = heldCartStore ?? throw new ArgumentNullException(nameof(heldCartStore));
             _ownerWindowProvider = ownerWindowProvider ?? throw new ArgumentNullException(nameof(ownerWindowProvider));
@@ -86,7 +80,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.CustomerSearchRequested += OnCustomerSearchRequested;
             _view.CustomerCleared += OnCustomerCleared;
 
-            _view.PromoApplyRequested += OnPromoApplyRequested;
             _view.PointsRedemptionChanged += OnPointsRedemptionChanged;
 
             _view.HoldCartRequested += OnHoldCartRequested;
@@ -98,7 +91,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void OnViewReady(object sender, EventArgs e)
         {
             _view.BindCategories(_catalogService.GetCategories());
-            _view.BindPromotions(_promotionService.GetAvailablePromotions());
             _view.SetPaymentMethods(PaymentMethods);
             _view.SetHeldCartCount(_heldCartStore.GetAll().Count);
             RefreshCart();
@@ -276,7 +268,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
         private void RefreshTotals()
         {
-            var totalsWithoutPoints = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, 0);
+            var totalsWithoutPoints = _calculator.Calculate(_cart.Subtotal, 0);
             decimal pointsAllowedByTotal = Math.Floor(
                 totalsWithoutPoints.GrandTotal / CartCalculator.PointRedeemRateVnd);
             int customerPoints = _selectedCustomer == null
@@ -288,7 +280,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _pointsToUse = Math.Min(_pointsToUse, maxRedeemablePoints);
             _view.SetPointRedemptionLimit(maxRedeemablePoints);
 
-            var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
+            var totals = _calculator.Calculate(_cart.Subtotal, _usePoints ? _pointsToUse : 0);
             _view.SetTotals(totals);
             _view.SetCheckoutEnabled(!_cart.IsEmpty);
         }
@@ -326,27 +318,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         }
         #endregion
 
-        #region Khuyến mãi & điểm thưởng
-        private void OnPromoApplyRequested(object sender, string code)
-        {
-            var result = _promotionService.Apply(code, _cart.Subtotal);
-            IWin32Window owner = _ownerWindowProvider();
-
-            if (!result.IsSuccess)
-            {
-                _promotionDiscount = 0m;
-                AppToast.Error(owner as Control, "Không áp dụng được", result.Message);
-            }
-            else
-            {
-                _promotionDiscount = result.DiscountAmount;
-                _promotionId = result.PromotionId;
-                _promotionCode = result.PromotionCode ?? code.Trim().ToUpperInvariant();
-                AppToast.Success(owner as Control, "Áp dụng thành công", result.Message);
-            }
-            RefreshTotals();
-        }
-
+        #region Điểm thưởng
         private void OnPointsRedemptionChanged(object sender, (bool UsePoints, int PointsToUse) e)
         {
             _usePoints = e.UsePoints;
@@ -425,7 +397,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.SetBusy(true);
             try
             {
-                var totals = _calculator.Calculate(_cart.Subtotal, _promotionDiscount, _usePoints ? _pointsToUse : 0);
+                var totals = _calculator.Calculate(_cart.Subtotal, _usePoints ? _pointsToUse : 0);
                 string paymentMethod = _view.SelectedPaymentMethod;
                 receiptInvoice = CreateReceiptInvoice(paymentMethod, totals);
                 invoiceCode = _invoiceService.CreateInvoice(
@@ -433,8 +405,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
                     _selectedCustomer == null ? (int?)null : _selectedCustomer.CustomerId,
                     paymentMethod,
                     totals,
-                    _promotionId,
-                    _promotionCode,
                     _cart.Lines);
                 receiptInvoice.InvoiceCode = invoiceCode;
             }
@@ -491,14 +461,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             System.Diagnostics.Debug.WriteLine("[PosPresenter] Checkout failed: " + exception);
 
             Exception root = exception.GetBaseException();
-            string detail = root.Message;
-            if (exception is SqlException sqlException)
-                detail = "Mã lỗi SQL: " + sqlException.Number + Environment.NewLine + detail;
-            if (string.IsNullOrWhiteSpace(detail))
-                detail = root.GetType().FullName;
-
+            string failureMessage = isWarning && !(root is SqlException)
+                ? root.Message
+                : "Vui lòng thử lại. Nếu sự cố tiếp diễn, hãy liên hệ quản lý hoặc bộ phận kỹ thuật.";
             string message = "Hóa đơn chưa được tạo." + Environment.NewLine +
-                Environment.NewLine + "Chi tiết lỗi:" + Environment.NewLine + detail;
+                Environment.NewLine + failureMessage;
             if (isWarning)
                 DialogHelper.ShowWarning(owner, title, message);
             else
@@ -546,15 +513,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
         private void ResetForNewSale()
         {
             _cart.Clear();
-            _promotionDiscount = 0m;
-            _promotionId = null;
-            _promotionCode = null;
             _selectedCustomer = null;
             _usePoints = false;
             _pointsToUse = 0;
 
             _view.ClearCustomer();
-            _view.SetPromoCode(string.Empty);
             RefreshCart();
         }
         #endregion
@@ -575,7 +538,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             _view.CustomerSearchRequested -= OnCustomerSearchRequested;
             _view.CustomerCleared -= OnCustomerCleared;
 
-            _view.PromoApplyRequested -= OnPromoApplyRequested;
             _view.PointsRedemptionChanged -= OnPointsRedemptionChanged;
 
             _view.HoldCartRequested -= OnHoldCartRequested;

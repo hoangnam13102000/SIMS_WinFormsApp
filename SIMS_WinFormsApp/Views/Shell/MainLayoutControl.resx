@@ -123,4 +123,13 @@
   <metadata name="_notificationsContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>259, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="_notificationsClearItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAB7SURBVDhPY2CgFnj//Pn/NydOgPGL5cv/31FTg+P7ISFw
+        ubeXLv1H1wsGz2fPRtGED6PrBQNkF+DDOF0AAg/T0jBsQ8cgQ9D1wQHFBhATDuh6UMAwMAAUQOgakDEo
+        QaHrQQGEDADFEroeFPDuzh0MTcj4WX8/fgOGJgAAEoYgygZl3ccAAAAASUVORK5CYII=
+</value>
+  </data>
 </root>

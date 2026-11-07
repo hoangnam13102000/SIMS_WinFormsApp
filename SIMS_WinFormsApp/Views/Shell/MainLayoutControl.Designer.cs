@@ -39,7 +39,6 @@ namespace SIMS_WinFormsApp.Views.Shell
         private Panel _footerPanel;
         private Label _footerStatusLabel;
         private IconButton _settingsButton;
-        private IconButton _chatbotButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -57,6 +56,7 @@ namespace SIMS_WinFormsApp.Views.Shell
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainLayoutControl));
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
             this._profileButton = new FontAwesome.Sharp.IconButton();
@@ -86,7 +86,6 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsClearItem = new System.Windows.Forms.ToolStripMenuItem();
             this._notificationsEmptyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._settingsButton = new FontAwesome.Sharp.IconButton();
-            this._chatbotButton = new FontAwesome.Sharp.IconButton();
             this._root.SuspendLayout();
             this._headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._logoIcon)).BeginInit();
@@ -348,15 +347,12 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._profileMenuItem,
             this._accountSeparator2,
             this._logoutMenuItem});
-            this._accountContextMenu.AutoSize = true;
             this._accountContextMenu.MinimumSize = new System.Drawing.Size(266, 0);
             this._accountContextMenu.Name = "_accountContextMenu";
-            this._accountContextMenu.Padding = new System.Windows.Forms.Padding(5);
-            this._accountContextMenu.ShowImageMargin = true;
-            this._accountContextMenu.Size = new System.Drawing.Size(266, 0);
-            //
+            this._accountContextMenu.Size = new System.Drawing.Size(266, 160);
+            // 
             // _accountNameMenuItem
-            //
+            // 
             this._accountNameMenuItem.AutoSize = false;
             this._accountNameMenuItem.Enabled = false;
             this._accountNameMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -364,9 +360,9 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._accountNameMenuItem.Padding = new System.Windows.Forms.Padding(12, 8, 12, 2);
             this._accountNameMenuItem.Size = new System.Drawing.Size(250, 32);
             this._accountNameMenuItem.Text = "Admin";
-            //
+            // 
             // _accountEmailMenuItem
-            //
+            // 
             this._accountEmailMenuItem.AutoSize = false;
             this._accountEmailMenuItem.Enabled = false;
             this._accountEmailMenuItem.Font = new System.Drawing.Font("Segoe UI", 8F);
@@ -374,11 +370,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._accountEmailMenuItem.Padding = new System.Windows.Forms.Padding(12, 0, 12, 8);
             this._accountEmailMenuItem.Size = new System.Drawing.Size(250, 28);
             this._accountEmailMenuItem.Text = "admin@sims.local";
-            //
+            // 
             // _accountSeparator1
-            //
+            // 
             this._accountSeparator1.Name = "_accountSeparator1";
-            this._accountSeparator1.Size = new System.Drawing.Size(247, 6);
+            this._accountSeparator1.Size = new System.Drawing.Size(262, 6);
             // 
             // _profileMenuItem
             // 
@@ -389,11 +385,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._profileMenuItem.Size = new System.Drawing.Size(254, 42);
             this._profileMenuItem.Text = "Hồ sơ cá nhân";
             this._profileMenuItem.Click += new System.EventHandler(this.ProfileMenuItem_Click);
-            //
+            // 
             // _accountSeparator2
-            //
+            // 
             this._accountSeparator2.Name = "_accountSeparator2";
-            this._accountSeparator2.Size = new System.Drawing.Size(247, 6);
+            this._accountSeparator2.Size = new System.Drawing.Size(262, 6);
             // 
             // _logoutMenuItem
             // 
@@ -413,30 +409,30 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._notificationsClearItem,
             this._notificationsEmptyMenuItem});
             this._notificationsContextMenu.Name = "_notificationsContextMenu";
-            this._notificationsContextMenu.Size = new System.Drawing.Size(286, 68);
+            this._notificationsContextMenu.Size = new System.Drawing.Size(294, 100);
             // 
             // _notificationsTitleMenuItem
             // 
             this._notificationsTitleMenuItem.Enabled = false;
             this._notificationsTitleMenuItem.Name = "_notificationsTitleMenuItem";
-            this._notificationsTitleMenuItem.Size = new System.Drawing.Size(285, 32);
+            this._notificationsTitleMenuItem.Size = new System.Drawing.Size(293, 32);
             this._notificationsTitleMenuItem.Text = "Thông báo";
-            //
+            // 
             // _notificationsClearItem
-            //
+            // 
             this._notificationsClearItem.Enabled = false;
-            this._notificationsClearItem.Image = IconBitmapCache.Get(FontAwesome.Sharp.IconChar.Trash, AppColors.Error, new System.Drawing.Size(16, 16));
+            this._notificationsClearItem.Image = ((System.Drawing.Image)(resources.GetObject("_notificationsClearItem.Image")));
             this._notificationsClearItem.Name = "_notificationsClearItem";
-            this._notificationsClearItem.Size = new System.Drawing.Size(285, 32);
+            this._notificationsClearItem.Size = new System.Drawing.Size(293, 32);
             this._notificationsClearItem.Text = "Xóa tất cả";
             this._notificationsClearItem.Visible = false;
             this._notificationsClearItem.Click += new System.EventHandler(this.NotificationsClearItem_Click);
-            //
+            // 
             // _notificationsEmptyMenuItem
             // 
             this._notificationsEmptyMenuItem.Enabled = false;
             this._notificationsEmptyMenuItem.Name = "_notificationsEmptyMenuItem";
-            this._notificationsEmptyMenuItem.Size = new System.Drawing.Size(285, 32);
+            this._notificationsEmptyMenuItem.Size = new System.Drawing.Size(293, 32);
             this._notificationsEmptyMenuItem.Text = "Không có thông báo mới";
             // 
             // _settingsButton
@@ -452,25 +448,11 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._settingsButton.UseVisualStyleBackColor = false;
             this._settingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             // 
-            // _chatbotButton
-            // 
-            this._chatbotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._chatbotButton.IconChar = FontAwesome.Sharp.IconChar.None;
-            this._chatbotButton.IconColor = System.Drawing.Color.Black;
-            this._chatbotButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._chatbotButton.Location = new System.Drawing.Point(1152, 718);
-            this._chatbotButton.Name = "_chatbotButton";
-            this._chatbotButton.Size = new System.Drawing.Size(48, 48);
-            this._chatbotButton.TabIndex = 1;
-            this._chatbotButton.UseVisualStyleBackColor = false;
-            this._chatbotButton.Click += new System.EventHandler(this.ChatbotButton_Click);
-            // 
             // MainLayoutControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.Controls.Add(this._root);
-            this.Controls.Add(this._chatbotButton);
             this.Controls.Add(this._settingsButton);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Margin = new System.Windows.Forms.Padding(0);

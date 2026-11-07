@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
-using SIMS_WinFormsApp.Models.DTOs.Promotions;
 
 namespace SIMS_WinFormsApp.Views.Interfaces
 {
@@ -21,7 +20,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         event EventHandler<string> CustomerSearchRequested;
         event EventHandler CustomerCleared;
 
-        event EventHandler<string> PromoApplyRequested;
         event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
         event EventHandler HoldCartRequested;
         event EventHandler ViewHeldCartsRequested;
@@ -35,9 +33,7 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         void ClearCustomer();
         void SetPointRedemptionLimit(int points);
 
-        void BindPromotions(IReadOnlyList<PromotionDto> promotions);
         void SetTotals(CartTotalsDto totals);
-        void SetPromoCode(string code);
         void SetPaymentMethods(IReadOnlyList<string> methods);
         string SelectedPaymentMethod { get; }
         void SetCheckoutEnabled(bool enabled);

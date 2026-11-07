@@ -134,17 +134,6 @@ CREATE TABLE Products (
 );
 GO
 
--- Bang trung gian nhieu-nhieu: 1 san pham co the nhap tu nhieu NCC, 1 NCC cung cap nhieu SP
-CREATE TABLE SupplierProducts (
-    SupplierID      INT NOT NULL FOREIGN KEY REFERENCES Suppliers(SupplierID),
-    ProductID       INT NOT NULL FOREIGN KEY REFERENCES Products(ProductID),
-    SupplyPrice     DECIMAL(18,0) NULL,               -- gia nhap rieng cua NCC nay cho SP nay
-    IsPreferred     BIT NOT NULL DEFAULT 0,           -- danh dau NCC uu tien/chinh cho SP nay
-    CreatedAt       DATETIME NOT NULL DEFAULT GETDATE(),
-    PRIMARY KEY (SupplierID, ProductID)
-);
-GO
-
 /* ============================================================
    III. HOA DON BAN HANG
    (Da bo he thong Ca ban hang/Shifts de giam do phuc tap - R4 "huy
@@ -159,9 +148,7 @@ CREATE TABLE Invoices (
     CreatedAt       DATETIME NOT NULL DEFAULT GETDATE(),
     SubTotal        DECIMAL(18,0) NOT NULL DEFAULT 0,
     DiscountAmount  DECIMAL(18,0) NOT NULL DEFAULT 0
-                        CHECK (DiscountAmount >= 0),  -- so tien giam tu ma KM (0 neu khong ap dung)
-    PromotionID     INT NULL,                         -- FK them sau khi co bang Promotions
-    PromotionCode   VARCHAR(30) NULL,                 -- snapshot ma KM luc lap HD
+                        CHECK (DiscountAmount >= 0),
     VATRate         DECIMAL(5,2)  NOT NULL DEFAULT 0, -- lay tu StoreConfig VAT_RATE
     -- VAT tinh tren (SubTotal - DiscountAmount); TotalAmount = taxable + VAT (duy tri qua app)
     VATAmount       AS (
@@ -260,20 +247,8 @@ CREATE TABLE PurchaseReceiptDetails (
 GO
 
 /* ============================================================
-   VI. BAO CAO NGOAI LE (Staff -> Sales Manager) + THONG BAO HET HANG
+   VI. THONG BAO HET HANG
    ============================================================ */
-CREATE TABLE ExceptionReports (
-    ReportID        INT IDENTITY(1,1) PRIMARY KEY,
-    CreatedBy       INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
-    Content         NVARCHAR(500) NOT NULL,
-    Status          VARCHAR(20) NOT NULL DEFAULT 'PENDING'
-                        CHECK (Status IN ('PENDING', 'HANDLED')),
-    HandledBy       INT NULL FOREIGN KEY REFERENCES Users(UserID),
-    HandledAt       DATETIME NULL,
-    CreatedAt       DATETIME NOT NULL DEFAULT GETDATE()
-);
-GO
-
 -- NV ban hang bao cao cho Quan ly kho khi phat hien SP het hang (Stock = 0)
 -- hoac sap het (Stock <= MinStock). Quan ly kho xem o trang "Canh bao ton kho"
 -- (StockAlertPanel) de len ke hoach nhap hang bo sung.
@@ -310,8 +285,7 @@ CREATE TABLE InventoryTransactions (
     ProductID       INT NOT NULL FOREIGN KEY REFERENCES Products(ProductID),
     TransactionType VARCHAR(20) NOT NULL
                         CHECK (TransactionType IN ('IMPORT','SALE','SALE_CANCEL',
-                                                    'RETURN_IN','RETURN_OUT','RECONCILE_ADJUST','DISPOSAL',
-                                                    'SUPPLIER_RETURN')),
+                                                    'RETURN_IN','RETURN_OUT','RECONCILE_ADJUST','DISPOSAL')),
     Direction       VARCHAR(3) NOT NULL CHECK (Direction IN ('IN','OUT')),
     Quantity        INT NOT NULL CHECK (Quantity > 0),
     StockBefore     INT NOT NULL,
@@ -412,22 +386,6 @@ CREATE TABLE StockReconciliation (
 );
 GO
 
-CREATE TABLE StockReconciliationBatchAdjustments (
-    ReconciliationBatchAdjustmentID INT IDENTITY(1,1) PRIMARY KEY,
-    ReconciliationID INT NOT NULL
-        FOREIGN KEY REFERENCES StockReconciliation(ReconciliationID),
-    BatchID INT NOT NULL FOREIGN KEY REFERENCES InventoryBatch(BatchID),
-    Quantity INT NOT NULL CHECK (Quantity > 0),
-    BatchStockBefore INT NOT NULL CHECK (BatchStockBefore >= 0),
-    BatchStockAfter INT NOT NULL CHECK (BatchStockAfter >= 0),
-    CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
-);
-GO
-
-CREATE INDEX IX_StockReconBatchAdjustments_Reconciliation
-    ON StockReconciliationBatchAdjustments(ReconciliationID);
-GO
-
 /* ============================================================
    X. CAU HINH HE THONG
    ============================================================ */
@@ -467,194 +425,4 @@ CREATE TABLE StockDisposalDetails (
 GO
 
 CREATE INDEX IX_StockDisposalDetails_Product ON StockDisposalDetails(ProductID);
-GO
-
-/* ============================================================
-   XI. TRA HANG LO VE NHA CUNG CAP (loi/hong/sai quy cach)
-   Tru kho NGAY khi lap phieu (khong qua duyet), luu tong gia tri
-   hoan tra trong phieu SupplierReturns.
-   ============================================================ */
-CREATE TABLE SupplierReturns (
-    SupplierReturnID    INT IDENTITY(1,1) PRIMARY KEY,
-    SupplierReturnCode  AS ('TRNC_' + RIGHT('000000' + CAST(SupplierReturnID AS VARCHAR(10)), 6)) PERSISTED UNIQUE,
-    SupplierID          INT NOT NULL FOREIGN KEY REFERENCES Suppliers(SupplierID),
-    Reason              VARCHAR(20) NOT NULL
-                            CHECK (Reason IN ('DAMAGED','EXPIRED','QUALITY','WRONG_SPEC','OTHER')),
-    Status              VARCHAR(20) NOT NULL DEFAULT 'COMPLETED'
-                            CHECK (Status IN ('COMPLETED','CANCELLED')),
-    TotalRefundAmount   DECIMAL(18,0) NOT NULL DEFAULT 0 CHECK (TotalRefundAmount >= 0),
-    Note                NVARCHAR(500) NULL,
-    CreatedBy           INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
-    CreatedAt           DATETIME NOT NULL DEFAULT GETDATE()
-);
-GO
-
-CREATE INDEX IX_SupplierReturns_CreatedAt ON SupplierReturns(CreatedAt DESC);
-GO
-CREATE INDEX IX_SupplierReturns_Supplier ON SupplierReturns(SupplierID);
-GO
-
-CREATE TABLE SupplierReturnDetails (
-    SupplierReturnDetailID INT IDENTITY(1,1) PRIMARY KEY,
-    SupplierReturnID       INT NOT NULL FOREIGN KEY REFERENCES SupplierReturns(SupplierReturnID),
-    ProductID              INT NOT NULL FOREIGN KEY REFERENCES Products(ProductID),
-    BatchID                INT NOT NULL FOREIGN KEY REFERENCES InventoryBatch(BatchID),
-    Quantity               INT NOT NULL CHECK (Quantity > 0),
-    UnitRefundPrice        DECIMAL(18,0) NOT NULL CHECK (UnitRefundPrice >= 0),
-    LineRefundAmount       AS (Quantity * UnitRefundPrice) PERSISTED,
-    CONSTRAINT UQ_SupplierReturn_Batch UNIQUE (SupplierReturnID, BatchID)
-);
-GO
-
-CREATE INDEX IX_SupplierReturnDetails_Product ON SupplierReturnDetails(ProductID);
-GO
-
-/* ============================================================
-   XII. CHAT REAL-TIME
-   ============================================================ */
-CREATE TABLE ChatConversations (
-    ConversationID      INT IDENTITY(1,1) PRIMARY KEY,
-    -- CUSTOMER_SUPPORT | STAFF_DM
-    ConversationType    VARCHAR(20) NOT NULL
-        CHECK (ConversationType IN ('CUSTOMER_SUPPORT', 'STAFF_DM')),
-    -- Khách (Users.UserID role CUSTOMER). NULL nếu STAFF_DM
-    CustomerUserID      INT NULL
-        FOREIGN KEY REFERENCES Users(UserID),
-    -- Cặp NV cho STAFF_DM: luôn lưu UserID nhỏ hơn vào A, lớn hơn vào B
-    StaffUserIdA        INT NULL
-        FOREIGN KEY REFERENCES Users(UserID),
-    StaffUserIdB        INT NULL
-        FOREIGN KEY REFERENCES Users(UserID),
-    CreatedAt           DATETIME NOT NULL DEFAULT GETDATE(),
-    LastMessageAt       DATETIME NOT NULL DEFAULT GETDATE(),
-    IsClosed            BIT NOT NULL DEFAULT 0
-);
-GO
-
--- Mỗi khách chỉ 1 hội thoại hỗ trợ đang mở
-CREATE UNIQUE INDEX UX_ChatConv_Customer_Open
-    ON ChatConversations (CustomerUserID)
-    WHERE ConversationType = 'CUSTOMER_SUPPORT' AND CustomerUserID IS NOT NULL AND IsClosed = 0;
-GO
-
--- Mỗi cặp NV chỉ 1 hội thoại DM
-CREATE UNIQUE INDEX UX_ChatConv_StaffPair
-    ON ChatConversations (StaffUserIdA, StaffUserIdB)
-    WHERE ConversationType = 'STAFF_DM' AND StaffUserIdA IS NOT NULL AND StaffUserIdB IS NOT NULL;
-GO
-
-CREATE TABLE ChatMessages (
-    MessageID       INT IDENTITY(1,1) PRIMARY KEY,
-    ConversationID  INT NOT NULL
-        FOREIGN KEY REFERENCES ChatConversations(ConversationID),
-    SenderUserID    INT NOT NULL
-        FOREIGN KEY REFERENCES Users(UserID),
-    SenderName      NVARCHAR(100) NOT NULL,
-    -- true = tin từ phía nhân viên (trong hội thoại khách)
-    FromStaff       BIT NOT NULL DEFAULT 0,
-    BodyText        NVARCHAR(MAX) NULL,
-    -- Ảnh lưu file local (uploads/chat/...), KHÔNG lưu base64 trong DB
-    ImagePath       NVARCHAR(500) NULL,
-    ImageMime       VARCHAR(50) NULL,
-    -- File đính kèm (pdf, doc, zip...) lưu local uploads/chat/files/
-    FilePath        NVARCHAR(500) NULL,
-    FileName        NVARCHAR(255) NULL,
-    CreatedAt       DATETIME NOT NULL DEFAULT GETDATE(),
-    IsReadByPeer    BIT NOT NULL DEFAULT 0
-);
-GO
-
-CREATE INDEX IX_ChatMessages_Conversation_Created
-    ON ChatMessages (ConversationID, CreatedAt);
-GO
-CREATE INDEX IX_ChatMessages_Sender
-    ON ChatMessages (SenderUserID, CreatedAt DESC);
-GO
-
-/* ============================================================
-   XIII. KHUYEN MAI / MA GIAM GIA
-   Ap dung tai quay (POS).
-   DiscountAmount / PromotionID / PromotionCode nam trong Invoices.
-   Quang ba tren trang chu client qua ShowOnBanner + BannerSortOrder
-   (KHONG tao bang moi).
-   ============================================================ */
-CREATE TABLE Promotions (
-    PromotionID       INT IDENTITY(1,1) PRIMARY KEY,
-    Code              VARCHAR(30)    NOT NULL UNIQUE,   -- ma khuyen mai, vd SUMMER10
-    Name              NVARCHAR(150)  NOT NULL,          -- ten chuong trinh, vd "Khuyen mai he 2026"
-    DiscountType      VARCHAR(10)    NOT NULL
-                          CHECK (DiscountType IN ('PERCENT', 'AMOUNT')),
-    DiscountValue     DECIMAL(18,0)  NOT NULL CHECK (DiscountValue > 0),
-    MaxDiscountAmount DECIMAL(18,0)  NULL
-                          CHECK (MaxDiscountAmount IS NULL OR MaxDiscountAmount >= 0),
-    MinOrderAmount    DECIMAL(18,0)  NOT NULL DEFAULT 0 CHECK (MinOrderAmount >= 0),
-    StartDate         DATE           NOT NULL,
-    EndDate           DATE           NOT NULL,
-    UsageLimit        INT            NULL CHECK (UsageLimit IS NULL OR UsageLimit > 0),
-    UsedCount         INT            NOT NULL DEFAULT 0 CHECK (UsedCount >= 0),
-    IsActive          BIT            NOT NULL DEFAULT 1,
-    -- Quang ba banner/carousel trang chu (khong tao bang rieng)
-    ShowOnBanner      BIT            NOT NULL CONSTRAINT DF_Promotions_ShowOnBanner DEFAULT 0,
-    BannerSortOrder   INT            NULL,              -- so nho hien truoc; NULL = cuoi danh sach
-    IsDeleted         BIT            NOT NULL DEFAULT 0,
-    DeletedAt         DATETIME       NULL,
-    CreatedBy         INT            NULL FOREIGN KEY REFERENCES Users(UserID),
-    CreatedAt         DATETIME       NOT NULL DEFAULT GETDATE(),
-    CONSTRAINT CK_Promotions_DateRange CHECK (EndDate >= StartDate)
-);
-GO
-
-CREATE INDEX IX_Promotions_Code ON Promotions(Code);
-GO
-CREATE INDEX IX_Promotions_ActiveRange ON Promotions(IsActive, StartDate, EndDate);
-GO
-
--- Index ho tro truy van banner (active + show + trong thoi han)
-CREATE INDEX IX_Promotions_Banner
-    ON Promotions (ShowOnBanner, IsActive, StartDate, EndDate)
-    INCLUDE (Code, Name, DiscountType, DiscountValue, MaxDiscountAmount, MinOrderAmount, BannerSortOrder)
-    WHERE IsDeleted = 0 AND ShowOnBanner = 1;
-GO
-
--- FK PromotionID (tao sau Promotions vi Invoices duoc tao truoc)
-ALTER TABLE Invoices
-    ADD CONSTRAINT FK_Invoices_Promotion
-        FOREIGN KEY (PromotionID) REFERENCES Promotions(PromotionID);
-GO
-
-CREATE INDEX IX_Invoices_PromotionID ON Invoices(PromotionID) WHERE PromotionID IS NOT NULL;
-GO
-
-
-
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'UserTwoFactor')
-BEGIN
-    CREATE TABLE UserTwoFactor (
-        UserID          INT PRIMARY KEY FOREIGN KEY REFERENCES Users(UserID),
-        Method          VARCHAR(10)  NOT NULL DEFAULT 'NONE'
-                            CHECK (Method IN ('NONE', 'EMAIL', 'TOTP')),
-        TotpSecretEnc   VARCHAR(255) NULL,
-        Enabled         BIT NOT NULL DEFAULT 0,
-        EnrolledAt      DATETIME NULL,
-        UpdatedAt       DATETIME NOT NULL DEFAULT GETDATE()
-    );
-END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'UserTwoFactorBackupCodes')
-BEGIN
-    CREATE TABLE UserTwoFactorBackupCodes (
-        BackupCodeID    INT IDENTITY(1,1) PRIMARY KEY,
-        UserID          INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
-        CodeHash        VARCHAR(255) NOT NULL,
-        UsedAt          DATETIME NULL,
-        CreatedAt       DATETIME NOT NULL DEFAULT GETDATE()
-    );
-END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_UserTwoFactorBackupCodes_UserID')
-BEGIN
-    CREATE INDEX IX_UserTwoFactorBackupCodes_UserID ON UserTwoFactorBackupCodes(UserID);
-END
 GO

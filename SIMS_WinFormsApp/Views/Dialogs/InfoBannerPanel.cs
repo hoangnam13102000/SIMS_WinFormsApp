@@ -137,5 +137,10 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             int contentBottom = Math.Max(_iconBox.Bottom, _lblDescription.Bottom);
             Height = contentBottom + PanelPadding;
         }
+
+        private void InfoBannerPanel_Resize(object sender, EventArgs e)
+        {
+            LayoutChildren();
+        }
     }
 }

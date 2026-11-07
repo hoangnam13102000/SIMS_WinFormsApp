@@ -73,7 +73,7 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                                   CashierName = cashier.FullName,
                                   CustomerName = customer == null ? "Khách lẻ" : customer.FullName,
                                   invoice.PaymentMethod, invoice.SubTotal, invoice.DiscountAmount,
-                                  invoice.PromotionCode, invoice.VATRate, invoice.VATAmount,
+                                  invoice.VATRate, invoice.VATAmount,
                                   invoice.TotalAmount, invoice.Status, invoice.CancelReason, invoice.CancelledAt,
                                   invoice.PointsUsed, invoice.PointsDiscountAmount
                               }).FirstOrDefault();
@@ -88,7 +88,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Sales
                     PaymentMethod = header.PaymentMethod,
                     Subtotal = header.SubTotal,
                     DiscountAmount = header.DiscountAmount,
-                    PromotionCode = header.PromotionCode ?? string.Empty,
                     VatRate = header.VATRate,
                     VatAmount = header.VATAmount ?? 0m,
                     TotalAmount = header.TotalAmount,

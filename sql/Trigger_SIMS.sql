@@ -659,30 +659,13 @@ GO
    X. DOI CHIEU / KIEM KE KHO CUOI NGAY (StockReconciliation)
    ============================================================ */
 
-IF OBJECT_ID('dbo.StockReconciliationBatchAdjustments', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.StockReconciliationBatchAdjustments (
-        ReconciliationBatchAdjustmentID INT IDENTITY(1,1) PRIMARY KEY,
-        ReconciliationID INT NOT NULL
-            FOREIGN KEY REFERENCES dbo.StockReconciliation(ReconciliationID),
-        BatchID INT NOT NULL FOREIGN KEY REFERENCES dbo.InventoryBatch(BatchID),
-        Quantity INT NOT NULL CHECK (Quantity > 0),
-        BatchStockBefore INT NOT NULL CHECK (BatchStockBefore >= 0),
-        BatchStockAfter INT NOT NULL CHECK (BatchStockAfter >= 0),
-        CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
-    );
-    CREATE INDEX IX_StockReconBatchAdjustments_Reconciliation
-        ON dbo.StockReconciliationBatchAdjustments(ReconciliationID);
-END;
-GO
-
 -- ---------------------------------------------------------------
 -- Ap dung 1 dong doi chieu kho: SystemStock LUON duoc tinh lai tu
 -- Products.Stock TAI THOI DIEM GHI (bo qua gia tri app gui len, neu
 -- co) de tranh sai lech do phien kiem ke keo dai (nhieu nguoi/nhieu
 -- thoi diem doc cung 1 luc). Products.Stock la so tong da kiem ke:
 -- neu tong ton lo cao hon thi giam cac lo da het han truoc, sau do
--- FEFO; moi thay doi lo duoc ghi trong StockReconciliationBatchAdjustments.
+-- FEFO; so luong tung lo duoc cap nhat truc tiep theo thu tu FEFO.
 -- Khong tu tao lo khi ActualStock cao hon tong ton lo vi khong co thong tin
 -- nha cung cap/han su dung; truong hop nay phai nhap/doi soat theo lo.
 -- ---------------------------------------------------------------
@@ -759,12 +742,6 @@ BEGIN
 
                 IF @@ROWCOUNT <> 1
                     THROW 51004, N'So luong lo vua thay doi. Giao dich doi chieu da bi huy; hay tai lai va thu lai.', 1;
-
-                INSERT INTO StockReconciliationBatchAdjustments
-                    (ReconciliationID, BatchID, Quantity, BatchStockBefore, BatchStockAfter)
-                VALUES
-                    (@NewReconciliationID, @BatchID, @Take,
-                     @BatchStockBefore, @BatchStockAfter);
 
                 SET @BatchDiff -= @Take;
                 FETCH NEXT FROM batch_cursor INTO @BatchID, @BatchRemain;

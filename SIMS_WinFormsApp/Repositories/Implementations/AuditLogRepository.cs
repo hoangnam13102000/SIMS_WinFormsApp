@@ -58,9 +58,15 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                 IQueryable<AuditLogEntity> baseQuery = db.AuditLogs;
 
                 if (query.FromDate.HasValue)
-                    baseQuery = baseQuery.Where(l => l.CreatedAt >= query.FromDate.Value.Date);
+                {
+                    DateTime fromDate = query.FromDate.Value.Date;
+                    baseQuery = baseQuery.Where(l => l.CreatedAt >= fromDate);
+                }
                 if (query.ToDate.HasValue)
-                    baseQuery = baseQuery.Where(l => l.CreatedAt < query.ToDate.Value.Date.AddDays(1));
+                {
+                    DateTime toExclusive = query.ToDate.Value.Date.AddDays(1);
+                    baseQuery = baseQuery.Where(l => l.CreatedAt < toExclusive);
+                }
                 if (!string.IsNullOrWhiteSpace(query.ActionFilter))
                     baseQuery = baseQuery.Where(l => l.Action == query.ActionFilter);
                 if (!string.IsNullOrWhiteSpace(query.TableFilter))
@@ -130,7 +136,7 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     FailedLoginCount = all.Count(x => AuditLogDisplayMapper.IsIncident(x.Action) &&
                         string.Equals(x.Action, "LOGIN_FAILED", StringComparison.OrdinalIgnoreCase)),
                     ActiveUserCount = all.Where(x => x.UserID.HasValue)
-                        .Select(x => x.UserID.Value)
+                        .Select(x => x.UserID ?? 0)
                         .Distinct()
                         .Count()
                 };

@@ -122,8 +122,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 new FlatPermissionLayoutEntry(AppPermission.STOCK_DISPOSE_VIEW),
                 new FlatPermissionLayoutEntry(AppPermission.STOCK_ALERT_REPORT),
                 new FlatPermissionLayoutEntry(AppPermission.STOCK_ALERT_VIEW),
-                new FlatPermissionLayoutEntry(AppPermission.SUPPLIER_RETURN_CREATE),
-                new FlatPermissionLayoutEntry(AppPermission.SUPPLIER_RETURN_VIEW)
             }));
 
             groups.Add(new PermissionGroupLayout("Bán hàng", null, new List<PermissionGroupLayoutEntry>
@@ -139,25 +137,11 @@ namespace SIMS_WinFormsApp.Models.Permission
                 new FlatPermissionLayoutEntry(AppPermission.RETURN_EXCHANGE_CREATE),
                 new FlatPermissionLayoutEntry(AppPermission.RETURN_EXCHANGE_APPROVE),
                 new FlatPermissionLayoutEntry(AppPermission.POS_CART_HOLD),
-                new FlatPermissionLayoutEntry(AppPermission.POS_CART_RESTORE),
-                new FlatPermissionLayoutEntry(AppPermission.PROMOTION_MANAGE)
+                new FlatPermissionLayoutEntry(AppPermission.POS_CART_RESTORE)
             }));
 
-            groups.Add(new PermissionGroupLayout("Báo cáo",
-                "Báo cáo ngoại lệ: mở dropdown để bật Xem · Gửi · Xử lý",
-                new List<PermissionGroupLayoutEntry>
+            groups.Add(new PermissionGroupLayout("Báo cáo", null, new List<PermissionGroupLayoutEntry>
                 {
-                    new ResourcePermissionLayoutEntry(new PermissionResourceLayout(
-                        "Báo cáo ngoại lệ", "NV gửi báo cáo bất thường · QL xem và xử lý",
-                        new List<PermissionResourceTierLayout>
-                        {
-                            new PermissionResourceTierLayout(AppPermission.EXCEPTION_REPORT_VIEW,
-                                "Chỉ xem", "Xem danh sách báo cáo, không gửi / xử lý"),
-                            new PermissionResourceTierLayout(AppPermission.EXCEPTION_REPORT_CREATE,
-                                "Gửi báo cáo", "Tạo báo cáo ngoại lệ mới (NV bán hàng)"),
-                            new PermissionResourceTierLayout(AppPermission.EXCEPTION_REPORT_HANDLE,
-                                "Xử lý báo cáo", "Đánh dấu đã xử lý báo cáo chờ xử lý")
-                        })),
                     new FlatPermissionLayoutEntry(AppPermission.REVENUE_REPORT_VIEW),
                     new FlatPermissionLayoutEntry(AppPermission.PROFIT_REPORT_VIEW),
                     new FlatPermissionLayoutEntry(AppPermission.STOCK_REPORT_VIEW)
@@ -166,7 +150,6 @@ namespace SIMS_WinFormsApp.Models.Permission
             groups.Add(new PermissionGroupLayout("Hệ thống", null, new List<PermissionGroupLayoutEntry>
             {
                 new FlatPermissionLayoutEntry(AppPermission.AUDIT_LOG_VIEW),
-                new FlatPermissionLayoutEntry(AppPermission.BACKUP_MANAGE),
                 new FlatPermissionLayoutEntry(AppPermission.SETTINGS_MANAGE),
                 new FlatPermissionLayoutEntry(AppPermission.RBAC_MANAGE)
             }));

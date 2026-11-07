@@ -142,7 +142,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             {
                 var products = db.Products.Where(product => product.Status == "ACTIVE");
                 if (categoryId.HasValue)
-                    products = products.Where(product => product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(product => product.CategoryID == selectedCategoryId);
+                }
 
                 return new InventoryStockSummary
                 {
@@ -170,7 +173,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                 var products = db.Products
                     .Where(product => product.Status == "ACTIVE");
                 if (categoryId.HasValue)
-                    products = products.Where(product => product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(product => product.CategoryID == selectedCategoryId);
+                }
 
                 var productRows = products
                     .OrderByDescending(product => product.Stock)
@@ -225,7 +231,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                where product.Status == "ACTIVE"
                                select new { product, category.CategoryName };
                 if (categoryId.HasValue)
-                    products = products.Where(item => item.product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(item => item.product.CategoryID == selectedCategoryId);
+                }
 
                 results = products
                     .GroupBy(item => item.CategoryName)
@@ -260,7 +269,10 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                 var products = db.Products
                     .Where(product => product.Status == "ACTIVE");
                 if (categoryId.HasValue)
-                    products = products.Where(product => product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    products = products.Where(product => product.CategoryID == selectedCategoryId);
+                }
 
                 var productRows = products
                     .Select(product => new { product.SellPrice, product.Stock })
@@ -522,22 +534,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                             Note = disposal.Reason
                                         }).ToList());
 
-                historyEvents.AddRange((from detail in db.SupplierReturnDetails
-                                        join supplierReturn in db.SupplierReturns
-                                            on detail.SupplierReturnID equals supplierReturn.SupplierReturnID
-                                        join batch in db.InventoryBatches
-                                            on detail.BatchID equals batch.BatchID
-                                        where supplierReturn.Status == "COMPLETED"
-                                        select new BatchHistoryEvent
-                                        {
-                                            BatchID = batch.BatchID,
-                                            ChangedAt = supplierReturn.CreatedAt,
-                                            DocumentType = "Trả nhà cung cấp",
-                                            DocumentCode = supplierReturn.SupplierReturnCode,
-                                            Quantity = detail.Quantity,
-                                            Direction = "OUT",
-                                            Note = supplierReturn.Reason
-                                        }).ToList());
             }
 
             var historyRows = new List<InventoryBatchHistoryRow>();
@@ -572,13 +568,22 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                 });
             }
 
-            DateTime? from = fromDate.HasValue ? fromDate.Value.Date : (DateTime?)null;
-            DateTime? toExclusive = toDate.HasValue ? toDate.Value.Date.AddDays(1) : (DateTime?)null;
             string search = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim();
-            return historyRows
-                .Where(row => (!from.HasValue || row.ChangedAt >= from.Value)
-                    && (!toExclusive.HasValue || row.ChangedAt < toExclusive.Value)
-                    && (search == null || MatchesBatchHistoryKeyword(row, search)))
+            IEnumerable<InventoryBatchHistoryRow> filteredRows = historyRows;
+            if (fromDate.HasValue)
+            {
+                DateTime start = fromDate.Value.Date;
+                filteredRows = filteredRows.Where(row => row.ChangedAt >= start);
+            }
+            if (toDate.HasValue)
+            {
+                DateTime end = toDate.Value.Date.AddDays(1);
+                filteredRows = filteredRows.Where(row => row.ChangedAt < end);
+            }
+            if (search != null)
+                filteredRows = filteredRows.Where(row => MatchesBatchHistoryKeyword(row, search));
+
+            return filteredRows
                 .OrderByDescending(row => row.ChangedAt)
                 .ToList();
         }
@@ -652,7 +657,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
             {
                 var activeProducts = db.Products.Where(product => product.Status == "ACTIVE");
                 if (categoryId.HasValue)
-                    activeProducts = activeProducts.Where(product => product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    activeProducts = activeProducts.Where(product =>
+                        product.CategoryID == selectedCategoryId);
+                }
 
                 var products = (from product in activeProducts
                                join category in db.Categories on product.CategoryID equals category.CategoryID
@@ -706,7 +715,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                           where product.Status == "ACTIVE"
                                           select new { batch, product };
                 if (categoryId.HasValue)
-                    expiredBatches = expiredBatches.Where(item => item.product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    expiredBatches = expiredBatches.Where(item =>
+                        item.product.CategoryID == selectedCategoryId);
+                }
                 report.ExpiredQuantity = expiredBatches
                     .Select(item => (long?)item.batch.RemainingQty)
                     .Sum() ?? 0L;
@@ -719,7 +732,11 @@ namespace SIMS_WinFormsApp.Services.Implementations.Reports
                                    && product.Status == "ACTIVE"
                                select new { movement, product };
                 if (categoryId.HasValue)
-                    importMovements = importMovements.Where(item => item.product.CategoryID == categoryId.Value);
+                {
+                    int selectedCategoryId = categoryId.Value;
+                    importMovements = importMovements.Where(item =>
+                        item.product.CategoryID == selectedCategoryId);
+                }
 
                 var imports = (from item in importMovements
                                group item.movement by item.movement.CreatedAt.Date into day

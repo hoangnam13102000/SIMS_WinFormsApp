@@ -30,6 +30,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private Button _refreshButton;
         private Button _clearProductFilterButton;
         private DataGridView _grid;
+        private DataGridViewTextBoxColumn _colBatchCode;
+        private DataGridViewTextBoxColumn _colProduct;
+        private DataGridViewTextBoxColumn _colLotNumber;
+        private DataGridViewTextBoxColumn _colSupplier;
+        private DataGridViewTextBoxColumn _colExpiryDate;
+        private DataGridViewTextBoxColumn _colRemaining;
+        private DataGridViewTextBoxColumn _colUnitCost;
+        private DataGridViewTextBoxColumn _colLossValue;
+        private DataGridViewTextBoxColumn _colStatus;
         private Label _footerLabel;
 
         protected override void Dispose(bool disposing)
@@ -65,6 +74,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _refreshButton = new Button();
             _clearProductFilterButton = new Button();
             _grid = new DataGridView();
+            _colBatchCode = new DataGridViewTextBoxColumn();
+            _colProduct = new DataGridViewTextBoxColumn();
+            _colLotNumber = new DataGridViewTextBoxColumn();
+            _colSupplier = new DataGridViewTextBoxColumn();
+            _colExpiryDate = new DataGridViewTextBoxColumn();
+            _colRemaining = new DataGridViewTextBoxColumn();
+            _colUnitCost = new DataGridViewTextBoxColumn();
+            _colLossValue = new DataGridViewTextBoxColumn();
+            _colStatus = new DataGridViewTextBoxColumn();
             _footerLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)_grid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)_headerIcon).BeginInit();
@@ -185,17 +203,83 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _summaryLayout.Margin = new Padding(0, 2, 0, 8);
             _summaryLayout.Name = "_summaryLayout";
             //
-            // summary cards
+            // _expiredCard
             //
-            ConfigureSummaryCard(_expiredCard, _expiredValue, _expiredCaption,
-                "0", "ĐƠN VỊ HẾT HẠN CHỜ XỬ LÝ", Color.FromArgb(254, 242, 242),
-                Color.FromArgb(185, 28, 28), 0);
-            ConfigureSummaryCard(_nearExpiryCard, _nearExpiryValue, _nearExpiryCaption,
-                "0", "LÔ SẼ HẾT HẠN TRONG 30 NGÀY", Color.White,
-                Color.FromArgb(217, 119, 6), 1);
-            ConfigureSummaryCard(_totalCard, _totalValue, _totalCaption,
-                "0", "TỔNG SỐ LÔ CÓ HẠN SỬ DỤNG", Color.White,
-                Color.FromArgb(37, 99, 235), 2);
+            _expiredCard.BackColor = Color.FromArgb(254, 242, 242);
+            _expiredCard.BorderStyle = BorderStyle.FixedSingle;
+            _expiredCard.Controls.Add(_expiredCaption);
+            _expiredCard.Controls.Add(_expiredValue);
+            _expiredCard.Dock = DockStyle.Fill;
+            _expiredCard.Margin = new Padding(0, 0, 8, 0);
+            _expiredCard.Name = "summaryCard0";
+            //
+            // _expiredValue
+            //
+            _expiredValue.AutoSize = true;
+            _expiredValue.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            _expiredValue.ForeColor = Color.FromArgb(185, 28, 28);
+            _expiredValue.Location = new Point(16, 10);
+            _expiredValue.Text = "0";
+            //
+            // _expiredCaption
+            //
+            _expiredCaption.AutoSize = true;
+            _expiredCaption.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            _expiredCaption.ForeColor = Color.FromArgb(100, 116, 139);
+            _expiredCaption.Location = new Point(18, 58);
+            _expiredCaption.Text = "ĐƠN VỊ HẾT HẠN CHỜ XỬ LÝ";
+            //
+            // _nearExpiryCard
+            //
+            _nearExpiryCard.BackColor = Color.White;
+            _nearExpiryCard.BorderStyle = BorderStyle.FixedSingle;
+            _nearExpiryCard.Controls.Add(_nearExpiryCaption);
+            _nearExpiryCard.Controls.Add(_nearExpiryValue);
+            _nearExpiryCard.Dock = DockStyle.Fill;
+            _nearExpiryCard.Margin = new Padding(8, 0, 8, 0);
+            _nearExpiryCard.Name = "summaryCard1";
+            //
+            // _nearExpiryValue
+            //
+            _nearExpiryValue.AutoSize = true;
+            _nearExpiryValue.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            _nearExpiryValue.ForeColor = Color.FromArgb(217, 119, 6);
+            _nearExpiryValue.Location = new Point(16, 10);
+            _nearExpiryValue.Text = "0";
+            //
+            // _nearExpiryCaption
+            //
+            _nearExpiryCaption.AutoSize = true;
+            _nearExpiryCaption.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            _nearExpiryCaption.ForeColor = Color.FromArgb(100, 116, 139);
+            _nearExpiryCaption.Location = new Point(18, 58);
+            _nearExpiryCaption.Text = "LÔ SẼ HẾT HẠN TRONG 30 NGÀY";
+            //
+            // _totalCard
+            //
+            _totalCard.BackColor = Color.White;
+            _totalCard.BorderStyle = BorderStyle.FixedSingle;
+            _totalCard.Controls.Add(_totalCaption);
+            _totalCard.Controls.Add(_totalValue);
+            _totalCard.Dock = DockStyle.Fill;
+            _totalCard.Margin = new Padding(8, 0, 8, 0);
+            _totalCard.Name = "summaryCard2";
+            //
+            // _totalValue
+            //
+            _totalValue.AutoSize = true;
+            _totalValue.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            _totalValue.ForeColor = Color.FromArgb(37, 99, 235);
+            _totalValue.Location = new Point(16, 10);
+            _totalValue.Text = "0";
+            //
+            // _totalCaption
+            //
+            _totalCaption.AutoSize = true;
+            _totalCaption.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            _totalCaption.ForeColor = Color.FromArgb(100, 116, 139);
+            _totalCaption.Location = new Point(18, 58);
+            _totalCaption.Text = "TỔNG SỐ LÔ CÓ HẠN SỬ DỤNG";
             //
             // _filterPanel
             //
@@ -254,17 +338,71 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.BackgroundColor = Color.White;
             _grid.BorderStyle = BorderStyle.None;
             _grid.ColumnHeadersHeight = 42;
+            _colBatchCode.FillWeight = 85F;
+            _colBatchCode.HeaderText = "Mã lô";
+            _colBatchCode.MinimumWidth = 45;
+            _colBatchCode.Name = "BatchCode";
+            _colBatchCode.ReadOnly = true;
+            _colBatchCode.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colProduct.FillWeight = 155F;
+            _colProduct.HeaderText = "Sản phẩm";
+            _colProduct.MinimumWidth = 45;
+            _colProduct.Name = "Product";
+            _colProduct.ReadOnly = true;
+            _colProduct.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colLotNumber.FillWeight = 95F;
+            _colLotNumber.HeaderText = "Số lô NCC";
+            _colLotNumber.MinimumWidth = 45;
+            _colLotNumber.Name = "LotNumber";
+            _colLotNumber.ReadOnly = true;
+            _colLotNumber.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colSupplier.FillWeight = 125F;
+            _colSupplier.HeaderText = "Nhà cung cấp";
+            _colSupplier.MinimumWidth = 45;
+            _colSupplier.Name = "Supplier";
+            _colSupplier.ReadOnly = true;
+            _colSupplier.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colExpiryDate.FillWeight = 90F;
+            _colExpiryDate.HeaderText = "Hạn sử dụng";
+            _colExpiryDate.MinimumWidth = 45;
+            _colExpiryDate.Name = "ExpiryDate";
+            _colExpiryDate.ReadOnly = true;
+            _colExpiryDate.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colRemaining.FillWeight = 65F;
+            _colRemaining.HeaderText = "Còn lại";
+            _colRemaining.MinimumWidth = 45;
+            _colRemaining.Name = "Remaining";
+            _colRemaining.ReadOnly = true;
+            _colRemaining.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colUnitCost.FillWeight = 85F;
+            _colUnitCost.HeaderText = "Giá nhập";
+            _colUnitCost.MinimumWidth = 45;
+            _colUnitCost.Name = "UnitCost";
+            _colUnitCost.ReadOnly = true;
+            _colUnitCost.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colLossValue.FillWeight = 95F;
+            _colLossValue.HeaderText = "Giá trị tồn";
+            _colLossValue.MinimumWidth = 45;
+            _colLossValue.Name = "LossValue";
+            _colLossValue.ReadOnly = true;
+            _colLossValue.SortMode = DataGridViewColumnSortMode.NotSortable;
+            _colStatus.FillWeight = 100F;
+            _colStatus.HeaderText = "Tình trạng";
+            _colStatus.MinimumWidth = 45;
+            _colStatus.Name = "Status";
+            _colStatus.ReadOnly = true;
+            _colStatus.SortMode = DataGridViewColumnSortMode.NotSortable;
             _grid.Columns.AddRange(new DataGridViewColumn[]
             {
-                MakeColumn("BatchCode", "Mã lô", 85),
-                MakeColumn("Product", "Sản phẩm", 155),
-                MakeColumn("LotNumber", "Số lô NCC", 95),
-                MakeColumn("Supplier", "Nhà cung cấp", 125),
-                MakeColumn("ExpiryDate", "Hạn sử dụng", 90),
-                MakeColumn("Remaining", "Còn lại", 65),
-                MakeColumn("UnitCost", "Giá nhập", 85),
-                MakeColumn("LossValue", "Giá trị tồn", 95),
-                MakeColumn("Status", "Tình trạng", 100)
+                _colBatchCode,
+                _colProduct,
+                _colLotNumber,
+                _colSupplier,
+                _colExpiryDate,
+                _colRemaining,
+                _colUnitCost,
+                _colLossValue,
+                _colStatus
             });
             _grid.Dock = DockStyle.Fill;
             _grid.ReadOnly = true;
@@ -273,12 +411,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.MultiSelect = false;
             _grid.RowTemplate.Height = 36;
             _grid.Name = "_grid";
-            _grid.Rows.Add("LOT_000012", "Sữa tươi nguyên kem", "MILK-042", "NCC Thực phẩm An Tâm",
-                "05/11/2026", "18", "32.000 ₫", "576.000 ₫", "Sắp hết hạn");
-            _grid.Rows.Add("LOT_000008", "Cà phê bột 500g", "LOT-CF-001", "NCC Cà phê Việt",
-                "28/10/2026", "10", "65.000 ₫", "650.000 ₫", "Đã hết hạn");
-            _grid.Rows[1].DefaultCellStyle.BackColor = Color.FromArgb(254, 242, 242);
-            _grid.Rows[1].DefaultCellStyle.ForeColor = Color.FromArgb(153, 27, 27);
             //
             // _footerLabel
             //
@@ -309,42 +441,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _root.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)_grid).EndInit();
             ResumeLayout(false);
-        }
-
-        private static void ConfigureSummaryCard(
-            Panel card, Label value, Label caption, string initialValue,
-            string captionText, Color background, Color foreground, int column)
-        {
-            card.BackColor = background;
-            card.BorderStyle = BorderStyle.FixedSingle;
-            card.Controls.Add(caption);
-            card.Controls.Add(value);
-            card.Dock = DockStyle.Fill;
-            card.Margin = column == 0 ? new Padding(0, 0, 8, 0) : new Padding(8, 0, 8, 0);
-            card.Name = "summaryCard" + column;
-            value.AutoSize = true;
-            value.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            value.ForeColor = foreground;
-            value.Location = new Point(16, 10);
-            value.Text = initialValue;
-            caption.AutoSize = true;
-            caption.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-            caption.ForeColor = Color.FromArgb(100, 116, 139);
-            caption.Location = new Point(18, 58);
-            caption.Text = captionText;
-        }
-
-        private static DataGridViewTextBoxColumn MakeColumn(string name, string header, int fill)
-        {
-            return new DataGridViewTextBoxColumn
-            {
-                Name = name,
-                HeaderText = header,
-                ReadOnly = true,
-                FillWeight = fill,
-                MinimumWidth = 45,
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            };
         }
     }
 }

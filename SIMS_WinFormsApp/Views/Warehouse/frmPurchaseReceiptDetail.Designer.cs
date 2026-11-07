@@ -712,7 +712,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._closeButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this._closeButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this._closeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._closeButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);

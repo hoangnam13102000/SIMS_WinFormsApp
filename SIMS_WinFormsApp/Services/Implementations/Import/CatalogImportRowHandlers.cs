@@ -11,8 +11,8 @@ namespace SIMS_WinFormsApp.Services.Implementations.Import
     {
         public static readonly string[] ExpectedColumns =
         {
-            "Tên sản phẩm", "Danh mục", "Nhà cung cấp", "Thương hiệu", "Đơn vị",
-            "Khối lượng", "Giá nhập", "Giá bán", "Tồn kho", "Tồn tối thiểu", "Mô tả", "Ảnh"
+            "Tên sản phẩm", "Danh mục", "Thương hiệu", "Đơn vị", "Khối lượng",
+            "Giá nhập", "Giá bán", "Tồn kho", "Tồn tối thiểu", "Mô tả", "Ảnh"
         };
 
         private readonly ICatalogAdminService _service;
@@ -26,19 +26,17 @@ namespace SIMS_WinFormsApp.Services.Implementations.Import
         {
             string name = Cell(cells, 0);
             string categoryName = Cell(cells, 1);
-            string supplierName = Cell(cells, 2);
             if (string.IsNullOrWhiteSpace(name))
                 return ImportRowResult.Failure("Dòng " + rowNumber + ": thiếu tên sản phẩm.");
             if (string.IsNullOrWhiteSpace(categoryName))
                 return ImportRowResult.Failure("Dòng " + rowNumber + ": thiếu danh mục.");
-            if (!CatalogImportParsing.TryMoney(Cell(cells, 6), out decimal importPrice))
+            if (!CatalogImportParsing.TryMoney(Cell(cells, 5), out decimal importPrice))
                 return ImportRowResult.Failure("Dòng " + rowNumber + ": giá nhập không hợp lệ.");
-            if (!CatalogImportParsing.TryMoney(Cell(cells, 7), out decimal sellPrice))
+            if (!CatalogImportParsing.TryMoney(Cell(cells, 6), out decimal sellPrice))
                 return ImportRowResult.Failure("Dòng " + rowNumber + ": giá bán không hợp lệ.");
 
             int categoryId = EnsureCategory(_service, categoryName);
-            int? supplierId = string.IsNullOrWhiteSpace(supplierName) ? (int?)null : EnsureSupplier(_service, supplierName);
-            string image = Cell(cells, 11);
+            string image = Cell(cells, 10);
             if (!string.IsNullOrWhiteSpace(image) && !File.Exists(image))
                 return ImportRowResult.Failure("Dòng " + rowNumber + ": không tìm thấy file ảnh.");
 
@@ -46,15 +44,14 @@ namespace SIMS_WinFormsApp.Services.Implementations.Import
             {
                 Name = name,
                 CategoryId = categoryId,
-                SupplierId = supplierId,
-                Brand = Cell(cells, 3),
-                Unit = Cell(cells, 4),
-                WeightVolume = Cell(cells, 5),
+                Brand = Cell(cells, 2),
+                Unit = Cell(cells, 3),
+                WeightVolume = Cell(cells, 4),
                 ImportPrice = importPrice,
                 SellPrice = sellPrice,
-                Stock = CatalogImportParsing.ParseInt(Cell(cells, 8), 0),
-                MinStock = CatalogImportParsing.ParseInt(Cell(cells, 9), 5),
-                Description = Cell(cells, 10),
+                Stock = CatalogImportParsing.ParseInt(Cell(cells, 7), 0),
+                MinStock = CatalogImportParsing.ParseInt(Cell(cells, 8), 5),
+                Description = Cell(cells, 9),
                 ImagePath = image,
                 IsActive = true
             };
@@ -73,18 +70,6 @@ namespace SIMS_WinFormsApp.Services.Implementations.Import
                     return item.Id;
             }
             var created = service.SaveCategory(new CategoryEditDto { Name = name, IsActive = true });
-            if (!created.Success) throw new InvalidOperationException(created.Message);
-            return created.Id;
-        }
-
-        internal static int EnsureSupplier(ICatalogAdminService service, string name)
-        {
-            foreach (var item in service.GetSupplierOptions())
-            {
-                if (string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase))
-                    return item.Id;
-            }
-            var created = service.SaveSupplier(new SupplierEditDto { Name = name });
             if (!created.Success) throw new InvalidOperationException(created.Message);
             return created.Id;
         }

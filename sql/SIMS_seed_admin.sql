@@ -27,27 +27,21 @@ IF NOT EXISTS (SELECT 1 FROM Roles WHERE RoleCode = 'SALES_STAFF')
     VALUES ('SALES_STAFF', N'Nhân viên bán hàng', N'Tạo hóa đơn, tìm sản phẩm, hủy/đổi trả');
 GO
 
-/* ---- 2) Quyen CRUD quan ly ma giam gia ---- */
-IF NOT EXISTS (SELECT 1 FROM Permissions WHERE PermissionCode = 'PROMOTION_MANAGE')
-    INSERT INTO Permissions (PermissionCode, Description)
-    VALUES ('PROMOTION_MANAGE', N'Quản lý CRUD mã giảm giá: tạo, xem, sửa và xóa mềm');
-
-UPDATE Permissions
-SET Description = N'Quản lý CRUD mã giảm giá: tạo, xem, sửa và xóa mềm'
-WHERE PermissionCode = 'PROMOTION_MANAGE';
-GO
-
-INSERT INTO RolePermissions (RoleID, PermissionID)
-SELECT r.RoleID, p.PermissionID
-FROM Roles r
-CROSS JOIN Permissions p
-WHERE r.RoleCode IN ('ADMIN', 'SALES_MANAGER')
-  AND p.PermissionCode = 'PROMOTION_MANAGE'
-  AND NOT EXISTS (
-      SELECT 1
-      FROM RolePermissions rp
-      WHERE rp.RoleID = r.RoleID
-        AND rp.PermissionID = p.PermissionID);
+/* ---- 2) Xoa cac quyen cua tinh nang da loai bo ---- */
+DELETE rp
+FROM RolePermissions rp
+JOIN Permissions p ON p.PermissionID = rp.PermissionID
+WHERE p.PermissionCode IN (
+    'PROMOTION_MANAGE',
+    'EXCEPTION_REPORT_VIEW', 'EXCEPTION_REPORT_CREATE', 'EXCEPTION_REPORT_HANDLE', 'EXCEPTION_REPORT_SEND',
+    'SUPPLIER_RETURN_MANAGE', 'SUPPLIER_RETURN_CREATE', 'SUPPLIER_RETURN_VIEW'
+);
+DELETE FROM Permissions
+WHERE PermissionCode IN (
+    'PROMOTION_MANAGE',
+    'EXCEPTION_REPORT_VIEW', 'EXCEPTION_REPORT_CREATE', 'EXCEPTION_REPORT_HANDLE', 'EXCEPTION_REPORT_SEND',
+    'SUPPLIER_RETURN_MANAGE', 'SUPPLIER_RETURN_CREATE', 'SUPPLIER_RETURN_VIEW'
+);
 GO
 
 /* ---- 3) Tao tai khoan Admin mac dinh ----

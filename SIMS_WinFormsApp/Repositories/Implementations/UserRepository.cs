@@ -239,27 +239,6 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
             }
         }
 
-        // Danh bạ nhân viên (trừ CUSTOMER) để hiển thị trong Chat nội bộ, kể cả khi họ
-        // đang offline — trước đây UI chỉ hiển thị người đang kết nối WebSocket nên nếu
-        // chỉ có 1 máy client đang chạy thì danh sách luôn trống dù DB có nhiều nhân viên.
-        public IReadOnlyList<User> GetActiveStaffExcept(int excludeUserId)
-        {
-            using (var db = new SimsDataContext())
-            {
-                var rows = (
-                    from u in db.Users
-                    join r in db.Roles on u.RoleID equals r.RoleID
-                    where !u.IsDeleted
-                          && u.UserID != excludeUserId
-                          && r.RoleCode != "CUSTOMER"
-                          && u.Status == "ACTIVE"
-                    select new { u, r }
-                ).ToList();
-
-                return rows.Select(x => Map(x.u, x.r)).ToList();
-            }
-        }
-
         public UserManagementPageDto GetManagementPage(
                 int pageIndex,
                 int pageSize,

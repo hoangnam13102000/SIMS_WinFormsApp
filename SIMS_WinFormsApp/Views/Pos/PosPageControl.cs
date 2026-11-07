@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Models.DTOs.Pos;
-using SIMS_WinFormsApp.Models.DTOs.Promotions;
 using SIMS_WinFormsApp.MVP.Presenters.Pos;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Theme;
@@ -24,9 +23,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private bool _checkoutAllowedByCart;
         private bool _isBusy;
         private bool _bindingCart;
-
-        public DataGridViewTextBoxColumn CartQuantity => _cart_quantity_column;
-        public DataGridViewImageColumn CartRemove => _cart_remove_column;
+        private bool _bindingCategories;
 
         public event EventHandler ViewReady;
         public event EventHandler<string> ProductSearchChanged;
@@ -39,7 +36,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public event EventHandler<int> CartLineRemoved;
         public event EventHandler<string> CustomerSearchRequested;
         public event EventHandler CustomerCleared;
-        public event EventHandler<string> PromoApplyRequested;
         public event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
         public event EventHandler HoldCartRequested;
         public event EventHandler ViewHeldCartsRequested;
@@ -67,58 +63,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             InitializeComponent();
             ConfigurePointsRedemptionControls();
             _designTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-            _header.SizeChanged += (sender, args) => LayoutHeader();
             LayoutHeader();
-            ConfigurePromoApplyButton();
             _cashierNameLabel.Text = string.IsNullOrWhiteSpace(cashierDisplayName)
                 ? "Nhân viên:"
                 : "Nhân viên: " + cashierDisplayName;
-
-            _productSearch.TextChanged += (sender, args) =>
-                ProductSearchChanged?.Invoke(this, _productSearch.Text);
-            _productCategory.SelectedIndexChanged += OnCategorySelectedIndexChanged;
-            _scanBarcodeButton.Click += (sender, args) =>
-                ScanBarcodeRequested?.Invoke(this, EventArgs.Empty);
-            _customerSearchButton.Click += (sender, args) => RequestCustomerSearch();
-            _customerScanButton.Click += (sender, args) =>
-                CustomerBarcodeScanRequested?.Invoke(this, EventArgs.Empty);
-            _customerTextBox.KeyDown += OnCustomerTextBoxKeyDown;
-            _clearCustomerButton.Click += (sender, args) =>
-                CustomerCleared?.Invoke(this, EventArgs.Empty);
-            _usePointsCheckBox.CheckedChanged += OnUsePointsCheckedChanged;
-            _pointsToRedeemInput.ValueChanged += (sender, args) =>
-                PointsRedemptionChanged?.Invoke(
-                    this, (_usePointsCheckBox.Checked, decimal.ToInt32(_pointsToRedeemInput.Value)));
-            _cartGrid.CellValidating += OnCartCellValidating;
-            _cartGrid.CellEndEdit += OnCartCellEndEdit;
-            _cartGrid.CellClick += OnCartCellClick;
-            _cartGrid.EditingControlShowing += OnCartEditingControlShowing;
-            _applyPromoButton.Click += (sender, args) =>
-            {
-                if (!string.IsNullOrWhiteSpace(_promoTextBox.Text))
-                    PromoApplyRequested?.Invoke(this, _promoTextBox.Text.Trim());
-            };
-            _promoDropdownButton.Click += (sender, args) =>
-            {
-                if (_promoTextBox.Items.Count > 0)
-                {
-                    _promoTextBox.Focus();
-                    _promoTextBox.DroppedDown = true;
-                }
-            };
-            _holdButton.Click += (sender, args) => HoldCartRequested?.Invoke(this, EventArgs.Empty);
-            _heldCartsButton.Click += (sender, args) => ViewHeldCartsRequested?.Invoke(this, EventArgs.Empty);
-            _checkoutButton.Click += (sender, args) => CheckoutRequested?.Invoke(this, EventArgs.Empty);
-            Load += (sender, args) =>
-            {
-                ConfigurePromoApplyButton();
-                if (!_designTime)
-                {
-                    BeginInvoke((Action)SetInitialCartSplitterDistance);
-                    ViewReady?.Invoke(this, EventArgs.Empty);
-                }
-            };
-            _cartCheckoutSplit.SplitterMoving += OnCartCheckoutSplitterMoving;
         }
 
         private void LayoutHeader()
@@ -127,33 +75,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 _header.ClientSize.Width - _cashierNameLabel.Width - 20,
                 38);
             _pageTitle.Width = Math.Max(180, _cashierNameLabel.Left - _pageTitle.Left - 24);
-        }
-
-        private void ConfigurePromoApplyButton()
-        {
-            int textWidth = TextRenderer.MeasureText(
-                _applyPromoButton.Text,
-                _applyPromoButton.Font).Width;
-            int buttonWidth = Math.Max(120, textWidth + 24);
-
-            _checkoutLayout.RowStyles[0].Height = 50F;
-            _checkoutLayout.MinimumSize = new Size(0, 322);
-            _checkoutScrollPanel.AutoScrollMinSize = new Size(0, 322);
-            _promoLayout.ColumnStyles[3].SizeType = SizeType.Absolute;
-            _promoLayout.ColumnStyles[3].Width = buttonWidth;
-            _applyPromoButtonBorder.BackColor = Color.FromArgb(37, 99, 235);
-            _applyPromoButtonBorder.Padding = new Padding(1);
-            _applyPromoButtonBorder.Margin = new Padding(0, 2, 0, 2);
-            _applyPromoButtonBorder.MinimumSize = new Size(buttonWidth, 0);
-            _applyPromoButton.MinimumSize = Size.Empty;
-            _applyPromoButton.Margin = Padding.Empty;
-            _applyPromoButton.AutoSize = false;
-            _applyPromoButton.Dock = DockStyle.Fill;
-            _applyPromoButton.BackColor = Color.White;
-            _applyPromoButton.FlatAppearance.BorderSize = 0;
-            _applyPromoButton.TextAlign = ContentAlignment.MiddleCenter;
-            _applyPromoButton.UseVisualStyleBackColor = false;
-            _promoLayout.PerformLayout();
         }
 
         private void ConfigurePointsRedemptionControls()
@@ -173,6 +94,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 Enabled = false,
                 Margin = new Padding(0, 0, 6, 0)
             };
+            _pointsToRedeemInput.ValueChanged += _pointsToRedeemInput_ValueChanged;
 
             _pointsRedemptionPanel = new FlowLayoutPanel
             {
@@ -201,7 +123,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _customerLayout.SetColumnSpan(_pointsRedemptionPanel, 4);
         }
 
-        private void OnUsePointsCheckedChanged(object sender, EventArgs e)
+        private void _usePointsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (_usePointsCheckBox.Checked && _pointsToRedeemInput.Value == 0)
                 _pointsToRedeemInput.Value = _pointsToRedeemInput.Maximum;
@@ -214,16 +136,22 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         public void BindCategories(IReadOnlyList<CategoryOptionDto> categories)
         {
-            _productCategory.SelectedIndexChanged -= OnCategorySelectedIndexChanged;
-            _productCategory.Items.Clear();
-            _productCategory.Items.Add(new CategoryChoice("Tất cả danh mục", null));
-            if (categories != null)
+            _bindingCategories = true;
+            try
             {
-                foreach (var category in categories)
-                    _productCategory.Items.Add(new CategoryChoice(category.Name, category.CategoryId));
+                _productCategory.Items.Clear();
+                _productCategory.Items.Add(new CategoryChoice("Tất cả danh mục", null));
+                if (categories != null)
+                {
+                    foreach (var category in categories)
+                        _productCategory.Items.Add(new CategoryChoice(category.Name, category.CategoryId));
+                }
+                _productCategory.SelectedIndex = 0;
             }
-            _productCategory.SelectedIndex = 0;
-            _productCategory.SelectedIndexChanged += OnCategorySelectedIndexChanged;
+            finally
+            {
+                _bindingCategories = false;
+            }
         }
 
         public void BindProducts(IReadOnlyList<ProductCatalogItemDto> products)
@@ -332,38 +260,14 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _pointsBalanceLabel.Text = "(có " + _customerPoints.ToString("N0") + ")";
         }
 
-        public void BindPromotions(IReadOnlyList<PromotionDto> promotions)
-        {
-            string currentCode = _promoTextBox.Text;
-            _promoTextBox.BeginUpdate();
-            try
-            {
-                _promoTextBox.DataSource = null;
-                _promoTextBox.Items.Clear();
-                _promoTextBox.DisplayMember = nameof(PromotionDto.Code);
-                _promoTextBox.DataSource = promotions == null
-                    ? new List<PromotionDto>()
-                    : promotions.ToList();
-                _promoTextBox.SelectedIndex = -1;
-                _promoTextBox.Text = currentCode;
-            }
-            finally
-            {
-                _promoTextBox.EndUpdate();
-            }
-        }
-
         public void SetTotals(CartTotalsDto totals)
         {
             if (totals == null) return;
             _subtotalValue.Text = PosFormat.Vnd(totals.Subtotal);
-            _discountValue.Text = PosFormat.Vnd(totals.DiscountAmount);
             _vatValue.Text = PosFormat.Vnd(totals.VatAmount);
             _pointsValue.Text = PosFormat.Vnd(totals.PointsDiscountAmount);
             _grandTotalValue.Text = PosFormat.Vnd(totals.GrandTotal);
         }
-
-        public void SetPromoCode(string code) => _promoTextBox.Text = code ?? string.Empty;
 
         public void SetPaymentMethods(IReadOnlyList<string> methods)
         {
@@ -405,10 +309,73 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 item => ((HeldCartDto)item).DisplayText) as HeldCartDto;
         }
 
-        private void OnCategorySelectedIndexChanged(object sender, EventArgs e)
+        private void _productCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_bindingCategories)
+                return;
+
             if (_productCategory.SelectedItem is CategoryChoice choice)
                 CategoryChanged?.Invoke(this, choice.CategoryId);
+        }
+
+        private void _header_SizeChanged(object sender, EventArgs e)
+        {
+            LayoutHeader();
+        }
+
+        private void _productSearch_TextChanged(object sender, EventArgs e)
+        {
+            ProductSearchChanged?.Invoke(this, _productSearch.Text);
+        }
+
+        private void _scanBarcodeButton_Click(object sender, EventArgs e)
+        {
+            ScanBarcodeRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _customerSearchButton_Click(object sender, EventArgs e)
+        {
+            RequestCustomerSearch();
+        }
+
+        private void _customerScanButton_Click(object sender, EventArgs e)
+        {
+            CustomerBarcodeScanRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _clearCustomerButton_Click(object sender, EventArgs e)
+        {
+            CustomerCleared?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _pointsToRedeemInput_ValueChanged(object sender, EventArgs e)
+        {
+            PointsRedemptionChanged?.Invoke(
+                this, (_usePointsCheckBox.Checked, decimal.ToInt32(_pointsToRedeemInput.Value)));
+        }
+
+        private void _holdButton_Click(object sender, EventArgs e)
+        {
+            HoldCartRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _heldCartsButton_Click(object sender, EventArgs e)
+        {
+            ViewHeldCartsRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _checkoutButton_Click(object sender, EventArgs e)
+        {
+            CheckoutRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PosPageControl_Load(object sender, EventArgs e)
+        {
+            if (!_designTime)
+            {
+                BeginInvoke((Action)SetInitialCartSplitterDistance);
+                ViewReady?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private void SetInitialCartSplitterDistance()
@@ -426,7 +393,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 Math.Min(availableHeight * 2 / 5, maxDistance));
         }
 
-        private void OnCartCheckoutSplitterMoving(object sender, SplitterCancelEventArgs e)
+        private void _cartCheckoutSplit_SplitterMoving(object sender, SplitterCancelEventArgs e)
         {
             int availableHeight = _cartCheckoutSplit.ClientSize.Height - _cartCheckoutSplit.SplitterWidth;
             int maxDistance = availableHeight - _cartCheckoutSplit.Panel2MinSize;
@@ -435,7 +402,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 e.Cancel = true;
         }
 
-        private void OnCartCellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        private void _cartGrid_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
@@ -450,7 +417,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             _cartGrid.Rows[e.RowIndex].ErrorText = "Số lượng phải là số nguyên lớn hơn 0.";
         }
 
-        private void OnCartEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        private void _cartGrid_EditingControlShowing(
+            object sender,
+            DataGridViewEditingControlShowingEventArgs e)
         {
             if (_cartGrid.CurrentCell?.ColumnIndex == CartQuantity.Index && e.Control is TextBox textBox)
             {
@@ -459,7 +428,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             }
         }
 
-        private void OnCartCellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void _cartGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (_bindingCart || e.RowIndex < 0 || e.ColumnIndex != CartQuantity.Index)
                 return;
@@ -473,7 +442,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             }
         }
 
-        private void OnCartCellClick(object sender, DataGridViewCellEventArgs e)
+        private void _cartGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex != CartRemove.Index)
                 return;
@@ -481,7 +450,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 CartLineRemoved?.Invoke(this, line.ProductId);
         }
 
-        private void OnCustomerTextBoxKeyDown(object sender, KeyEventArgs e)
+        private void _customerTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;

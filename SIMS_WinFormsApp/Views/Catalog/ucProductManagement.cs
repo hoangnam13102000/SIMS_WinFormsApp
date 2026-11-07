@@ -456,16 +456,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
             IWin32Window owner = FindForm();
             IReadOnlyList<LookupItem> categories = EnsureLookup(_presenter.Categories(), draft.CategoryId, categoryName);
-            IReadOnlyList<LookupItem> suppliers = EnsureLookup(_presenter.Suppliers(), draft.SupplierId ?? 0, null);
             if (readOnly)
             {
                 ProductEditDto ignored;
-                frmProductEditor.TryEdit(owner, draft, categories, suppliers, true, out ignored);
+                frmProductEditor.TryEdit(owner, draft, categories, true, out ignored);
                 return;
             }
 
             ProductEditDto edited;
-            while (frmProductEditor.TryEdit(owner, draft, categories, suppliers, false, out edited))
+            while (frmProductEditor.TryEdit(owner, draft, categories, false, out edited))
             {
                 CatalogSaveResult result = _presenter.Save(edited);
                 if (result != null && result.Success)

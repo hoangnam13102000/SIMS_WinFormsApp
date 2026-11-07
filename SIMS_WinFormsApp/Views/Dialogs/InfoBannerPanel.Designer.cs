@@ -28,7 +28,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
                 Location = new Point(PanelPadding, PanelPadding),
                 BackColor = Color.Transparent
             };
-            _iconBox.Paint += IconBox_Paint;
+            this._iconBox.Paint += new System.Windows.Forms.PaintEventHandler(this.IconBox_Paint);
             this.Controls.Add(_iconBox);
 
             _iconGlyph = new IconPictureBox
@@ -62,7 +62,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             };
             this.Controls.Add(_lblDescription);
 
-            this.Resize += (s, e) => LayoutChildren();
+            this.Resize += new System.EventHandler(this.InfoBannerPanel_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
         }

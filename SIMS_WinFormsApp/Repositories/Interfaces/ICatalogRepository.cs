@@ -10,7 +10,6 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         int InsertProduct(ProductEditDto dto);
         void UpdateProduct(ProductEditDto dto);
         void SetProductStatus(int productId, bool active);
-        void SetPreferredSupplier(int productId, int? supplierId);
         int? FindProductIdByName(string name);
 
         CatalogPage<CategoryRowDto> GetCategories(int pageIndex, int pageSize, string keyword, string status);
@@ -23,7 +22,6 @@ namespace SIMS_WinFormsApp.Repositories.Interfaces
         int? FindCategoryIdByName(string name);
 
         CatalogPage<SupplierRowDto> GetSuppliers(int pageIndex, int pageSize, string keyword);
-        IReadOnlyList<LookupItem> GetActiveSuppliers();
         SupplierEditDto GetSupplier(int supplierId);
         int InsertSupplier(SupplierEditDto dto);
         void UpdateSupplier(SupplierEditDto dto);

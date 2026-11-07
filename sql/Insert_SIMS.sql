@@ -11,7 +11,6 @@
    ============================================================ */
 /* Dong bo voi SIMS.sql hien tai:
    - ReturnExchanges: DiscountShare, PointsShare
-   - Promotions: ShowOnBanner, BannerSortOrder (seed demo banner)
 */
 USE SIMS_DB;
 GO
@@ -41,8 +40,6 @@ INSERT INTO Permissions (PermissionCode, Description) VALUES
 ('INVOICE_CANCEL',      N'Hủy hóa đơn'),
 ('RETURN_EXCHANGE',     N'Xử lý đổi/trả hàng'),
 ('RETURN_APPROVE',      N'Phê duyệt đổi/trả giá trị lớn'),
-('EXCEPTION_REPORT_SEND',   N'Gửi báo cáo ngoại lệ'),
-('EXCEPTION_REPORT_HANDLE', N'Xử lý báo cáo ngoại lệ'),
 ('STOCK_IMPORT',        N'Nhập hàng vào kho'),
 ('STOCK_RECONCILE',     N'Đối chiếu kho cuối ngày'),
 ('CUSTOMER_MANAGE',     N'Quản lý khách hàng'),
@@ -50,13 +47,9 @@ INSERT INTO Permissions (PermissionCode, Description) VALUES
 ('REPORT_INVENTORY',    N'Báo cáo tồn kho, biểu đồ xu hướng tồn'),
 ('REPORT_REVENUE',      N'Thống kê doanh thu, biểu đồ xu hướng bán'),
 ('REPORT_PROFIT',       N'Báo cáo lợi nhuận'),
-('BACKUP_MANAGE',       N'Xem trang Sao lưu & Khôi phục, tự sao lưu / khôi phục DB từ file backup'),
 ('RETURN_EXCHANGE_CREATE',  N'Tạo yêu cầu đổi/trả hàng cho hóa đơn'),
 ('RETURN_EXCHANGE_APPROVE', N'Duyệt / từ chối yêu cầu đổi/trả hàng giá trị lớn'),
-('EXCEPTION_REPORT_CREATE', N'Gửi báo cáo ngoại lệ cho Quản lý bán hàng'),
-('SETTINGS_MANAGE',     N'Xem và sửa trang Cài đặt hệ thống (VAT, tên cửa hàng, chính sách đổi trả...)'),
-('PROMOTION_MANAGE',    N'Quản lý CRUD mã giảm giá: tạo, xem, sửa và xóa mềm'),
-('SUPPLIER_RETURN_MANAGE',  N'Lập phiếu trả hàng lỗi/hỏng về nhà cung cấp');
+('SETTINGS_MANAGE',     N'Xem và sửa trang Cài đặt hệ thống (VAT, tên cửa hàng, chính sách đổi trả...)');
 GO
 
 -- ---- 3. RolePermissions ----
@@ -67,21 +60,19 @@ INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'SALES_STAFF'), PermissionID
 FROM Permissions
 WHERE PermissionCode IN ('STOCK_VIEW','PRODUCT_SEARCH','INVOICE_CREATE','INVOICE_CANCEL',
-                          'RETURN_EXCHANGE','RETURN_EXCHANGE_CREATE','EXCEPTION_REPORT_SEND',
-                          'EXCEPTION_REPORT_CREATE','CUSTOMER_MANAGE');
+                          'RETURN_EXCHANGE','RETURN_EXCHANGE_CREATE','CUSTOMER_MANAGE');
 
 INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'INVENTORY_MANAGER'), PermissionID
 FROM Permissions
 WHERE PermissionCode IN ('STOCK_VIEW','STOCK_IMPORT','STOCK_RECONCILE','REPORT_INVENTORY',
-                          'SUPPLIER_MANAGE','SUPPLIER_RETURN_MANAGE','EXCEPTION_REPORT_HANDLE');
+                          'SUPPLIER_MANAGE');
 
 INSERT INTO RolePermissions (RoleID, PermissionID)
 SELECT (SELECT RoleID FROM Roles WHERE RoleCode = 'SALES_MANAGER'), PermissionID
 FROM Permissions
-WHERE PermissionCode IN ('REPORT_REVENUE','REPORT_PROFIT','EXCEPTION_REPORT_HANDLE',
-                           'RETURN_APPROVE','RETURN_EXCHANGE_APPROVE','AUDIT_VIEW',
-                           'PROMOTION_MANAGE');
+WHERE PermissionCode IN ('REPORT_REVENUE','REPORT_PROFIT',
+                           'RETURN_APPROVE','RETURN_EXCHANGE_APPROVE','AUDIT_VIEW');
 
 -- Khach hang (tu dang ky o client): chi duoc tim/xem san pham
 INSERT INTO RolePermissions (RoleID, PermissionID)
@@ -140,7 +131,7 @@ GO
 -- tung SP de trg_Products_SyncSellPrice (chay ngay sau INSERT nay) tinh ra
 -- dung SellPrice mong muon = ImportPrice + Margin, khong bi roi ve muc
 -- DEFAULT_MARGIN chung (5000, fn_GetDefaultMargin). Tat ca ton kho ban dau
--- PHAI di qua muc 10 (Phieu nhap kho) ben duoi.
+-- PHAI di qua muc 9 (Phieu nhap kho) ben duoi.
 INSERT INTO Products (ProductName, CategoryID, ImportPrice, SellPrice, Margin, Stock, MinStock) VALUES
 (N'Táo Envy',                (SELECT CategoryID FROM Categories WHERE CategoryName=N'Trái cây'),      35000, 45000, 10000, 0, 10),
 (N'Chuối già',                (SELECT CategoryID FROM Categories WHERE CategoryName=N'Trái cây'),      15000, 20000,  5000, 0, 15),
@@ -159,35 +150,7 @@ GO
 UPDATE Products SET Status = 'DISABLED' WHERE ProductName = N'Mì tôm Hảo Hảo (thùng)';
 GO
 
--- ---- 8. SupplierProducts ----
-INSERT INTO SupplierProducts (SupplierID, ProductID, SupplyPrice, IsPreferred) VALUES
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Nông sản Miền Tây'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Táo Envy'), 35000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Nông sản Miền Tây'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Chuối già'), 15000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Nông sản Miền Tây'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Cà chua'), 18500, 0),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Nông sản Miền Tây'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Cà rốt'), 12500, 0),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Nước suối 500ml'), 4000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Trà xanh Không Độ 500ml'), 6000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g'), 65000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Mì tôm Hảo Hảo (thùng)'), 90000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Rau sạch Đà Lạt'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Cà chua'), 17500, 1),   -- gia tot hon -> NCC uu tien
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Rau sạch Đà Lạt'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Cà rốt'), 12000, 1),    -- gia tot hon -> NCC uu tien
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Sữa & Bánh kẹo Việt'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Sữa tươi Vinamilk 1L'), 28000, 1),
-((SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Sữa & Bánh kẹo Việt'),
- (SELECT ProductID FROM Products WHERE ProductName=N'Bánh quy bơ 200g'), 20000, 1);
-GO
-
--- ---- 9. Customers ----
+-- ---- 8. Customers ----
 INSERT INTO Customers (CustomerID, CustomerCode, MemberPoint)
 SELECT UserID, 'CUS_' + RIGHT('0000' + CAST(UserID AS VARCHAR(10)), 4), 120
 FROM Users WHERE Username = 'lan.nguyen'
@@ -205,10 +168,10 @@ SELECT UserID, 'CUS_' + RIGHT('0000' + CAST(UserID AS VARCHAR(10)), 4), 0   -- d
 FROM Users WHERE Username = 'khach_le';
 GO
 
--- ---- 10. Phieu nhap kho mau (BAT BUOC chay TRUOC muc 11 - Hoa don mau) ----
+-- ---- 9. Phieu nhap kho mau (BAT BUOC chay TRUOC muc 10 - Hoa don mau) ----
 -- Day la nguon DUY NHAT tao InventoryBatch, trigger tu cong Products.Stock
 -- tuong ung - KHONG duoc UPDATE Products.Stock thu cong o bat ky dau khac.
--- So luong nhap du de "song sot" qua 7 ngay ban hang mau o muc 11.
+-- So luong nhap du de "song sot" qua 7 ngay ban hang mau o muc 10.
 INSERT INTO PurchaseReceipts (ReceiptCode, SupplierID, CreatedBy, TotalAmount) VALUES
 ('PN-' + CONVERT(VARCHAR(8), DATEADD(DAY,-10,GETDATE()), 112) + '-001',
  (SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty TNHH Nông sản Miền Tây'),
@@ -242,7 +205,7 @@ INSERT INTO PurchaseReceiptDetails (ReceiptID, ProductID, Quantity, ImportPrice,
  N'LOT-CHUOI-001', DATEADD(DAY, -11, GETDATE()), DATEADD(DAY, 14, GETDATE()));
 GO
 
--- Rau sach Da Lat (NCC uu tien - gia 17500/12000 theo SupplierProducts): Ca chua + Ca rot
+-- Rau sach Da Lat: Ca chua + Ca rot
 INSERT INTO PurchaseReceiptDetails (ReceiptID, ProductID, Quantity, ImportPrice, LotNumber, ManufactureDate, ExpiryDate) VALUES
 ((SELECT ReceiptID FROM PurchaseReceipts WHERE ReceiptCode='PN-' + CONVERT(VARCHAR(8), DATEADD(DAY,-9,GETDATE()), 112) + '-001'),
  (SELECT ProductID FROM Products WHERE ProductName=N'Cà chua'), 200, 17500,
@@ -277,8 +240,8 @@ INSERT INTO PurchaseReceiptDetails (ReceiptID, ProductID, Quantity, ImportPrice,
 GO
 
 -- Lo Ca phe bot DA HET HAN (30 ngay truoc, HSD -5 ngay so voi hom nay) - khong tinh
--- vao ton kho ban duoc (trigger loai b.ExpiryDate < GETDATE()), dung cho muc 12/13
--- (Tra hang ve NCC + Huy huy kho) minh hoa xu ly hang qua han.
+-- vao ton kho ban duoc (trigger loai b.ExpiryDate < GETDATE()), dung cho muc 13
+-- (Huy huy kho) minh hoa xu ly hang qua han.
 INSERT INTO PurchaseReceiptDetails (ReceiptID, ProductID, Quantity, ImportPrice, LotNumber, ManufactureDate, ExpiryDate) VALUES
 ((SELECT ReceiptID FROM PurchaseReceipts WHERE ReceiptCode='PN-' + CONVERT(VARCHAR(8), DATEADD(DAY,-30,GETDATE()), 112) + '-002'),
  (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g'), 20, 65000,
@@ -302,7 +265,7 @@ JOIN (SELECT ReceiptID, SUM(Quantity * ImportPrice) AS Sum FROM PurchaseReceiptD
   ON t.ReceiptID = r.ReceiptID;
 GO
 
--- ---- 11. Hoa don ban hang 7 ngay gan nhat (phuc vu bieu do doanh thu) ----
+-- ---- 10. Hoa don ban hang 7 ngay gan nhat (phuc vu bieu do doanh thu) ----
 -- Invoice A (sang, staff01, khach quen Lan, CASH), B (trua, staff02, khach le, BANK_TRANSFER),
 -- C (chieu toi, staff01, khach quen Hung, CARD/PAYPAL xen ke) - moi ngay 3 hoa don
 -- => dam bao RevenueChartPanel (RevenueReportDAO.getDailyRevenue) co du 7 cot doanh thu lien tuc.
@@ -684,7 +647,7 @@ GO
 
 
 
--- ---- 12. Doi/tra hang mau (co Approval that su, dung thu tu PENDING -> APPROVED) ----
+-- ---- 11. Doi/tra hang mau (co Approval that su, dung thu tu PENDING -> APPROVED) ----
 INSERT INTO ReturnExchanges (InvoiceID, Type, Reason, TotalValue, DiscountShare, PointsShare, RequiresApproval, Status, CreatedBy) VALUES
 ((SELECT InvoiceID FROM Invoices WHERE InvoiceCode = 'HD-' + CONVERT(VARCHAR(8), DATEADD(DAY,-2,GETDATE()), 112) + '-C'),
  'RETURN', N'Khách phản ánh chuối bị dập, xin trả lại 1 nải', 20000, 0, 0, 0, 'PENDING',
@@ -706,7 +669,7 @@ SET Status = 'APPROVED',
 WHERE ReturnID = (SELECT TOP 1 ReturnID FROM ReturnExchanges ORDER BY ReturnID DESC);
 GO
 
--- ---- 13. Doi/tra gia tri lon, can duyet (van PENDING de demo man hinh cho duyet) ----
+-- ---- 12. Doi/tra gia tri lon, can duyet (van PENDING de demo man hinh cho duyet) ----
 INSERT INTO ReturnExchanges (InvoiceID, Type, Reason, TotalValue, DiscountShare, PointsShare, RequiresApproval, Status, CreatedBy) VALUES
 ((SELECT InvoiceID FROM Invoices WHERE InvoiceCode = 'HD-' + CONVERT(VARCHAR(8), DATEADD(DAY,-4,GETDATE()), 112) + '-B'),
  'EXCHANGE', N'Khách đổi cà phê bột lấy sữa tươi do đặt nhầm', 89000, 0, 0, 1, 'PENDING',
@@ -724,49 +687,12 @@ GO
 -- Gia tri lon (RequiresApproval=1) -> giu PENDING, cho SALES_MANAGER duyet o man hinh,
 -- minh hoa constraint CK_Return_ApprovalRequired
 
--- ---- 14. Tra hang loi ve NCC (SupplierReturns) ----
--- Bang nay KHONG co trigger rieng - logic tru kho nam trong
--- SupplierReturnDAO.java, tai lap y het o day: tru InventoryBatch.RemainingQty
--- (lo Ca phe bot DA HET HAN), tru Products.Stock va ghi InventoryTransactions
--- (SUPPLIER_RETURN, OUT).
-DECLARE @SR_SupplierID INT = (SELECT SupplierID FROM Suppliers WHERE SupplierName=N'Công ty CP Thực phẩm An Bình');
-DECLARE @SR_ProductID  INT = (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g');
-DECLARE @SR_BatchID    INT = (SELECT BatchID FROM InventoryBatch WHERE LotNumber = N'LOT-CAPHE-EXP-001');
-DECLARE @SR_Qty        INT = 10;
-DECLARE @SR_UnitPrice  DECIMAL(18,0) = 65000;
-
-INSERT INTO SupplierReturns (SupplierID, Reason, Status, TotalRefundAmount, Note, CreatedBy)
-VALUES (@SR_SupplierID, 'EXPIRED', 'COMPLETED', @SR_Qty * @SR_UnitPrice,
-        N'Trả lại lô cà phê bột hết hạn sử dụng, yêu cầu NCC hoàn tiền',
-        (SELECT UserID FROM Users WHERE Username='invmgr'));
-
-DECLARE @SR_ID INT = SCOPE_IDENTITY();
-
-INSERT INTO SupplierReturnDetails (SupplierReturnID, ProductID, BatchID, Quantity, UnitRefundPrice)
-VALUES (@SR_ID, @SR_ProductID, @SR_BatchID, @SR_Qty, @SR_UnitPrice);
-
-UPDATE InventoryBatch
-SET RemainingQty = RemainingQty - @SR_Qty,
-    Status = CASE WHEN RemainingQty - @SR_Qty = 0 THEN 'DEPLETED' ELSE Status END
-WHERE BatchID = @SR_BatchID;
-
-UPDATE Products SET Stock = Stock - @SR_Qty WHERE ProductID = @SR_ProductID;
-
-INSERT INTO InventoryTransactions (ProductID, TransactionType, Direction, Quantity,
-                                    StockBefore, StockAfter, RefTable, RefID, CreatedBy, Note)
-SELECT @SR_ProductID, 'SUPPLIER_RETURN', 'OUT', @SR_Qty,
-       Stock + @SR_Qty, Stock, 'SupplierReturns', @SR_ID,
-       (SELECT UserID FROM Users WHERE Username='invmgr'), N'Trả hàng hết hạn về NCC An Bình'
-FROM Products WHERE ProductID = @SR_ProductID;
-
-GO
-
--- ---- 15. Huy huy kho (StockDisposals) ----
--- Phan con lai (10 don vi) cua lo Ca phe bot het han -> huy bo (khong tra NCC duoc nua),
+-- ---- 13. Huy huy kho (StockDisposals) ----
+-- Huy toan bo lo Ca phe bot da het han.
 -- tai lap logic StockDisposalDAO.java (khong co trigger rieng).
 DECLARE @DP_ProductID INT = (SELECT ProductID FROM Products WHERE ProductName=N'Cà phê bột 500g');
 DECLARE @DP_BatchID   INT = (SELECT BatchID FROM InventoryBatch WHERE LotNumber = N'LOT-CAPHE-EXP-001');
-DECLARE @DP_Qty       INT = 10;
+DECLARE @DP_Qty       INT = 20;
 DECLARE @DP_UnitCost  DECIMAL(18,0) = 65000;
 
 INSERT INTO StockDisposals (Reason, Status, TotalLossAmount, Note, CreatedBy)
@@ -790,11 +716,11 @@ INSERT INTO InventoryTransactions (ProductID, TransactionType, Direction, Quanti
                                     StockBefore, StockAfter, RefTable, RefID, CreatedBy, Note)
 SELECT @DP_ProductID, 'DISPOSAL', 'OUT', @DP_Qty,
        Stock + @DP_Qty, Stock, 'StockDisposals', @DP_ID,
-       (SELECT UserID FROM Users WHERE Username='invmgr'), N'Hủy lô hết hạn (phần còn lại sau khi đã trả NCC)'
+       (SELECT UserID FROM Users WHERE Username='invmgr'), N'Hủy toàn bộ lô cà phê bột đã hết hạn'
 FROM Products WHERE ProductID = @DP_ProductID;
 GO
 
--- ---- 16. Doi chieu kho cuoi ngay mau ----
+-- ---- 14. Doi chieu kho cuoi ngay mau ----
 -- Gia su kiem ke thuc te phat hien Ca rot thieu 2 don vi so voi he thong
 INSERT INTO StockReconciliation (ProductID, SystemStock, ActualStock, Note, CreatedBy) VALUES
 ((SELECT ProductID FROM Products WHERE ProductName=N'Cà rốt'),
@@ -807,7 +733,7 @@ GO
 -- + ghi InventoryTransactions (TransactionType='RECONCILE_ADJUST')
 
 
--- ---- 16b. Phien kiem ke ton kho mau ngay hom qua ----
+-- ---- 14b. Phien kiem ke ton kho mau ngay hom qua ----
 -- Giu nguyen ton kho hien tai; chi tao du lieu mau de xem lich su theo ngay.
 DECLARE @Yesterday DATETIME = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
 DECLARE @Today DATETIME = CAST(CAST(GETDATE() AS DATE) AS DATETIME);
@@ -833,19 +759,7 @@ WHERE r.Note = @InventoryCountNote
    AND r.CreatedBy = @InventoryCountUser
    AND r.CreatedAt >= @Today AND r.CreatedAt < DATEADD(DAY, 1, @Today);
 GO
--- ---- 17. Bao cao ngoai le mau (1 PENDING, 1 da HANDLED) ----
-INSERT INTO ExceptionReports (CreatedBy, Content) VALUES
-((SELECT UserID FROM Users WHERE Username='staff02'),
- N'Khách yêu cầu mua "Xoài cát Hòa Lộc" nhưng sản phẩm chưa có trong hệ thống.');
-GO
-
-INSERT INTO ExceptionReports (CreatedBy, Content, Status, HandledBy, HandledAt) VALUES
-((SELECT UserID FROM Users WHERE Username='staff01'),
- N'Máy quét mã vạch ở quầy 2 quét không lên sản phẩm Nước suối 500ml, nghi lỗi tem.',
- 'HANDLED', (SELECT UserID FROM Users WHERE Username='salesmgr'), DATEADD(HOUR, -6, GETDATE()));
-GO
-
--- ---- 18. Canh bao ton kho (StockAlerts) ----
+-- ---- 15. Canh bao ton kho (StockAlerts) ----
 -- 1 dong tu trigger trg_Products_AutoStockAlert da tu sinh khi Banh quy bo
 -- nhap kho (Stock=8 <= MinStock=10) o muc 10. Them thu cong 1 dong o trang
 -- thai PLANNED va 1 dong RESOLVED de demo day du vong doi xu ly.
@@ -862,7 +776,7 @@ INSERT INTO StockAlerts (ProductID, AlertType, StockAtReport, Note, ReportedBy, 
  (SELECT UserID FROM Users WHERE Username='invmgr'), DATEADD(DAY, -1, GETDATE()));
 GO
 
--- ---- 19. AuditLogs mau (co OldValue/NewValue de truy vet day du) ----
+-- ---- 16. AuditLogs mau (co OldValue/NewValue de truy vet day du) ----
 INSERT INTO AuditLogs (UserID, Action, TableName, RecordID, OldValue, NewValue, Detail, IPAddress) VALUES
 ((SELECT UserID FROM Users WHERE Username='admin'), 'LOGIN', 'Users',
    (SELECT UserID FROM Users WHERE Username='admin'),
@@ -888,16 +802,10 @@ INSERT INTO AuditLogs (UserID, Action, TableName, RecordID, OldValue, NewValue, 
    (SELECT UserID FROM Users WHERE Username='staff02'),
    N'{"IsLocked":false,"FailedLoginCount":5}',
    N'{"IsLocked":true,"FailedLoginCount":5}',
-   N'Tài khoản tự động khóa sau 5 lần đăng nhập sai liên tiếp', NULL),
-
-((SELECT UserID FROM Users WHERE Username='invmgr'), 'SUPPLIER_RETURN_CREATE', 'SupplierReturns',
-   (SELECT MAX(SupplierReturnID) FROM SupplierReturns),
-   NULL,
-   N'{"Reason":"EXPIRED","Status":"COMPLETED"}',
-   N'Lập phiếu trả hàng hết hạn về NCC An Bình', '192.168.1.30');
+   N'Tài khoản tự động khóa sau 5 lần đăng nhập sai liên tiếp', NULL);
 GO
 
--- ---- 20. Cau hinh he thong mau ----
+-- ---- 17. Cau hinh he thong mau ----
 -- QUAN TRONG: tat ca cac dong PHAI nam chung 1 cau INSERT (1 danh sach VALUES) -
 -- 1 comment chen giua danh sach VALUES se tach roi tuple ra khoi cau lenh INSERT,
 -- gay loi cu phap T-SQL lam HONG CA BATCH nay.
@@ -940,67 +848,6 @@ GO
 UPDATE Users
 SET PasswordHash = '$2a$12$rULa7sQqQB78UAMj4a.8IOPHPuspkHU2zffYsu75HhmFDVGPl3csS'
 WHERE Username IN ('salesmgr', 'invmgr', 'staff01', 'staff02', 'lan.nguyen', 'hung.tran', 'mai.pham', 'duc.le');
-GO
-
-/* ============================================================
-   22. KHUYEN MAI / MA GIAM GIA
-   ============================================================ */
-DELETE FROM Promotions WHERE Code IN ('SUMMER10', 'GIAM50K', 'FREESHIP', 'WELCOME15', 'FLASH20');
-GO
-
-INSERT INTO Promotions (
-    Code, Name, DiscountType, DiscountValue,
-    MaxDiscountAmount, MinOrderAmount,
-    StartDate, EndDate, UsageLimit, UsedCount,
-    IsActive, ShowOnBanner, BannerSortOrder, IsDeleted, CreatedBy, CreatedAt
-) VALUES
-('SUMMER10', N'Khuyến mãi hè - Giảm 10%', 'PERCENT', 10, 30000, 100000,
- CAST(DATEADD(DAY,-30,GETDATE()) AS DATE), CAST(DATEADD(DAY,180,GETDATE()) AS DATE), 1000, 0, 1, 1, 10, 0,
- (SELECT UserID FROM Users WHERE Username='admin'), GETDATE()),
-('GIAM50K', N'Giảm ngay 50.000đ', 'AMOUNT', 50000, NULL, 300000,
- CAST(DATEADD(DAY,-30,GETDATE()) AS DATE), CAST(DATEADD(DAY,180,GETDATE()) AS DATE), 500, 0, 1, 1, 20, 0,
- (SELECT UserID FROM Users WHERE Username='admin'), GETDATE()),
-('WELCOME15', N'Chào thành viên mới - Giảm 15%', 'PERCENT', 15, 40000, 150000,
- CAST(DATEADD(DAY,-30,GETDATE()) AS DATE), CAST(DATEADD(DAY,180,GETDATE()) AS DATE), NULL, 0, 1, 0, NULL, 0,
- (SELECT UserID FROM Users WHERE Username='admin'), GETDATE()),
-('FLASH20', N'Flash sale - Giảm 20%', 'PERCENT', 20, 100000, 200000,
- CAST(GETDATE() AS DATE), DATEADD(DAY, 30, CAST(GETDATE() AS DATE)), 200, 0, 1, 1, 5, 0,
- (SELECT UserID FROM Users WHERE Username='admin'), GETDATE()),
-('FREESHIP', N'Ưu đãi 20.000đ', 'AMOUNT', 20000, NULL, 99000,
- CAST(DATEADD(DAY,-30,GETDATE()) AS DATE), CAST(DATEADD(DAY,180,GETDATE()) AS DATE), 9999, 0, 1, 0, NULL, 0,
- (SELECT UserID FROM Users WHERE Username='admin'), GETDATE());
-GO
-
-/* ============================================================
-   23. Chat real-time (ChatConversations/ChatMessages) - demo
-   ho tro khach hang + tin nhan noi bo giua nhan vien.
-   ============================================================ */
-INSERT INTO ChatConversations (ConversationType, CustomerUserID, CreatedAt, LastMessageAt, IsClosed) VALUES
-('CUSTOMER_SUPPORT', (SELECT UserID FROM Users WHERE Username='lan.nguyen'),
- DATEADD(HOUR, -3, GETDATE()), DATEADD(MINUTE, -20, GETDATE()), 0);
-GO
-
-INSERT INTO ChatMessages (ConversationID, SenderUserID, SenderName, FromStaff, BodyText, CreatedAt, IsReadByPeer) VALUES
-((SELECT TOP 1 ConversationID FROM ChatConversations WHERE ConversationType='CUSTOMER_SUPPORT' ORDER BY ConversationID DESC),
- (SELECT UserID FROM Users WHERE Username='lan.nguyen'), N'Nguyễn Thị Lan', 0,
- N'Shop ơi, đơn hàng của mình khi nào giao vậy ạ?', DATEADD(HOUR, -3, GETDATE()), 1),
-((SELECT TOP 1 ConversationID FROM ChatConversations WHERE ConversationType='CUSTOMER_SUPPORT' ORDER BY ConversationID DESC),
- (SELECT UserID FROM Users WHERE Username='staff01'), N'Lê Thanh Tú', 1,
- N'Chào chị Lan, đơn hàng đang được đóng gói và sẽ giao trong hôm nay ạ.', DATEADD(MINUTE, -20, GETDATE()), 0);
-GO
-
-DECLARE @ChatA INT = (SELECT UserID FROM Users WHERE Username='staff01');
-DECLARE @ChatB INT = (SELECT UserID FROM Users WHERE Username='staff02');
-INSERT INTO ChatConversations (ConversationType, StaffUserIdA, StaffUserIdB, CreatedAt, LastMessageAt, IsClosed)
-VALUES ('STAFF_DM', CASE WHEN @ChatA < @ChatB THEN @ChatA ELSE @ChatB END,
-                     CASE WHEN @ChatA < @ChatB THEN @ChatB ELSE @ChatA END,
-        DATEADD(HOUR, -5, GETDATE()), DATEADD(HOUR, -1, GETDATE()), 0);
-GO
-
-INSERT INTO ChatMessages (ConversationID, SenderUserID, SenderName, FromStaff, BodyText, CreatedAt, IsReadByPeer) VALUES
-((SELECT TOP 1 ConversationID FROM ChatConversations WHERE ConversationType='STAFF_DM' ORDER BY ConversationID DESC),
- (SELECT UserID FROM Users WHERE Username='staff02'), N'Hoàng Văn Sơn', 0,
- N'Ca chiều nay bên quầy 2 hết nước suối rồi, có ai nhập thêm chưa nhỉ?', DATEADD(HOUR, -1, GETDATE()), 1);
 GO
 
 /* ============================================================

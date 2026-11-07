@@ -205,7 +205,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._closeButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this._closeButton.BackColor = System.Drawing.Color.White;
             this._closeButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this._closeButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this._closeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
             this._closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._closeButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -222,6 +222,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._closeButton.Text = "Đóng";
             this._closeButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this._closeButton.UseVisualStyleBackColor = false;
+            this._closeButton.Click += new System.EventHandler(this._closeButton_Click);
             // 
             // _footerLine
             // 

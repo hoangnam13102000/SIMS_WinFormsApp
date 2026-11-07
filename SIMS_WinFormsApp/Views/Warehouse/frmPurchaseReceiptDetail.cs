@@ -33,7 +33,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             DataGridViewCodeCopy.Attach(_grid, "ProductCode", "BatchCode");
             UpdateReceiptData();
             _headerIconCircle.Paint += new PaintEventHandler(HeaderIconCircle_Paint);
-            _closeButton.Click += new EventHandler(_closeButton_Click);
             Load += new EventHandler(DetailForm_Load);
         }
 

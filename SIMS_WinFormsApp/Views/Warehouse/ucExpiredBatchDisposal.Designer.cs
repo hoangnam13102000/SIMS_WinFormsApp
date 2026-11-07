@@ -223,7 +223,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _confirmButton.Name = "_confirmButton";
             _confirmButton.Size = new Size(180, 40);
             _confirmButton.Text = "Xác nhận lập phiếu";
-            _confirmButton.Click += ConfirmButton_Click;
+            this._confirmButton.Click += new System.EventHandler(this.ConfirmButton_Click);
 
             _cancelButton.FlatStyle = FlatStyle.Flat;
             _cancelButton.Font = new Font("Segoe UI", 9F);
@@ -231,12 +231,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _cancelButton.Name = "_cancelButton";
             _cancelButton.Size = new Size(180, 40);
             _cancelButton.Text = "Quay lại danh sách lô";
-            _cancelButton.Click += CancelButton_Click;
+            this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
 
             BackColor = Color.FromArgb(244, 247, 250);
             Controls.Add(_root);
             Name = "ucExpiredBatchDisposal";
             Padding = new Padding(28);
+            AutoScaleMode = AutoScaleMode.Font;
+            Size = new Size(1200, 760);
             _buttons.ResumeLayout(false);
             _details.ResumeLayout(false);
             _header.ResumeLayout(false);

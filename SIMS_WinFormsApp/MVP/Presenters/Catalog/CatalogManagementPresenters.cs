@@ -49,8 +49,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
         public CatalogSaveResult SetActive(int productId, bool active) => _service.SetProductActive(productId, active);
         public IReadOnlyList<LookupItem> Categories() => _service.GetCategoryOptions();
         public IReadOnlyList<LookupItem> CategoryFilterOptions() => _service.GetAllCategoryOptions();
-        public IReadOnlyList<LookupItem> Suppliers() => _service.GetSupplierOptions();
-
         public IReadOnlyList<object[]> ExportRows()
         {
             var page = _service.GetProducts(0, 100000, null, null, null);

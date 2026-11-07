@@ -10,8 +10,6 @@ namespace SIMS_WinFormsApp.Services.Interfaces.Pos
             int? customerId,
             string paymentMethod,
             CartTotalsDto totals,
-            int? promotionId,
-            string promotionCode,
             IReadOnlyList<CartLineDto> lines);
     }
 }

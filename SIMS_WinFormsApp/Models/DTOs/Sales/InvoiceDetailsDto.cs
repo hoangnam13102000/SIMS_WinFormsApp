@@ -13,7 +13,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Sales
         public string PaymentMethod { get; set; }
         public decimal Subtotal { get; set; }
         public decimal DiscountAmount { get; set; }
-        public string PromotionCode { get; set; }
         public decimal VatRate { get; set; }
         public decimal VatAmount { get; set; }
         public decimal TotalAmount { get; set; }
@@ -54,7 +53,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Sales
         public DateTime CreatedAt { get; set; }
         public bool IsRead { get; set; }
         public string TargetPageKey { get; set; }
-        public int? TargetUserId { get; set; }
     }
 
 }

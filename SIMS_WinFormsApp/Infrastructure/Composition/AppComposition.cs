@@ -5,16 +5,12 @@ using SIMS_WinFormsApp.Infrastructure.Configuration;
 using SIMS_WinFormsApp.Repositories.Implementations;
 using SIMS_WinFormsApp.Repositories.Interfaces;
 using SIMS_WinFormsApp.Services;
-using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations;
 using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Implementations.Inventory;
 using SIMS_WinFormsApp.Services.Implementations.Pos;
 using SIMS_WinFormsApp.Services.Implementations.Reports;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
-using SIMS_WinFormsApp.Services.AI.Implementations;
-using SIMS_WinFormsApp.Services.AI.Implementations.Tools;
-using SIMS_WinFormsApp.Services.AI.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Interfaces.Pos;
 using SIMS_WinFormsApp.Services.Mail;
@@ -23,8 +19,6 @@ using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls.Barcode;
 using SIMS_WinFormsApp.Views.Toast;
 using System;
-using System.Configuration;
-using System.IO;
 
 namespace SIMS_WinFormsApp.Infrastructure.Composition
 {
@@ -48,11 +42,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IPermissionRepository CreatePermissionRepository()
         {
             return new PermissionRepository();
-        }
-
-        public static IChatRepository CreateChatRepository()
-        {
-            return new ChatRepository();
         }
 
         public static IRolePermissionRepository CreateRolePermissionRepository()
@@ -102,27 +91,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
             return new DbConnectionFactory(new ConnectionStringProvider());
         }
 
-        public static BackupManager CreateBackupManager()
-        {
-            string directory = ConfigurationManager.AppSettings["BackupDirectory"];
-            if (string.IsNullOrWhiteSpace(directory))
-                directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Backups");
-
-            var storage = new BackupStorage(directory);
-            var strategies = new IBackupStrategy[]
-            {
-                new SqlServerNativeBackupStrategy(CreateConnectionFactory())
-            };
-            return new BackupManager(storage, strategies);
-        }
-
-        public static CloudinaryBackupUploadListener CreateCloudinaryBackupUploadListener()
-        {
-            return CloudinaryConfig.IsConfigured
-                ? new CloudinaryBackupUploadListener(new CloudinaryUploader())
-                : null;
-        }
-
         public static IProductCatalogService CreateProductCatalogService()
         {
             return new SqlProductCatalogService(CreateConnectionFactory(), new LocalProductImageStore());
@@ -146,30 +114,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         public static IDashboardDataService CreateDashboardDataService()
         {
             return new DashboardDataService(CreateConnectionFactory());
-        }
-
-        public static IAiChatService CreateAiChatService()
-        {
-            IProductCatalogService catalogService = CreateProductCatalogService();
-            IAiToolPermissionPolicy permissionPolicy =
-                new AiToolPermissionPolicy(CreateRolePermissionRepository());
-            IAiTool[] tools =
-            {
-                new SearchProductsTool(catalogService, permissionPolicy),
-                new GetProductDetailTool(catalogService, permissionPolicy),
-                new GetStockStatusTool(catalogService, permissionPolicy),
-                new ListCategoriesTool(catalogService, permissionPolicy)
-            };
-
-            var registry = new AiToolRegistry(tools);
-            var limiter = new AiRateLimiter(12, TimeSpan.FromMinutes(1));
-            var dispatcher = new AiToolDispatcher(registry, limiter);
-            return new AiChatService(
-                new GeminiClient(),
-                registry,
-                dispatcher,
-                new AiPromptBuilder(CreateStoreConfigRepository()),
-                UserSession.Instance);
         }
 
         public static ICatalogAdminService CreateCatalogAdminService()
@@ -212,16 +156,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Composition
         internal static IReturnManagementDataService CreateReturnManagementDataService()
         {
             return new ReturnManagementDataService(CreateConnectionFactory());
-        }
-
-        public static IPromotionService CreatePromotionService()
-        {
-            return new SqlPromotionService(new PromotionRepository(CreateConnectionFactory()));
-        }
-
-        public static IPromotionManagementService CreatePromotionManagementService()
-        {
-            return new SqlPromotionService(new PromotionRepository(CreateConnectionFactory()));
         }
 
         public static IBarcodeScannerLauncher CreateBarcodeScannerLauncher()

@@ -51,7 +51,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
         public string Code { get; set; }
         public string Name { get; set; }
         public int CategoryId { get; set; }
-        public int? SupplierId { get; set; }
         public string Brand { get; set; }
         public string Unit { get; set; }
         public string WeightVolume { get; set; }
@@ -71,7 +70,6 @@ namespace SIMS_WinFormsApp.Models.DTOs.Catalog
                 Code = Code,
                 Name = Name,
                 CategoryId = CategoryId,
-                SupplierId = SupplierId,
                 Brand = Brand,
                 Unit = Unit,
                 WeightVolume = WeightVolume,

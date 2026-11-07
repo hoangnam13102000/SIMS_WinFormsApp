@@ -163,6 +163,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.TabIndex = 3;
             this._optionsButton.Text = "Tùy chọn ▾";
             this._optionsButton.UseVisualStyleBackColor = false;
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             // 
             // _optionsMenu
             // 
@@ -178,12 +179,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem.Name = "_exportCsvItem";
             this._exportCsvItem.Size = new System.Drawing.Size(163, 32);
             this._exportCsvItem.Text = "Xuất CSV";
+            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
             this._exportExcelItem.Size = new System.Drawing.Size(163, 32);
             this._exportExcelItem.Text = "Xuất Excel";
+            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
             // _filterCard
             // 
@@ -274,6 +277,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearFilterLink.TabStop = true;
             this._clearFilterLink.Text = "✕ Xóa lọc";
             this._clearFilterLink.Visible = false;
+            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
             // 
             // _totalLabel
             // 
@@ -529,6 +533,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
             this._prevButton.UseVisualStyleBackColor = false;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageLabel
             // 
@@ -554,6 +559,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
             this._nextButton.UseVisualStyleBackColor = false;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pageInfoLabel
             // 
@@ -621,12 +627,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
             this._pagerPanel.ResumeLayout(false);
             this._pagerInner.ResumeLayout(false);
-            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
-            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
-            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
-            this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
-            this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             this.ResumeLayout(false);
 
         }

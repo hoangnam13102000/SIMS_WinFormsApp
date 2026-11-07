@@ -17,8 +17,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private TextBox _nameTextBox;
         private Label _categoryLabel;
         private ComboBox _categoryComboBox;
-        private Label _supplierLabel;
-        private ComboBox _supplierComboBox;
         private Label _brandLabel;
         private TextBox _brandTextBox;
         private Label _unitLabel;
@@ -59,8 +57,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nameTextBox = new System.Windows.Forms.TextBox();
             this._categoryLabel = new System.Windows.Forms.Label();
             this._categoryComboBox = new System.Windows.Forms.ComboBox();
-            this._supplierLabel = new System.Windows.Forms.Label();
-            this._supplierComboBox = new System.Windows.Forms.ComboBox();
             this._brandLabel = new System.Windows.Forms.Label();
             this._brandTextBox = new System.Windows.Forms.TextBox();
             this._unitLabel = new System.Windows.Forms.Label();
@@ -188,8 +184,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._fields.Controls.Add(this._nameTextBox, 0, 1);
             this._fields.Controls.Add(this._categoryLabel, 0, 2);
             this._fields.Controls.Add(this._categoryComboBox, 0, 3);
-            this._fields.Controls.Add(this._supplierLabel, 2, 2);
-            this._fields.Controls.Add(this._supplierComboBox, 2, 3);
             this._fields.Controls.Add(this._brandLabel, 0, 4);
             this._fields.Controls.Add(this._brandTextBox, 0, 5);
             this._fields.Controls.Add(this._unitLabel, 2, 4);
@@ -254,48 +248,25 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // _categoryLabel
             // 
             this._categoryLabel.AutoSize = true;
-            this._fields.SetColumnSpan(this._categoryLabel, 2);
+            this._fields.SetColumnSpan(this._categoryLabel, 4);
             this._categoryLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._categoryLabel.Location = new System.Drawing.Point(3, 54);
             this._categoryLabel.Name = "_categoryLabel";
-            this._categoryLabel.Size = new System.Drawing.Size(324, 24);
+            this._categoryLabel.Size = new System.Drawing.Size(655, 24);
             this._categoryLabel.TabIndex = 2;
             this._categoryLabel.Text = "Danh mục";
             this._categoryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _categoryComboBox
             // 
-            this._fields.SetColumnSpan(this._categoryComboBox, 2);
+            this._fields.SetColumnSpan(this._categoryComboBox, 4);
             this._categoryComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._categoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._categoryComboBox.Location = new System.Drawing.Point(0, 78);
             this._categoryComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
             this._categoryComboBox.Name = "_categoryComboBox";
-            this._categoryComboBox.Size = new System.Drawing.Size(320, 28);
+            this._categoryComboBox.Size = new System.Drawing.Size(651, 28);
             this._categoryComboBox.TabIndex = 3;
-            // 
-            // _supplierLabel
-            // 
-            this._supplierLabel.AutoSize = true;
-            this._fields.SetColumnSpan(this._supplierLabel, 2);
-            this._supplierLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._supplierLabel.Location = new System.Drawing.Point(333, 54);
-            this._supplierLabel.Name = "_supplierLabel";
-            this._supplierLabel.Size = new System.Drawing.Size(325, 24);
-            this._supplierLabel.TabIndex = 4;
-            this._supplierLabel.Text = "Nhà cung cấp";
-            this._supplierLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _supplierComboBox
-            // 
-            this._fields.SetColumnSpan(this._supplierComboBox, 2);
-            this._supplierComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._supplierComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._supplierComboBox.Location = new System.Drawing.Point(330, 78);
-            this._supplierComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
-            this._supplierComboBox.Name = "_supplierComboBox";
-            this._supplierComboBox.Size = new System.Drawing.Size(321, 28);
-            this._supplierComboBox.TabIndex = 5;
             // 
             // _brandLabel
             // 

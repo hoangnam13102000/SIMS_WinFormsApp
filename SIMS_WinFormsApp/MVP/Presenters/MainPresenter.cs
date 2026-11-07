@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
-using SIMS_WinFormsApp.Views.Chat;
 using SIMS_WinFormsApp.Views.Dashboard;
 using SIMS_WinFormsApp.Views.Reports;
 using SIMS_WinFormsApp.Views.Sales.InvoiceManagement;
@@ -16,17 +14,14 @@ using SIMS_WinFormsApp.Views.Warehouse;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Services.Session;
-using SIMS_WinFormsApp.Services.Backup;
 using SIMS_WinFormsApp.Services.Implementations.Sales;
 using SIMS_WinFormsApp.Services.Interfaces;
-using SIMS_WinFormsApp.Services.Chat;
 using SIMS_WinFormsApp.UI.I18n;
 using SIMS_WinFormsApp.UI.Controls;
 using SIMS_WinFormsApp.UI.Controls.Catalog;
 using SIMS_WinFormsApp.UI.Controls.Pos;
 using SIMS_WinFormsApp.Models.Enums;
 using SIMS_WinFormsApp.Models.Permission;
-using SIMS_WinFormsApp.Models.Chat;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.Views.Shell;
 
@@ -42,14 +37,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
         private readonly IUserManagementService _userManagementService;
         private readonly SIMS_WinFormsApp.Repositories.Interfaces.IAuditLogWriter _auditLogWriter;
         private HashSet<AppPermission> _currentPermissions;
-        private DailyBackupScheduler _dailyBackupScheduler;
         private IReturnManagementDataService _notificationService;
         private Timer _notificationTimer;
         private readonly HashSet<string> _seenNotificationIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _readNotificationIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> _dismissedNotificationIds = new HashSet<string>(StringComparer.Ordinal);
-        private readonly List<NotificationDto> _chatNotifications = new List<NotificationDto>();
-        private IChatClientService _chatClient;
         private bool _notificationBaselineLoaded;
         private bool _notificationFailureShown;
         private bool _isLoggingOut;
@@ -85,7 +77,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("accounts", "sidebar.page.accounts"),
             ("employees", "sidebar.page.employees"),
             ("customers", "sidebar.page.customers"),
-            ("chat", "sidebar.page.chat"),
             ("shifts", "sidebar.page.shifts"),
             ("settings", "sidebar.page.settings"),
         };
@@ -118,7 +109,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 var permissions = await Task.Run(GetCurrentUserPermissions);
                 _currentPermissions = permissions;
                 _layout = BuildLayout(permissions);
-                _layout.AiChatRequested += OnAiChatRequested;
                 _view.AttachLayout(_layout);
                 _view.SetWindowTitle(Lang.Get("main.window.title"));
                 var name = _getDisplayName() ?? "Admin";
@@ -127,11 +117,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _view.SetUserInfo(name, email);
                 _layout.SetUser(name, email, null, role, UserSession.Instance.CurrentUser?.AvatarUrl);
                 StartNotificationPolling();
-                StartChatNotifications();
                 RefreshUnviewedInvoiceBadge(permissions);
                 _layout.ShowPage(CanViewDashboard(permissions) ? "dashboard" : "profile");
-
-                StartDailyBackupScheduler();
             }
             catch (Exception ex)
             {
@@ -157,20 +144,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _notificationTimer.Tick += (sender, args) => RefreshNotifications();
             RefreshNotifications();
             _notificationTimer.Start();
-        }
-
-        private void StartChatNotifications()
-        {
-            var user = UserSession.Instance.CurrentUser;
-            if (user == null)
-                return;
-
-            ChatServerHost.Instance.Start();
-            _chatClient = ChatClientService.Instance;
-            _chatClient.MessageReceived += OnChatMessageReceived;
-            if (!_chatClient.IsConnected)
-                _chatClient.ConnectStaff(user.UserId,
-                    user.FullName ?? user.Username, user.RoleCode ?? string.Empty);
         }
 
         private void RefreshNotifications()
@@ -228,8 +201,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 }
 
                 _notificationBaselineLoaded = true;
-                notifications.AddRange(_chatNotifications.Where(notification =>
-                    !_dismissedNotificationIds.Contains(notification.NotificationId)));
                 foreach (NotificationDto notification in notifications)
                     notification.IsRead = notification.IsRead ||
                         _readNotificationIds.Contains(notification.NotificationId);
@@ -254,59 +225,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             }
         }
 
-        private void OnChatMessageReceived(ChatMessageDto message)
-        {
-            var user = UserSession.Instance.CurrentUser;
-            if (message == null || user == null || !message.IsStaffChat ||
-                message.ToUserId != user.UserId || message.UserId == user.UserId ||
-                !IsInternalStaffRole(message.RoleCode))
-                return;
-
-            string notificationId = "chat:" + (message.MessageId > 0
-                ? message.MessageId.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                : message.UserId + ":" + message.Timestamp.ToString(
-                    System.Globalization.CultureInfo.InvariantCulture));
-            DateTime createdAt = DateTimeOffset.FromUnixTimeMilliseconds(message.Timestamp).LocalDateTime;
-            var notification = new NotificationDto
-            {
-                NotificationId = notificationId,
-                Kind = "CHAT_MESSAGE",
-                Title = "Tin nhắn mới từ " + (message.UserName ?? "nhân viên bán hàng"),
-                Message = message.Text ?? string.Empty,
-                CreatedAt = createdAt,
-                TargetPageKey = "chat",
-                TargetUserId = message.UserId
-            };
-
-            if (_layout == null || _layout.IsDisposed || !_layout.IsHandleCreated)
-                return;
-
-            Action showNotification = () =>
-            {
-                if (_layout == null || _layout.IsDisposed)
-                    return;
-                if (!_seenNotificationIds.Add(notificationId))
-                    return;
-                _chatNotifications.Insert(0, notification);
-                if (_chatNotifications.Count > 20)
-                    _chatNotifications.RemoveRange(20, _chatNotifications.Count - 20);
-                _layout.NotifyNewNotification(notification.Title, notification.Message);
-                RefreshNotifications();
-            };
-            if (_layout.InvokeRequired)
-                _layout.BeginInvoke(showNotification);
-            else
-                showNotification();
-        }
-
-        private static bool IsInternalStaffRole(string roleCode)
-        {
-            return string.Equals(roleCode, RoleCodes.Admin, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(roleCode, RoleCodes.SalesManager, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(roleCode, RoleCodes.InventoryManager, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(roleCode, RoleCodes.SalesStaff, StringComparison.OrdinalIgnoreCase);
-        }
-
         private void OnNotificationReadRequested(NotificationDto notification)
         {
             if (notification == null)
@@ -314,13 +232,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
             _readNotificationIds.Add(notification.NotificationId);
             if (!string.IsNullOrWhiteSpace(notification.TargetPageKey) && _layout != null)
-            {
                 _layout.ShowPage(notification.TargetPageKey);
-                if (notification.TargetPageKey == "chat" &&
-                    notification.TargetUserId.HasValue &&
-                    _layout.TryGetPage<ucChat>("chat", out ucChat chat))
-                    chat.OpenConversation(notification.TargetUserId.Value);
-            }
             RefreshNotifications();
         }
 
@@ -331,8 +243,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
 
             _dismissedNotificationIds.Add(notificationId);
             _readNotificationIds.Add(notificationId);
-            _chatNotifications.RemoveAll(notification =>
-                string.Equals(notification.NotificationId, notificationId, StringComparison.Ordinal));
             RefreshNotifications();
         }
 
@@ -350,24 +260,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 }
             }
 
-            _chatNotifications.RemoveAll(notification =>
-                _dismissedNotificationIds.Contains(notification.NotificationId));
             RefreshNotifications();
-        }
-
-        private void StartDailyBackupScheduler()
-        {
-            if (_dailyBackupScheduler != null) return;
-
-            var backupManager = AppComposition.CreateBackupManager();
-            var cloudUploadListener = AppComposition.CreateCloudinaryBackupUploadListener();
-            if (cloudUploadListener != null)
-                backupManager.AddListener(cloudUploadListener);
-
-            _dailyBackupScheduler = new DailyBackupScheduler(
-                backupManager,
-                TimeSpan.FromHours(1));
-            _dailyBackupScheduler.Start();
         }
 
         private void OnLanguageChanged(object sender, EventArgs e)
@@ -430,7 +323,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     AppPermission.INVOICE_CREATE, AppPermission.INVOICE_VIEW_OWN,
                     AppPermission.INVOICE_VIEW_ALL, AppPermission.INVOICE_CANCEL,
                     AppPermission.INVOICE_CANCEL_REQUEST, AppPermission.RETURN_EXCHANGE_CREATE,
-                     AppPermission.RETURN_EXCHANGE_APPROVE, AppPermission.PROMOTION_MANAGE))
+                    AppPermission.RETURN_EXCHANGE_APPROVE))
             {
                 layout.AddSection(Lang.Get("sidebar.section.sales"));
                 if (HasAnyPermission(permissions, AppPermission.INVOICE_CREATE))
@@ -442,9 +335,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                             invoiceCode => MarkInvoiceViewed(null, invoiceCode, permissions)),
                         IconChar.CartShopping);
                 }
-                if (HasAnyPermission(permissions, AppPermission.PROMOTION_MANAGE))
-                    layout.AddLazyPage("promotions", "Mã giảm giá",
-                        () => PromotionManagementPage.Create(), IconChar.Tags);
                 if (HasAnyPermission(permissions,
                         AppPermission.INVOICE_VIEW_OWN, AppPermission.INVOICE_VIEW_ALL,
                         AppPermission.INVOICE_CANCEL, AppPermission.INVOICE_CANCEL_REQUEST,
@@ -477,8 +367,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                     AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE,
                     AppPermission.STOCK_VIEW, AppPermission.STOCK_IMPORT, AppPermission.STOCK_RECONCILE,
                     AppPermission.STOCK_DISPOSE, AppPermission.STOCK_DISPOSE_VIEW,
-                    AppPermission.STOCK_ALERT_REPORT, AppPermission.STOCK_ALERT_VIEW,
-                    AppPermission.SUPPLIER_RETURN_CREATE, AppPermission.SUPPLIER_RETURN_VIEW))
+                    AppPermission.STOCK_ALERT_REPORT, AppPermission.STOCK_ALERT_VIEW))
             {
                 layout.AddSection(Lang.Get("sidebar.section.warehouse"));
                 if (HasAnyPermission(permissions,
@@ -506,8 +395,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                                 permissions.Contains(AppPermission.CATEGORY_MANAGE),
                             permissions.Contains(AppPermission.CATEGORY_MANAGE)), IconChar.Tags);
                 if (HasAnyPermission(permissions,
-                        AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE,
-                        AppPermission.SUPPLIER_RETURN_CREATE, AppPermission.SUPPLIER_RETURN_VIEW))
+                        AppPermission.SUPPLIER_VIEW, AppPermission.SUPPLIER_EDIT, AppPermission.SUPPLIER_MANAGE))
                     layout.AddLazyPage("suppliers", Lang.Get("sidebar.page.suppliers"),
                         CatalogPages.Suppliers, IconChar.Building);
                 if (HasAnyPermission(permissions,
@@ -590,27 +478,22 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                         () => new ucInventoryReport(), IconChar.ChartLine);
             }
 
-            layout.AddSection(Lang.Get("sidebar.section.support"));
-            layout.AddLazyPage("chat", Lang.Get("sidebar.page.chat"),
-                () => new ucChat(), IconChar.Comments);
             if (!IsAdmin() && HasAnyPermission(permissions,
                     AppPermission.SHIFT_OPERATE, AppPermission.SHIFT_VIEW_ALL, AppPermission.SHIFT_APPROVE))
             {
+                layout.AddSection(Lang.Get("sidebar.section.support"));
                 layout.AddLazyPage("shifts", Lang.Get("sidebar.page.shifts"),
                     () => new ucShiftManagement(), IconChar.Stopwatch);
             }
 
             if (HasAnyPermission(permissions,
-                    AppPermission.SETTINGS_MANAGE, AppPermission.BACKUP_MANAGE,
-                    AppPermission.AUDIT_LOG_VIEW, AppPermission.RBAC_MANAGE))
+                    AppPermission.SETTINGS_MANAGE, AppPermission.AUDIT_LOG_VIEW,
+                    AppPermission.RBAC_MANAGE))
             {
                 layout.AddSection(Lang.Get("sidebar.section.system"));
                 if (HasAnyPermission(permissions, AppPermission.SETTINGS_MANAGE))
                     layout.AddLazyPage("settings", Lang.Get("sidebar.page.settings"),
                         () => new ucSystemSettings(), IconChar.Gear);
-                if (HasAnyPermission(permissions, AppPermission.BACKUP_MANAGE))
-                    layout.AddLazyPage("backup", Lang.Get("sidebar.page.backup"),
-                        SIMS_WinFormsApp.Views.Backup.BackupPage.Create, IconChar.ShieldHalved);
                 if (HasAnyPermission(permissions, AppPermission.AUDIT_LOG_VIEW))
                     layout.AddLazyPage("audit-log", "Nhật ký hệ thống",
                         () => new ucAuditLog(), IconChar.ClockRotateLeft);
@@ -748,65 +631,13 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                    permissions.Contains(AppPermission.INVOICE_CANCEL);
         }
 
-        private AiChatPopupForm _aiChatPopup;
-
-        private void OnAiChatRequested(object sender, EventArgs e)
-        {
-            if (_layout == null || _layout.ChatbotButton == null) return;
-
-            if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
-            {
-                _aiChatPopup.Close();
-                return;
-            }
-
-            var chatView = new ucAiChat(AppComposition.CreateAiChatService());
-            var popup = new AiChatPopupForm(chatView);
-            popup.FormClosed += (_, __) => _aiChatPopup = null;
-            _aiChatPopup = popup;
-            ShowPopupAbove(popup, _layout.ChatbotButton, 12);
-        }
-
-        private static void ShowPopupAbove(Form popup, Control anchor, int offsetY)
-        {
-            if (popup == null || anchor == null || anchor.IsDisposed) return;
-
-            Rectangle working = Screen.FromControl(anchor).WorkingArea;
-            Point anchorTopLeft = anchor.PointToScreen(Point.Empty);
-            int x = anchorTopLeft.X + anchor.Width - popup.Width;
-            x = Math.Max(working.Left, Math.Min(x, working.Right - popup.Width));
-
-            int y = anchorTopLeft.Y - popup.Height - offsetY;
-            if (y < working.Top)
-            {
-                int below = anchorTopLeft.Y + anchor.Height + offsetY;
-                y = below + popup.Height <= working.Bottom
-                    ? below
-                    : Math.Max(working.Top, working.Bottom - popup.Height);
-            }
-
-            popup.Location = new Point(x, y);
-            popup.Show(anchor.FindForm());
-            popup.Activate();
-        }
-
         public void Dispose()
         {
             if (_layout != null)
             {
-                _layout.AiChatRequested -= OnAiChatRequested;
                 _layout.NotificationReadRequested -= OnNotificationReadRequested;
                 _layout.NotificationDeleteRequested -= OnNotificationDeleteRequested;
                 _layout.NotificationsClearRequested -= OnNotificationsClearRequested;
-                if (_aiChatPopup != null && !_aiChatPopup.IsDisposed)
-                    _aiChatPopup.Close();
-                _aiChatPopup = null;
-            }
-            if (_chatClient != null)
-            {
-                _chatClient.MessageReceived -= OnChatMessageReceived;
-                _chatClient.Disconnect();
-                _chatClient = null;
             }
             if (_notificationTimer != null)
             {
@@ -814,8 +645,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 _notificationTimer.Dispose();
                 _notificationTimer = null;
             }
-            _dailyBackupScheduler?.Dispose();
-            _dailyBackupScheduler = null;
             _view.ViewReady -= OnViewReady;
             _view.LogoutRequested -= OnLogoutRequested;
             _view.ProfileRequested -= OnProfileRequested;

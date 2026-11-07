@@ -59,7 +59,15 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                             })
                             .ToList();
 
-                        db.StockReconciliation.InsertAllOnSubmit(newRows);
+                        foreach (StockReconciliationEntity row in newRows)
+                            TriggerInsertExecutor.InsertStockReconciliation(
+                                db,
+                                row.ProductID,
+                                row.SystemStock,
+                                row.ActualStock,
+                                row.Note,
+                                row.CreatedBy,
+                                row.CreatedAt);
                         db.SubmitChangesWithoutAutomaticAudit(ConflictMode.FailOnFirstConflict);
                         transaction.Commit();
                         return newRows.Count;
@@ -113,7 +121,20 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
 
             using (SimsDataContext db = _connections.CreateDataContext())
             {
-                return (from row in db.StockReconciliation
+                IQueryable<StockReconciliationEntity> rows = db.StockReconciliation
+                    .Where(row => row.SystemStock != 0);
+                if (fromDate.HasValue)
+                {
+                    DateTime start = fromDate.Value;
+                    rows = rows.Where(row => row.CreatedAt >= start);
+                }
+                if (toExclusive.HasValue)
+                {
+                    DateTime end = toExclusive.Value;
+                    rows = rows.Where(row => row.CreatedAt < end);
+                }
+
+                return (from row in rows
                         join product in db.Products on row.ProductID equals product.ProductID
                         join category in db.Categories on product.CategoryID equals category.CategoryID
                         join user in db.Users on row.CreatedBy equals user.UserID
@@ -122,14 +143,11 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                                 && item.RefID == row.ReconciliationID)
                             .Select(item => (DateTime?)item.CreatedAt)
                             .Max()
-                        where row.SystemStock != 0
-                            && (normalizedKeyword.Length == 0
+                        where (normalizedKeyword.Length == 0
                                 || SqlMethods.Like(product.ProductName, pattern)
                                 || SqlMethods.Like(product.ProductCode, pattern)
                                 || SqlMethods.Like(category.CategoryName, pattern)
                                 || SqlMethods.Like(row.Note, pattern))
-                            && (!fromDate.HasValue || row.CreatedAt >= fromDate.Value)
-                            && (!toExclusive.HasValue || row.CreatedAt < toExclusive.Value)
                         orderby row.CreatedAt.Date descending,
                             (row.ActualStock != row.SystemStock ? 0 : 1),
                             product.ProductName,

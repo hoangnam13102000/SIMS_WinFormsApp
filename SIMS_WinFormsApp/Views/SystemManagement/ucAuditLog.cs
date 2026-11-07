@@ -81,8 +81,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                     (_pageSizeComboBox.SelectedIndex == 2 ? 50 : 10);
                 ResetPageAndReload();
             };
-            _exportCsvButton.Click += (sender, args) => ExportAudit(new CsvTableExporter());
-            _exportExcelButton.Click += (sender, args) => ExportAudit(new ExcelTableExporter());
             _auditGrid.CellContentClick += OnGridCellContentClick;
             _auditGrid.CellPainting += OnAuditGridCellPainting;
             _auditGrid.CellDoubleClick += (sender, args) =>
@@ -173,12 +171,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             BindOptions(_tableComboBox, _tableOptions,
                 Lang.Get("audit.filter.allTables"), AuditLogDisplayMapper.GetTableLabel);
         }
-
-        public DataGridViewTextBoxColumn Time => _time_column;
-        public DataGridViewTextBoxColumn User => _user_column;
-        public DataGridViewTextBoxColumn Action => _action_column;
-        public DataGridViewTextBoxColumn Table => _table_column;
-        public DataGridViewTextBoxColumn Description => _description_column;
 
         public void ShowDetail(AuditLogDetailDto detail)
         {
@@ -367,6 +359,16 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             return option == null ? null : option.Value;
         }
 
+        private void _exportCsvButton_Click(object sender, EventArgs e)
+        {
+            ExportAudit(new CsvTableExporter());
+        }
+
+        private void _exportExcelButton_Click(object sender, EventArgs e)
+        {
+            ExportAudit(new ExcelTableExporter());
+        }
+
         private void ExportAudit(ITableDataExporter exporter)
         {
             string[] headers =
@@ -411,5 +413,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             public override string ToString() => DisplayText;
         }
+
     }
 }

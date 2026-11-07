@@ -61,10 +61,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 "Báo cáo hàng sắp hết", "Báo cáo sản phẩm hết/sắp hết hàng cho Quản lý kho.");
             Put(AppPermission.STOCK_ALERT_VIEW, "Kho hàng",
                 "Xử lý cảnh báo tồn", "Xem và xử lý các báo cáo hết/sắp hết hàng, lên kế hoạch nhập bổ sung.");
-            Put(AppPermission.SUPPLIER_RETURN_CREATE, "Kho hàng",
-                "Trả hàng nhà cung cấp", "Lập phiếu trả hàng lô về nhà cung cấp (trừ lô + ghi công nợ).");
-            Put(AppPermission.SUPPLIER_RETURN_VIEW, "Kho hàng",
-                "Xem trả hàng NCC", "Xem lịch sử trả hàng nhà cung cấp và báo cáo công nợ.");
 
             Put(AppPermission.INVOICE_CREATE, "Bán hàng",
                 "Tạo hoá đơn", "Lập hoá đơn bán hàng tại quầy (POS).");
@@ -90,15 +86,7 @@ namespace SIMS_WinFormsApp.Models.Permission
                 "Tạm giữ giỏ POS", "Tạm giữ giỏ hàng hiện tại để phục vụ khách khác trong cùng ca.");
             Put(AppPermission.POS_CART_RESTORE, "Bán hàng",
                 "Khôi phục giỏ POS", "Tìm, khôi phục hoặc hủy các giỏ tạm giữ của chính nhân viên trong ca hiện tại.");
-            Put(AppPermission.PROMOTION_MANAGE, "Bán hàng",
-                "Quản lý khuyến mãi", "Tạo, sửa, bật/tắt, xoá khuyến mãi / mã giảm giá.");
 
-            Put(AppPermission.EXCEPTION_REPORT_VIEW, "Báo cáo",
-                "Chỉ xem báo cáo ngoại lệ", "Chỉ xem danh sách báo cáo ngoại lệ, không gửi mới / xử lý.");
-            Put(AppPermission.EXCEPTION_REPORT_CREATE, "Báo cáo",
-                "Gửi báo cáo ngoại lệ", "Gửi báo cáo sản phẩm chưa có trong hệ thống / tình huống bất thường.");
-            Put(AppPermission.EXCEPTION_REPORT_HANDLE, "Báo cáo",
-                "Xử lý báo cáo ngoại lệ", "Đánh dấu đã xử lý các báo cáo ngoại lệ từ nhân viên bán hàng.");
             Put(AppPermission.REVENUE_REPORT_VIEW, "Báo cáo",
                 "Báo cáo doanh thu", "Thống kê doanh thu theo thời gian / sản phẩm / phương thức thanh toán.");
             Put(AppPermission.PROFIT_REPORT_VIEW, "Báo cáo",
@@ -108,8 +96,6 @@ namespace SIMS_WinFormsApp.Models.Permission
 
             Put(AppPermission.AUDIT_LOG_VIEW, "Hệ thống",
                 "Nhật ký audit", "Xem lịch sử thao tác (thêm/sửa/xoá/đăng nhập...) của người dùng.");
-            Put(AppPermission.BACKUP_MANAGE, "Hệ thống",
-                "Sao lưu & khôi phục", "Tự sao lưu thủ công hoặc khôi phục CSDL từ file backup.");
             Put(AppPermission.SETTINGS_MANAGE, "Hệ thống",
                 "Cài đặt hệ thống", "Xem/sửa cấu hình chung (thuế VAT, ngưỡng duyệt đổi trả...).");
             Put(AppPermission.RBAC_MANAGE, "Hệ thống",

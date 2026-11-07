@@ -72,17 +72,18 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._optionsSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ucPurchaseReceiptManagement));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._optionsSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerCard = new System.Windows.Forms.Panel();
             this._headerLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -149,6 +150,46 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageNumberBadge.SuspendLayout();
             this.SuspendLayout();
             // 
+            // _optionsMenu
+            // 
+            this._optionsMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._exportCsvMenuItem,
+            this._exportExcelMenuItem,
+            this._optionsSeparator,
+            this._importMenuItem});
+            this._optionsMenu.Name = "_optionsMenu";
+            this._optionsMenu.Size = new System.Drawing.Size(195, 106);
+            // 
+            // _exportCsvMenuItem
+            // 
+            this._exportCsvMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("_exportCsvMenuItem.Image")));
+            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
+            this._exportCsvMenuItem.Size = new System.Drawing.Size(194, 32);
+            this._exportCsvMenuItem.Text = "Xuất CSV";
+            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
+            // 
+            // _exportExcelMenuItem
+            // 
+            this._exportExcelMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("_exportExcelMenuItem.Image")));
+            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
+            this._exportExcelMenuItem.Size = new System.Drawing.Size(194, 32);
+            this._exportExcelMenuItem.Text = "Xuất Excel";
+            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
+            // 
+            // _optionsSeparator
+            // 
+            this._optionsSeparator.Name = "_optionsSeparator";
+            this._optionsSeparator.Size = new System.Drawing.Size(191, 6);
+            // 
+            // _importMenuItem
+            // 
+            this._importMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("_importMenuItem.Image")));
+            this._importMenuItem.Name = "_importMenuItem";
+            this._importMenuItem.Size = new System.Drawing.Size(194, 32);
+            this._importMenuItem.Text = "Nhập dữ liệu";
+            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
+            // 
             // _root
             // 
             this._root.ColumnCount = 1;
@@ -158,15 +199,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._root.Controls.Add(this._gridCard, 0, 2);
             this._root.Controls.Add(this._pagingPanel, 0, 3);
             this._root.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._root.Location = new System.Drawing.Point(20, 20);
+            this._root.Location = new System.Drawing.Point(22, 25);
             this._root.Margin = new System.Windows.Forms.Padding(0);
             this._root.Name = "_root";
             this._root.RowCount = 4;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 125F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-            this._root.Size = new System.Drawing.Size(1160, 720);
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this._root.Size = new System.Drawing.Size(1306, 900);
             this._root.TabIndex = 0;
             // 
             // _headerCard
@@ -178,30 +219,30 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCard.Location = new System.Drawing.Point(0, 0);
             this._headerCard.Margin = new System.Windows.Forms.Padding(0);
             this._headerCard.Name = "_headerCard";
-            this._headerCard.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
-            this._headerCard.Size = new System.Drawing.Size(1160, 100);
+            this._headerCard.Padding = new System.Windows.Forms.Padding(14, 8, 14, 8);
+            this._headerCard.Size = new System.Drawing.Size(1306, 125);
             this._headerCard.TabIndex = 0;
             // 
             // _headerLayout
             // 
             this._headerLayout.ColumnCount = 2;
             this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 430F));
+            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 484F));
             this._headerLayout.Controls.Add(this._headerLeftLayout, 0, 0);
             this._headerLayout.Controls.Add(this._headerActions, 1, 0);
             this._headerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._headerLayout.Location = new System.Drawing.Point(12, 6);
+            this._headerLayout.Location = new System.Drawing.Point(14, 8);
             this._headerLayout.Margin = new System.Windows.Forms.Padding(0);
             this._headerLayout.Name = "_headerLayout";
             this._headerLayout.RowCount = 1;
             this._headerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._headerLayout.Size = new System.Drawing.Size(1134, 86);
+            this._headerLayout.Size = new System.Drawing.Size(1276, 107);
             this._headerLayout.TabIndex = 0;
             // 
             // _headerLeftLayout
             // 
             this._headerLeftLayout.ColumnCount = 2;
-            this._headerLeftLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 68F));
+            this._headerLeftLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 76F));
             this._headerLeftLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this._headerLeftLayout.Controls.Add(this._headerIconCircle, 0, 0);
             this._headerLeftLayout.Controls.Add(this._headerCopyLayout, 1, 0);
@@ -211,7 +252,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerLeftLayout.Name = "_headerLeftLayout";
             this._headerLeftLayout.RowCount = 1;
             this._headerLeftLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._headerLeftLayout.Size = new System.Drawing.Size(704, 86);
+            this._headerLeftLayout.Size = new System.Drawing.Size(792, 107);
             this._headerLeftLayout.TabIndex = 0;
             // 
             // _headerIconCircle
@@ -219,9 +260,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerIconCircle.Anchor = System.Windows.Forms.AnchorStyles.None;
             this._headerIconCircle.BackColor = System.Drawing.Color.Transparent;
             this._headerIconCircle.Controls.Add(this._titleIcon);
-            this._headerIconCircle.Location = new System.Drawing.Point(6, 15);
+            this._headerIconCircle.Location = new System.Drawing.Point(6, 18);
+            this._headerIconCircle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this._headerIconCircle.Name = "_headerIconCircle";
-            this._headerIconCircle.Size = new System.Drawing.Size(56, 56);
+            this._headerIconCircle.Size = new System.Drawing.Size(63, 70);
             this._headerIconCircle.TabIndex = 0;
             // 
             // _titleIcon
@@ -231,10 +273,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._titleIcon.IconChar = FontAwesome.Sharp.IconChar.FileInvoice;
             this._titleIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._titleIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._titleIcon.IconSize = 26;
-            this._titleIcon.Location = new System.Drawing.Point(15, 15);
+            this._titleIcon.IconSize = 29;
+            this._titleIcon.Location = new System.Drawing.Point(17, 19);
+            this._titleIcon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this._titleIcon.Name = "_titleIcon";
-            this._titleIcon.Size = new System.Drawing.Size(26, 26);
+            this._titleIcon.Size = new System.Drawing.Size(29, 32);
             this._titleIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._titleIcon.TabIndex = 0;
             this._titleIcon.TabStop = false;
@@ -246,13 +289,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCopyLayout.Controls.Add(this._titleLabel, 0, 0);
             this._headerCopyLayout.Controls.Add(this._subtitleLabel, 0, 1);
             this._headerCopyLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._headerCopyLayout.Location = new System.Drawing.Point(68, 11);
-            this._headerCopyLayout.Margin = new System.Windows.Forms.Padding(0, 11, 0, 11);
+            this._headerCopyLayout.Location = new System.Drawing.Point(76, 14);
+            this._headerCopyLayout.Margin = new System.Windows.Forms.Padding(0, 14, 0, 14);
             this._headerCopyLayout.Name = "_headerCopyLayout";
             this._headerCopyLayout.RowCount = 2;
-            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._headerCopyLayout.Size = new System.Drawing.Size(636, 64);
+            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this._headerCopyLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._headerCopyLayout.Size = new System.Drawing.Size(716, 79);
             this._headerCopyLayout.TabIndex = 1;
             // 
             // _titleLabel
@@ -265,7 +308,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._titleLabel.Location = new System.Drawing.Point(3, 0);
             this._titleLabel.Margin = new System.Windows.Forms.Padding(3, 0, 4, 0);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(719, 40);
+            this._titleLabel.Size = new System.Drawing.Size(709, 50);
             this._titleLabel.TabIndex = 0;
             this._titleLabel.Text = "Quản lý nhập kho";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -277,10 +320,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._subtitleLabel.AutoEllipsis = true;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(3, 44);
-            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(3, 4, 4, 0);
+            this._subtitleLabel.Location = new System.Drawing.Point(3, 55);
+            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(3, 5, 4, 0);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(719, 20);
+            this._subtitleLabel.Size = new System.Drawing.Size(709, 25);
             this._subtitleLabel.TabIndex = 1;
             this._subtitleLabel.Text = "Lập phiếu nhập và tra cứu lịch sử nhập hàng";
             // 
@@ -290,11 +333,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerActions.Controls.Add(this._optionsButton);
             this._headerActions.Dock = System.Windows.Forms.DockStyle.Right;
             this._headerActions.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this._headerActions.Location = new System.Drawing.Point(704, 0);
+            this._headerActions.Location = new System.Drawing.Point(792, 0);
             this._headerActions.Margin = new System.Windows.Forms.Padding(0);
             this._headerActions.Name = "_headerActions";
-            this._headerActions.Padding = new System.Windows.Forms.Padding(0, 21, 6, 0);
-            this._headerActions.Size = new System.Drawing.Size(430, 86);
+            this._headerActions.Padding = new System.Windows.Forms.Padding(0, 26, 7, 0);
+            this._headerActions.Size = new System.Drawing.Size(484, 107);
             this._headerActions.TabIndex = 1;
             this._headerActions.WrapContents = false;
             // 
@@ -307,14 +350,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._createButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._createButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._createButton.ForeColor = System.Drawing.Color.White;
-            this._createButton.Location = new System.Drawing.Point(154, 21);
-            this._createButton.Margin = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            this._createButton.Location = new System.Drawing.Point(275, 26);
+            this._createButton.Margin = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this._createButton.Name = "_createButton";
-            this._createButton.Size = new System.Drawing.Size(180, 44);
+            this._createButton.Size = new System.Drawing.Size(202, 55);
             this._createButton.TabIndex = 0;
             this._createButton.Text = "+ Lập phiếu nhập";
-            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             this._createButton.UseVisualStyleBackColor = false;
+            this._createButton.Click += new System.EventHandler(this.CreateButton_Click);
             // 
             // _optionsButton
             // 
@@ -325,37 +368,37 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._optionsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this._optionsButton.Location = new System.Drawing.Point(12, 21);
+            this._optionsButton.Location = new System.Drawing.Point(115, 26);
             this._optionsButton.Margin = new System.Windows.Forms.Padding(0);
             this._optionsButton.Name = "_optionsButton";
-            this._optionsButton.Size = new System.Drawing.Size(130, 44);
+            this._optionsButton.Size = new System.Drawing.Size(146, 55);
             this._optionsButton.TabIndex = 1;
             this._optionsButton.Text = "Tùy chọn  ⌄";
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
             this._optionsButton.UseVisualStyleBackColor = false;
-            //
+            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
+            // 
             // _filterCard
-            //
+            // 
             this._filterCard.BackColor = System.Drawing.Color.White;
             this._filterCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._filterCard.Controls.Add(this._filterLayout);
             this._filterCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._filterCard.Location = new System.Drawing.Point(0, 100);
+            this._filterCard.Location = new System.Drawing.Point(0, 125);
             this._filterCard.Margin = new System.Windows.Forms.Padding(0);
             this._filterCard.Name = "_filterCard";
-            this._filterCard.Padding = new System.Windows.Forms.Padding(8);
-            this._filterCard.Size = new System.Drawing.Size(1160, 72);
+            this._filterCard.Padding = new System.Windows.Forms.Padding(9, 10, 9, 10);
+            this._filterCard.Size = new System.Drawing.Size(1306, 90);
             this._filterCard.TabIndex = 1;
             // 
             // _filterLayout
             // 
             this._filterLayout.ColumnCount = 7;
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 180F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 180F));
-            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 56F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 202F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 202F));
+            this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this._filterLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42F));
             this._filterLayout.Controls.Add(this._toDateLabel, 3, 0);
             this._filterLayout.Controls.Add(this._searchContainer, 0, 0);
@@ -365,12 +408,12 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._filterLayout.Controls.Add(this._totalLabel, 6, 0);
             this._filterLayout.Controls.Add(this._clearDateLink, 5, 0);
             this._filterLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._filterLayout.Location = new System.Drawing.Point(8, 8);
+            this._filterLayout.Location = new System.Drawing.Point(9, 10);
             this._filterLayout.Margin = new System.Windows.Forms.Padding(0);
             this._filterLayout.Name = "_filterLayout";
             this._filterLayout.RowCount = 1;
             this._filterLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._filterLayout.Size = new System.Drawing.Size(1142, 54);
+            this._filterLayout.Size = new System.Drawing.Size(1286, 68);
             this._filterLayout.TabIndex = 0;
             // 
             // _toDateLabel
@@ -379,9 +422,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDateLabel.AutoSize = true;
             this._toDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._toDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._toDateLabel.Location = new System.Drawing.Point(614, 17);
+            this._toDateLabel.Location = new System.Drawing.Point(698, 9);
             this._toDateLabel.Name = "_toDateLabel";
-            this._toDateLabel.Size = new System.Drawing.Size(36, 20);
+            this._toDateLabel.Size = new System.Drawing.Size(34, 50);
             this._toDateLabel.TabIndex = 2;
             this._toDateLabel.Text = "Đến";
             this._toDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -392,18 +435,18 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._searchContainer.Controls.Add(this._searchLayout);
             this._searchContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._searchContainer.Location = new System.Drawing.Point(2, 7);
-            this._searchContainer.Margin = new System.Windows.Forms.Padding(2, 7, 8, 7);
+            this._searchContainer.Location = new System.Drawing.Point(2, 9);
+            this._searchContainer.Margin = new System.Windows.Forms.Padding(2, 9, 9, 9);
             this._searchContainer.Name = "_searchContainer";
-            this._searchContainer.Size = new System.Drawing.Size(371, 40);
+            this._searchContainer.Size = new System.Drawing.Size(419, 50);
             this._searchContainer.TabIndex = 0;
             // 
             // _searchLayout
             // 
             this._searchLayout.ColumnCount = 3;
-            this._searchLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 38F));
+            this._searchLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this._searchLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._searchLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._searchLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this._searchLayout.Controls.Add(this._searchIcon, 0, 0);
             this._searchLayout.Controls.Add(this._searchBox, 1, 0);
             this._searchLayout.Controls.Add(this._clearSearchButton, 2, 0);
@@ -413,7 +456,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchLayout.Name = "_searchLayout";
             this._searchLayout.RowCount = 1;
             this._searchLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._searchLayout.Size = new System.Drawing.Size(369, 38);
+            this._searchLayout.Size = new System.Drawing.Size(417, 48);
             this._searchLayout.TabIndex = 0;
             // 
             // _searchIcon
@@ -424,10 +467,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchIcon.IconChar = FontAwesome.Sharp.IconChar.MagnifyingGlass;
             this._searchIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this._searchIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._searchIcon.IconSize = 18;
-            this._searchIcon.Location = new System.Drawing.Point(10, 10);
+            this._searchIcon.IconSize = 20;
+            this._searchIcon.Location = new System.Drawing.Point(11, 13);
+            this._searchIcon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this._searchIcon.Name = "_searchIcon";
-            this._searchIcon.Size = new System.Drawing.Size(18, 18);
+            this._searchIcon.Size = new System.Drawing.Size(20, 22);
             this._searchIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._searchIcon.TabIndex = 0;
             this._searchIcon.TabStop = false;
@@ -437,10 +481,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._searchBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._searchBox.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this._searchBox.Location = new System.Drawing.Point(38, 2);
+            this._searchBox.Location = new System.Drawing.Point(43, 2);
             this._searchBox.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(301, 20);
+            this._searchBox.Size = new System.Drawing.Size(340, 24);
             this._searchBox.TabIndex = 1;
             // 
             // _clearSearchButton
@@ -451,15 +495,15 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._clearSearchButton.Font = new System.Drawing.Font("Segoe UI", 10F);
             this._clearSearchButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._clearSearchButton.Location = new System.Drawing.Point(339, 0);
+            this._clearSearchButton.Location = new System.Drawing.Point(383, 0);
             this._clearSearchButton.Margin = new System.Windows.Forms.Padding(0);
             this._clearSearchButton.Name = "_clearSearchButton";
-            this._clearSearchButton.Size = new System.Drawing.Size(30, 30);
+            this._clearSearchButton.Size = new System.Drawing.Size(34, 38);
             this._clearSearchButton.TabIndex = 2;
             this._clearSearchButton.Text = "✕";
-            this._clearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
             this._clearSearchButton.UseVisualStyleBackColor = false;
             this._clearSearchButton.Visible = false;
+            this._clearSearchButton.Click += new System.EventHandler(this.ClearSearchButton_Click);
             // 
             // _fromDateLabel
             // 
@@ -467,9 +511,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDateLabel.AutoSize = true;
             this._fromDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._fromDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._fromDateLabel.Location = new System.Drawing.Point(402, 17);
+            this._fromDateLabel.Location = new System.Drawing.Point(451, 21);
             this._fromDateLabel.Name = "_fromDateLabel";
-            this._fromDateLabel.Size = new System.Drawing.Size(26, 20);
+            this._fromDateLabel.Size = new System.Drawing.Size(32, 25);
             this._fromDateLabel.TabIndex = 1;
             this._fromDateLabel.Text = "Từ";
             this._fromDateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -477,22 +521,22 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _fromDate
             // 
             this._fromDate.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this._fromDate.Location = new System.Drawing.Point(434, 9);
+            this._fromDate.Location = new System.Drawing.Point(489, 11);
             this._fromDate.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this._fromDate.MinimumSize = new System.Drawing.Size(100, 36);
+            this._fromDate.MinimumSize = new System.Drawing.Size(112, 45);
             this._fromDate.Name = "_fromDate";
-            this._fromDate.Size = new System.Drawing.Size(177, 36);
+            this._fromDate.Size = new System.Drawing.Size(199, 45);
             this._fromDate.TabIndex = 0;
             this._fromDate.Value = null;
             // 
             // _toDate
             // 
             this._toDate.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this._toDate.Location = new System.Drawing.Point(656, 9);
+            this._toDate.Location = new System.Drawing.Point(738, 11);
             this._toDate.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this._toDate.MinimumSize = new System.Drawing.Size(100, 36);
+            this._toDate.MinimumSize = new System.Drawing.Size(112, 45);
             this._toDate.Name = "_toDate";
-            this._toDate.Size = new System.Drawing.Size(177, 36);
+            this._toDate.Size = new System.Drawing.Size(199, 45);
             this._toDate.TabIndex = 1;
             this._toDate.Value = null;
             // 
@@ -502,9 +546,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._totalLabel.Dock = System.Windows.Forms.DockStyle.Right;
             this._totalLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._totalLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._totalLabel.Location = new System.Drawing.Point(938, 0);
+            this._totalLabel.Location = new System.Drawing.Point(1037, 0);
             this._totalLabel.Name = "_totalLabel";
-            this._totalLabel.Size = new System.Drawing.Size(201, 54);
+            this._totalLabel.Size = new System.Drawing.Size(246, 68);
             this._totalLabel.TabIndex = 4;
             this._totalLabel.Text = "Tổng cộng: 0 phiếu nhập kho";
             this._totalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -518,15 +562,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearDateLink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._clearDateLink.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._clearDateLink.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._clearDateLink.Location = new System.Drawing.Point(836, 13);
+            this._clearDateLink.Location = new System.Drawing.Point(940, 16);
+            this._clearDateLink.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this._clearDateLink.Name = "_clearDateLink";
-            this._clearDateLink.Size = new System.Drawing.Size(26, 28);
+            this._clearDateLink.Size = new System.Drawing.Size(29, 35);
             this._clearDateLink.TabIndex = 3;
             this._clearDateLink.Text = "✕";
             this._toolTip.SetToolTip(this._clearDateLink, "Xóa lọc ngày");
-            this._clearDateLink.Click += new System.EventHandler(this.ClearDateLink_Click);
             this._clearDateLink.UseVisualStyleBackColor = false;
             this._clearDateLink.Visible = false;
+            this._clearDateLink.Click += new System.EventHandler(this.ClearDateLink_Click);
             // 
             // _gridCard
             // 
@@ -534,10 +579,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._gridCard.Controls.Add(this._grid);
             this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._gridCard.Location = new System.Drawing.Point(0, 172);
+            this._gridCard.Location = new System.Drawing.Point(0, 215);
             this._gridCard.Margin = new System.Windows.Forms.Padding(0);
             this._gridCard.Name = "_gridCard";
-            this._gridCard.Size = new System.Drawing.Size(1160, 484);
+            this._gridCard.Size = new System.Drawing.Size(1306, 605);
             this._gridCard.TabIndex = 2;
             // 
             // _grid
@@ -547,6 +592,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grid.BackgroundColor = System.Drawing.Color.White;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
@@ -584,16 +630,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.EnableHeadersVisualStyles = false;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
             this._grid.Location = new System.Drawing.Point(0, 0);
+            this._grid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this._grid.MultiSelect = false;
             this._grid.Name = "_grid";
-            this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grid.ReadOnly = true;
             this._grid.RowHeadersVisible = false;
             this._grid.RowHeadersWidth = 51;
             this._grid.RowTemplate.Height = 44;
             this._grid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._grid.Size = new System.Drawing.Size(1158, 482);
+            this._grid.Size = new System.Drawing.Size(1304, 603);
             this._grid.TabIndex = 0;
             this._grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Grid_CellDoubleClick);
             // 
@@ -604,7 +650,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._receiptIdColumn.Name = "_receiptIdColumn";
             this._receiptIdColumn.ReadOnly = true;
             this._receiptIdColumn.Visible = false;
-            this._receiptIdColumn.Width = 125;
             // 
             // _codeColumn
             // 
@@ -636,10 +681,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _dateColumn
             // 
             this._dateColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this._dateColumn.FillWeight = 12F;
             dataGridViewCellStyle3.Format = "dd/MM/yyyy";
             dataGridViewCellStyle3.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
             this._dateColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this._dateColumn.FillWeight = 12F;
             this._dateColumn.HeaderText = "Ngày tạo";
             this._dateColumn.MinimumWidth = 95;
             this._dateColumn.Name = "_dateColumn";
@@ -657,10 +702,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _totalColumn
             // 
             this._totalColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this._totalColumn.FillWeight = 14F;
             dataGridViewCellStyle4.Format = "N0";
             dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
             this._totalColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            this._totalColumn.FillWeight = 14F;
             this._totalColumn.HeaderText = "Tổng tiền";
             this._totalColumn.MinimumWidth = 105;
             this._totalColumn.Name = "_totalColumn";
@@ -678,9 +723,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // _actionColumn
             // 
             this._actionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this._actionColumn.FillWeight = 6F;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this._actionColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this._actionColumn.FillWeight = 6F;
             this._actionColumn.HeaderText = "Thao tác";
             this._actionColumn.MinimumWidth = 65;
             this._actionColumn.Name = "_actionColumn";
@@ -699,10 +744,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pagingPanel.Controls.Add(this._displayLabel);
             this._pagingPanel.Controls.Add(this._pageSizeCombo);
             this._pagingPanel.Controls.Add(this._rowsLabel);
-            this._pagingPanel.Location = new System.Drawing.Point(376, 671);
+            this._pagingPanel.Location = new System.Drawing.Point(414, 839);
             this._pagingPanel.Margin = new System.Windows.Forms.Padding(0);
             this._pagingPanel.Name = "_pagingPanel";
-            this._pagingPanel.Size = new System.Drawing.Size(408, 34);
+            this._pagingPanel.Size = new System.Drawing.Size(477, 42);
             this._pagingPanel.TabIndex = 3;
             this._pagingPanel.WrapContents = false;
             // 
@@ -712,22 +757,22 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._prevButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._prevButton.Font = new System.Drawing.Font("Segoe UI", 16F);
             this._prevButton.Location = new System.Drawing.Point(0, 0);
-            this._prevButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
+            this._prevButton.Margin = new System.Windows.Forms.Padding(0, 0, 7, 0);
             this._prevButton.Name = "_prevButton";
-            this._prevButton.Size = new System.Drawing.Size(34, 34);
+            this._prevButton.Size = new System.Drawing.Size(38, 42);
             this._prevButton.TabIndex = 0;
             this._prevButton.Text = "‹";
-            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             this._prevButton.UseVisualStyleBackColor = true;
+            this._prevButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // _pageNumberBadge
             // 
             this._pageNumberBadge.BackColor = System.Drawing.Color.Transparent;
             this._pageNumberBadge.Controls.Add(this._pageNumberLabel);
-            this._pageNumberBadge.Location = new System.Drawing.Point(40, 0);
-            this._pageNumberBadge.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
+            this._pageNumberBadge.Location = new System.Drawing.Point(45, 0);
+            this._pageNumberBadge.Margin = new System.Windows.Forms.Padding(0, 0, 7, 0);
             this._pageNumberBadge.Name = "_pageNumberBadge";
-            this._pageNumberBadge.Size = new System.Drawing.Size(34, 34);
+            this._pageNumberBadge.Size = new System.Drawing.Size(38, 42);
             this._pageNumberBadge.TabIndex = 1;
             // 
             // _pageNumberLabel
@@ -738,7 +783,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._pageNumberLabel.ForeColor = System.Drawing.Color.White;
             this._pageNumberLabel.Location = new System.Drawing.Point(0, 0);
             this._pageNumberLabel.Name = "_pageNumberLabel";
-            this._pageNumberLabel.Size = new System.Drawing.Size(34, 34);
+            this._pageNumberLabel.Size = new System.Drawing.Size(38, 42);
             this._pageNumberLabel.TabIndex = 0;
             this._pageNumberLabel.Text = "1";
             this._pageNumberLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -748,24 +793,24 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._nextButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._nextButton.Font = new System.Drawing.Font("Segoe UI", 16F);
-            this._nextButton.Location = new System.Drawing.Point(80, 0);
-            this._nextButton.Margin = new System.Windows.Forms.Padding(0, 0, 12, 0);
+            this._nextButton.Location = new System.Drawing.Point(90, 0);
+            this._nextButton.Margin = new System.Windows.Forms.Padding(0, 0, 14, 0);
             this._nextButton.Name = "_nextButton";
-            this._nextButton.Size = new System.Drawing.Size(34, 34);
+            this._nextButton.Size = new System.Drawing.Size(38, 42);
             this._nextButton.TabIndex = 2;
             this._nextButton.Text = "›";
-            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             this._nextButton.UseVisualStyleBackColor = true;
+            this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // _pageInfoLabel
             // 
             this._pageInfoLabel.AutoSize = true;
             this._pageInfoLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._pageInfoLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._pageInfoLabel.Location = new System.Drawing.Point(126, 8);
-            this._pageInfoLabel.Margin = new System.Windows.Forms.Padding(0, 8, 18, 0);
+            this._pageInfoLabel.Location = new System.Drawing.Point(142, 10);
+            this._pageInfoLabel.Margin = new System.Windows.Forms.Padding(0, 10, 20, 0);
             this._pageInfoLabel.Name = "_pageInfoLabel";
-            this._pageInfoLabel.Size = new System.Drawing.Size(80, 20);
+            this._pageInfoLabel.Size = new System.Drawing.Size(97, 25);
             this._pageInfoLabel.TabIndex = 3;
             this._pageInfoLabel.Text = "Trang 1 / 1";
             this._pageInfoLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -775,10 +820,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._displayLabel.AutoSize = true;
             this._displayLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._displayLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._displayLabel.Location = new System.Drawing.Point(224, 8);
-            this._displayLabel.Margin = new System.Windows.Forms.Padding(0, 8, 6, 0);
+            this._displayLabel.Location = new System.Drawing.Point(259, 10);
+            this._displayLabel.Margin = new System.Windows.Forms.Padding(0, 10, 7, 0);
             this._displayLabel.Name = "_displayLabel";
-            this._displayLabel.Size = new System.Drawing.Size(64, 20);
+            this._displayLabel.Size = new System.Drawing.Size(77, 25);
             this._displayLabel.TabIndex = 4;
             this._displayLabel.Text = "Hiển thị:";
             this._displayLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -791,10 +836,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             10,
             20,
             50});
-            this._pageSizeCombo.Location = new System.Drawing.Point(294, 2);
-            this._pageSizeCombo.Margin = new System.Windows.Forms.Padding(0, 2, 6, 0);
+            this._pageSizeCombo.Location = new System.Drawing.Point(343, 2);
+            this._pageSizeCombo.Margin = new System.Windows.Forms.Padding(0, 2, 7, 0);
             this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(64, 28);
+            this._pageSizeCombo.Size = new System.Drawing.Size(72, 33);
             this._pageSizeCombo.TabIndex = 5;
             // 
             // _rowsLabel
@@ -802,10 +847,10 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._rowsLabel.AutoSize = true;
             this._rowsLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._rowsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._rowsLabel.Location = new System.Drawing.Point(364, 8);
-            this._rowsLabel.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
+            this._rowsLabel.Location = new System.Drawing.Point(422, 10);
+            this._rowsLabel.Margin = new System.Windows.Forms.Padding(0, 10, 0, 0);
             this._rowsLabel.Name = "_rowsLabel";
-            this._rowsLabel.Size = new System.Drawing.Size(44, 20);
+            this._rowsLabel.Size = new System.Drawing.Size(55, 25);
             this._rowsLabel.TabIndex = 6;
             this._rowsLabel.Text = "dòng";
             this._rowsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -815,50 +860,18 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toolTip.AutoPopDelay = 5000;
             this._toolTip.InitialDelay = 500;
             this._toolTip.ReshowDelay = 100;
-            //
-            // _exportCsvMenuItem
-            //
-            this._exportCsvMenuItem.AutoSize = true;
-            this._exportCsvMenuItem.Image = IconBitmapCache.Get(IconChar.FileCsv, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
-            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
-            this._exportCsvMenuItem.Text = "Xuất CSV";
-            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
-            //
-            // _exportExcelMenuItem
-            //
-            this._exportExcelMenuItem.AutoSize = true;
-            this._exportExcelMenuItem.Image = IconBitmapCache.Get(IconChar.FileExcel, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
-            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
-            this._exportExcelMenuItem.Text = "Xuất Excel";
-            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
-            //
-            // _importMenuItem
-            //
-            this._importMenuItem.AutoSize = true;
-            this._importMenuItem.Image = IconBitmapCache.Get(IconChar.FileImport, AppColors.TableViewAction, new System.Drawing.Size(18, 18));
-            this._importMenuItem.Name = "_importMenuItem";
-            this._importMenuItem.Text = "Nhập dữ liệu";
-            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
-            //
-            // _optionsMenu
-            //
-            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._exportCsvMenuItem,
-            this._exportExcelMenuItem,
-            this._optionsSeparator,
-            this._importMenuItem});
-            this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.ResumeLayout(false);
-            //
+            // 
             // ucPurchaseReceiptManagement
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.Controls.Add(this._root);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ucPurchaseReceiptManagement";
-            this.Padding = new System.Windows.Forms.Padding(20);
-            this.Size = new System.Drawing.Size(1200, 760);
+            this.Padding = new System.Windows.Forms.Padding(22, 25, 22, 25);
+            this.Size = new System.Drawing.Size(1350, 950);
+            this._optionsMenu.ResumeLayout(false);
             this._root.ResumeLayout(false);
             this._root.PerformLayout();
             this._headerCard.ResumeLayout(false);

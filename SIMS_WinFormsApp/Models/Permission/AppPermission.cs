@@ -42,8 +42,6 @@ namespace SIMS_WinFormsApp.Models.Permission
         STOCK_DISPOSE_VIEW,
         STOCK_ALERT_REPORT,
         STOCK_ALERT_VIEW,
-        SUPPLIER_RETURN_CREATE,
-        SUPPLIER_RETURN_VIEW,
 
         INVOICE_CREATE,
         INVOICE_VIEW_OWN,
@@ -57,17 +55,12 @@ namespace SIMS_WinFormsApp.Models.Permission
         RETURN_EXCHANGE_APPROVE,
         POS_CART_HOLD,
         POS_CART_RESTORE,
-        PROMOTION_MANAGE,
 
-        EXCEPTION_REPORT_VIEW,
-        EXCEPTION_REPORT_CREATE,
-        EXCEPTION_REPORT_HANDLE,
         REVENUE_REPORT_VIEW,
         PROFIT_REPORT_VIEW,
         STOCK_REPORT_VIEW,
 
         AUDIT_LOG_VIEW,
-        BACKUP_MANAGE,
         SETTINGS_MANAGE,
         RBAC_MANAGE
     }
