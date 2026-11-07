@@ -98,9 +98,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
             _headerPanel.Dock = DockStyle.Fill;
             _headerPanel.BorderStyle = BorderStyle.FixedSingle;
+            _headerPanel.Size = new Size(1160, 96);
             _headerPanel.Controls.Add(_subtitleLabel);
             _headerPanel.Controls.Add(_titleLabel);
             _headerPanel.Controls.Add(_headerActions);
+            _headerPanel.Controls.SetChildIndex(_headerActions, 0);
             _titleLabel.AutoSize = true;
             _titleLabel.Font = new Font("Segoe UI", 21F, FontStyle.Bold);
             _titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
@@ -110,9 +112,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
             _subtitleLabel.Location = new Point(2, 45);
             _subtitleLabel.Text = "Chọn vai trò, điều chỉnh quyền và lưu thay đổi";
-            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            _headerActions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _headerActions.AutoSize = false;
             _headerActions.FlowDirection = FlowDirection.LeftToRight;
+            _headerActions.Location = new Point(820, 18);
+            _headerActions.Name = "_headerActions";
             _headerActions.Size = new Size(338, 40);
             _headerActions.WrapContents = false;
             _headerActions.Controls.AddRange(new Control[] { _resetButton, _saveButton });
@@ -121,14 +125,18 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _resetButton.FlatStyle = FlatStyle.Flat;
             _resetButton.ForeColor = Color.FromArgb(51, 65, 85);
             _resetButton.Margin = new Padding(0, 0, 10, 0);
+            _resetButton.Name = "_resetButton";
             _resetButton.Size = new Size(176, 40);
+            _resetButton.TabIndex = 0;
             _resetButton.Text = "Khôi phục mặc định";
             _saveButton.BackColor = Color.FromArgb(37, 99, 235);
             _saveButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
             _saveButton.FlatStyle = FlatStyle.Flat;
             _saveButton.ForeColor = Color.White;
             _saveButton.Margin = new Padding(0, 0, 10, 0);
+            _saveButton.Name = "_saveButton";
             _saveButton.Size = new Size(132, 40);
+            _saveButton.TabIndex = 1;
             _saveButton.Text = "Lưu thay đổi";
             _resetButton.Click += new System.EventHandler(ResetButton_Click);
             _saveButton.Click += new System.EventHandler(SaveButton_Click);

@@ -22,8 +22,18 @@ using SIMS_WinFormsApp.Views.Dialogs;
 
 namespace SIMS_WinFormsApp.Views.Backup
 {
-    internal sealed class BackupRecoveryPageControl : UserControl, IBackupRecoveryView, IDateRangeFilterView
+    internal sealed partial class BackupRecoveryPageControl : UserControl, IBackupRecoveryView, IDateRangeFilterView
     {
+        private TableLayoutPanel _rootLayout;
+        private Panel _headerPanel;
+        private Panel _cardPanel;
+        private Panel _headerIconCircle;
+        private IconPictureBox _headerIcon;
+        private Label _headerTitle;
+        private Label _headerSubtitle;
+        private FlowLayoutPanel _headerActionsPanel;
+        private Label _searchIcon;
+
         private PrimaryButton _restoreFileButton;
         private PrimaryButton _backupNowButton;
 
@@ -63,18 +73,7 @@ namespace SIMS_WinFormsApp.Views.Backup
 
         public BackupRecoveryPageControl()
         {
-            Dock = DockStyle.Fill;
-            BackColor = AppColors.PageBg;
-            Padding = new Padding(16);
-
-            var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, BackColor = Color.Transparent };
-            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 112));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            Controls.Add(root);
-
-            root.Controls.Add(BuildBanner(), 0, 0);
-            root.Controls.Add(BuildListCard(), 0, 1);
+            InitializeComponent();
 
             _searchTimer = new Timer { Interval = 300 };
             _searchTimer.Tick += (s, e) =>
@@ -87,11 +86,6 @@ namespace SIMS_WinFormsApp.Views.Backup
                     _paginationPresenter.ResetToFirstPage();
                 else
                     RaiseQueryChanged();
-            };
-            _searchTextBox.TextChanged += (s, e) =>
-            {
-                _searchTimer.Stop();
-                _searchTimer.Start();
             };
 
             _datePresenter = new DateRangeFilterPresenter(this);
@@ -107,6 +101,75 @@ namespace SIMS_WinFormsApp.Views.Backup
             _paginationPresenter.PageChanged += (s, e) => RaiseQueryChanged();
 
             Load += (s, e) => ViewReady?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private void _restoreFileButton_Click(object sender, EventArgs e)
+        {
+            RestoreFromFileRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _backupNowButton_Click(object sender, EventArgs e)
+        {
+            BackupNowRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _todayButton_Click(object sender, EventArgs e)
+        {
+            PresetRequested?.Invoke(this, DateRangePreset.Today);
+        }
+
+        private void _clearRangeButton_Click(object sender, EventArgs e)
+        {
+            ClearRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _fromDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            OnDatePickerCheckedChanged(true);
+        }
+
+        private void _toDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            OnDatePickerCheckedChanged(false);
+        }
+
+        private void _fromDatePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (!_updatingDateRange && _fromDatePicker.Checked)
+                FromPicked?.Invoke(this, _fromDatePicker.Value.Date);
+        }
+
+        private void _toDatePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (!_updatingDateRange && _toDatePicker.Checked)
+                ToPicked?.Invoke(this, _toDatePicker.Value.Date);
+        }
+
+        private void _headerIconCircle_Paint(object sender, PaintEventArgs e)
+        {
+            using (var brush = new SolidBrush(AppColors.InfoBg))
+                e.Graphics.FillEllipse(brush, _headerIconCircle.ClientRectangle);
+        }
+
+        private void _headerActionsPanel_Resize(object sender, EventArgs e)
+        {
+            _headerActionsPanel.Location = new Point(Math.Max(360, _headerPanel.ClientSize.Width - _headerActionsPanel.Width - 20), 0);
+        }
+
+        private void _filterHost_Resize(object sender, EventArgs e)
+        {
+            ReflowFilter();
+        }
+
+        private void _searchFrame_Resize(object sender, EventArgs e)
+        {
+            _searchTextBox.Width = Math.Max(30, _searchFrame.ClientSize.Width - _searchTextBox.Left - 10);
         }
 
         #region Banner tiêu đề + nút hành động

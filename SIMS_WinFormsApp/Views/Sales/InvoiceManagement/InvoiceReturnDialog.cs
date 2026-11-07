@@ -19,11 +19,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private readonly int _currentUserId;
         private readonly bool _canApprove;
         private readonly IReturnManagementDataService _dataService;
-        private readonly DataGridView _linesGrid;
-        private readonly ComboBox _reasonCombo;
-        private readonly TextBox _reasonDetails;
-        private readonly Label _summaryLabel;
-        private readonly Label _policyLabel;
         private readonly List<ReturnableLine> _lines = new List<ReturnableLine>();
         private decimal _approvalThreshold;
         private int _returnPolicyDays = 7;
@@ -70,212 +65,41 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             ClientSize = new Size(820, 600);
             BackColor = AppColors.PageBg;
 
-            var root = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 1,
-                RowCount = 3,
-                Padding = new Padding(20)
-            };
-            root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72F));
-            root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 130F));
-            Controls.Add(root);
-
-            var header = new Panel { Dock = DockStyle.Fill };
-            header.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
-                ForeColor = AppColors.TextTitle,
-                Location = new Point(0, 0),
-                Text = "Trả hàng từ hóa đơn " + _invoice.InvoiceCode
-            });
-            _policyLabel = new Label
-            {
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9F),
-                ForeColor = AppColors.TextMuted,
-                Location = new Point(2, 38)
-            };
-            header.Controls.Add(_policyLabel);
-            var selectAllCheckBox = new CheckBox
-            {
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Location = new Point(590, 43),
-                Text = "Chọn toàn bộ hóa đơn"
-            };
-            selectAllCheckBox.CheckedChanged += (sender, args) =>
-            {
-                foreach (DataGridViewRow row in _linesGrid.Rows)
-                {
-                    if (row.Cells["Selected"].ReadOnly)
-                        continue;
-                    row.Cells["Selected"].Value = selectAllCheckBox.Checked;
-                }
-                UpdateSummary();
-            };
-            header.Controls.Add(selectAllCheckBox);
-            root.Controls.Add(header, 0, 0);
-
-            _linesGrid = new DataGridView
-            {
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                BackgroundColor = AppColors.White,
-                BorderStyle = BorderStyle.None,
-                ColumnHeadersHeight = 38,
-                Dock = DockStyle.Fill,
-                EnableHeadersVisualStyles = false,
-                GridColor = AppColors.TableGrid,
-                RowHeadersVisible = false,
-                SelectionMode = DataGridViewSelectionMode.CellSelect,
-                MultiSelect = false
-            };
-            _linesGrid.Columns.Add(new DataGridViewCheckBoxColumn
-            {
-                Name = "Selected",
-                HeaderText = "Trả",
-                FillWeight = 8,
-                MinimumWidth = 48
-            });
-            _linesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Product",
-                HeaderText = "Sản phẩm",
-                FillWeight = 39,
-                ReadOnly = true
-            });
-            _linesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Sold",
-                HeaderText = "Đã mua",
-                FillWeight = 10,
-                ReadOnly = true
-            });
-            _linesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Returned",
-                HeaderText = "Đã yêu cầu/đã trả",
-                FillWeight = 17,
-                ReadOnly = true
-            });
-            _linesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Quantity",
-                HeaderText = "SL trả",
-                FillWeight = 9
-            });
-            _linesGrid.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Price",
-                HeaderText = "Đơn giá",
-                FillWeight = 17,
-                ReadOnly = true
-            });
-            _linesGrid.Columns["Sold"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _linesGrid.Columns["Returned"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _linesGrid.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _linesGrid.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _linesGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
-            _linesGrid.ColumnHeadersDefaultCellStyle.BackColor = AppColors.TableHeaderBg;
-            _linesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            _linesGrid.CurrentCellDirtyStateChanged += (sender, args) =>
-            {
-                if (_linesGrid.IsCurrentCellDirty)
-                    _linesGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
-            };
-            _linesGrid.EditingControlShowing += OnLinesGridEditingControlShowing;
-            _linesGrid.CellValueChanged += (sender, args) => UpdateSummary();
-            _linesGrid.CellEndEdit += (sender, args) => UpdateSummary();
-            _linesGrid.DataError += (sender, args) =>
-            {
-                args.ThrowException = false;
-                DialogHelper.ShowWarning(this, "Số lượng không hợp lệ",
-                    "Số lượng trả phải là số nguyên hợp lệ.");
-            };
-            root.Controls.Add(_linesGrid, 0, 1);
-
-            var footer = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 3,
-                Padding = new Padding(0, 10, 0, 0)
-            };
-            footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            footer.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 230F));
-            footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
-            footer.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-            footer.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            root.Controls.Add(footer, 0, 2);
-
-            var reasonPanel = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                WrapContents = false,
-                Margin = Padding.Empty
-            };
-            reasonPanel.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Text = "Lý do:",
-                Margin = new Padding(0, 6, 8, 0)
-            });
-            _reasonCombo = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Width = 160,
-                Margin = new Padding(0, 2, 8, 0)
-            };
-            _reasonCombo.Items.AddRange(new object[]
-            {
-                "Lỗi sản phẩm",
-                "Giao sai sản phẩm",
-                "Không còn nhu cầu",
-                "Khác"
-            });
-            _reasonCombo.SelectedIndex = 0;
-            reasonPanel.Controls.Add(_reasonCombo);
-            _reasonDetails = new TextBox
-            {
-                Dock = DockStyle.Fill,
-                MaxLength = 180,
-            };
-            reasonPanel.Controls.Add(_reasonDetails);
-            footer.Controls.Add(reasonPanel, 0, 0);
-            footer.SetColumnSpan(reasonPanel, 2);
-
-            _summaryLabel = new Label
-            {
-                AutoSize = true,
-                Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                ForeColor = AppColors.Accent,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            footer.Controls.Add(_summaryLabel, 0, 1);
-
-            _actionButtonsPanel.Dock = DockStyle.Fill;
-            footer.Controls.Add(_actionButtonsPanel, 1, 1);
-
-            var note = new Label
-            {
-                AutoSize = true,
-                Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 8F),
-                ForeColor = AppColors.TextMuted,
-                Text = "Tiền hoàn được ghi nhận theo giá trị dự kiến; thanh toán thực tế xử lý bên ngoài."
-            };
-            footer.Controls.Add(note, 0, 2);
-            footer.SetColumnSpan(note, 2);
-
             LoadReturnableLines();
+        }
+
+        private void SelectAllCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in _linesGrid.Rows)
+            {
+                if (row.Cells["Selected"].ReadOnly)
+                    continue;
+                row.Cells["Selected"].Value = _selectAllCheckBox.Checked;
+            }
+            UpdateSummary();
+        }
+
+        private void LinesGrid_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (_linesGrid.IsCurrentCellDirty)
+                _linesGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void LinesGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateSummary();
+        }
+
+        private void LinesGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateSummary();
+        }
+
+        private void LinesGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            DialogHelper.ShowWarning(this, "Số lượng không hợp lệ",
+                "Số lượng trả phải là số nguyên hợp lệ.");
         }
 
         private void OnLinesGridEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -350,6 +174,12 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _summaryLabel.Text = "Giá trị hàng chọn: " + FormatMoney(total);
             bool hasReturnableLine = _lines.Any(line => line.SoldQuantity > line.ReturnedQuantity);
             _submitButton.Enabled = hasReturnableLine && !_invoice.IsCancelled;
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void SubmitButton_Click(object sender, EventArgs e)

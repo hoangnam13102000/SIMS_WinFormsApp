@@ -9,7 +9,7 @@ using SIMS_WinFormsApp.UI.Theme;
 namespace SIMS_WinFormsApp.Views.Dialogs
 {
     [DesignerCategory("Code")]
-    public class DetailInfoItemControl : Control
+    public partial class DetailInfoItemControl : Control
     {
         private const int IconBoxSize = 40;
         private const int TextLeftOffset = IconBoxSize + 12;
@@ -29,10 +29,10 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         private const TextFormatFlags SingleLineMeasureFlags =
             TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
 
-        private readonly Panel _iconBox;
-        private readonly IconPictureBox _iconGlyph;
-        private readonly Label _lblLabel;
-        private readonly Label _lblValue;
+        private Panel _iconBox;
+        private IconPictureBox _iconGlyph;
+        private Label _lblLabel;
+        private Label _lblValue;
 
         private Color _iconBackground = AppColors.AccentBgSoft;
 
@@ -75,68 +75,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
 
         public DetailInfoItemControl()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint |
-                     ControlStyles.UserPaint |
-                     ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.SupportsTransparentBackColor, true);
-
-            Size = new Size(260, 56);
-            MinimumSize = new Size(160, 48);
-            BackColor = Color.Transparent;
-
-            _iconBox = new Panel
-            {
-                Size = new Size(IconBoxSize, IconBoxSize),
-                Location = new Point(0, 0),
-                BackColor = Color.Transparent
-            };
-            _iconBox.Paint += IconBox_Paint;
-            Controls.Add(_iconBox);
-
-            _iconGlyph = new IconPictureBox
-            {
-                IconChar = IconChar.CircleInfo,
-                IconColor = AppColors.Accent,
-                IconSize = 18,
-                Size = new Size(20, 20),
-                Location = new Point((IconBoxSize - 20) / 2, (IconBoxSize - 20) / 2),
-                BackColor = Color.Transparent
-            };
-            _iconBox.Controls.Add(_iconGlyph);
-
-            _lblLabel = new Label
-            {
-                AutoSize = false,
-                Text = string.Empty,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent,
-                Location = new Point(TextLeftOffset, 2),
-                Size = new Size(Width - TextLeftOffset, LabelTextHeight),
-                TextAlign = ContentAlignment.MiddleLeft,
-                AutoEllipsis = true // MỚI: nhãn quá dài (hiếm) sẽ hiện "..." thay vì tràn/bị cắt cứng
-            };
-            Controls.Add(_lblLabel);
-
-            _lblValue = new Label
-            {
-                AutoSize = false,
-                Text = string.Empty,
-                Font = AppFonts.BodyBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                Location = new Point(TextLeftOffset, _lblLabel.Bottom + 2),
-                Size = new Size(Width - TextLeftOffset, ValueTextHeight),
-                TextAlign = ContentAlignment.MiddleLeft,
-                // MỚI: bật AutoEllipsis làm lưới an toàn cuối cùng - ví dụ email dài không có
-                // khoảng trắng để xuống dòng sẽ hiện "..." thay vì bị cắt cứng không dấu hiệu
-                // như trước đây (AutoEllipsis=false).
-                AutoEllipsis = true
-            };
-            Controls.Add(_lblValue);
-
-            LayoutChildren();
+            InitializeComponent();
         }
 
         protected override void OnResize(EventArgs e)

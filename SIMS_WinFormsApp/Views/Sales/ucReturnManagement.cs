@@ -15,7 +15,6 @@ namespace SIMS_WinFormsApp.Views.Sales
         private readonly int _currentUserId;
         private readonly bool _canApprove;
         private readonly IReturnManagementDataService _dataService;
-        private readonly Label _emptyStateLabel;
 
         public ucReturnManagement()
             : this(null, 0, false)
@@ -38,21 +37,6 @@ namespace SIMS_WinFormsApp.Views.Sales
             _from.Value = DateTime.Today.AddDays(-30);
             _to.Value = DateTime.Today;
             _reason.SelectedIndex = 0;
-            _emptyStateLabel = new Label
-            {
-                BackColor = AppColors.White,
-                Dock = DockStyle.Fill,
-                Font = new System.Drawing.Font("Segoe UI", 10F),
-                ForeColor = AppColors.TextMuted,
-                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                Visible = false
-            };
-            _gridCard.Controls.Remove(_grid);
-            var gridContainer = new Panel { Dock = DockStyle.Fill };
-            gridContainer.Controls.Add(_grid);
-            gridContainer.Controls.Add(_emptyStateLabel);
-            _gridCard.Controls.Add(gridContainer);
-
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             _approve.Visible = canApprove;
             _reject.Visible = canApprove;

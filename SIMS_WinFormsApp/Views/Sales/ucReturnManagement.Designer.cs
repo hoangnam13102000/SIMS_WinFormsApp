@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using FontAwesome.Sharp;
+using SIMS_WinFormsApp.UI.Theme;
 
 namespace SIMS_WinFormsApp.Views.Sales
 {
@@ -20,6 +21,8 @@ namespace SIMS_WinFormsApp.Views.Sales
         private DateTimePicker _to;
         private ComboBox _reason;
         private Panel _gridCard;
+        private Panel _gridContainer;
+        private Label _emptyStateLabel;
         private DataGridView _grid;
         private DataGridViewTextBoxColumn _returnCode;
         private DataGridViewTextBoxColumn _orderCode;
@@ -53,6 +56,8 @@ namespace SIMS_WinFormsApp.Views.Sales
             _to = new DateTimePicker();
             _reason = new ComboBox();
             _gridCard = new Panel();
+            _gridContainer = new Panel();
+            _emptyStateLabel = new Label();
             _grid = new DataGridView();
             _returnCode = new DataGridViewTextBoxColumn();
             _orderCode = new DataGridViewTextBoxColumn();
@@ -162,10 +167,22 @@ namespace SIMS_WinFormsApp.Views.Sales
             _reason.Size = new Size(160, 28);
             _gridCard.BackColor = Color.White;
             _gridCard.BorderStyle = BorderStyle.FixedSingle;
-            _gridCard.Controls.Add(_grid);
             _gridCard.Dock = DockStyle.Fill;
             _gridCard.Margin = Padding.Empty;
             _gridCard.Name = "_gridCard";
+            _gridContainer.BackColor = Color.Transparent;
+            _gridContainer.Dock = DockStyle.Fill;
+            _gridContainer.Name = "_gridContainer";
+            _gridContainer.Controls.Add(_grid);
+            _gridContainer.Controls.Add(_emptyStateLabel);
+            _gridCard.Controls.Add(_gridContainer);
+            _emptyStateLabel.BackColor = Color.White;
+            _emptyStateLabel.Dock = DockStyle.Fill;
+            _emptyStateLabel.Font = new Font("Segoe UI", 10F);
+            _emptyStateLabel.ForeColor = AppColors.TextMuted;
+            _emptyStateLabel.Name = "_emptyStateLabel";
+            _emptyStateLabel.TextAlign = ContentAlignment.MiddleCenter;
+            _emptyStateLabel.Visible = false;
             _grid.AllowUserToAddRows = false;
             _grid.AllowUserToDeleteRows = false;
             _grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;

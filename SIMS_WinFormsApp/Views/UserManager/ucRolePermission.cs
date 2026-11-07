@@ -29,8 +29,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         public ucRolePermission()
         {
             InitializeComponent();
-            _headerPanel.Resize += (sender, args) => LayoutHeaderActions();
-            LayoutHeaderActions();
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
 
             _presenter = new RolePermissionPresenter(
@@ -59,13 +57,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void ResetButton_Click(object sender, EventArgs e)
         {
             ResetRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void LayoutHeaderActions()
-        {
-            _headerActions.Location = new System.Drawing.Point(
-                Math.Max(0, _headerPanel.ClientSize.Width - _headerActions.Width),
-                18);
         }
 
         public void ShowRoles(IReadOnlyList<RolePermissionRoleRowDto> roles)

@@ -525,6 +525,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._clearImageButton.Size = new System.Drawing.Size(215, 34);
             this._clearImageButton.TabIndex = 0;
             this._clearImageButton.Text = "Xóa ảnh";
+            this._clearImageButton.Click += new System.EventHandler(this.ClearImage_Click);
             // 
             // _uploadImageButton
             // 
@@ -535,6 +536,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._uploadImageButton.Size = new System.Drawing.Size(215, 36);
             this._uploadImageButton.TabIndex = 1;
             this._uploadImageButton.Text = "Chọn ảnh...";
+            this._uploadImageButton.Click += new System.EventHandler(this.UploadImage_Click);
             // 
             // _preview
             // 
@@ -582,6 +584,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._closeButton.Size = new System.Drawing.Size(100, 34);
             this._closeButton.TabIndex = 0;
             this._closeButton.Text = "Hủy";
+            this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // _saveButton
             // 
@@ -597,9 +600,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._saveButton.Text = "Lưu thay đổi";
             this._saveButton.UseVisualStyleBackColor = false;
             this._saveButton.Click += new System.EventHandler(this._saveButton_Click);
-            this._uploadImageButton.Click += new System.EventHandler(this.UploadImage_Click);
-            this._clearImageButton.Click += new System.EventHandler(this.ClearImage_Click);
-            this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // frmProductEditor
             // 

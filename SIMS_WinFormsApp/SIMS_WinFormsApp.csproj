@@ -121,12 +121,6 @@
     <Compile Include="Views\Profile\ucMyProfile.Designer.cs">
       <DependentUpon>ucMyProfile.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Sales\ucOrderManagement.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Sales\ucOrderManagement.Designer.cs">
-      <DependentUpon>ucOrderManagement.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\Sales\ucReturnManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -267,7 +261,6 @@
     <Compile Include="MVP\Presenters\Pos\PosCart.cs" />
     <Compile Include="MVP\Presenters\Pos\PosFormat.cs" />
     <Compile Include="MVP\Presenters\Pos\PosPresenter.cs" />
-    <Compile Include="MVP\Presenters\RoleManagementPresenter.cs" />
     <Compile Include="MVP\Presenters\RolePermissionPresenter.cs" />
     <Compile Include="MVP\Presenters\SystemSettingsPresenter.cs" />
     <Compile Include="MVP\Presenters\UserAccountDetailPresenter.cs" />
@@ -359,13 +352,11 @@
     <Compile Include="MVP\Presenters\Inventory\StockDisposalListPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\PurchaseReceiptListPresenter.cs" />
     <Compile Include="MVP\Presenters\Inventory\StockAlertPresenter.cs" />
-    <Compile Include="MVP\Presenters\Inventory\StockReconciliationPresenter.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptView.cs" />
     <Compile Include="Views\Interfaces\IStockDisposalEditorView.cs" />
     <Compile Include="Views\Interfaces\IStockDisposalListView.cs" />
     <Compile Include="Views\Interfaces\IPurchaseReceiptListView.cs" />
     <Compile Include="Views\Interfaces\IStockAlertView.cs" />
-    <Compile Include="Views\Interfaces\IStockReconciliationView.cs" />
     <Compile Include="Views\Catalog\frmProductEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -476,12 +467,18 @@
       <DependentUpon>BaseFormDialogForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Dialogs\DetailInfoItemControl.cs" />
+    <Compile Include="Views\Dialogs\DetailInfoItemControl.Designer.cs">
+      <DependentUpon>DetailInfoItemControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Dialogs\DialogCloseButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\Dialogs\DialogSizing.cs" />
     <Compile Include="Views\Dialogs\DialogTheme.cs" />
     <Compile Include="Views\Dialogs\InfoBannerPanel.cs" />
+    <Compile Include="Views\Dialogs\InfoBannerPanel.Designer.cs">
+      <DependentUpon>InfoBannerPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Dialogs\RoundedDialogFrame.cs" />
     <Compile Include="Views\Dialogs\DialogHelper.cs" />
     <Compile Include="Views\Dialogs\DialogService.cs" />
@@ -541,7 +538,6 @@
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
     <Compile Include="Views\Interfaces\IDateRangeFilterView.cs" />
     <Compile Include="Views\Interfaces\IPosView.cs" />
-    <Compile Include="Views\Interfaces\IRoleManagementView.cs" />
     <Compile Include="Views\Interfaces\IRolePermissionView.cs" />
     <Compile Include="Views\Interfaces\ISystemSettingsView.cs" />
     <Compile Include="Views\Interfaces\IUserAccountDetailView.cs" />
@@ -664,6 +660,9 @@
     <Compile Include="Views\Dashboard\ucDashboard.Designer.cs">
       <DependentUpon>ucDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Backup\BackupRecoveryPageControl.Designer.cs">
+      <DependentUpon>BackupRecoveryPageControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Auth\frmForgotPassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -748,12 +747,6 @@
     <Compile Include="Views\UserManager\frmCustomerManagement.Designer.cs">
       <DependentUpon>frmCustomerManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\UserManager\frmRoleManagement.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\UserManager\frmRoleManagement.Designer.cs">
-      <DependentUpon>frmRoleManagement.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\UserManager\frmUserManagement.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -795,12 +788,6 @@
     </Compile>
     <Compile Include="Views\Warehouse\ucPurchaseReceiptManagement.Designer.cs">
       <DependentUpon>ucPurchaseReceiptManagement.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Warehouse\frmStockReconciliation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\Warehouse\frmStockReconciliation.Designer.cs">
-      <DependentUpon>frmStockReconciliation.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Warehouse\ucStockAlert.cs">
       <SubType>UserControl</SubType>
@@ -963,9 +950,6 @@
     <EmbeddedResource Include="Views\Sales\PromotionManagementPage.resx">
       <DependentUpon>PromotionManagementPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Sales\ucOrderManagement.resx">
-      <DependentUpon>ucOrderManagement.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\Shell\MainLayoutControl.resx">
       <DependentUpon>MainLayoutControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -1031,9 +1015,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockDisposalManagement.resx">
       <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Warehouse\frmStockReconciliation.resx">
-      <DependentUpon>frmStockReconciliation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucPurchaseReceiptManagement.resx">
       <DependentUpon>ucPurchaseReceiptManagement.cs</DependentUpon>

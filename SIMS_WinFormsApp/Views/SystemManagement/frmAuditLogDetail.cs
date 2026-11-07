@@ -23,9 +23,9 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             InitializeComponent();
             HeaderTitle = "Chi tiết nhật ký";
             SetHeaderIcon(IconChar.Eye, AppColors.Accent);
+            BuildDesignPreviewContent();
             if (DesignMode || LicenseManager.UsageMode == LicenseUsageMode.Designtime)
             {
-                BuildDesignPreviewContent();
                 return;
             }
         }
@@ -65,37 +65,22 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             HeaderTitle = Lang.Get("audit.detail.title", detail.LogId);
             SetHeaderIcon(IconChar.Eye, AppColors.Accent);
 
-            var infoGrid = new TableLayoutPanel
-            {
-                Dock = DockStyle.Top,
-                ColumnCount = 2,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                Margin = new Padding(0, 0, 0, 16)
-            };
-            infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
-            infoGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            ContentHost.Controls.Clear();
+            _detailInfoGrid.Controls.Clear();
+            _detailInfoGrid.RowCount = 0;
+            _detailInfoGrid.RowStyles.Clear();
 
-            AddInfoField(infoGrid, Lang.Get("audit.detail.time"), detail.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"));
-            AddInfoField(infoGrid, Lang.Get("audit.detail.user"), detail.Username);
-            AddInfoField(infoGrid, Lang.Get("audit.detail.action"), AuditLogDisplayMapper.GetActionLabel(detail.Action));
-            AddInfoField(infoGrid, Lang.Get("audit.detail.target"), AuditLogDisplayMapper.GetTableLabel(detail.TableName)
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.time"), detail.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss"));
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.user"), detail.Username);
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.action"), AuditLogDisplayMapper.GetActionLabel(detail.Action));
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.target"), AuditLogDisplayMapper.GetTableLabel(detail.TableName)
                 + (detail.RecordId.HasValue ? " #" + detail.RecordId.Value : ""));
-            AddInfoField(infoGrid, Lang.Get("audit.detail.ip"), string.IsNullOrWhiteSpace(detail.IPAddress) ? "-" : detail.IPAddress);
-            AddInfoField(infoGrid, Lang.Get("audit.detail.description"), string.IsNullOrWhiteSpace(detail.Detail) ? "-" : detail.Detail);
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.ip"), string.IsNullOrWhiteSpace(detail.IPAddress) ? "-" : detail.IPAddress);
+            AddInfoField(_detailInfoGrid, Lang.Get("audit.detail.description"), string.IsNullOrWhiteSpace(detail.Detail) ? "-" : detail.Detail);
 
-            var diffHeader = new Label
-            {
-                Dock = DockStyle.Top,
-                Height = AppFonts.SmallBold.Height + 8,
-                Text = Lang.Get("audit.detail.diff"),
-                Font = AppFonts.SmallBold,
-                ForeColor = AppColors.TextMuted,
-                BackColor = Color.Transparent
-            };
+            _detailDiffHeader.Text = Lang.Get("audit.detail.diff");
 
             bool hasDiff = !string.IsNullOrWhiteSpace(detail.OldValue) || !string.IsNullOrWhiteSpace(detail.NewValue);
-
             Control diffContent;
             if (hasDiff)
             {
@@ -126,12 +111,12 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 };
             }
 
-            var diffHost = new Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
-            diffHost.Controls.Add(diffContent);
+            _detailDiffHost.Controls.Clear();
+            _detailDiffHost.Controls.Add(diffContent);
 
-            ContentHost.Controls.Add(diffHost);
-            ContentHost.Controls.Add(diffHeader);
-            ContentHost.Controls.Add(infoGrid);
+            ContentHost.Controls.Add(_detailDiffHost);
+            ContentHost.Controls.Add(_detailDiffHeader);
+            ContentHost.Controls.Add(_detailInfoGrid);
         }
 
         private void BuildDesignPreviewContent()
@@ -141,6 +126,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
                 ColumnCount = 1,
                 Dock = DockStyle.Fill,
                 Name = "auditPreviewRoot",
+                Padding = new Padding(0),
                 RowCount = 3
             };
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 228F));
@@ -169,13 +155,14 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             AddPreviewField(infoGrid, 1, 2, "Mô tả", "Nội dung thay đổi");
             root.Controls.Add(infoGrid, 0, 0);
 
-            root.Controls.Add(new Label
+            var diffTitle = new Label
             {
                 Dock = DockStyle.Fill,
                 Name = "diffTitle",
                 Text = "Thay đổi",
                 TextAlign = ContentAlignment.MiddleLeft
-            }, 0, 1);
+            };
+            root.Controls.Add(diffTitle, 0, 1);
 
             var diffGrid = new TableLayoutPanel
             {
@@ -191,8 +178,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             diffGrid.Controls.Add(CreatePreviewDiffPanel("Giá trị sau", "Dữ liệu mới"), 1, 0);
             root.Controls.Add(diffGrid, 0, 2);
 
-            ContentHost.Controls.Add(root);
-            root.BringToFront();
+            SetDesignPreviewContent(root);
             ContentHost.PerformLayout();
         }
 

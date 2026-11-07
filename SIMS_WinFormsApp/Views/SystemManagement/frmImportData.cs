@@ -41,7 +41,8 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             ImportRowHandler rowHandler) : base(owner)
         {
             InitializeComponent();
-            ContentHost.Controls.Clear();
+            _lblFileName = _designerFileName;
+            _txtResult = _designerResult;
             if (rowHandler == null) throw new ArgumentNullException(nameof(rowHandler));
 
             BuildContent(importColumns, instructions);
@@ -79,102 +80,16 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         #region Dựng giao diện
         private void BuildContent(string[] importColumns, string instructions)
         {
-            var resultBox = CreateResultBox();
-            var fileRow = CreateFileRow();
-            var instructionsLabel = CreateInstructionsLabel(instructions);
-            var columnsLabel = CreateColumnsLabel(importColumns);
-            var banner = CreateBanner();
-
-            // Cùng quy ước với frmAddEmployee: add SAU CÙNG hiển thị TRÊN CÙNG, nên add theo thứ
-            // tự NGƯỢC LẠI với thứ tự hiển thị mong muốn (banner -> cột cần có -> ghi chú -> chọn
-            // file -> kết quả, từ trên xuống).
-            ContentHost.Controls.Add(resultBox);
-            ContentHost.Controls.Add(fileRow);
-            if (instructionsLabel != null) ContentHost.Controls.Add(instructionsLabel);
-            ContentHost.Controls.Add(columnsLabel);
-            ContentHost.Controls.Add(banner);
-
-            _txtResult = resultBox;
-
+            _designerColumns.Text = "Cột cần có: " + string.Join(", ", importColumns ?? Array.Empty<string>());
+            _designerInstructions.Text = string.IsNullOrWhiteSpace(instructions) ? string.Empty : instructions;
+            _designerInstructions.Visible = !string.IsNullOrWhiteSpace(instructions);
+            _designerResult.Visible = false;
             _btnStart.Enabled = false;
-        }
 
-        private static InfoBannerPanel CreateBanner()
-        {
-            return new InfoBannerPanel
-            {
-                Icon = IconChar.FileUpload,
-                TitleText = "Nhập dữ liệu từ file",
-                DescriptionText = "Chỉ chấp nhận file .xlsx hoặc .csv, dòng đầu tiên là tiêu đề cột.",
-                Margin = new Padding(0, 0, 0, 16)
-            };
-        }
-
-        private static Label CreateColumnsLabel(string[] importColumns)
-        {
-            return new Label
-            {
-                AutoSize = false,
-                Text = "Cột cần có: " + string.Join(", ", importColumns ?? Array.Empty<string>()),
-                Font = AppFonts.Body,
-                ForeColor = AppColors.TextSecondary,
-                Dock = DockStyle.Top,
-                Height = 44,
-                Margin = new Padding(0, 0, 0, 8)
-            };
-        }
-
-        private static Label CreateInstructionsLabel(string instructions)
-        {
-            if (string.IsNullOrWhiteSpace(instructions)) return null;
-            return new Label
-            {
-                AutoSize = false,
-                Text = instructions,
-                Font = AppFonts.Body,
-                ForeColor = AppColors.TextSecondary,
-                Dock = DockStyle.Top,
-                Height = 40,
-                Margin = new Padding(0, 0, 0, 8)
-            };
-        }
-
-        private Panel CreateFileRow()
-        {
-            var panel = new Panel { Dock = DockStyle.Top, Height = 46, Margin = new Padding(0, 0, 0, 16) };
-
-            _lblFileName = new Label
-            {
-                AutoSize = false,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                Text = "Chưa chọn file nào",
-                Font = AppFonts.Body,
-                ForeColor = AppColors.TextMuted,
-                Location = new Point(_btnChooseFile.Right + 12, 0),
-                Size = new Size(360, 42),
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-
-            panel.Controls.Add(_btnChooseFile);
-            panel.Controls.Add(_lblFileName);
-            return panel;
-        }
-
-        private TextBox CreateResultBox()
-        {
-            return new TextBox
-            {
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical,
-                Dock = DockStyle.Top,
-                Height = 160,
-                Font = AppFonts.Small,
-                BackColor = AppColors.BgLight,
-                ForeColor = AppColors.TextSecondary,
-                Visible = false,
-                Margin = new Padding(0, 0, 0, 8)
-            };
+            _designerBanner.Icon = IconChar.FileUpload;
+            _designerBanner.TitleText = "Nhập dữ liệu từ file";
+            _designerBanner.DescriptionText = "Chỉ chấp nhận file .xlsx hoặc .csv, dòng đầu tiên là tiêu đề cột.";
+            _designerBanner.Margin = new Padding(0, 0, 0, 16);
         }
 
         private void ChooseFile()

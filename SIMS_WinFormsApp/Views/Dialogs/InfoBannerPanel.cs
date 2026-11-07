@@ -10,72 +10,22 @@ namespace SIMS_WinFormsApp.Views.Dialogs
 {
 
     [DesignerCategory("Code")]
-    public class InfoBannerPanel : Control
+    public partial class InfoBannerPanel : Control
     {
         private const int IconBoxSize = 40;
         private const int PanelPadding = 16;
         private const int TextLeftOffset = IconBoxSize + 12;
 
-        private readonly Panel _iconBox;
-        private readonly IconPictureBox _iconGlyph;
-        private readonly Label _lblTitle;
-        private readonly Label _lblDescription;
+        private Panel _iconBox;
+        private IconPictureBox _iconGlyph;
+        private Label _lblTitle;
+        private Label _lblDescription;
 
         private Color _backgroundColor = AppColors.AccentBgSoft;
 
         public InfoBannerPanel()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint |
-                     ControlStyles.UserPaint |
-                     ControlStyles.OptimizedDoubleBuffer |
-                     ControlStyles.ResizeRedraw |
-                     ControlStyles.SupportsTransparentBackColor, true);
-
-            Dock = DockStyle.Top;
-            BackColor = Color.Transparent;
-            Height = 96;
-
-            _iconBox = new Panel
-            {
-                Size = new Size(IconBoxSize, IconBoxSize),
-                Location = new Point(PanelPadding, PanelPadding),
-                BackColor = Color.Transparent
-            };
-            _iconBox.Paint += IconBox_Paint;
-            Controls.Add(_iconBox);
-
-            _iconGlyph = new IconPictureBox
-            {
-                IconChar = IconChar.UserGear,
-                IconColor = AppColors.Accent,
-                IconSize = 18,
-                Size = new Size(20, 20),
-                Location = new Point((IconBoxSize - 20) / 2, (IconBoxSize - 20) / 2),
-                BackColor = Color.Transparent
-            };
-            _iconBox.Controls.Add(_iconGlyph);
-
-            _lblTitle = new Label
-            {
-                AutoSize = false,
-                Font = AppFonts.BodyBold,
-                ForeColor = AppColors.TextTitle,
-                BackColor = Color.Transparent,
-                Location = new Point(PanelPadding + TextLeftOffset, PanelPadding - 2)
-            };
-            Controls.Add(_lblTitle);
-
-            _lblDescription = new Label
-            {
-                AutoSize = false,
-                Font = AppFonts.Small,
-                ForeColor = AppColors.TextSecondary,
-                BackColor = Color.Transparent,
-                Location = new Point(PanelPadding + TextLeftOffset, PanelPadding + 18)
-            };
-            Controls.Add(_lblDescription);
-
-            Resize += (s, e) => LayoutChildren();
+            InitializeComponent();
         }
 
         public IconChar Icon
