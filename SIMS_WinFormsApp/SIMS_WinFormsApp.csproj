@@ -65,6 +65,12 @@
     <EmbeddedResource Include="Views\SystemManagement\frmAuditLogDetail.resx">
       <DependentUpon>frmAuditLogDetail.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\UserManager\frmEmployeeManagement.resx">
+      <DependentUpon>frmEmployeeManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\frmPurchaseReceipt.resx">
+      <DependentUpon>frmPurchaseReceipt.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\frmStockReconciliationDetail.resx">
       <DependentUpon>frmStockReconciliationDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -169,12 +175,6 @@
     </Compile>
     <Compile Include="Views\SystemManagement\ucSystemSettings.Designer.cs">
       <DependentUpon>ucSystemSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\UserManager\ucShiftManagement.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\UserManager\ucShiftManagement.Designer.cs">
-      <DependentUpon>ucShiftManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\DTOs\AuditLogDtos.cs" />
     <Compile Include="Models\DTOs\Dashboard\DashboardDataDto.cs" />
@@ -607,6 +607,9 @@
     <Compile Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.Designer.cs">
       <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Views\Sales\InvoiceManagement\InvoiceDetailsDialog.resx">
+      <DependentUpon>InvoiceDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Views\Sales\InvoiceManagement\InvoiceReturnDialog.cs">
       <SubType>Form</SubType>
     </Compile>

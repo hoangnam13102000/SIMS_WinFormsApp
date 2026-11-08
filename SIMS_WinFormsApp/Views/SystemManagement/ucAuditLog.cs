@@ -63,18 +63,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             _incidentCheckBox.CheckedChanged += OnFilterChanged;
             _fromDatePicker.ValueChanged += OnFromDateChanged;
             _toDatePicker.ValueChanged += OnToDateChanged;
-            _previousButton.Click += (sender, args) =>
-            {
-                if (_pageIndex <= 0) return;
-                _pageIndex--;
-                QueryChanged?.Invoke(this, EventArgs.Empty);
-            };
-            _nextButton.Click += (sender, args) =>
-            {
-                if (_pageIndex + 1 >= PageCount) return;
-                _pageIndex++;
-                QueryChanged?.Invoke(this, EventArgs.Empty);
-            };
             _pageSizeComboBox.SelectedIndexChanged += (sender, args) =>
             {
                 _pageSize = _pageSizeComboBox.SelectedIndex == 1 ? 20 :
@@ -288,6 +276,20 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
         private void ResetPageAndReload()
         {
             _pageIndex = 0;
+            QueryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _previousButton_Click(object sender, EventArgs e)
+        {
+            if (_pageIndex <= 0) return;
+            _pageIndex--;
+            QueryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void _nextButton_Click(object sender, EventArgs e)
+        {
+            if (_pageIndex + 1 >= PageCount) return;
+            _pageIndex++;
             QueryChanged?.Invoke(this, EventArgs.Empty);
         }
 

@@ -31,8 +31,6 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
             RefreshTexts();
             LoadCurrentConfig();
-            WireEvents();
-
             LanguageManager.Instance.LanguageChanged += OnLanguageChanged;
             FormClosed += (s, e) => LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
         }
@@ -69,24 +67,24 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             txtSenderEmail.Text = string.IsNullOrWhiteSpace(savedEmail) ? DefaultSenderEmail : savedEmail;
         }
 
-        private void WireEvents()
+        private void lnkHowTo_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            lnkHowTo.Click += (s, e) =>
+            try
             {
-                try
+                Process.Start(new ProcessStartInfo("https://myaccount.google.com/apppasswords")
                 {
-                    Process.Start(new ProcessStartInfo("https://myaccount.google.com/apppasswords")
-                    {
-                        UseShellExecute = true
-                    });
-                }
-                catch (Exception)
-                {
-                    // Không mở được trình duyệt mặc định -> bỏ qua, không phải lỗi nghiêm trọng.
-                }
-            };
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception)
+            {
+                // Không mở được trình duyệt mặc định -> bỏ qua, không phải lỗi nghiêm trọng.
+            }
+        }
 
-            btnTest.Click += async (s, e) => await SendTestAsync();
+        private async void btnTest_Click(object sender, EventArgs e)
+        {
+            await SendTestAsync();
         }
 
         private async void btnSave_Click(object sender, EventArgs e)

@@ -36,8 +36,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 AppPermission.INVOICE_VIEW_ALL,
                 AppPermission.INVOICE_CANCEL,
                 AppPermission.RETURN_EXCHANGE_APPROVE,
-                AppPermission.SHIFT_VIEW_ALL,
-                AppPermission.SHIFT_APPROVE,
                 AppPermission.STOCK_DISPOSE_VIEW
             });
 
@@ -62,7 +60,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 AppPermission.STOCK_ALERT_REPORT,
                 AppPermission.INVOICE_CREATE,
                 AppPermission.INVOICE_VIEW_OWN,
-                AppPermission.SHIFT_OPERATE,
                 AppPermission.INVOICE_CANCEL_REQUEST,
                 AppPermission.RETURN_EXCHANGE_CREATE,
                 AppPermission.POS_CART_HOLD,

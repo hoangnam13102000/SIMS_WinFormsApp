@@ -8,6 +8,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
     partial class InvoiceDetailsDialog
     {
         private IContainer components = null;
+        private System.Drawing.Printing.PrintDocument _printDocument;
         private PrintPreviewDialog _printPreviewDialog;
         private TableLayoutPanel _root;
         private Label _invoiceHeading;
@@ -60,9 +61,11 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private Button _returnButton;
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InvoiceDetailsDialog));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.components = new System.ComponentModel.Container();
+            this._printDocument = new System.Drawing.Printing.PrintDocument();
             this._printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._invoiceHeading = new System.Windows.Forms.Label();
@@ -814,7 +817,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             // _receiptLogo
             // 
             this._receiptLogo.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this._receiptLogo.Image = global::SIMS_WinFormsApp.Properties.Resources.logo_icon;
+            this._receiptLogo.Image = ((System.Drawing.Image)(resources.GetObject("_receiptLogo.Image")));
             this._receiptLogo.Location = new System.Drawing.Point(79, 4);
             this._receiptLogo.Margin = new System.Windows.Forms.Padding(2, 4, 2, 2);
             this._receiptLogo.Name = "_receiptLogo";

@@ -136,8 +136,7 @@ GO
 
 /* ============================================================
    III. HOA DON BAN HANG
-   (Da bo he thong Ca ban hang/Shifts de giam do phuc tap - R4 "huy
-   trong cung ngay" gio kiem tra truc tiep qua Invoices.CreatedAt,
+   (R4 "huy trong cung ngay" gio kiem tra truc tiep qua Invoices.CreatedAt,
    xem trg_Invoices_CancelSameDayOnly trong Trigger_SIMS.sql)
    ============================================================ */
 CREATE TABLE Invoices (

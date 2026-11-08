@@ -42,6 +42,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public frmPurchaseReceipt(IInventoryService service, IUserSession session)
         {
             InitializeComponent();
+            // Giữ kích thước runtime cũ; Designer dùng ClientSize nhỏ hơn để preview vừa màn hình.
+            ClientSize = new Size(1040, 760);
             _service = service;
             _session = session;
             Load += Editor_Load;

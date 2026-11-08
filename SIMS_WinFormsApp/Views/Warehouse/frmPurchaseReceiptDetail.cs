@@ -145,7 +145,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             return IsCancelled(status) ? "Đã hủy" : "Hoàn tất";
         }
 
-        private sealed class RoundedInformationPanel : Panel
+        public sealed class RoundedInformationPanel : Panel
         {
             public Color FillColor { get; set; }
 
@@ -166,7 +166,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
         }
 
-        private sealed class RoundedBadgeLabel : Label
+        public sealed class RoundedBadgeLabel : Label
         {
             public Color FillColor { get; set; }
             public Color TextColor { get; set; }

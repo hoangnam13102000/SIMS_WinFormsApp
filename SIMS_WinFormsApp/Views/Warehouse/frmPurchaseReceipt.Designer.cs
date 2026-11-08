@@ -68,603 +68,833 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void InitializeComponent()
         {
-            components = new Container();
-            _headerPanel = new Panel();
-            _headerIconPanel = new Panel();
-            _headerIcon = new IconPictureBox();
-            _titleLabel = new Label();
-            _subtitleLabel = new Label();
-            _demoButton = new Button();
-            _headerDivider = new Panel();
-            _bodyPanel = new Panel();
-            _supplierCard = new CardPanel();
-            _supplierTitle = new Label();
-            _supplierRequired = new Label();
-            _supplierComboBox = new ComboBox();
-            _entryCard = new CardPanel();
-            _entryIcon = new IconPictureBox();
-            _entryTitle = new Label();
-            _productLabel = new Label();
-            _quantityLabel = new Label();
-            _priceLabel = new Label();
-            _lotNumberLabel = new Label();
-            _manufactureDateLabel = new Label();
-            _expiryDateLabel = new Label();
-            _productComboBox = new ComboBox();
-            _quantityTextBox = new TextBox();
-            _priceTextBox = new TextBox();
-            _lotNumberTextBox = new TextBox();
-            _manufactureDateBox = new DateFilterBox();
-            _expiryDateBox = new DateFilterBox();
-            _addLineButton = new Button();
-            _linesCard = new CardPanel();
-            _linesIcon = new IconPictureBox();
-            _linesTitle = new Label();
-            _lineCountLabel = new Label();
-            _linesGrid = new DataGridView();
-            _emptyLabel = new Label();
-            _productColumn = new DataGridViewTextBoxColumn();
-            _quantityColumn = new DataGridViewTextBoxColumn();
-            _importPriceColumn = new DataGridViewTextBoxColumn();
-            _lotNumberColumn = new DataGridViewTextBoxColumn();
-            _manufactureColumn = new DataGridViewTextBoxColumn();
-            _expiryColumn = new DataGridViewTextBoxColumn();
-            _amountColumn = new DataGridViewTextBoxColumn();
-            _removeColumn = new DataGridViewTextBoxColumn();
-            _footerPanel = new Panel();
-            _totalCaptionLabel = new Label();
-            _totalValueLabel = new Label();
-            _cancelButton = new IconButton();
-            _saveButton = new IconButton();
-            _footerDivider = new Panel();
-            ((ISupportInitialize)_headerIcon).BeginInit();
-            ((ISupportInitialize)_entryIcon).BeginInit();
-            ((ISupportInitialize)_linesIcon).BeginInit();
-            ((ISupportInitialize)_linesGrid).BeginInit();
-            _headerPanel.SuspendLayout();
-            _headerIconPanel.SuspendLayout();
-            _bodyPanel.SuspendLayout();
-            _supplierCard.SuspendLayout();
-            _entryCard.SuspendLayout();
-            _linesCard.SuspendLayout();
-            _footerPanel.SuspendLayout();
-            SuspendLayout();
-            // Form
-            AutoScaleDimensions = new SizeF(96F, 96F);
-            AutoScaleMode = AutoScaleMode.Dpi;
-            AutoSize = false;
-            BackColor = Color.FromArgb(245, 247, 250);
-            CancelButton = _cancelButton;
-            ClientSize = new Size(1040, 760);
-            FormBorderStyle = FormBorderStyle.Sizable;
-            MinimumSize = new Size(1000, 640);
-            Name = "frmPurchaseReceipt";
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Lập phiếu nhập kho";
-            // Header
-            _headerPanel.AutoSize = false;
-            _headerPanel.BackColor = Color.White;
-            _headerPanel.BorderStyle = BorderStyle.FixedSingle;
-            _headerPanel.Controls.Add(_headerIconPanel);
-            _headerPanel.Controls.Add(_titleLabel);
-            _headerPanel.Controls.Add(_subtitleLabel);
-            _headerPanel.Controls.Add(_demoButton);
-            _headerPanel.Controls.Add(_headerDivider);
-            _headerPanel.Dock = DockStyle.Top;
-            _headerPanel.Location = new Point(0, 0);
-            _headerPanel.Name = "_headerPanel";
-            _headerPanel.Size = new Size(1040, 96);
-            _headerPanel.TabIndex = 0;
-            _headerIconPanel.AutoSize = false;
-            _headerIconPanel.BackColor = Color.FromArgb(232, 240, 254);
-            _headerIconPanel.Controls.Add(_headerIcon);
-            _headerIconPanel.Location = new Point(24, 20);
-            _headerIconPanel.Name = "_headerIconPanel";
-            _headerIconPanel.Size = new Size(56, 56);
-            _headerIconPanel.TabIndex = 0;
-            _headerIcon.AutoSize = false;
-            _headerIcon.BackColor = Color.Transparent;
-            _headerIcon.ForeColor = Color.FromArgb(37, 99, 235);
-            _headerIcon.IconChar = IconChar.FileLines;
-            _headerIcon.IconColor = Color.FromArgb(37, 99, 235);
-            _headerIcon.IconFont = IconFont.Auto;
-            _headerIcon.IconSize = 28;
-            _headerIcon.Location = new Point(14, 14);
-            _headerIcon.Name = "_headerIcon";
-            _headerIcon.Size = new Size(28, 28);
-            _headerIcon.SizeMode = PictureBoxSizeMode.CenterImage;
-            _headerIcon.TabStop = false;
-            _titleLabel.AutoSize = false;
-            _titleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-            _titleLabel.ForeColor = Color.FromArgb(30, 41, 59);
-            _titleLabel.Location = new Point(96, 18);
-            _titleLabel.Name = "_titleLabel";
-            _titleLabel.Size = new Size(600, 34);
-            _titleLabel.TabIndex = 1;
-            _titleLabel.Text = "Lập phiếu nhập kho";
-            _titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _titleLabel.UseMnemonic = false;
-            _subtitleLabel.AutoSize = false;
-            _subtitleLabel.Font = new Font("Segoe UI", 9.5F);
-            _subtitleLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _subtitleLabel.Location = new Point(96, 56);
-            _subtitleLabel.Name = "_subtitleLabel";
-            _subtitleLabel.Size = new Size(600, 22);
-            _subtitleLabel.TabIndex = 2;
-            _subtitleLabel.Text = "Một phiếu · nhiều sản phẩm · mỗi dòng tự sinh 1 lô hàng (FEFO)";
-            _subtitleLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _subtitleLabel.UseMnemonic = false;
-            _demoButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _demoButton.AutoSize = false;
-            _demoButton.BackColor = Color.FromArgb(37, 99, 235);
-            _demoButton.FlatAppearance.BorderSize = 0;
-            _demoButton.FlatStyle = FlatStyle.Flat;
-            _demoButton.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            _demoButton.ForeColor = Color.White;
-            _demoButton.Location = new Point(814, 16);
-            _demoButton.Name = "_demoButton";
-            _demoButton.Size = new Size(180, 38);
-            _demoButton.TabIndex = 3;
-            _demoButton.Text = "⚡ Điền dữ liệu Demo";
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            this._headerPanel = new System.Windows.Forms.Panel();
+            this._headerIconPanel = new System.Windows.Forms.Panel();
+            this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
+            this._titleLabel = new System.Windows.Forms.Label();
+            this._subtitleLabel = new System.Windows.Forms.Label();
+            this._demoButton = new System.Windows.Forms.Button();
+            this._headerDivider = new System.Windows.Forms.Panel();
+            this._bodyPanel = new System.Windows.Forms.Panel();
+            this._footerPanel = new System.Windows.Forms.Panel();
+            this._totalCaptionLabel = new System.Windows.Forms.Label();
+            this._totalValueLabel = new System.Windows.Forms.Label();
+            this._saveButton = new FontAwesome.Sharp.IconButton();
+            this._cancelButton = new FontAwesome.Sharp.IconButton();
+            this._footerDivider = new System.Windows.Forms.Panel();
+            this._supplierCard = new SIMS_WinFormsApp.UI.Controls.CardPanel();
+            this._supplierTitle = new System.Windows.Forms.Label();
+            this._supplierRequired = new System.Windows.Forms.Label();
+            this._supplierComboBox = new System.Windows.Forms.ComboBox();
+            this._entryCard = new SIMS_WinFormsApp.UI.Controls.CardPanel();
+            this._entryIcon = new FontAwesome.Sharp.IconPictureBox();
+            this._entryTitle = new System.Windows.Forms.Label();
+            this._productLabel = new System.Windows.Forms.Label();
+            this._quantityLabel = new System.Windows.Forms.Label();
+            this._priceLabel = new System.Windows.Forms.Label();
+            this._productComboBox = new System.Windows.Forms.ComboBox();
+            this._quantityTextBox = new System.Windows.Forms.TextBox();
+            this._priceTextBox = new System.Windows.Forms.TextBox();
+            this._lotNumberLabel = new System.Windows.Forms.Label();
+            this._manufactureDateLabel = new System.Windows.Forms.Label();
+            this._expiryDateLabel = new System.Windows.Forms.Label();
+            this._lotNumberTextBox = new System.Windows.Forms.TextBox();
+            this._manufactureDateBox = new SIMS_WinFormsApp.UI.Controls.DateFilterBox();
+            this._expiryDateBox = new SIMS_WinFormsApp.UI.Controls.DateFilterBox();
+            this._addLineButton = new System.Windows.Forms.Button();
+            this._linesCard = new SIMS_WinFormsApp.UI.Controls.CardPanel();
+            this._linesIcon = new FontAwesome.Sharp.IconPictureBox();
+            this._linesTitle = new System.Windows.Forms.Label();
+            this._lineCountLabel = new System.Windows.Forms.Label();
+            this._linesGrid = new System.Windows.Forms.DataGridView();
+            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Quantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ImportPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LotNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ManufactureDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExpiryDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RemoveLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._emptyLabel = new System.Windows.Forms.Label();
+            this._headerPanel.SuspendLayout();
+            this._headerIconPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
+            this._bodyPanel.SuspendLayout();
+            this._footerPanel.SuspendLayout();
+            this._supplierCard.SuspendLayout();
+            this._entryCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._entryIcon)).BeginInit();
+            this._linesCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._linesIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._linesGrid)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // _headerPanel
+            // 
+            this._headerPanel.BackColor = System.Drawing.Color.White;
+            this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._headerPanel.Controls.Add(this._headerIconPanel);
+            this._headerPanel.Controls.Add(this._titleLabel);
+            this._headerPanel.Controls.Add(this._subtitleLabel);
+            this._headerPanel.Controls.Add(this._demoButton);
+            this._headerPanel.Controls.Add(this._headerDivider);
+            this._headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this._headerPanel.Location = new System.Drawing.Point(0, 0);
+            this._headerPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerPanel.Name = "_headerPanel";
+            this._headerPanel.Size = new System.Drawing.Size(1467, 143);
+            this._headerPanel.TabIndex = 0;
+            // 
+            // _headerIconPanel
+            // 
+            this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
+            this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Location = new System.Drawing.Point(36, 30);
+            this._headerIconPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerIconPanel.Name = "_headerIconPanel";
+            this._headerIconPanel.Size = new System.Drawing.Size(84, 84);
+            this._headerIconPanel.TabIndex = 0;
+            // 
+            // _headerIcon
+            // 
+            this._headerIcon.BackColor = System.Drawing.Color.Transparent;
+            this._headerIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.FileText;
+            this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._headerIcon.IconSize = 42;
+            this._headerIcon.Location = new System.Drawing.Point(21, 21);
+            this._headerIcon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerIcon.Name = "_headerIcon";
+            this._headerIcon.Size = new System.Drawing.Size(42, 42);
+            this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._headerIcon.TabIndex = 0;
+            this._headerIcon.TabStop = false;
+            // 
+            // _titleLabel
+            // 
+            this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._titleLabel.Location = new System.Drawing.Point(144, 27);
+            this._titleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._titleLabel.Name = "_titleLabel";
+            this._titleLabel.Size = new System.Drawing.Size(900, 51);
+            this._titleLabel.TabIndex = 1;
+            this._titleLabel.Text = "Lập phiếu nhập kho";
+            this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._titleLabel.UseMnemonic = false;
+            // 
+            // _subtitleLabel
+            // 
+            this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._subtitleLabel.Location = new System.Drawing.Point(144, 84);
+            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._subtitleLabel.Name = "_subtitleLabel";
+            this._subtitleLabel.Size = new System.Drawing.Size(900, 33);
+            this._subtitleLabel.TabIndex = 2;
+            this._subtitleLabel.Text = "Một phiếu · nhiều sản phẩm · mỗi dòng tự sinh 1 lô hàng (FEFO)";
+            this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._subtitleLabel.UseMnemonic = false;
+            // 
+            // _demoButton
+            // 
+            this._demoButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._demoButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._demoButton.FlatAppearance.BorderSize = 0;
+            this._demoButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._demoButton.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this._demoButton.ForeColor = System.Drawing.Color.White;
+            this._demoButton.Location = new System.Drawing.Point(1129, 24);
+            this._demoButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._demoButton.Name = "_demoButton";
+            this._demoButton.Size = new System.Drawing.Size(270, 57);
+            this._demoButton.TabIndex = 3;
+            this._demoButton.Text = "⚡ Điền dữ liệu Demo";
+            this._demoButton.UseVisualStyleBackColor = false;
             this._demoButton.Click += new System.EventHandler(this.DemoButton_Click);
-            _demoButton.UseVisualStyleBackColor = false;
-            _headerDivider.BackColor = Color.FromArgb(226, 232, 240);
-            _headerDivider.Dock = DockStyle.Bottom;
-            _headerDivider.Location = new Point(0, 95);
-            _headerDivider.Name = "_headerDivider";
-            _headerDivider.AutoSize = false;
-            _headerDivider.Size = new Size(1040, 1);
-            // Body
-            _bodyPanel.AutoScroll = true;
-            _bodyPanel.AutoSize = false;
-            _bodyPanel.BackColor = Color.FromArgb(245, 247, 250);
-            _bodyPanel.Dock = DockStyle.Fill;
-            _bodyPanel.Location = new Point(0, 96);
-            _bodyPanel.Name = "_bodyPanel";
-            _bodyPanel.Padding = Padding.Empty;
-            // Supplier card
-            _supplierCard.AutoSize = false;
-            _supplierCard.BackColor = Color.White;
-            _supplierCard.BorderStyle = BorderStyle.FixedSingle;
-            _supplierCard.FillColor = Color.White;
-            _supplierCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _supplierCard.Location = new Point(24, 66);
-            _supplierCard.Name = "_supplierCard";
-            _supplierCard.Size = new Size(970, 76);
-            _supplierTitle.AutoSize = true;
-            _supplierTitle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            _supplierTitle.ForeColor = Color.FromArgb(30, 41, 59);
-            _supplierTitle.Location = new Point(20, 27);
-            _supplierTitle.Name = "_supplierTitle";
-            _supplierTitle.Text = "Nhà cung cấp";
-            _supplierTitle.UseMnemonic = false;
-            _supplierRequired.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _supplierRequired.AutoSize = true;
-            _supplierRequired.Font = new Font("Segoe UI", 8.5F);
-            _supplierRequired.ForeColor = Color.FromArgb(100, 116, 139);
-            _supplierRequired.Location = new Point(870, 29);
-            _supplierRequired.Name = "_supplierRequired";
-            _supplierRequired.Text = "* bắt buộc";
-            _supplierRequired.UseMnemonic = false;
-            _supplierComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _supplierComboBox.AutoSize = false;
-            _supplierComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            _supplierComboBox.Font = new Font("Segoe UI", 10.5F);
-            _supplierComboBox.FormattingEnabled = true;
-            _supplierComboBox.Location = new Point(150, 20);
-            _supplierComboBox.Name = "_supplierComboBox";
-            _supplierComboBox.Size = new Size(520, 36);
-            _supplierCard.Controls.Add(_supplierTitle);
-            _supplierCard.Controls.Add(_supplierRequired);
-            _supplierCard.Controls.Add(_supplierComboBox);
-            _bodyPanel.Controls.Add(_supplierCard);
-            // Entry card
-            _entryCard.AutoSize = false;
-            _entryCard.BackColor = Color.White;
-            _entryCard.BorderStyle = BorderStyle.FixedSingle;
-            _entryCard.FillColor = Color.White;
-            _entryCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _entryCard.Location = new Point(24, 158);
-            _entryCard.Name = "_entryCard";
-            _entryCard.Size = new Size(970, 220);
-            _entryIcon.AutoSize = false;
-            _entryIcon.BackColor = Color.Transparent;
-            _entryIcon.ForeColor = Color.FromArgb(37, 99, 235);
-            _entryIcon.IconChar = IconChar.CirclePlus;
-            _entryIcon.IconColor = Color.FromArgb(37, 99, 235);
-            _entryIcon.IconFont = IconFont.Auto;
-            _entryIcon.IconSize = 18;
-            _entryIcon.Location = new Point(20, 18);
-            _entryIcon.Name = "_entryIcon";
-            _entryIcon.Size = new Size(18, 18);
-            _entryIcon.SizeMode = PictureBoxSizeMode.CenterImage;
-            _entryIcon.TabStop = false;
-            _entryTitle.AutoSize = false;
-            _entryTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            _entryTitle.ForeColor = Color.FromArgb(30, 41, 59);
-            _entryTitle.Location = new Point(46, 16);
-            _entryTitle.Name = "_entryTitle";
-            _entryTitle.Size = new Size(400, 24);
-            _entryTitle.Text = "Thêm sản phẩm vào phiếu";
-            _entryTitle.TextAlign = ContentAlignment.MiddleLeft;
-            _entryTitle.UseMnemonic = false;
-            _productLabel.AutoSize = true;
-            _productLabel.Font = new Font("Segoe UI", 9F);
-            _productLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _productLabel.Location = new Point(20, 56);
-            _productLabel.Text = "Sản phẩm *";
-            _productLabel.UseMnemonic = false;
-            _quantityLabel.AutoSize = true;
-            _quantityLabel.Font = new Font("Segoe UI", 9F);
-            _quantityLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _quantityLabel.Location = new Point(466, 56);
-            _quantityLabel.Text = "Số lượng *";
-            _quantityLabel.UseMnemonic = false;
-            _priceLabel.AutoSize = true;
-            _priceLabel.Font = new Font("Segoe UI", 9F);
-            _priceLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _priceLabel.Location = new Point(712, 56);
-            _priceLabel.Text = "Giá nhập *";
-            _priceLabel.UseMnemonic = false;
-            _productComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _productComboBox.AutoSize = false;
-            _productComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            _productComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
-            _productComboBox.DropDownStyle = ComboBoxStyle.DropDown;
-            _productComboBox.Font = new Font("Segoe UI", 10.5F);
-            _productComboBox.FormattingEnabled = true;
-            _productComboBox.Location = new Point(20, 78);
-            _productComboBox.Name = "_productComboBox";
-            _productComboBox.Size = new Size(430, 36);
-            _quantityTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _quantityTextBox.AutoSize = false;
-            _quantityTextBox.BorderStyle = BorderStyle.FixedSingle;
-            _quantityTextBox.Font = new Font("Segoe UI", 10.5F);
-            _quantityTextBox.Location = new Point(466, 78);
-            _quantityTextBox.Name = "_quantityTextBox";
-            _quantityTextBox.Size = new Size(230, 36);
-            _lotNumberTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _lotNumberTextBox.AutoSize = false;
-            _lotNumberTextBox.BorderStyle = BorderStyle.FixedSingle;
-            _lotNumberTextBox.Font = new Font("Segoe UI", 10.5F);
-            _lotNumberTextBox.Location = new Point(20, 156);
-            _lotNumberTextBox.Name = "_lotNumberTextBox";
-            _lotNumberTextBox.Size = new Size(200, 36);
-            _priceTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _priceTextBox.AutoSize = false;
-            _priceTextBox.BorderStyle = BorderStyle.FixedSingle;
-            _priceTextBox.Font = new Font("Segoe UI", 10.5F);
-            _priceTextBox.Location = new Point(712, 78);
-            _priceTextBox.Name = "_priceTextBox";
-            _priceTextBox.Size = new Size(238, 36);
-            _lotNumberLabel.AutoSize = true;
-            _lotNumberLabel.Font = new Font("Segoe UI", 9F);
-            _lotNumberLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _lotNumberLabel.Location = new Point(20, 134);
-            _lotNumberLabel.Text = "Số lô NCC *";
-            _lotNumberLabel.UseMnemonic = false;
-            _manufactureDateLabel.AutoSize = true;
-            _manufactureDateLabel.Font = new Font("Segoe UI", 9F);
-            _manufactureDateLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _manufactureDateLabel.Location = new Point(236, 134);
-            _manufactureDateLabel.Text = "NSX";
-            _manufactureDateLabel.UseMnemonic = false;
-            _expiryDateLabel.AutoSize = true;
-            _expiryDateLabel.Font = new Font("Segoe UI", 9F);
-            _expiryDateLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _expiryDateLabel.Location = new Point(466, 134);
-            _expiryDateLabel.Text = "HSD";
-            _expiryDateLabel.UseMnemonic = false;
-            _manufactureDateBox.AutoSize = false;
-            _manufactureDateBox.Font = new Font("Segoe UI", 10.5F);
-            _manufactureDateBox.Location = new Point(236, 156);
-            _manufactureDateBox.Name = "_manufactureDateBox";
-            _manufactureDateBox.Size = new Size(214, 36);
-            _expiryDateBox.AutoSize = false;
-            _expiryDateBox.Font = new Font("Segoe UI", 10.5F);
-            _expiryDateBox.Location = new Point(466, 156);
-            _expiryDateBox.Name = "_expiryDateBox";
-            _expiryDateBox.Size = new Size(230, 36);
-            _addLineButton.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            _addLineButton.AutoSize = false;
-            _addLineButton.BackColor = Color.FromArgb(37, 99, 235);
-            _addLineButton.FlatAppearance.BorderSize = 0;
-            _addLineButton.FlatStyle = FlatStyle.Flat;
-            _addLineButton.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            _addLineButton.ForeColor = Color.White;
-            _addLineButton.Location = new Point(712, 154);
-            _addLineButton.Name = "_addLineButton";
-            _addLineButton.Size = new Size(238, 40);
-            _addLineButton.Text = "+ Thêm dòng";
-            this._addLineButton.Click += new System.EventHandler(this.AddLineButton_Click);
-            _addLineButton.UseVisualStyleBackColor = false;
-            _entryCard.Controls.Add(_entryIcon);
-            _entryCard.Controls.Add(_entryTitle);
-            _entryCard.Controls.Add(_productLabel);
-            _entryCard.Controls.Add(_quantityLabel);
-            _entryCard.Controls.Add(_priceLabel);
-            _entryCard.Controls.Add(_productComboBox);
-            _entryCard.Controls.Add(_quantityTextBox);
-            _entryCard.Controls.Add(_priceTextBox);
-            _entryCard.Controls.Add(_lotNumberLabel);
-            _entryCard.Controls.Add(_manufactureDateLabel);
-            _entryCard.Controls.Add(_expiryDateLabel);
-            _entryCard.Controls.Add(_lotNumberTextBox);
-            _entryCard.Controls.Add(_manufactureDateBox);
-            _entryCard.Controls.Add(_expiryDateBox);
-            _entryCard.Controls.Add(_addLineButton);
-            _bodyPanel.Controls.Add(_entryCard);
-            // Lines card
-            _linesCard.AutoSize = false;
-            _linesCard.BackColor = Color.White;
-            _linesCard.BorderStyle = BorderStyle.FixedSingle;
-            _linesCard.FillColor = Color.White;
-            _linesCard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _linesCard.Location = new Point(24, 394);
-            _linesCard.Name = "_linesCard";
-            _linesCard.Size = new Size(970, 320);
-            _linesIcon.AutoSize = false;
-            _linesIcon.BackColor = Color.Transparent;
-            _linesIcon.ForeColor = Color.FromArgb(37, 99, 235);
-            _linesIcon.IconChar = IconChar.ListUl;
-            _linesIcon.IconColor = Color.FromArgb(37, 99, 235);
-            _linesIcon.IconFont = IconFont.Auto;
-            _linesIcon.IconSize = 18;
-            _linesIcon.Location = new Point(20, 18);
-            _linesIcon.Name = "_linesIcon";
-            _linesIcon.Size = new Size(18, 18);
-            _linesIcon.SizeMode = PictureBoxSizeMode.CenterImage;
-            _linesIcon.TabStop = false;
-            _linesTitle.AutoSize = false;
-            _linesTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            _linesTitle.ForeColor = Color.FromArgb(30, 41, 59);
-            _linesTitle.Location = new Point(46, 16);
-            _linesTitle.Name = "_linesTitle";
-            _linesTitle.Size = new Size(600, 24);
-            _linesTitle.Text = "Danh sách sản phẩm trên phiếu";
-            _linesTitle.TextAlign = ContentAlignment.MiddleLeft;
-            _linesTitle.UseMnemonic = false;
-            _lineCountLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _lineCountLabel.AutoSize = true;
-            _lineCountLabel.Font = new Font("Segoe UI", 9F);
-            _lineCountLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _lineCountLabel.Location = new Point(880, 18);
-            _lineCountLabel.Name = "_lineCountLabel";
-            _lineCountLabel.Text = "0 dòng";
-            _lineCountLabel.TextAlign = ContentAlignment.MiddleRight;
-            _lineCountLabel.UseMnemonic = false;
-            _linesGrid.AllowUserToAddRows = false;
-            _linesGrid.AllowUserToDeleteRows = false;
-            _linesGrid.AllowUserToResizeRows = false;
-            _linesGrid.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _linesGrid.AutoSize = false;
-            _linesGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            _linesGrid.BackgroundColor = Color.White;
-            _linesGrid.BorderStyle = BorderStyle.None;
-            _linesGrid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            _linesGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            _linesGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 41, 59);
-            _linesGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            _linesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            _linesGrid.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 0, 0, 0);
-            _linesGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(30, 41, 59);
-            _linesGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
-            _linesGrid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            _linesGrid.ColumnHeadersHeight = 40;
-            _linesGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            _linesGrid.Columns.AddRange(new DataGridViewColumn[] {
-                _productColumn, _quantityColumn, _importPriceColumn, _lotNumberColumn,
-                _manufactureColumn, _expiryColumn, _amountColumn, _removeColumn });
-            _linesGrid.DefaultCellStyle.BackColor = Color.White;
-            _linesGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9.5F);
-            _linesGrid.DefaultCellStyle.ForeColor = Color.FromArgb(71, 85, 105);
-            _linesGrid.DefaultCellStyle.Padding = new Padding(12, 0, 0, 0);
-            _linesGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(239, 246, 255);
-            _linesGrid.DefaultCellStyle.SelectionForeColor = Color.FromArgb(30, 41, 59);
-            _linesGrid.EnableHeadersVisualStyles = false;
-            _linesGrid.GridColor = Color.FromArgb(226, 232, 240);
-            _linesGrid.Location = new Point(20, 52);
-            _linesGrid.MultiSelect = false;
-            _linesGrid.Name = "_linesGrid";
-            _linesGrid.ReadOnly = true;
-            _linesGrid.RowHeadersVisible = false;
-            _linesGrid.RowTemplate.Height = 40;
-            _linesGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            _linesGrid.ScrollBars = ScrollBars.Vertical;
-            _linesGrid.Size = new Size(930, 250);
-            _productColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _productColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            _productColumn.FillWeight = 28F;
-            _productColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            _productColumn.HeaderText = "Sản phẩm";
-            _productColumn.MinimumWidth = 160;
-            _productColumn.Name = "Product";
-            _productColumn.ReadOnly = true;
-            _productColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _quantityColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _quantityColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _quantityColumn.DefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
-            _quantityColumn.FillWeight = 8F;
-            _quantityColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _quantityColumn.HeaderCell.Style.Padding = new Padding(12, 0, 12, 0);
-            _quantityColumn.HeaderText = "SL";
-            _quantityColumn.MinimumWidth = 48;
-            _quantityColumn.Name = "Quantity";
-            _quantityColumn.ReadOnly = true;
-            _quantityColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _importPriceColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _importPriceColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _importPriceColumn.DefaultCellStyle.Format = "N0";
-            _importPriceColumn.DefaultCellStyle.FormatProvider = CultureInfo.GetCultureInfo("vi-VN");
-            _importPriceColumn.DefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
-            _importPriceColumn.FillWeight = 12F;
-            _importPriceColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _importPriceColumn.HeaderCell.Style.Padding = new Padding(12, 0, 12, 0);
-            _importPriceColumn.HeaderText = "Giá nhập";
-            _importPriceColumn.MinimumWidth = 80;
-            _importPriceColumn.Name = "ImportPrice";
-            _importPriceColumn.ReadOnly = true;
-            _importPriceColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _lotNumberColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _lotNumberColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            _lotNumberColumn.FillWeight = 14F;
-            _lotNumberColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            _lotNumberColumn.HeaderText = "Số lô NCC";
-            _lotNumberColumn.MinimumWidth = 90;
-            _lotNumberColumn.Name = "LotNumber";
-            _lotNumberColumn.ReadOnly = true;
-            _lotNumberColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _manufactureColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _manufactureColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _manufactureColumn.DefaultCellStyle.Format = "dd/MM/yyyy";
-            _manufactureColumn.FillWeight = 11F;
-            _manufactureColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _manufactureColumn.HeaderText = "NSX";
-            _manufactureColumn.MinimumWidth = 75;
-            _manufactureColumn.Name = "ManufactureDate";
-            _manufactureColumn.ReadOnly = true;
-            _manufactureColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _expiryColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _expiryColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _expiryColumn.DefaultCellStyle.Format = "dd/MM/yyyy";
-            _expiryColumn.FillWeight = 11F;
-            _expiryColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _expiryColumn.HeaderText = "HSD";
-            _expiryColumn.MinimumWidth = 75;
-            _expiryColumn.Name = "ExpiryDate";
-            _expiryColumn.ReadOnly = true;
-            _expiryColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _amountColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _amountColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _amountColumn.DefaultCellStyle.Format = "N0";
-            _amountColumn.DefaultCellStyle.FormatProvider = CultureInfo.GetCultureInfo("vi-VN");
-            _amountColumn.DefaultCellStyle.Padding = new Padding(12, 0, 12, 0);
-            _amountColumn.FillWeight = 13F;
-            _amountColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
-            _amountColumn.HeaderCell.Style.Padding = new Padding(12, 0, 12, 0);
-            _amountColumn.HeaderText = "Thành tiền";
-            _amountColumn.MinimumWidth = 100;
-            _amountColumn.Name = "Amount";
-            _amountColumn.ReadOnly = true;
-            _amountColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _removeColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            _removeColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _removeColumn.DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
-            _removeColumn.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _removeColumn.HeaderText = string.Empty;
-            _removeColumn.Name = "RemoveLine";
-            _removeColumn.ReadOnly = true;
-            _removeColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            _removeColumn.Width = 48;
-            _emptyLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _emptyLabel.AutoSize = false;
-            _emptyLabel.BackColor = Color.White;
-            _emptyLabel.Font = new Font("Segoe UI", 9.5F);
-            _emptyLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _emptyLabel.Location = new Point(20, 92);
-            _emptyLabel.Name = "_emptyLabel";
-            _emptyLabel.Size = new Size(930, 210);
-            _emptyLabel.Text = "Chưa có sản phẩm — dùng form phía trên để thêm dòng";
-            _emptyLabel.TextAlign = ContentAlignment.MiddleCenter;
-            _emptyLabel.UseMnemonic = false;
-            _emptyLabel.Visible = true;
-            _linesCard.Controls.Add(_linesIcon);
-            _linesCard.Controls.Add(_linesTitle);
-            _linesCard.Controls.Add(_lineCountLabel);
-            _linesCard.Controls.Add(_linesGrid);
-            _linesCard.Controls.Add(_emptyLabel);
-            _bodyPanel.Controls.Add(_linesCard);
-            // Footer
-            _footerPanel.AutoSize = false;
-            _footerPanel.BackColor = Color.White;
-            _footerPanel.Dock = DockStyle.Bottom;
-            _footerPanel.Location = new Point(0, 684);
-            _footerPanel.Name = "_footerPanel";
-            _footerPanel.Size = new Size(1040, 76);
-            _totalCaptionLabel.AutoSize = false;
-            _totalCaptionLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            _totalCaptionLabel.ForeColor = Color.FromArgb(100, 116, 139);
-            _totalCaptionLabel.Location = new Point(24, 12);
-            _totalCaptionLabel.Name = "_totalCaptionLabel";
-            _totalCaptionLabel.Size = new Size(200, 18);
-            _totalCaptionLabel.Text = "TỔNG TIỀN";
-            _totalCaptionLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _totalCaptionLabel.UseMnemonic = false;
-            _totalValueLabel.AutoSize = false;
-            _totalValueLabel.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            _totalValueLabel.ForeColor = Color.FromArgb(37, 99, 235);
-            _totalValueLabel.Location = new Point(24, 32);
-            _totalValueLabel.Name = "_totalValueLabel";
-            _totalValueLabel.Size = new Size(320, 34);
-            _totalValueLabel.Text = "0 đ";
-            _totalValueLabel.TextAlign = ContentAlignment.MiddleLeft;
-            _totalValueLabel.UseMnemonic = false;
-            _saveButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _saveButton.AutoSize = false;
-            _saveButton.BackColor = Color.FromArgb(37, 99, 235);
-            _saveButton.FlatAppearance.BorderSize = 0;
-            _saveButton.FlatStyle = FlatStyle.Flat;
-            _saveButton.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            _saveButton.ForeColor = Color.White;
-            _saveButton.IconChar = IconChar.FloppyDisk;
-            _saveButton.IconColor = Color.White;
-            _saveButton.IconFont = IconFont.Auto;
-            _saveButton.IconSize = 18;
-            _saveButton.ImageAlign = ContentAlignment.MiddleLeft;
-            _saveButton.Location = new Point(806, 15);
-            _saveButton.Name = "_saveButton";
-            _saveButton.Size = new Size(210, 46);
-            _saveButton.Text = "Lưu phiếu nhập";
-            _saveButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            // 
+            // _headerDivider
+            // 
+            this._headerDivider.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._headerDivider.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this._headerDivider.Location = new System.Drawing.Point(0, 139);
+            this._headerDivider.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._headerDivider.Name = "_headerDivider";
+            this._headerDivider.Size = new System.Drawing.Size(1465, 2);
+            this._headerDivider.TabIndex = 4;
+            // 
+            // _bodyPanel
+            // 
+            this._bodyPanel.AutoScroll = true;
+            this._bodyPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this._bodyPanel.Controls.Add(this._supplierCard);
+            this._bodyPanel.Controls.Add(this._entryCard);
+            this._bodyPanel.Controls.Add(this._linesCard);
+            this._bodyPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._bodyPanel.Location = new System.Drawing.Point(0, 143);
+            this._bodyPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._bodyPanel.Name = "_bodyPanel";
+            this._bodyPanel.Size = new System.Drawing.Size(1467, 619);
+            this._bodyPanel.TabIndex = 0;
+            // 
+            // _footerPanel
+            // 
+            this._footerPanel.BackColor = System.Drawing.Color.White;
+            this._footerPanel.Controls.Add(this._totalCaptionLabel);
+            this._footerPanel.Controls.Add(this._totalValueLabel);
+            this._footerPanel.Controls.Add(this._saveButton);
+            this._footerPanel.Controls.Add(this._cancelButton);
+            this._footerPanel.Controls.Add(this._footerDivider);
+            this._footerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this._footerPanel.Location = new System.Drawing.Point(0, 762);
+            this._footerPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._footerPanel.Name = "_footerPanel";
+            this._footerPanel.Size = new System.Drawing.Size(1467, 114);
+            this._footerPanel.TabIndex = 1;
+            // 
+            // _totalCaptionLabel
+            // 
+            this._totalCaptionLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._totalCaptionLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._totalCaptionLabel.Location = new System.Drawing.Point(36, 18);
+            this._totalCaptionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._totalCaptionLabel.Name = "_totalCaptionLabel";
+            this._totalCaptionLabel.Size = new System.Drawing.Size(300, 27);
+            this._totalCaptionLabel.TabIndex = 0;
+            this._totalCaptionLabel.Text = "TỔNG TIỀN";
+            this._totalCaptionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._totalCaptionLabel.UseMnemonic = false;
+            // 
+            // _totalValueLabel
+            // 
+            this._totalValueLabel.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this._totalValueLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._totalValueLabel.Location = new System.Drawing.Point(36, 48);
+            this._totalValueLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._totalValueLabel.Name = "_totalValueLabel";
+            this._totalValueLabel.Size = new System.Drawing.Size(480, 51);
+            this._totalValueLabel.TabIndex = 1;
+            this._totalValueLabel.Text = "0 đ";
+            this._totalValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._totalValueLabel.UseMnemonic = false;
+            // 
+            // _saveButton
+            // 
+            this._saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._saveButton.FlatAppearance.BorderSize = 0;
+            this._saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._saveButton.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this._saveButton.ForeColor = System.Drawing.Color.White;
+            this._saveButton.IconChar = FontAwesome.Sharp.IconChar.FloppyDisk;
+            this._saveButton.IconColor = System.Drawing.Color.White;
+            this._saveButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._saveButton.IconSize = 18;
+            this._saveButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._saveButton.Location = new System.Drawing.Point(1116, 22);
+            this._saveButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._saveButton.Name = "_saveButton";
+            this._saveButton.Size = new System.Drawing.Size(315, 69);
+            this._saveButton.TabIndex = 2;
+            this._saveButton.Text = "Lưu phiếu nhập";
+            this._saveButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this._saveButton.UseVisualStyleBackColor = false;
             this._saveButton.Click += new System.EventHandler(this.SaveButton_Click);
-            _saveButton.UseVisualStyleBackColor = false;
-            _cancelButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _cancelButton.AutoSize = false;
-            _cancelButton.BackColor = Color.White;
-            _cancelButton.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
-            _cancelButton.FlatAppearance.BorderSize = 1;
-            _cancelButton.FlatStyle = FlatStyle.Flat;
-            _cancelButton.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            _cancelButton.ForeColor = Color.FromArgb(51, 65, 85);
-            _cancelButton.IconChar = IconChar.Xmark;
-            _cancelButton.IconColor = Color.FromArgb(51, 65, 85);
-            _cancelButton.IconFont = IconFont.Auto;
-            _cancelButton.IconSize = 18;
-            _cancelButton.ImageAlign = ContentAlignment.MiddleLeft;
-            _cancelButton.Location = new Point(694, 15);
-            _cancelButton.Name = "_cancelButton";
-            _cancelButton.Size = new Size(100, 46);
-            _cancelButton.Text = "Hủy";
-            _cancelButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            // 
+            // _cancelButton
+            // 
+            this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._cancelButton.BackColor = System.Drawing.Color.White;
+            this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this._cancelButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this._cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._cancelButton.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this._cancelButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this._cancelButton.IconChar = FontAwesome.Sharp.IconChar.Remove;
+            this._cancelButton.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this._cancelButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._cancelButton.IconSize = 18;
+            this._cancelButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._cancelButton.Location = new System.Drawing.Point(948, 22);
+            this._cancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._cancelButton.Name = "_cancelButton";
+            this._cancelButton.Size = new System.Drawing.Size(150, 69);
+            this._cancelButton.TabIndex = 3;
+            this._cancelButton.Text = "Hủy";
+            this._cancelButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this._cancelButton.UseVisualStyleBackColor = false;
             this._cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-            _cancelButton.UseVisualStyleBackColor = false;
-            _footerPanel.Controls.Add(_totalCaptionLabel);
-            _footerPanel.Controls.Add(_totalValueLabel);
-            _footerPanel.Controls.Add(_saveButton);
-            _footerPanel.Controls.Add(_cancelButton);
-            _footerPanel.Controls.Add(_footerDivider);
-            _footerDivider.BackColor = Color.FromArgb(226, 232, 240);
-            _footerDivider.Dock = DockStyle.Top;
-            _footerDivider.Location = new Point(0, 0);
-            _footerDivider.Name = "_footerDivider";
-            _footerDivider.AutoSize = false;
-            _footerDivider.Size = new Size(1040, 1);
-            // Form controls
-            Controls.Add(_bodyPanel);
-            Controls.Add(_footerPanel);
-            Controls.Add(_headerPanel);
-            ((ISupportInitialize)_headerIcon).EndInit();
-            ((ISupportInitialize)_entryIcon).EndInit();
-            ((ISupportInitialize)_linesIcon).EndInit();
-            ((ISupportInitialize)_linesGrid).EndInit();
-            _headerPanel.ResumeLayout(false);
-            _headerIconPanel.ResumeLayout(false);
-            _bodyPanel.ResumeLayout(false);
-            _supplierCard.ResumeLayout(false);
-            _entryCard.ResumeLayout(false);
-            _linesCard.ResumeLayout(false);
-            _footerPanel.ResumeLayout(false);
-            ResumeLayout(false);
+            // 
+            // _footerDivider
+            // 
+            this._footerDivider.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._footerDivider.Dock = System.Windows.Forms.DockStyle.Top;
+            this._footerDivider.Location = new System.Drawing.Point(0, 0);
+            this._footerDivider.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._footerDivider.Name = "_footerDivider";
+            this._footerDivider.Size = new System.Drawing.Size(1467, 2);
+            this._footerDivider.TabIndex = 4;
+            // 
+            // _supplierCard
+            // 
+            this._supplierCard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._supplierCard.BackColor = System.Drawing.Color.White;
+            this._supplierCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._supplierCard.Controls.Add(this._supplierTitle);
+            this._supplierCard.Controls.Add(this._supplierRequired);
+            this._supplierCard.Controls.Add(this._supplierComboBox);
+            this._supplierCard.FillColor = System.Drawing.Color.White;
+            this._supplierCard.Location = new System.Drawing.Point(36, 99);
+            this._supplierCard.Margin = new System.Windows.Forms.Padding(4);
+            this._supplierCard.Name = "_supplierCard";
+            this._supplierCard.Size = new System.Drawing.Size(2621, 113);
+            this._supplierCard.TabIndex = 0;
+            // 
+            // _supplierTitle
+            // 
+            this._supplierTitle.AutoSize = true;
+            this._supplierTitle.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this._supplierTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._supplierTitle.Location = new System.Drawing.Point(30, 40);
+            this._supplierTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._supplierTitle.Name = "_supplierTitle";
+            this._supplierTitle.Size = new System.Drawing.Size(149, 30);
+            this._supplierTitle.TabIndex = 0;
+            this._supplierTitle.Text = "Nhà cung cấp";
+            this._supplierTitle.UseMnemonic = false;
+            // 
+            // _supplierRequired
+            // 
+            this._supplierRequired.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._supplierRequired.AutoSize = true;
+            this._supplierRequired.Font = new System.Drawing.Font("Segoe UI", 8.5F);
+            this._supplierRequired.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._supplierRequired.Location = new System.Drawing.Point(2472, 44);
+            this._supplierRequired.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._supplierRequired.Name = "_supplierRequired";
+            this._supplierRequired.Size = new System.Drawing.Size(90, 23);
+            this._supplierRequired.TabIndex = 1;
+            this._supplierRequired.Text = "* bắt buộc";
+            this._supplierRequired.UseMnemonic = false;
+            // 
+            // _supplierComboBox
+            // 
+            this._supplierComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._supplierComboBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._supplierComboBox.FormattingEnabled = true;
+            this._supplierComboBox.Location = new System.Drawing.Point(225, 30);
+            this._supplierComboBox.Margin = new System.Windows.Forms.Padding(4);
+            this._supplierComboBox.Name = "_supplierComboBox";
+            this._supplierComboBox.Size = new System.Drawing.Size(778, 38);
+            this._supplierComboBox.TabIndex = 2;
+            // 
+            // _entryCard
+            // 
+            this._entryCard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._entryCard.BackColor = System.Drawing.Color.White;
+            this._entryCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._entryCard.Controls.Add(this._entryIcon);
+            this._entryCard.Controls.Add(this._entryTitle);
+            this._entryCard.Controls.Add(this._productLabel);
+            this._entryCard.Controls.Add(this._quantityLabel);
+            this._entryCard.Controls.Add(this._priceLabel);
+            this._entryCard.Controls.Add(this._productComboBox);
+            this._entryCard.Controls.Add(this._quantityTextBox);
+            this._entryCard.Controls.Add(this._priceTextBox);
+            this._entryCard.Controls.Add(this._lotNumberLabel);
+            this._entryCard.Controls.Add(this._manufactureDateLabel);
+            this._entryCard.Controls.Add(this._expiryDateLabel);
+            this._entryCard.Controls.Add(this._lotNumberTextBox);
+            this._entryCard.Controls.Add(this._manufactureDateBox);
+            this._entryCard.Controls.Add(this._expiryDateBox);
+            this._entryCard.Controls.Add(this._addLineButton);
+            this._entryCard.FillColor = System.Drawing.Color.White;
+            this._entryCard.Location = new System.Drawing.Point(36, 237);
+            this._entryCard.Margin = new System.Windows.Forms.Padding(4);
+            this._entryCard.Name = "_entryCard";
+            this._entryCard.Size = new System.Drawing.Size(2621, 329);
+            this._entryCard.TabIndex = 1;
+            // 
+            // _entryIcon
+            // 
+            this._entryIcon.BackColor = System.Drawing.Color.Transparent;
+            this._entryIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._entryIcon.IconChar = FontAwesome.Sharp.IconChar.PlusCircle;
+            this._entryIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._entryIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._entryIcon.IconSize = 27;
+            this._entryIcon.Location = new System.Drawing.Point(30, 27);
+            this._entryIcon.Margin = new System.Windows.Forms.Padding(4);
+            this._entryIcon.Name = "_entryIcon";
+            this._entryIcon.Size = new System.Drawing.Size(27, 27);
+            this._entryIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._entryIcon.TabIndex = 0;
+            this._entryIcon.TabStop = false;
+            // 
+            // _entryTitle
+            // 
+            this._entryTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this._entryTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._entryTitle.Location = new System.Drawing.Point(69, 24);
+            this._entryTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._entryTitle.Name = "_entryTitle";
+            this._entryTitle.Size = new System.Drawing.Size(600, 36);
+            this._entryTitle.TabIndex = 1;
+            this._entryTitle.Text = "Thêm sản phẩm vào phiếu";
+            this._entryTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._entryTitle.UseMnemonic = false;
+            // 
+            // _productLabel
+            // 
+            this._productLabel.AutoSize = true;
+            this._productLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._productLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._productLabel.Location = new System.Drawing.Point(30, 84);
+            this._productLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._productLabel.Name = "_productLabel";
+            this._productLabel.Size = new System.Drawing.Size(105, 25);
+            this._productLabel.TabIndex = 2;
+            this._productLabel.Text = "Sản phẩm *";
+            this._productLabel.UseMnemonic = false;
+            // 
+            // _quantityLabel
+            // 
+            this._quantityLabel.AutoSize = true;
+            this._quantityLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._quantityLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._quantityLabel.Location = new System.Drawing.Point(699, 84);
+            this._quantityLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._quantityLabel.Name = "_quantityLabel";
+            this._quantityLabel.Size = new System.Drawing.Size(98, 25);
+            this._quantityLabel.TabIndex = 3;
+            this._quantityLabel.Text = "Số lượng *";
+            this._quantityLabel.UseMnemonic = false;
+            // 
+            // _priceLabel
+            // 
+            this._priceLabel.AutoSize = true;
+            this._priceLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._priceLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._priceLabel.Location = new System.Drawing.Point(1068, 84);
+            this._priceLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._priceLabel.Name = "_priceLabel";
+            this._priceLabel.Size = new System.Drawing.Size(95, 25);
+            this._priceLabel.TabIndex = 4;
+            this._priceLabel.Text = "Giá nhập *";
+            this._priceLabel.UseMnemonic = false;
+            // 
+            // _productComboBox
+            // 
+            this._productComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this._productComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this._productComboBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._productComboBox.FormattingEnabled = true;
+            this._productComboBox.Location = new System.Drawing.Point(30, 117);
+            this._productComboBox.Margin = new System.Windows.Forms.Padding(4);
+            this._productComboBox.Name = "_productComboBox";
+            this._productComboBox.Size = new System.Drawing.Size(643, 38);
+            this._productComboBox.TabIndex = 5;
+            // 
+            // _quantityTextBox
+            // 
+            this._quantityTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._quantityTextBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._quantityTextBox.Location = new System.Drawing.Point(699, 117);
+            this._quantityTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this._quantityTextBox.Name = "_quantityTextBox";
+            this._quantityTextBox.Size = new System.Drawing.Size(344, 35);
+            this._quantityTextBox.TabIndex = 6;
+            // 
+            // _priceTextBox
+            // 
+            this._priceTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._priceTextBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._priceTextBox.Location = new System.Drawing.Point(1068, 117);
+            this._priceTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this._priceTextBox.Name = "_priceTextBox";
+            this._priceTextBox.Size = new System.Drawing.Size(356, 35);
+            this._priceTextBox.TabIndex = 7;
+            // 
+            // _lotNumberLabel
+            // 
+            this._lotNumberLabel.AutoSize = true;
+            this._lotNumberLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lotNumberLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._lotNumberLabel.Location = new System.Drawing.Point(30, 201);
+            this._lotNumberLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._lotNumberLabel.Name = "_lotNumberLabel";
+            this._lotNumberLabel.Size = new System.Drawing.Size(106, 25);
+            this._lotNumberLabel.TabIndex = 8;
+            this._lotNumberLabel.Text = "Số lô NCC *";
+            this._lotNumberLabel.UseMnemonic = false;
+            // 
+            // _manufactureDateLabel
+            // 
+            this._manufactureDateLabel.AutoSize = true;
+            this._manufactureDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._manufactureDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._manufactureDateLabel.Location = new System.Drawing.Point(354, 201);
+            this._manufactureDateLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._manufactureDateLabel.Name = "_manufactureDateLabel";
+            this._manufactureDateLabel.Size = new System.Drawing.Size(46, 25);
+            this._manufactureDateLabel.TabIndex = 9;
+            this._manufactureDateLabel.Text = "NSX";
+            this._manufactureDateLabel.UseMnemonic = false;
+            // 
+            // _expiryDateLabel
+            // 
+            this._expiryDateLabel.AutoSize = true;
+            this._expiryDateLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._expiryDateLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._expiryDateLabel.Location = new System.Drawing.Point(699, 201);
+            this._expiryDateLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._expiryDateLabel.Name = "_expiryDateLabel";
+            this._expiryDateLabel.Size = new System.Drawing.Size(48, 25);
+            this._expiryDateLabel.TabIndex = 10;
+            this._expiryDateLabel.Text = "HSD";
+            this._expiryDateLabel.UseMnemonic = false;
+            // 
+            // _lotNumberTextBox
+            // 
+            this._lotNumberTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lotNumberTextBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._lotNumberTextBox.Location = new System.Drawing.Point(30, 234);
+            this._lotNumberTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this._lotNumberTextBox.Name = "_lotNumberTextBox";
+            this._lotNumberTextBox.Size = new System.Drawing.Size(299, 35);
+            this._lotNumberTextBox.TabIndex = 11;
+            // 
+            // _manufactureDateBox
+            // 
+            this._manufactureDateBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._manufactureDateBox.Location = new System.Drawing.Point(354, 234);
+            this._manufactureDateBox.Margin = new System.Windows.Forms.Padding(4);
+            this._manufactureDateBox.MinimumSize = new System.Drawing.Size(150, 54);
+            this._manufactureDateBox.Name = "_manufactureDateBox";
+            this._manufactureDateBox.Size = new System.Drawing.Size(321, 54);
+            this._manufactureDateBox.TabIndex = 12;
+            this._manufactureDateBox.Value = null;
+            // 
+            // _expiryDateBox
+            // 
+            this._expiryDateBox.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this._expiryDateBox.Location = new System.Drawing.Point(699, 234);
+            this._expiryDateBox.Margin = new System.Windows.Forms.Padding(4);
+            this._expiryDateBox.MinimumSize = new System.Drawing.Size(150, 54);
+            this._expiryDateBox.Name = "_expiryDateBox";
+            this._expiryDateBox.Size = new System.Drawing.Size(345, 54);
+            this._expiryDateBox.TabIndex = 13;
+            this._expiryDateBox.Value = null;
+            // 
+            // _addLineButton
+            // 
+            this._addLineButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._addLineButton.FlatAppearance.BorderSize = 0;
+            this._addLineButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._addLineButton.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this._addLineButton.ForeColor = System.Drawing.Color.White;
+            this._addLineButton.Location = new System.Drawing.Point(1068, 231);
+            this._addLineButton.Margin = new System.Windows.Forms.Padding(4);
+            this._addLineButton.Name = "_addLineButton";
+            this._addLineButton.Size = new System.Drawing.Size(357, 60);
+            this._addLineButton.TabIndex = 14;
+            this._addLineButton.Text = "+ Thêm dòng";
+            this._addLineButton.UseVisualStyleBackColor = false;
+            this._addLineButton.Click += new System.EventHandler(this.AddLineButton_Click);
+            // 
+            // _linesCard
+            // 
+            this._linesCard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._linesCard.BackColor = System.Drawing.Color.White;
+            this._linesCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._linesCard.Controls.Add(this._linesIcon);
+            this._linesCard.Controls.Add(this._linesTitle);
+            this._linesCard.Controls.Add(this._lineCountLabel);
+            this._linesCard.Controls.Add(this._linesGrid);
+            this._linesCard.Controls.Add(this._emptyLabel);
+            this._linesCard.FillColor = System.Drawing.Color.White;
+            this._linesCard.Location = new System.Drawing.Point(36, 591);
+            this._linesCard.Margin = new System.Windows.Forms.Padding(4);
+            this._linesCard.Name = "_linesCard";
+            this._linesCard.Size = new System.Drawing.Size(2621, 479);
+            this._linesCard.TabIndex = 2;
+            // 
+            // _linesIcon
+            // 
+            this._linesIcon.BackColor = System.Drawing.Color.Transparent;
+            this._linesIcon.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._linesIcon.IconChar = FontAwesome.Sharp.IconChar.ListUl;
+            this._linesIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._linesIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this._linesIcon.IconSize = 27;
+            this._linesIcon.Location = new System.Drawing.Point(30, 27);
+            this._linesIcon.Margin = new System.Windows.Forms.Padding(4);
+            this._linesIcon.Name = "_linesIcon";
+            this._linesIcon.Size = new System.Drawing.Size(27, 27);
+            this._linesIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this._linesIcon.TabIndex = 0;
+            this._linesIcon.TabStop = false;
+            // 
+            // _linesTitle
+            // 
+            this._linesTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this._linesTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this._linesTitle.Location = new System.Drawing.Point(69, 24);
+            this._linesTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._linesTitle.Name = "_linesTitle";
+            this._linesTitle.Size = new System.Drawing.Size(900, 36);
+            this._linesTitle.TabIndex = 1;
+            this._linesTitle.Text = "Danh sách sản phẩm trên phiếu";
+            this._linesTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._linesTitle.UseMnemonic = false;
+            // 
+            // _lineCountLabel
+            // 
+            this._lineCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._lineCountLabel.AutoSize = true;
+            this._lineCountLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lineCountLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._lineCountLabel.Location = new System.Drawing.Point(2487, 27);
+            this._lineCountLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._lineCountLabel.Name = "_lineCountLabel";
+            this._lineCountLabel.Size = new System.Drawing.Size(70, 25);
+            this._lineCountLabel.TabIndex = 2;
+            this._lineCountLabel.Text = "0 dòng";
+            this._lineCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._lineCountLabel.UseMnemonic = false;
+            // 
+            // _linesGrid
+            // 
+            this._linesGrid.AllowUserToAddRows = false;
+            this._linesGrid.AllowUserToDeleteRows = false;
+            this._linesGrid.AllowUserToResizeRows = false;
+            this._linesGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._linesGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._linesGrid.BackgroundColor = System.Drawing.Color.White;
+            this._linesGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._linesGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this._linesGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle11.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._linesGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
+            this._linesGrid.ColumnHeadersHeight = 40;
+            this._linesGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this._linesGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Product,
+            this.Quantity,
+            this.ImportPrice,
+            this.LotNumber,
+            this.ManufactureDate,
+            this.ExpiryDate,
+            this.Amount,
+            this.RemoveLine});
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle20.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle20.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            dataGridViewCellStyle20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle20.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(246)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._linesGrid.DefaultCellStyle = dataGridViewCellStyle20;
+            this._linesGrid.EnableHeadersVisualStyles = false;
+            this._linesGrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
+            this._linesGrid.Location = new System.Drawing.Point(30, 78);
+            this._linesGrid.Margin = new System.Windows.Forms.Padding(4);
+            this._linesGrid.MultiSelect = false;
+            this._linesGrid.Name = "_linesGrid";
+            this._linesGrid.ReadOnly = true;
+            this._linesGrid.RowHeadersVisible = false;
+            this._linesGrid.RowHeadersWidth = 62;
+            this._linesGrid.RowTemplate.Height = 40;
+            this._linesGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this._linesGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._linesGrid.Size = new System.Drawing.Size(2562, 375);
+            this._linesGrid.TabIndex = 3;
+            // 
+            // Product
+            // 
+            this.Product.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Product.DefaultCellStyle = dataGridViewCellStyle12;
+            this.Product.FillWeight = 28F;
+            this.Product.HeaderText = "Sản phẩm";
+            this.Product.MinimumWidth = 160;
+            this.Product.Name = "Product";
+            this.Product.ReadOnly = true;
+            this.Product.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Quantity
+            // 
+            this.Quantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle13.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.Quantity.DefaultCellStyle = dataGridViewCellStyle13;
+            this.Quantity.FillWeight = 8F;
+            this.Quantity.HeaderText = "SL";
+            this.Quantity.MinimumWidth = 48;
+            this.Quantity.Name = "Quantity";
+            this.Quantity.ReadOnly = true;
+            this.Quantity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ImportPrice
+            // 
+            this.ImportPrice.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle14.Format = "N0";
+            dataGridViewCellStyle14.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
+            dataGridViewCellStyle14.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.ImportPrice.DefaultCellStyle = dataGridViewCellStyle14;
+            this.ImportPrice.FillWeight = 12F;
+            this.ImportPrice.HeaderText = "Giá nhập";
+            this.ImportPrice.MinimumWidth = 80;
+            this.ImportPrice.Name = "ImportPrice";
+            this.ImportPrice.ReadOnly = true;
+            this.ImportPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // LotNumber
+            // 
+            this.LotNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.LotNumber.DefaultCellStyle = dataGridViewCellStyle15;
+            this.LotNumber.FillWeight = 14F;
+            this.LotNumber.HeaderText = "Số lô NCC";
+            this.LotNumber.MinimumWidth = 90;
+            this.LotNumber.Name = "LotNumber";
+            this.LotNumber.ReadOnly = true;
+            this.LotNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ManufactureDate
+            // 
+            this.ManufactureDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle16.Format = "dd/MM/yyyy";
+            this.ManufactureDate.DefaultCellStyle = dataGridViewCellStyle16;
+            this.ManufactureDate.FillWeight = 11F;
+            this.ManufactureDate.HeaderText = "NSX";
+            this.ManufactureDate.MinimumWidth = 75;
+            this.ManufactureDate.Name = "ManufactureDate";
+            this.ManufactureDate.ReadOnly = true;
+            this.ManufactureDate.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ExpiryDate
+            // 
+            this.ExpiryDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle17.Format = "dd/MM/yyyy";
+            this.ExpiryDate.DefaultCellStyle = dataGridViewCellStyle17;
+            this.ExpiryDate.FillWeight = 11F;
+            this.ExpiryDate.HeaderText = "HSD";
+            this.ExpiryDate.MinimumWidth = 75;
+            this.ExpiryDate.Name = "ExpiryDate";
+            this.ExpiryDate.ReadOnly = true;
+            this.ExpiryDate.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Amount
+            // 
+            this.Amount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle18.Format = "N0";
+            dataGridViewCellStyle18.FormatProvider = new System.Globalization.CultureInfo("vi-VN");
+            dataGridViewCellStyle18.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.Amount.DefaultCellStyle = dataGridViewCellStyle18;
+            this.Amount.FillWeight = 13F;
+            this.Amount.HeaderText = "Thành tiền";
+            this.Amount.MinimumWidth = 100;
+            this.Amount.Name = "Amount";
+            this.Amount.ReadOnly = true;
+            this.Amount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // RemoveLine
+            // 
+            this.RemoveLine.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle19.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.RemoveLine.DefaultCellStyle = dataGridViewCellStyle19;
+            this.RemoveLine.HeaderText = "";
+            this.RemoveLine.MinimumWidth = 8;
+            this.RemoveLine.Name = "RemoveLine";
+            this.RemoveLine.ReadOnly = true;
+            this.RemoveLine.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.RemoveLine.Width = 48;
+            // 
+            // _emptyLabel
+            // 
+            this._emptyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._emptyLabel.BackColor = System.Drawing.Color.White;
+            this._emptyLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this._emptyLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this._emptyLabel.Location = new System.Drawing.Point(30, 138);
+            this._emptyLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._emptyLabel.Name = "_emptyLabel";
+            this._emptyLabel.Size = new System.Drawing.Size(2562, 315);
+            this._emptyLabel.TabIndex = 4;
+            this._emptyLabel.Text = "Chưa có sản phẩm — dùng form phía trên để thêm dòng";
+            this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._emptyLabel.UseMnemonic = false;
+            // 
+            // frmPurchaseReceipt
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.CancelButton = this._cancelButton;
+            this.ClientSize = new System.Drawing.Size(1467, 876);
+            this.Controls.Add(this._bodyPanel);
+            this.Controls.Add(this._footerPanel);
+            this.Controls.Add(this._headerPanel);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MinimumSize = new System.Drawing.Size(1489, 932);
+            this.Name = "frmPurchaseReceipt";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Lập phiếu nhập kho";
+            this._headerPanel.ResumeLayout(false);
+            this._headerIconPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
+            this._bodyPanel.ResumeLayout(false);
+            this._footerPanel.ResumeLayout(false);
+            this._supplierCard.ResumeLayout(false);
+            this._supplierCard.PerformLayout();
+            this._entryCard.ResumeLayout(false);
+            this._entryCard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._entryIcon)).EndInit();
+            this._linesCard.ResumeLayout(false);
+            this._linesCard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._linesIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._linesGrid)).EndInit();
+            this.ResumeLayout(false);
+
         }
+
+        private DataGridViewTextBoxColumn Product;
+        private DataGridViewTextBoxColumn Quantity;
+        private DataGridViewTextBoxColumn ImportPrice;
+        private DataGridViewTextBoxColumn LotNumber;
+        private DataGridViewTextBoxColumn ManufactureDate;
+        private DataGridViewTextBoxColumn ExpiryDate;
+        private DataGridViewTextBoxColumn Amount;
+        private DataGridViewTextBoxColumn RemoveLine;
     }
 }

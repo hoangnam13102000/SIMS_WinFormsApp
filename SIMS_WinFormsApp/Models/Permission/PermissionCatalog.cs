@@ -72,12 +72,6 @@ namespace SIMS_WinFormsApp.Models.Permission
                 "Yêu cầu huỷ hoá đơn", "Gửi yêu cầu huỷ hoá đơn để Quản lý bán hàng/Admin duyệt hoặc từ chối.");
             Put(AppPermission.INVOICE_CANCEL, "Bán hàng",
                 "Huỷ hoá đơn", "Duyệt và thực hiện huỷ hoá đơn theo thẩm quyền quản lý.");
-            Put(AppPermission.SHIFT_OPERATE, "Bán hàng",
-                "Vận hành ca bán hàng", "Mở ca, ghi thu/chi và đóng/đối soát ca của chính nhân viên.");
-            Put(AppPermission.SHIFT_VIEW_ALL, "Bán hàng",
-                "Xem tất cả ca bán hàng", "Xem lịch sử ca và chênh lệch quỹ của tất cả nhân viên.");
-            Put(AppPermission.SHIFT_APPROVE, "Bán hàng",
-                "Duyệt đối soát ca", "Duyệt hoặc từ chối kết quả đối soát quỹ khi nhân viên đóng ca.");
             Put(AppPermission.RETURN_EXCHANGE_CREATE, "Bán hàng",
                 "Tạo yêu cầu đổi/trả", "Tạo yêu cầu đổi/trả hàng cho 1 hoá đơn (bắt buộc ghi rõ lý do).");
             Put(AppPermission.RETURN_EXCHANGE_APPROVE, "Bán hàng",

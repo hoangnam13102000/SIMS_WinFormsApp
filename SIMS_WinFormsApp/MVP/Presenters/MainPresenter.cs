@@ -53,7 +53,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             "sidebar.section.warehouse",
             "sidebar.section.reports",
             "sidebar.section.users",
-            "sidebar.section.support",
             "sidebar.section.system",
         };
 
@@ -77,7 +76,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             ("accounts", "sidebar.page.accounts"),
             ("employees", "sidebar.page.employees"),
             ("customers", "sidebar.page.customers"),
-            ("shifts", "sidebar.page.shifts"),
             ("settings", "sidebar.page.settings"),
         };
 
@@ -476,14 +474,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters
                 if (HasAnyPermission(permissions, AppPermission.STOCK_REPORT_VIEW, AppPermission.STOCK_DISPOSE_VIEW))
                     layout.AddLazyPage("report-inventory", Lang.Get("sidebar.page.reportInventory"),
                         () => new ucInventoryReport(), IconChar.ChartLine);
-            }
-
-            if (!IsAdmin() && HasAnyPermission(permissions,
-                    AppPermission.SHIFT_OPERATE, AppPermission.SHIFT_VIEW_ALL, AppPermission.SHIFT_APPROVE))
-            {
-                layout.AddSection(Lang.Get("sidebar.section.support"));
-                layout.AddLazyPage("shifts", Lang.Get("sidebar.page.shifts"),
-                    () => new ucShiftManagement(), IconChar.Stopwatch);
             }
 
             if (HasAnyPermission(permissions,

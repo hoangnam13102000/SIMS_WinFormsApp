@@ -566,6 +566,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this._nextButton.Size = new System.Drawing.Size(78, 30);
             this._nextButton.TabIndex = 0;
             this._nextButton.Text = "Sau";
+            this._nextButton.Click += new System.EventHandler(this._nextButton_Click);
             // 
             // _pageLabel
             // 
@@ -585,6 +586,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this._previousButton.Size = new System.Drawing.Size(78, 30);
             this._previousButton.TabIndex = 2;
             this._previousButton.Text = "Trước";
+            this._previousButton.Click += new System.EventHandler(this._previousButton_Click);
             // 
             // _pageSizeComboBox
             // 

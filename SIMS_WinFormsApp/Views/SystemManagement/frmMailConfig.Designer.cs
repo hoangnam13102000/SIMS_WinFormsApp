@@ -105,6 +105,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.btnTest.TabIndex = 0;
             this.btnTest.Text = "Gửi thử";
             this.btnTest.UseVisualStyleBackColor = false;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // btnSave
             // 
@@ -148,6 +149,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             this.lnkHowTo.TabIndex = 2;
             this.lnkHowTo.Text = "Cách tạo App Password ↗";
             this.lnkHowTo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lnkHowTo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkHowTo_LinkClicked);
             // 
             // lblHint
             // 

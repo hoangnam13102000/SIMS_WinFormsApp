@@ -148,8 +148,7 @@ GO
 
 
 -- ---------------------------------------------------------------
--- R4: chi cho huy hoa don trong cung ngay tao (khong con rang buoc
--- theo ca ban hang - da bo he thong Shifts); huy xong hoan lai DUNG
+-- R4: chi cho huy hoa don trong cung ngay tao; huy xong hoan lai DUNG
 -- TUNG LO da tru (qua InvoiceDetailBatches) thay vi cong thang vao
 -- Products.Stock chung chung, tranh sai lech du lieu lo hang.
 -- ---------------------------------------------------------------

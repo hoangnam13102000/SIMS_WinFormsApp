@@ -11,7 +11,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
     public sealed partial class InvoiceDetailsDialog : Form
     {
         private readonly InvoiceDetails _invoice;
-        private readonly PrintDocument _printDocument;
         private int _nextLineToPrint;
         private Func<InvoiceDetails, bool> _returnRequestHandler;
 
@@ -23,11 +22,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         internal InvoiceDetailsDialog(InvoiceDetails invoice)
         {
             _invoice = invoice ?? throw new ArgumentNullException(nameof(invoice));
-            _printDocument = new PrintDocument();
+            InitializeComponent();
             _printDocument.BeginPrint += (sender, args) => _nextLineToPrint = 0;
             _printDocument.PrintPage += PrintDocument_PrintPage;
-
-            InitializeComponent();
             _closeButton.Click += CloseButton_Click;
             _printButton.Click += ShowPrintPreview;
             _returnButton.Click += ReturnButton_Click;
@@ -67,7 +64,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 if (components != null)
                     components.Dispose();
                 _printPreviewDialog?.Dispose();
-                _printDocument.Dispose();
+                _printDocument?.Dispose();
             }
             base.Dispose(disposing);
         }
