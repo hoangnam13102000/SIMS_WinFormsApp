@@ -52,7 +52,7 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
             this._subtitleLabel = new System.Windows.Forms.Label();
@@ -511,9 +511,9 @@ namespace SIMS_WinFormsApp.Views.SystemManagement
             // 
             // Description
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Description.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.Description.DefaultCellStyle = dataGridViewCellStyle1;
             this.Description.FillWeight = 29F;
             this.Description.HeaderText = "Chi tiết";
             this.Description.MinimumWidth = 8;

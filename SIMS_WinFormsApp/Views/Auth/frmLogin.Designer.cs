@@ -12,6 +12,7 @@ namespace SIMS_WinFormsApp.Views.Auth
 
         private Panel brandPanel;
         private Guna2Panel pnlRight;
+        private TableLayoutPanel pnlRightLayout;
         private TableLayoutPanel pnlAuthSplit;
         private Guna2Panel pnlFormCard;
         private Guna2Panel pnlUsernameInput;
@@ -47,6 +48,7 @@ namespace SIMS_WinFormsApp.Views.Auth
         private void InitializeComponent()
         {
             this.pnlRight = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlRightLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pnlFormCard = new Guna.UI2.WinForms.Guna2Panel();
             this.btnLogin = new SIMS_WinFormsApp.UI.Controls.PrimaryButton();
             this.lblError = new System.Windows.Forms.Label();
@@ -64,6 +66,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlAuthSplit = new System.Windows.Forms.TableLayoutPanel();
             this.brandPanel = new System.Windows.Forms.Panel();
             this.pnlRight.SuspendLayout();
+            this.pnlRightLayout.SuspendLayout();
             this.pnlFormCard.SuspendLayout();
             this.pnlOptionsRow.SuspendLayout();
             this.pnlPasswordInput.SuspendLayout();
@@ -74,7 +77,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // pnlRight
             // 
             this.pnlRight.BackColor = System.Drawing.Color.White;
-            this.pnlRight.Controls.Add(this.pnlFormCard);
+            this.pnlRight.Controls.Add(this.pnlRightLayout);
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlRight.FillColor = System.Drawing.Color.White;
             this.pnlRight.Location = new System.Drawing.Point(480, 0);
@@ -82,6 +85,22 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Size = new System.Drawing.Size(720, 760);
             this.pnlRight.TabIndex = 1;
+            // 
+            // pnlRightLayout
+            // 
+            this.pnlRightLayout.ColumnCount = 3;
+            this.pnlRightLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlRightLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlRightLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlRightLayout.Controls.Add(this.pnlFormCard, 1, 1);
+            this.pnlRightLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlRightLayout.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlRightLayout.Name = "pnlRightLayout";
+            this.pnlRightLayout.RowCount = 3;
+            this.pnlRightLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlRightLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlRightLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlRightLayout.TabIndex = 0;
             // 
             // pnlFormCard
             // 
@@ -97,7 +116,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.pnlFormCard.Controls.Add(this.lblSubtitle);
             this.pnlFormCard.Controls.Add(this.lblTitle);
             this.pnlFormCard.FillColor = System.Drawing.Color.Transparent;
-            this.pnlFormCard.Location = new System.Drawing.Point(127, 100);
+            this.pnlFormCard.Location = new System.Drawing.Point(0, 0);
             this.pnlFormCard.Name = "pnlFormCard";
             this.pnlFormCard.Size = new System.Drawing.Size(475, 560);
             this.pnlFormCard.TabIndex = 0;
@@ -136,6 +155,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // 
             this.pnlOptionsRow.Controls.Add(this.chkRemember);
             this.pnlOptionsRow.Controls.Add(this.lnkForgotPassword);
+            this.pnlOptionsRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOptionsRow.Location = new System.Drawing.Point(0, 366);
             this.pnlOptionsRow.Name = "pnlOptionsRow";
             this.pnlOptionsRow.Size = new System.Drawing.Size(440, 40);
@@ -144,6 +164,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // chkRemember
             // 
             this.chkRemember.BackColor = System.Drawing.Color.White;
+            this.chkRemember.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.chkRemember.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkRemember.Font = new System.Drawing.Font("Segoe UI", 12.5F);
             this.chkRemember.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
@@ -250,6 +271,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // lblSubtitle
             // 
             this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 13F);
+            this.lblSubtitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.lblSubtitle.Location = new System.Drawing.Point(0, 90);
             this.lblSubtitle.Name = "lblSubtitle";
@@ -261,6 +283,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             // lblTitle
             // 
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.lblTitle.Location = new System.Drawing.Point(0, 0);
             this.lblTitle.Name = "lblTitle";
@@ -306,6 +329,7 @@ namespace SIMS_WinFormsApp.Views.Auth
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Đăng nhập - SIMS";
             this.pnlRight.ResumeLayout(false);
+            this.pnlRightLayout.ResumeLayout(false);
             this.pnlFormCard.ResumeLayout(false);
             this.pnlOptionsRow.ResumeLayout(false);
             this.pnlPasswordInput.ResumeLayout(false);

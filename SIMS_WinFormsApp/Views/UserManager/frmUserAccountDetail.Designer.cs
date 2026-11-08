@@ -512,11 +512,14 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this.Controls.Add(this._designerFooter);
             this.Controls.Add(this._designerHeader);
             this.Font = new System.Drawing.Font("Segoe UI", 13F);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(1150, 660);
             this.Name = "frmUserAccountDetail";
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Chi tiết tài khoản";
+            this.MaximumSize = new System.Drawing.Size(1150, 660);
             this._designerHeader.ResumeLayout(false);
             this._designerBody.ResumeLayout(false);
             this._designerContent.ResumeLayout(false);

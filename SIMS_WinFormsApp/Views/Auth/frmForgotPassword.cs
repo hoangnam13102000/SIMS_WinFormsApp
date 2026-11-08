@@ -19,10 +19,6 @@ namespace SIMS_WinFormsApp.Views.Auth
     {
         private enum Step { Identify, VerifyOtp, ResetPassword }
 
-        // Khoảng trống dưới cùng của form so với panel bước hiện tại (bằng lề trên trong Designer).
-        private const int FormBottomMargin = 40;
-        private const int ContentWidth = 520;
-
         private readonly ForgotPasswordPresenter _presenter;
         private PasswordVisibilityToggle _newPasswordVisibilityToggle;
         private PasswordVisibilityToggle _confirmPasswordVisibilityToggle;
@@ -51,7 +47,6 @@ namespace SIMS_WinFormsApp.Views.Auth
                 return;
             }
 
-            BuildStepLayouts();
             _presenter = new ForgotPasswordPresenter(
                 this,
                 resetService ?? AppComposition.CreatePasswordResetService());
@@ -131,137 +126,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             btnReset3.Text = Lang.Get("forgot.password.submit");
             lnkCancel3.Text = Lang.Get("forgot.backToLogin");
 
-            RelayoutAllSteps();
-        }
-
-        // ===================== Bố cục (đo theo Font/DPI thật) =====================
-
-        private void BuildStepLayouts()
-        {
-            // Link "Gửi lại mã" canh trái sát tâm, đối xứng với link "Quay lại" canh phải sát tâm.
-            lnkResend2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
-            // Các nhãn đổi nội dung trong lúc chạy: chữ dài hơn/ngắn hơn -> xếp lại bước tương ứng.
-            lblMessage1.TextChanged += (s, e) => RelayoutStep(Step.Identify);
-            lblSentTo2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
-            lblMessage2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
-            lnkResend2.TextChanged += (s, e) => RelayoutStep(Step.VerifyOtp);
-            lblMessage3.TextChanged += (s, e) => RelayoutStep(Step.ResetPassword);
-            lblMatch3.TextChanged += (s, e) => RelayoutStep(Step.ResetPassword);
-        }
-
-        private void RelayoutAllSteps()
-        {
-            RelayoutStep(Step.Identify);
-            RelayoutStep(Step.VerifyOtp);
-            RelayoutStep(Step.ResetPassword);
-        }
-
-        private void RelayoutStep(Step step)
-        {
-            Panel panel;
-            int contentHeight;
-
-            switch (step)
-            {
-                case Step.VerifyOtp:
-                    panel = pnlStep2;
-                    contentHeight = LayoutVerifyOtpStep();
-                    break;
-                case Step.ResetPassword:
-                    panel = pnlStep3;
-                    contentHeight = LayoutResetPasswordStep();
-                    break;
-                default:
-                    panel = pnlStep1;
-                    contentHeight = LayoutIdentifyStep();
-                    break;
-            }
-
-            if (contentHeight > panel.Height)
-                panel.Height = contentHeight;
-
-            // Nếu nội dung cao hơn form (Windows scale rất lớn) thì nới form ra để không bị cắt.
-            int requiredClientHeight = panel.Top + panel.Height + FormBottomMargin;
-            if (requiredClientHeight > ClientSize.Height)
-                ClientSize = new System.Drawing.Size(ClientSize.Width, requiredClientHeight);
-        }
-
-        private int LayoutIdentifyStep()
-        {
-            int y = 0;
-            y = PlaceBlock(lblStep1, y, 6);
-            y = PlaceBlock(lblTitle1, y, 4);
-            y = PlaceBlock(lblSubtitle1, y, 8);
-            y = PlaceBlock(lblUsernameLabel1, y, 4);
-            y = PlaceBlock(txtUsername1, y, 16);
-            y = PlaceBlock(lblEmailLabel1, y, 4);
-            y = PlaceBlock(txtEmail1, y, 10);
-            y = PlaceBlock(lblMessage1, y, 4);
-            y = PlaceBlock(btnSubmit1, y, 14);
-            return PlaceCenteredLink(lnkBack1, y, 0);
-        }
-
-        private int LayoutVerifyOtpStep()
-        {
-            int y = 0;
-            y = PlaceBlock(lblStep2, y, 6);
-            y = PlaceBlock(lblTitle2, y, 4);
-            y = PlaceBlock(lblSentTo2, y, 12);
-            y = PlaceBlock(lblOtpLabel2, y, 4);
-            y = PlaceBlock(txtOtp2, y, 10);
-            y = PlaceBlock(lblMessage2, y, 4);
-            y = PlaceBlock(btnVerify2, y, 14);
-            return PlaceLinkPair(lnkBack2, lnkResend2, y, 24);
-        }
-
-        private int LayoutResetPasswordStep()
-        {
-            int y = 0;
-            y = PlaceBlock(lblStep3, y, 6);
-            y = PlaceBlock(lblTitle3, y, 4);
-            y = PlaceBlock(lblNewPasswordLabel3, y, 4);
-            y = PlaceBlock(txtNewPassword3, y, 16);
-            y = PlaceBlock(lblConfirmPasswordLabel3, y, 4);
-            y = PlaceBlock(txtConfirmPassword3, y, 8);
-            y = PlaceBlock(lblRequirements3, y, 2);
-            y = PlaceBlock(lblMatch3, y, 2);
-            y = PlaceBlock(lblMessage3, y, 4);
-            y = PlaceBlock(btnReset3, y, 14);
-            return PlaceCenteredLink(lnkCancel3, y, 0);
-        }
-
-        private static int PlaceBlock(Control control, int y, int gapAfter)
-        {
-            int height = control.Height;
-            if (control is Label label)
-                height = Math.Max(height, label.GetPreferredSize(new System.Drawing.Size(ContentWidth, 0)).Height + 2);
-
-            control.SetBounds(0, y, ContentWidth, height);
-            return y + height + gapAfter;
-        }
-
-        private static int PlaceCenteredLink(Label link, int y, int gapAfter)
-        {
-            System.Drawing.Size preferred = link.GetPreferredSize(System.Drawing.Size.Empty);
-            int width = Math.Min(ContentWidth, preferred.Width + 4);
-            int height = Math.Max(link.Height, preferred.Height + 2);
-            link.SetBounds((ContentWidth - width) / 2, y, width, height);
-            return y + height + gapAfter;
-        }
-
-        private static int PlaceLinkPair(Label left, Label right, int y, int gapBetween)
-        {
-            System.Drawing.Size leftSize = left.GetPreferredSize(System.Drawing.Size.Empty);
-            System.Drawing.Size rightSize = right.GetPreferredSize(System.Drawing.Size.Empty);
-            int center = ContentWidth / 2;
-            int halfGap = gapBetween / 2;
-            int leftWidth = Math.Min(center - halfGap, leftSize.Width + 4);
-            int rightWidth = Math.Min(ContentWidth - center - halfGap, rightSize.Width + 4);
-            int height = Math.Max(Math.Max(left.Height, right.Height), Math.Max(leftSize.Height, rightSize.Height) + 2);
-            left.SetBounds(center - halfGap - leftWidth, y, leftWidth, height);
-            right.SetBounds(center + halfGap, y, rightWidth, height);
-            return y + height;
         }
 
         // ===================== STEP 1: Identify =====================
@@ -673,7 +537,6 @@ namespace SIMS_WinFormsApp.Views.Auth
             pnlStep1.Visible = step == Step.Identify;
             pnlStep2.Visible = step == Step.VerifyOtp;
             pnlStep3.Visible = step == Step.ResetPassword;
-            RelayoutStep(step);
 
             switch (step)
             {

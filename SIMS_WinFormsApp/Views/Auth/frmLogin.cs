@@ -45,7 +45,6 @@ namespace SIMS_WinFormsApp.Views.Auth
         {
             InitializeComponent();
             InitializeNativeControls();
-            LayoutLoginPanels();
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _presenter = new LoginPresenter(this, _authService);
 
@@ -126,82 +125,6 @@ namespace SIMS_WinFormsApp.Views.Auth
         {
             LanguageManager.Instance.LanguageChanged -= OnLanguageChanged;
             ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
-        }
-
-        private void PnlOptionsRow_Resize(object sender, EventArgs e)
-        {
-            AlignOptionsRow();
-        }
-
-        private void ChkRemember_SizeChanged(object sender, EventArgs e)
-        {
-            AlignOptionsRow();
-        }
-
-        private void LnkForgotPassword_SizeChanged(object sender, EventArgs e)
-        {
-            AlignOptionsRow();
-        }
-
-        private void PnlRight_Resize(object sender, EventArgs e)
-        {
-            LayoutLoginPanels();
-        }
-
-        private void PnlFormCard_Resize(object sender, EventArgs e)
-        {
-            ResizeFormCardControls();
-        }
-
-        private void AlignOptionsRow()
-        {
-            if (pnlOptionsRow == null || lnkForgotPassword == null || chkRemember == null) return;
-
-            int linkX = Math.Max(0, pnlOptionsRow.Width - lnkForgotPassword.Width);
-            int linkY = Math.Max(0, (pnlOptionsRow.Height - lnkForgotPassword.Height) / 2);
-            lnkForgotPassword.Location = new Point(linkX, linkY);
-
-            int checkY = Math.Max(0, (pnlOptionsRow.Height - chkRemember.Height) / 2);
-            chkRemember.Location = new Point(0, checkY);
-        }
-
-        private void CenterFormCard()
-        {
-            if (pnlFormCard == null || pnlRight == null) return;
-
-            int x = Math.Max(24, (pnlRight.Width - pnlFormCard.Width) / 2);
-            int yPos = Math.Max(24, (pnlRight.Height - pnlFormCard.Height) / 2);
-            pnlFormCard.Location = new Point(x, yPos);
-            _brandPanelRenderer.ContentTop = yPos;
-        }
-
-        private void LayoutLoginPanels()
-        {
-            if (pnlRight == null || pnlFormCard == null || brandPanel == null) return;
-
-            pnlAuthSplit.PerformLayout();
-            int availableCardWidth = Math.Max(1, pnlRight.ClientSize.Width - 80);
-            int cardWidth = Math.Max(1, Math.Min(560, (int)(availableCardWidth * 0.78f)));
-            pnlFormCard.Width = cardWidth;
-            ResizeFormCardControls();
-            CenterFormCard();
-        }
-
-        private void ResizeFormCardControls()
-        {
-            if (pnlFormCard == null) return;
-
-            int width = Math.Max(1, pnlFormCard.ClientSize.Width);
-            lblTitle.Width = width + 5;
-            lblSubtitle.Width = width;
-            lblUsername.Width = width;
-            pnlUsernameInput.Width = width;
-            lblPassword.Width = width;
-            pnlPasswordInput.Width = width;
-            pnlOptionsRow.Width = width;
-            lblError.Width = width;
-            btnLogin.Width = width;
-            AlignOptionsRow();
         }
 
         private void OnLanguageChanged(object sender, EventArgs e) => RefreshTexts();

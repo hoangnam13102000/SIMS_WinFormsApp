@@ -16,9 +16,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
     public sealed partial class PosPageControl : UserControl, IPosView
     {
         private readonly bool _designTime;
-        private NumericUpDown _pointsToRedeemInput;
-        private FlowLayoutPanel _pointsRedemptionPanel;
-        private Label _pointsBalanceLabel;
         private int _customerPoints;
         private bool _checkoutAllowedByCart;
         private bool _isBusy;
@@ -61,66 +58,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public PosPageControl(string cashierDisplayName)
         {
             InitializeComponent();
-            ConfigurePointsRedemptionControls();
             _designTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-            LayoutHeader();
             _cashierNameLabel.Text = string.IsNullOrWhiteSpace(cashierDisplayName)
                 ? "Nhân viên:"
                 : "Nhân viên: " + cashierDisplayName;
-        }
-
-        private void LayoutHeader()
-        {
-            _cashierNameLabel.Location = new Point(
-                _header.ClientSize.Width - _cashierNameLabel.Width - 20,
-                38);
-            _pageTitle.Width = Math.Max(180, _cashierNameLabel.Left - _pageTitle.Left - 24);
-        }
-
-        private void ConfigurePointsRedemptionControls()
-        {
-            _customerLayout.Controls.Remove(_usePointsCheckBox);
-            _usePointsCheckBox.AutoSize = true;
-            _usePointsCheckBox.Visible = true;
-            _usePointsCheckBox.Text = "Dùng điểm";
-            _usePointsCheckBox.Margin = new Padding(0, 3, 8, 0);
-
-            _pointsToRedeemInput = new NumericUpDown
-            {
-                Minimum = 0,
-                Maximum = 0,
-                ThousandsSeparator = true,
-                Width = 90,
-                Enabled = false,
-                Margin = new Padding(0, 0, 6, 0)
-            };
-            _pointsToRedeemInput.ValueChanged += _pointsToRedeemInput_ValueChanged;
-
-            _pointsRedemptionPanel = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                WrapContents = false,
-                Visible = false,
-                Margin = Padding.Empty
-            };
-            _pointsBalanceLabel = new Label
-            {
-                AutoSize = true,
-                Margin = new Padding(4, 4, 0, 0)
-            };
-            _pointsRedemptionPanel.Controls.Add(_usePointsCheckBox);
-            _pointsRedemptionPanel.Controls.Add(_pointsToRedeemInput);
-            _pointsRedemptionPanel.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Text = "điểm",
-                Margin = new Padding(0, 4, 0, 0)
-            });
-            _pointsRedemptionPanel.Controls.Add(_pointsBalanceLabel);
-
-            _customerLayout.Controls.Add(_pointsRedemptionPanel, 0, 2);
-            _customerLayout.SetColumnSpan(_pointsRedemptionPanel, 4);
         }
 
         private void _usePointsCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -165,6 +106,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             if (products == null || products.Count == 0)
             {
+                // Empty-state UI exists only when the current product query has no results.
                 var emptyState = new Label
                 {
                     AutoSize = false,
@@ -316,11 +258,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
             if (_productCategory.SelectedItem is CategoryChoice choice)
                 CategoryChanged?.Invoke(this, choice.CategoryId);
-        }
-
-        private void _header_SizeChanged(object sender, EventArgs e)
-        {
-            LayoutHeader();
         }
 
         private void _productSearch_TextChanged(object sender, EventArgs e)

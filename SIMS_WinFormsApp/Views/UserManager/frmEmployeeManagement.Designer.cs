@@ -18,9 +18,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private Panel _surface;
         private TableLayoutPanel _contentLayout;
         private Panel _headerPanel;
+        private TableLayoutPanel _headerLayout;
+        private TableLayoutPanel _headerTextLayout;
+        private FlowLayoutPanel _headerActions;
         private Panel _headerIconPanel;
         private IconPictureBox _headerIcon;
         private Panel _toolbar;
+        private TableLayoutPanel _toolbarLayout;
         private Label _titleLabel;
         private Label _subtitleLabel;
         private Label _searchLabel;
@@ -57,6 +61,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._surface = new System.Windows.Forms.Panel();
             this._contentLayout = new System.Windows.Forms.TableLayoutPanel();
             this._headerPanel = new System.Windows.Forms.Panel();
+            this._headerLayout = new System.Windows.Forms.TableLayoutPanel();
+            this._headerTextLayout = new System.Windows.Forms.TableLayoutPanel();
+            this._headerActions = new System.Windows.Forms.FlowLayoutPanel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitleLabel = new System.Windows.Forms.Label();
@@ -66,6 +73,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._optionsButton = new System.Windows.Forms.Button();
             this._refreshButton = new System.Windows.Forms.Button();
             this._toolbar = new System.Windows.Forms.Panel();
+            this._toolbarLayout = new System.Windows.Forms.TableLayoutPanel();
             this._searchLabel = new System.Windows.Forms.Label();
             this._searchBox = new System.Windows.Forms.TextBox();
             this._statusLabel = new System.Windows.Forms.Label();
@@ -83,9 +91,13 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._surface.SuspendLayout();
             this._contentLayout.SuspendLayout();
             this._headerPanel.SuspendLayout();
+            this._headerLayout.SuspendLayout();
+            this._headerTextLayout.SuspendLayout();
+            this._headerActions.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             this._toolbar.SuspendLayout();
+            this._toolbarLayout.SuspendLayout();
             this._gridCard.SuspendLayout();
             this._rowMenu.SuspendLayout();
             this._optionsMenu.SuspendLayout();
@@ -125,24 +137,50 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             this._headerPanel.BackColor = System.Drawing.Color.White;
             this._headerPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._headerPanel.Controls.Add(this._headerIconPanel);
-            this._headerPanel.Controls.Add(this._subtitleLabel);
-            this._headerPanel.Controls.Add(this._titleLabel);
-            this._headerPanel.Controls.Add(this._lockButton);
-            this._headerPanel.Controls.Add(this._addButton);
-            this._headerPanel.Controls.Add(this._optionsButton);
-            this._headerPanel.Controls.Add(this._refreshButton);
+            this._headerPanel.Controls.Add(this._headerLayout);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerPanel.Location = new System.Drawing.Point(0, 0);
             this._headerPanel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
             this._headerPanel.Name = "_headerPanel";
             this._headerPanel.Size = new System.Drawing.Size(952, 96);
             this._headerPanel.TabIndex = 0;
+            this._headerLayout.ColumnCount = 2;
+            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this._headerLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55F));
+            this._headerLayout.Controls.Add(this._headerTextLayout, 0, 0);
+            this._headerLayout.Controls.Add(this._headerActions, 1, 0);
+            this._headerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerLayout.Name = "_headerLayout";
+            this._headerLayout.RowCount = 1;
+            this._headerLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._headerTextLayout.ColumnCount = 2;
+            this._headerTextLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this._headerTextLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._headerTextLayout.Controls.Add(this._headerIconPanel, 0, 0);
+            this._headerTextLayout.SetRowSpan(this._headerIconPanel, 2);
+            this._headerTextLayout.Controls.Add(this._titleLabel, 1, 0);
+            this._headerTextLayout.Controls.Add(this._subtitleLabel, 1, 1);
+            this._headerTextLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerTextLayout.Name = "_headerTextLayout";
+            this._headerTextLayout.RowCount = 2;
+            this._headerTextLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._headerTextLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._headerActions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerActions.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this._headerActions.Margin = new System.Windows.Forms.Padding(0);
+            this._headerActions.Name = "_headerActions";
+            this._headerActions.Padding = new System.Windows.Forms.Padding(4, 2, 8, 0);
+            this._headerActions.WrapContents = true;
+            this._headerActions.Controls.Add(this._refreshButton);
+            this._headerActions.Controls.Add(this._optionsButton);
+            this._headerActions.Controls.Add(this._addButton);
+            this._headerActions.Controls.Add(this._lockButton);
             // 
             // _headerIconPanel
             // 
             this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
             this._headerIconPanel.Controls.Add(this._headerIcon);
+            this._headerIconPanel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
             this._headerIconPanel.Name = "_headerIconPanel";
             this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
@@ -165,22 +203,23 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // _subtitleLabel
             // 
-            this._subtitleLabel.AutoSize = true;
+            this._subtitleLabel.AutoSize = false;
+            this._subtitleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(96, 56);
+            this._subtitleLabel.Margin = new System.Windows.Forms.Padding(0);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(368, 25);
             this._subtitleLabel.TabIndex = 1;
             this._subtitleLabel.Text = "Danh sách nhân viên và thông tin làm việc";
+            this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _titleLabel
             // 
+            this._titleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._titleLabel.Location = new System.Drawing.Point(93, 10);
+            this._titleLabel.Margin = new System.Windows.Forms.Padding(0);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(460, 52);
             this._titleLabel.TabIndex = 2;
             this._titleLabel.Text = "Quản lý nhân viên";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -194,7 +233,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._lockButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._lockButton.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._lockButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(83)))), ((int)(((byte)(9)))));
-            this._lockButton.Location = new System.Drawing.Point(608, 29);
+            this._lockButton.Margin = new System.Windows.Forms.Padding(4);
             this._lockButton.Name = "_lockButton";
             this._lockButton.Size = new System.Drawing.Size(110, 38);
             this._lockButton.TabIndex = 8;
@@ -204,13 +243,12 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // _addButton
             // 
-            this._addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._addButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._addButton.FlatAppearance.BorderSize = 0;
             this._addButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._addButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._addButton.ForeColor = System.Drawing.Color.White;
-            this._addButton.Location = new System.Drawing.Point(568, 29);
+            this._addButton.Margin = new System.Windows.Forms.Padding(4);
             this._addButton.Name = "_addButton";
             this._addButton.Size = new System.Drawing.Size(150, 38);
             this._addButton.TabIndex = 3;
@@ -220,13 +258,12 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // _optionsButton
             // 
-            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._optionsButton.BackColor = System.Drawing.Color.White;
             this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._optionsButton.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._optionsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._optionsButton.Location = new System.Drawing.Point(726, 29);
+            this._optionsButton.Margin = new System.Windows.Forms.Padding(4);
             this._optionsButton.Name = "_optionsButton";
             this._optionsButton.Size = new System.Drawing.Size(110, 38);
             this._optionsButton.TabIndex = 4;
@@ -236,12 +273,11 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // _refreshButton
             // 
-            this._refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this._refreshButton.BackColor = System.Drawing.Color.White;
             this._refreshButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this._refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._refreshButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._refreshButton.Location = new System.Drawing.Point(844, 29);
+            this._refreshButton.Margin = new System.Windows.Forms.Padding(4);
             this._refreshButton.Name = "_refreshButton";
             this._refreshButton.Size = new System.Drawing.Size(92, 38);
             this._refreshButton.TabIndex = 5;
@@ -253,10 +289,19 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             this._toolbar.BackColor = System.Drawing.Color.White;
             this._toolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._toolbar.Controls.Add(this._searchLabel);
-            this._toolbar.Controls.Add(this._searchBox);
-            this._toolbar.Controls.Add(this._statusLabel);
-            this._toolbar.Controls.Add(this._statusFilter);
+            this._toolbar.Controls.Add(this._toolbarLayout);
+            this._toolbarLayout.ColumnCount = 2;
+            this._toolbarLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65F));
+            this._toolbarLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this._toolbarLayout.Controls.Add(this._searchLabel, 0, 0);
+            this._toolbarLayout.Controls.Add(this._searchBox, 0, 1);
+            this._toolbarLayout.Controls.Add(this._statusLabel, 1, 0);
+            this._toolbarLayout.Controls.Add(this._statusFilter, 1, 1);
+            this._toolbarLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._toolbarLayout.Name = "_toolbarLayout";
+            this._toolbarLayout.RowCount = 2;
+            this._toolbarLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45F));
+            this._toolbarLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55F));
             this._toolbar.Dock = System.Windows.Forms.DockStyle.Fill;
             this._toolbar.Location = new System.Drawing.Point(0, 108);
             this._toolbar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
@@ -266,32 +311,37 @@ namespace SIMS_WinFormsApp.Views.UserManager
             // 
             // _searchLabel
             // 
-            this._searchLabel.AutoSize = true;
+            this._searchLabel.AutoSize = false;
             this._searchLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._searchLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._searchLabel.Location = new System.Drawing.Point(16, 8);
+            this._searchLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._searchLabel.Margin = new System.Windows.Forms.Padding(16, 6, 8, 0);
             this._searchLabel.Name = "_searchLabel";
             this._searchLabel.Size = new System.Drawing.Size(123, 23);
             this._searchLabel.TabIndex = 0;
             this._searchLabel.Text = "Tìm nhân viên";
+            this._searchLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _searchBox
             // 
             this._searchBox.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._searchBox.Location = new System.Drawing.Point(16, 31);
+            this._searchBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._searchBox.Margin = new System.Windows.Forms.Padding(16, 0, 8, 8);
             this._searchBox.Name = "_searchBox";
             this._searchBox.Size = new System.Drawing.Size(560, 34);
             this._searchBox.TabIndex = 1;
             // 
             // _statusLabel
             // 
-            this._statusLabel.AutoSize = true;
+            this._statusLabel.AutoSize = false;
             this._statusLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._statusLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._statusLabel.Location = new System.Drawing.Point(600, 8);
+            this._statusLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._statusLabel.Margin = new System.Windows.Forms.Padding(8, 6, 16, 0);
             this._statusLabel.Name = "_statusLabel";
             this._statusLabel.Size = new System.Drawing.Size(92, 23);
             this._statusLabel.TabIndex = 2;
+            this._statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._statusLabel.Text = "Trạng thái";
             // 
             // _statusFilter
@@ -302,7 +352,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             "Tất cả trạng thái",
             "Đang hoạt động",
             "Vô hiệu hóa"});
-            this._statusFilter.Location = new System.Drawing.Point(600, 31);
+            this._statusFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._statusFilter.Margin = new System.Windows.Forms.Padding(8, 0, 16, 8);
             this._statusFilter.Name = "_statusFilter";
             this._statusFilter.Size = new System.Drawing.Size(300, 36);
             this._statusFilter.TabIndex = 3;
@@ -509,11 +560,15 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._surface.ResumeLayout(false);
             this._contentLayout.ResumeLayout(false);
             this._headerPanel.ResumeLayout(false);
+            this._headerLayout.ResumeLayout(false);
+            this._headerTextLayout.ResumeLayout(false);
+            this._headerActions.ResumeLayout(false);
+            this._headerActions.PerformLayout();
             this._headerPanel.PerformLayout();
             this._headerIconPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             this._toolbar.ResumeLayout(false);
-            this._toolbar.PerformLayout();
+            this._toolbarLayout.ResumeLayout(false);
             this._gridCard.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._usersGrid)).EndInit();
             this.ResumeLayout(false);

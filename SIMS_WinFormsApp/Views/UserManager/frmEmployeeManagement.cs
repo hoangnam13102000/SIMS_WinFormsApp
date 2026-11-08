@@ -41,10 +41,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             }
             _pager = new UserManagementPager();
             _contentLayout.Controls.Add(_pager, 0, 3);
-            _headerPanel.SizeChanged += (sender, args) => LayoutHeader();
-            _toolbar.SizeChanged += (sender, args) => LayoutFilters();
-            LayoutHeader();
-            LayoutFilters();
             _pager.PageChanged += (sender, args) => ReloadUsers();
             _statusFilter.SelectedIndex = 0;
             _searchBox.TextChanged += (sender, args) => ReloadUsers(true);
@@ -121,48 +117,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ImportUsers();
         }
 
-        private void LayoutHeader()
-        {
-            int right = _headerPanel.ClientSize.Width - 16;
-            bool compact = _headerPanel.ClientSize.Width < 900;
-            int top = compact ? 10 : 29;
-            _refreshButton.Location = new Point(right - _refreshButton.Width, top);
-            right = _refreshButton.Left - 8;
-            _optionsButton.Location = new Point(right - _optionsButton.Width, top);
-            right = _optionsButton.Left - 8;
-            _addButton.Location = new Point(right - _addButton.Width, top);
-            if (compact)
-            {
-                right = _headerPanel.ClientSize.Width - 16;
-                _lockButton.Location = new Point(right - _lockButton.Width, 52);
-                _subtitleLabel.Visible = false;
-            }
-            else
-            {
-                right = _addButton.Left - 8;
-                _lockButton.Location = new Point(right - _lockButton.Width, 29);
-                _subtitleLabel.Visible = true;
-                _subtitleLabel.Location = new Point(96, 70);
-            }
-            int titleRight = compact
-                ? _addButton.Left
-                : _lockButton.Left;
-            _titleLabel.Width = Math.Max(0, titleRight - _titleLabel.Left - 16);
-            _optionsButton.BringToFront();
-            _addButton.BringToFront();
-            _lockButton.BringToFront();
-            _refreshButton.BringToFront();
-        }
-
-        private void LayoutFilters()
-        {
-            int statusLeft = Math.Max(252, _toolbar.ClientSize.Width - 340);
-            _searchBox.Width = Math.Max(140, statusLeft - 32);
-            _statusLabel.Location = new Point(statusLeft, 8);
-            _statusFilter.Location = new Point(statusLeft, 31);
-            _statusFilter.Width = Math.Max(180, _toolbar.ClientSize.Width - statusLeft - 32);
-        }
-
         public frmEmployeeManagement(IUserManagementService service, PermissionSet permissions) : this()
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
@@ -191,7 +145,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _toggleLockMenuItem.Visible = _canManage;
             _importMenuItem.Visible = _canManage;
             UpdateActionButtons();
-            LayoutHeader();
         }
 
         private async void ReloadUsers(bool resetPage = false)

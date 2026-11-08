@@ -125,10 +125,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _invoicesGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
 
             _exportButton.FlatStyle = FlatStyle.Flat;
-            _exportButton.FlatAppearance.BorderColor = AppColors.Border;
-            _exportButton.BackColor = AppColors.CancelBg;
-            _exportButton.ForeColor = AppColors.TextPrimary;
-            _exportButton.FlatAppearance.MouseOverBackColor = AppColors.CancelHover;
+            _exportButton.FlatAppearance.BorderColor = AppColors.Accent;
+            _exportButton.BackColor = AppColors.Accent;
+            _exportButton.ForeColor = AppColors.White;
+            _exportButton.FlatAppearance.MouseOverBackColor = AppColors.AccentHover;
             _refreshButton.FlatStyle = FlatStyle.Flat;
             _refreshButton.FlatAppearance.BorderSize = 0;
             _refreshButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(29, 78, 216);

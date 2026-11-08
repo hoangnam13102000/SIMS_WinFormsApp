@@ -51,7 +51,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
             InitializeComponent();
             InitializeView();
-            Size = new Size(DialogSizing.FitWidthToScreen(owner, PreferredDialogWidth), DefaultDialogSize.Height);
+            // Screen-dependent width is limited at runtime; the dialog height is fixed in the Designer.
+            Width = DialogSizing.FitWidthToScreen(owner, PreferredDialogWidth);
             DisplayUser(user);
             CloseRequested += (s, e) => Close();
             _presenter = new EditUserAccountPresenter(this, userManagementService, user.UserId);

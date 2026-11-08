@@ -20,7 +20,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
     public sealed partial class frmAddEmployee : BaseFormDialogForm, IAddEmployeeView
     {
         private const int PreferredDialogWidth = 1240;
-        private const int ScreenEdgeMargin = 48;
         private const long MaxAvatarSize = 5 * 1024 * 1024;
 
         private readonly AddEmployeePresenter _presenter;
@@ -69,7 +68,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
 
             InitializeComponent();
             InitializeView();
-            Size = new Size(ResolveDialogWidth(owner), DefaultDialogSize.Height);
+            // Screen-dependent width is limited at runtime; the dialog height is fixed in the Designer.
+            Width = DialogSizing.FitWidthToScreen(owner, PreferredDialogWidth);
             HeaderTitle = "Thêm nhân viên";
             CloseRequested += (s, e) => Close();
             _presenter = new AddEmployeePresenter(this, userManagementService);
@@ -79,14 +79,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             using (var dialog = new frmAddEmployee(owner, userManagementService))
                 return dialog.ShowDialog(owner);
-        }
-
-        private static int ResolveDialogWidth(IWin32Window owner)
-        {
-            Screen screen = owner is Control control
-                ? Screen.FromControl(control)
-                : Screen.PrimaryScreen;
-            return Math.Min(PreferredDialogWidth, screen.WorkingArea.Width - ScreenEdgeMargin);
         }
 
         private void InitializeView()

@@ -10,13 +10,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         public frmMessageDialog()
         {
             InitializeComponent();
-            AutoScaleMode = AutoScaleMode.None;
-            StartPosition = FormStartPosition.CenterParent;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            ShowInTaskbar = false;
-            MinimizeBox = false;
-            MaximizeBox = false;
-            KeyPreview = true;
         }
 
         internal void Configure(
@@ -37,15 +30,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             Text = title ?? string.Empty;
             lblTitle.Text = title ?? string.Empty;
             lblMessage.Text = message ?? string.Empty;
-            Size messageSize = TextRenderer.MeasureText(
-                lblMessage.Text,
-                lblMessage.Font,
-                new Size(lblMessage.Width, int.MaxValue),
-                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
-            lblMessage.Height = Math.Max(58, messageSize.Height + 8);
-            ClientSize = new Size(
-                ClientSize.Width,
-                88 + lblMessage.Height + 18 + pnlFooter.Height);
             lblIcon.Text = iconText ?? string.Empty;
             pnlIcon.BackColor = Color.FromArgb(
                 (accentColor.R + 4 * 255) / 5,
@@ -78,7 +62,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             int safeDefaultIndex = Math.Max(0, Math.Min(defaultButtonIndex, buttonTexts.Length - 1));
             AcceptButton = buttons[safeDefaultIndex];
             _closeResult = closeResult;
-            PositionButtons(buttons, buttonTexts.Length);
         }
 
         private DialogResult _closeResult = DialogResult.Cancel;
@@ -92,22 +75,6 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        private void PositionButtons(Button[] buttons, int visibleCount)
-        {
-            const int rightMargin = 24;
-            const int spacing = 10;
-            int x = pnlFooter.ClientSize.Width - rightMargin;
-
-            for (int i = 0; i < visibleCount; i++)
-            {
-                Button button = buttons[i];
-                if (button == null) continue;
-                x -= button.Width;
-                button.Location = new Point(x, button.Location.Y);
-                x -= spacing;
-            }
         }
 
         private void btnPrimary_Click(object sender, EventArgs e)

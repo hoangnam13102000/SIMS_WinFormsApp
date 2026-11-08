@@ -25,8 +25,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
     /// </summary>
     public sealed partial class frmBarcodeScannerDialog : BaseFormDialogForm, IBarcodeScannerView
     {
-        private static readonly Size DialogSize = new Size(560, 560);
-
         private BarcodeScannerPresenter _presenter;
         private Label _instructionLabel;
         private Panel _videoHolder;
@@ -52,8 +50,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Barcode
             BarcodeScanEngine engine) : base(owner)
         {
             InitializeComponent();
-            Size = DialogSize;
-            MinimumSize = DialogSize;
 
             HeaderTitle = dialogTitle;
             SetHeaderIcon(IconChar.Barcode, AppColors.Accent);

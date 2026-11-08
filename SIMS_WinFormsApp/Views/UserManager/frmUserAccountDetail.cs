@@ -19,8 +19,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
 {
     public sealed partial class frmUserAccountDetail : Form, IUserAccountDetailView
     {
-        private static readonly Size DetailDialogSize = new Size(1150, 660);
-
         private readonly UserAccountDetailPresenter _presenter;
         private readonly UserDetailDto _user;
 
@@ -29,7 +27,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         public frmUserAccountDetail()
         {
             InitializeComponent();
-            ConfigureDialog(null);
+            ConfigureDialog();
             _user = CreateDesignSampleUser();
             ConfigureAccountFields();
             Render(new UserAccountDetailViewModelBuilder().Build(_user));
@@ -63,7 +61,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             if (viewModelBuilder == null) throw new ArgumentNullException(nameof(viewModelBuilder));
 
             InitializeComponent();
-            ConfigureDialog(owner);
+            ConfigureDialog();
             _user = user;
             ConfigureAccountFields();
 
@@ -96,15 +94,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             };
         }
 
-        private void ConfigureDialog(IWin32Window owner)
+        private void ConfigureDialog()
         {
-            FormBorderStyle = FormBorderStyle.None;
-            StartPosition = owner == null ? FormStartPosition.CenterScreen : FormStartPosition.Manual;
-            ShowInTaskbar = false;
-            KeyPreview = true;
-            Size = DetailDialogSize;
-            MinimumSize = DetailDialogSize;
-            MaximumSize = DetailDialogSize;
             BackColor = DialogTheme.SurfaceColor;
 
             _btnClose.Click += (s, e) => RaiseCloseRequested();
@@ -112,30 +103,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _tabAccount.Click += (s, e) => SelectDetailTab(showAccount: true);
             _tabSecurity.Click += (s, e) => SelectDetailTab(showAccount: false);
             KeyDown += Form_KeyDown;
-            Shown += (s, e) => CenterOnOwner(owner);
 
             _lblDialogTitle.Text = "Chi tiết tài khoản";
             ConfigureAccountFields();
             SelectDetailTab(showAccount: true);
-        }
-
-        private void CenterOnOwner(IWin32Window owner)
-        {
-            if (owner is Control control)
-            {
-                Rectangle ownerBounds = owner is Form ownerForm
-                    ? ownerForm.Bounds
-                    : new Rectangle(control.PointToScreen(Point.Empty), control.Size);
-                Location = new Point(
-                    Math.Max(0, ownerBounds.Left + (ownerBounds.Width - Width) / 2),
-                    Math.Max(0, ownerBounds.Top + (ownerBounds.Height - Height) / 2));
-                return;
-            }
-
-            Rectangle workingArea = Screen.FromControl(this).WorkingArea;
-            Location = new Point(
-                workingArea.Left + (workingArea.Width - Width) / 2,
-                workingArea.Top + (workingArea.Height - Height) / 2);
         }
 
         private void ConfigureAccountFields()
@@ -149,7 +120,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _itemSalary.Visible = isEmployeeAccount;
             _itemLoyaltyPoints.Visible = !isEmployeeAccount;
             _itemCustomerCode.Visible = !isEmployeeAccount;
-            _designerAccountGrid.RowStyles[3].Height = 96F;
         }
 
         private void SelectDetailTab(bool showAccount)

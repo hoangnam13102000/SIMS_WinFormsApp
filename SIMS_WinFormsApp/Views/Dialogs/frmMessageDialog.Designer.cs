@@ -10,6 +10,9 @@ namespace SIMS_WinFormsApp.Views.Dialogs
         private Label lblTitle;
         private Label lblMessage;
         private Panel pnlFooter;
+        private TableLayoutPanel _dialogLayout;
+        private Panel _headerPanel;
+        private FlowLayoutPanel _buttonFlow;
         private Button btnPrimary;
         private Button btnSecondary;
         private Button _tertiaryButton;
@@ -21,11 +24,17 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblMessage = new System.Windows.Forms.Label();
             this.pnlFooter = new System.Windows.Forms.Panel();
+            this._dialogLayout = new System.Windows.Forms.TableLayoutPanel();
+            this._headerPanel = new System.Windows.Forms.Panel();
+            this._buttonFlow = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSecondary = new System.Windows.Forms.Button();
             this.btnPrimary = new System.Windows.Forms.Button();
             this._tertiaryButton = new System.Windows.Forms.Button();
             this.pnlIcon.SuspendLayout();
             this.pnlFooter.SuspendLayout();
+            this._dialogLayout.SuspendLayout();
+            this._headerPanel.SuspendLayout();
+            this._buttonFlow.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlIcon
@@ -61,28 +70,46 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             this.lblTitle.Text = "Hộp thoại";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // _headerPanel
+            // 
+            this._headerPanel.Controls.Add(this.pnlIcon);
+            this._headerPanel.Controls.Add(this.lblTitle);
+            this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerPanel.Name = "_headerPanel";
+            this._headerPanel.Size = new System.Drawing.Size(520, 72);
+            this._headerPanel.TabIndex = 0;
+            // 
             // lblMessage
             // 
+            this.lblMessage.AutoSize = true;
             this.lblMessage.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.lblMessage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblMessage.Location = new System.Drawing.Point(24, 88);
+            this.lblMessage.Margin = new System.Windows.Forms.Padding(24, 16, 24, 18);
+            this.lblMessage.MaximumSize = new System.Drawing.Size(472, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(472, 58);
             this.lblMessage.TabIndex = 3;
             this.lblMessage.Text = "Nội dung hộp thoại";
             // 
             // pnlFooter
             // 
             this.pnlFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this.pnlFooter.Controls.Add(this.btnSecondary);
-            this.pnlFooter.Controls.Add(this.btnPrimary);
-            this.pnlFooter.Controls.Add(this._tertiaryButton);
-            this.pnlFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlFooter.Location = new System.Drawing.Point(0, 164);
+            this.pnlFooter.Controls.Add(this._buttonFlow);
+            this.pnlFooter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlFooter.Name = "pnlFooter";
-            this.pnlFooter.Padding = new System.Windows.Forms.Padding(16, 10, 16, 10);
             this.pnlFooter.Size = new System.Drawing.Size(520, 64);
             this.pnlFooter.TabIndex = 4;
+            // 
+            // _buttonFlow
+            // 
+            this._buttonFlow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._buttonFlow.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this._buttonFlow.Margin = new System.Windows.Forms.Padding(0);
+            this._buttonFlow.Name = "_buttonFlow";
+            this._buttonFlow.Padding = new System.Windows.Forms.Padding(0, 10, 24, 0);
+            this._buttonFlow.WrapContents = false;
+            this._buttonFlow.Controls.Add(this.btnPrimary);
+            this._buttonFlow.Controls.Add(this.btnSecondary);
+            this._buttonFlow.Controls.Add(this._tertiaryButton);
             // 
             // btnSecondary
             // 
@@ -92,7 +119,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             this.btnSecondary.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSecondary.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnSecondary.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.btnSecondary.Location = new System.Drawing.Point(238, 12);
+            this.btnSecondary.Margin = new System.Windows.Forms.Padding(5);
             this.btnSecondary.Name = "btnSecondary";
             this.btnSecondary.Size = new System.Drawing.Size(124, 40);
             this.btnSecondary.TabIndex = 1;
@@ -107,7 +134,7 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             this.btnPrimary.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPrimary.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnPrimary.ForeColor = System.Drawing.Color.White;
-            this.btnPrimary.Location = new System.Drawing.Point(372, 12);
+            this.btnPrimary.Margin = new System.Windows.Forms.Padding(5);
             this.btnPrimary.Name = "btnPrimary";
             this.btnPrimary.Size = new System.Drawing.Size(124, 40);
             this.btnPrimary.TabIndex = 0;
@@ -122,31 +149,52 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             this._tertiaryButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._tertiaryButton.Font = this.btnSecondary.Font;
             this._tertiaryButton.ForeColor = this.btnSecondary.ForeColor;
-            this._tertiaryButton.Location = new System.Drawing.Point(104, 12);
+            this._tertiaryButton.Margin = new System.Windows.Forms.Padding(5);
             this._tertiaryButton.Name = "_tertiaryButton";
             this._tertiaryButton.Size = this.btnSecondary.Size;
             this._tertiaryButton.TabIndex = 2;
+            this._tertiaryButton.Visible = false;
             this._tertiaryButton.UseVisualStyleBackColor = false;
             this._tertiaryButton.Click += new System.EventHandler(this._tertiaryButton_Click);
             // 
             // frmMessageDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(520, 228);
-            this.Controls.Add(this.pnlFooter);
-            this.Controls.Add(this.lblMessage);
-            this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.pnlIcon);
+            this.Controls.Add(this._dialogLayout);
+            this._dialogLayout.ColumnCount = 1;
+            this._dialogLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._dialogLayout.Controls.Add(this._headerPanel, 0, 0);
+            this._dialogLayout.Controls.Add(this.lblMessage, 0, 1);
+            this._dialogLayout.Controls.Add(this.pnlFooter, 0, 2);
+            this._dialogLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._dialogLayout.Margin = new System.Windows.Forms.Padding(0);
+            this._dialogLayout.Name = "_dialogLayout";
+            this._dialogLayout.RowCount = 3;
+            this._dialogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+            this._dialogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this._dialogLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
+            this._dialogLayout.Size = new System.Drawing.Size(520, 228);
+            this._dialogLayout.TabIndex = 0;
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Name = "frmMessageDialog";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.KeyPreview = true;
             this.Text = "Hộp thoại";
             this.pnlIcon.ResumeLayout(false);
             this.pnlFooter.ResumeLayout(false);
+            this._buttonFlow.ResumeLayout(false);
+            this._headerPanel.ResumeLayout(false);
+            this._dialogLayout.ResumeLayout(false);
+            this._dialogLayout.PerformLayout();
             this.ResumeLayout(false);
 
         }

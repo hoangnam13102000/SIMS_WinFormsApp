@@ -62,7 +62,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             MinimizeBox = false;
             MaximizeBox = false;
             ShowInTaskbar = false;
-            ClientSize = new Size(820, 600);
             BackColor = AppColors.PageBg;
 
             LoadReturnableLines();

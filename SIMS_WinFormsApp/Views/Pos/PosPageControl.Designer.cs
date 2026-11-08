@@ -9,6 +9,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private System.ComponentModel.IContainer components = null;
         private TableLayoutPanel _root;
         private Panel _header;
+        private TableLayoutPanel _headerTextLayout;
         private Panel _headerIconPanel;
         private IconPictureBox _headerIcon;
         private Label _pageTitle;
@@ -36,6 +37,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private IconButton _customerScanButton;
         private IconButton _clearCustomerButton;
         private CheckBox _usePointsCheckBox;
+        private FlowLayoutPanel _pointsRedemptionPanel;
+        private NumericUpDown _pointsToRedeemInput;
+        private Label _pointsUnitLabel;
+        private Label _pointsBalanceLabel;
         private Label _cartLabel;
         private DataGridView _cartGrid;
         private TableLayoutPanel _totalsLayout;
@@ -66,6 +71,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         {
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
+            this._headerTextLayout = new System.Windows.Forms.TableLayoutPanel();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._cashierNameLabel = new System.Windows.Forms.Label();
@@ -89,6 +95,10 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerScanButton = new FontAwesome.Sharp.IconButton();
             this._clearCustomerButton = new FontAwesome.Sharp.IconButton();
             this._usePointsCheckBox = new System.Windows.Forms.CheckBox();
+            this._pointsRedemptionPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this._pointsToRedeemInput = new System.Windows.Forms.NumericUpDown();
+            this._pointsUnitLabel = new System.Windows.Forms.Label();
+            this._pointsBalanceLabel = new System.Windows.Forms.Label();
             this._cartCheckoutSplit = new System.Windows.Forms.SplitContainer();
             this._cartAreaLayout = new System.Windows.Forms.TableLayoutPanel();
             this._cartLabel = new System.Windows.Forms.Label();
@@ -118,6 +128,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._checkoutButton = new System.Windows.Forms.Button();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
+            this._headerTextLayout.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._body)).BeginInit();
@@ -130,6 +141,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._saleCard.SuspendLayout();
             this._saleLayout.SuspendLayout();
             this._customerLayout.SuspendLayout();
+            this._pointsRedemptionPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._pointsToRedeemInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._cartCheckoutSplit)).BeginInit();
             this._cartCheckoutSplit.Panel1.SuspendLayout();
             this._cartCheckoutSplit.Panel2.SuspendLayout();
@@ -164,16 +177,31 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._header.BackColor = System.Drawing.Color.White;
             this._header.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._header.Controls.Add(this._headerIconPanel);
-            this._header.Controls.Add(this._cashierNameLabel);
-            this._header.Controls.Add(this._pageTitle);
-            this._header.Controls.Add(this._pageSubtitle);
+            this._header.Controls.Add(this._headerTextLayout);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
             this._header.Location = new System.Drawing.Point(24, 24);
             this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
             this._header.Name = "_header";
             this._header.Size = new System.Drawing.Size(1132, 96);
             this._header.TabIndex = 0;
-            this._header.SizeChanged += new System.EventHandler(this._header_SizeChanged);
+            // 
+            // _headerTextLayout
+            // 
+            this._headerTextLayout.ColumnCount = 2;
+            this._headerTextLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._headerTextLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this._headerTextLayout.Controls.Add(this._pageTitle, 0, 0);
+            this._headerTextLayout.Controls.Add(this._pageSubtitle, 0, 1);
+            this._headerTextLayout.Controls.Add(this._cashierNameLabel, 1, 0);
+            this._headerTextLayout.SetRowSpan(this._cashierNameLabel, 2);
+            this._headerTextLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._headerTextLayout.Location = new System.Drawing.Point(0, 0);
+            this._headerTextLayout.Name = "_headerTextLayout";
+            this._headerTextLayout.Padding = new System.Windows.Forms.Padding(96, 0, 68, 0);
+            this._headerTextLayout.RowCount = 2;
+            this._headerTextLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._headerTextLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this._headerTextLayout.TabIndex = 1;
             // 
             // _headerIconPanel
             // 
@@ -204,33 +232,29 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._cashierNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._cashierNameLabel.AutoSize = true;
             this._cashierNameLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._cashierNameLabel.Location = new System.Drawing.Point(980, 38);
             this._cashierNameLabel.Name = "_cashierNameLabel";
-            this._cashierNameLabel.Size = new System.Drawing.Size(83, 20);
             this._cashierNameLabel.TabIndex = 0;
             this._cashierNameLabel.Text = "Nhân viên:";
             // 
             // _pageTitle
             // 
+            this._pageTitle.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pageTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this._pageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._pageTitle.Location = new System.Drawing.Point(96, 0);
             this._pageTitle.Name = "_pageTitle";
-            this._pageTitle.Size = new System.Drawing.Size(600, 52);
             this._pageTitle.TabIndex = 1;
             this._pageTitle.Text = "Bán hàng tại quầy";
             this._pageTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _pageSubtitle
             // 
-            this._pageSubtitle.AutoSize = true;
+            this._pageSubtitle.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pageSubtitle.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this._pageSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._pageSubtitle.Location = new System.Drawing.Point(96, 56);
             this._pageSubtitle.Name = "_pageSubtitle";
-            this._pageSubtitle.Size = new System.Drawing.Size(412, 25);
             this._pageSubtitle.TabIndex = 2;
             this._pageSubtitle.Text = "Quét sản phẩm, quản lý giỏ hàng và thanh toán";
+            this._pageSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // _body
             // 
@@ -403,7 +427,8 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._customerLayout.Controls.Add(this._customerSearchButton, 1, 1);
             this._customerLayout.Controls.Add(this._customerScanButton, 2, 1);
             this._customerLayout.Controls.Add(this._clearCustomerButton, 3, 1);
-            this._customerLayout.Controls.Add(this._usePointsCheckBox, 0, 2);
+            this._customerLayout.Controls.Add(this._pointsRedemptionPanel, 0, 2);
+            this._customerLayout.SetColumnSpan(this._pointsRedemptionPanel, 4);
             this._customerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this._customerLayout.Location = new System.Drawing.Point(3, 3);
             this._customerLayout.Name = "_customerLayout";
@@ -496,11 +521,48 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._usePointsCheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._usePointsCheckBox.Location = new System.Drawing.Point(3, 55);
             this._usePointsCheckBox.Name = "_usePointsCheckBox";
-            this._usePointsCheckBox.Size = new System.Drawing.Size(330, 24);
+            this._usePointsCheckBox.Margin = new System.Windows.Forms.Padding(0, 3, 8, 0);
+            this._usePointsCheckBox.Size = new System.Drawing.Size(110, 24);
             this._usePointsCheckBox.TabIndex = 5;
-            this._usePointsCheckBox.Text = "Dùng điểm thưởng";
-            this._usePointsCheckBox.Visible = false;
+            this._usePointsCheckBox.Text = "Dùng điểm";
             this._usePointsCheckBox.CheckedChanged += new System.EventHandler(this._usePointsCheckBox_CheckedChanged);
+            // 
+            // _pointsRedemptionPanel
+            // 
+            this._pointsRedemptionPanel.Controls.Add(this._usePointsCheckBox);
+            this._pointsRedemptionPanel.Controls.Add(this._pointsToRedeemInput);
+            this._pointsRedemptionPanel.Controls.Add(this._pointsUnitLabel);
+            this._pointsRedemptionPanel.Controls.Add(this._pointsBalanceLabel);
+            this._pointsRedemptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._pointsRedemptionPanel.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+            this._pointsRedemptionPanel.Margin = System.Windows.Forms.Padding.Empty;
+            this._pointsRedemptionPanel.Name = "_pointsRedemptionPanel";
+            this._pointsRedemptionPanel.WrapContents = false;
+            this._pointsRedemptionPanel.Visible = false;
+            // 
+            // _pointsToRedeemInput
+            // 
+            this._pointsToRedeemInput.Enabled = false;
+            this._pointsToRedeemInput.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
+            this._pointsToRedeemInput.Maximum = new decimal(new int[] { 0, 0, 0, 0 });
+            this._pointsToRedeemInput.Name = "_pointsToRedeemInput";
+            this._pointsToRedeemInput.Size = new System.Drawing.Size(90, 26);
+            this._pointsToRedeemInput.ThousandsSeparator = true;
+            this._pointsToRedeemInput.ValueChanged += new System.EventHandler(this._pointsToRedeemInput_ValueChanged);
+            // 
+            // _pointsUnitLabel
+            // 
+            this._pointsUnitLabel.AutoSize = true;
+            this._pointsUnitLabel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this._pointsUnitLabel.Name = "_pointsUnitLabel";
+            this._pointsUnitLabel.Text = "điểm";
+            // 
+            // _pointsBalanceLabel
+            // 
+            this._pointsBalanceLabel.AutoSize = true;
+            this._pointsBalanceLabel.Margin = new System.Windows.Forms.Padding(4, 4, 0, 0);
+            this._pointsBalanceLabel.Name = "_pointsBalanceLabel";
+            this._pointsBalanceLabel.Text = "(có 0)";
             // 
             // _cartCheckoutSplit
             // 
@@ -863,7 +925,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this.Load += new System.EventHandler(this.PosPageControl_Load);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
-            this._header.PerformLayout();
+            this._headerTextLayout.ResumeLayout(false);
             this._headerIconPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).EndInit();
             this._body.Panel1.ResumeLayout(false);
@@ -878,6 +940,9 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
             this._saleLayout.ResumeLayout(false);
             this._customerLayout.ResumeLayout(false);
             this._customerLayout.PerformLayout();
+            this._pointsRedemptionPanel.ResumeLayout(false);
+            this._pointsRedemptionPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._pointsToRedeemInput)).EndInit();
             this._cartCheckoutSplit.Panel1.ResumeLayout(false);
             this._cartCheckoutSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this._cartCheckoutSplit)).EndInit();

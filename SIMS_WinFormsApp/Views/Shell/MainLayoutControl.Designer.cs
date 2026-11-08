@@ -442,7 +442,9 @@ namespace SIMS_WinFormsApp.Views.Shell
             this._settingsButton.IconColor = System.Drawing.Color.Black;
             this._settingsButton.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this._settingsButton.Location = new System.Drawing.Point(1208, 718);
+            this._settingsButton.Margin = new System.Windows.Forms.Padding(0);
             this._settingsButton.Name = "_settingsButton";
+            this._settingsButton.Padding = new System.Windows.Forms.Padding(0);
             this._settingsButton.Size = new System.Drawing.Size(48, 48);
             this._settingsButton.TabIndex = 2;
             this._settingsButton.UseVisualStyleBackColor = false;

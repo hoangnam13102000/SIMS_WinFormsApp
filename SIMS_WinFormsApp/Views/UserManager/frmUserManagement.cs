@@ -37,10 +37,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             }
             _pager = new UserManagementPager();
             _contentLayout.Controls.Add(_pager, 0, 3);
-            _headerPanel.SizeChanged += (sender, args) => LayoutHeader();
-            _toolbar.SizeChanged += (sender, args) => LayoutFilters();
-            LayoutHeader();
-            LayoutFilters();
             _pager.PageChanged += (sender, args) => ReloadUsers();
             AddUserRow("admin", "Quản trị hệ thống", "admin@example.com", "Quản trị viên", "Đang hoạt động", false);
             AddUserRow("nhanvien01", "Nhân viên mẫu", "staff@example.com", "Nhân viên", "Đang hoạt động", false);
@@ -88,38 +84,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ToggleSelectedUserLock();
         }
 
-        private void LayoutHeader()
-        {
-            bool compact = _headerPanel.ClientSize.Width < 900;
-            _refreshButton.Location = new Point(_headerPanel.ClientSize.Width - 146, compact ? 10 : 28);
-            if (compact)
-            {
-                int right = _headerPanel.ClientSize.Width - 16;
-                _lockButton.Location = new Point(right - _lockButton.Width, 52);
-                _subtitleLabel.Visible = false;
-            }
-            else
-            {
-                int right = _refreshButton.Left - 8;
-                _lockButton.Location = new Point(right - _lockButton.Width, 28);
-                _subtitleLabel.Visible = true;
-                _subtitleLabel.Location = new Point(96, 68);
-            }
-            int titleRight = compact ? _refreshButton.Left : _lockButton.Left;
-            _titleLabel.Width = Math.Max(0, titleRight - _titleLabel.Left - 16);
-            _lockButton.BringToFront();
-            _refreshButton.BringToFront();
-        }
-
-        private void LayoutFilters()
-        {
-            int statusLeft = Math.Max(252, _toolbar.ClientSize.Width - 340);
-            _searchBox.Width = Math.Max(140, statusLeft - 32);
-            _statusLabel.Location = new Point(statusLeft, 8);
-            _statusFilter.Location = new Point(statusLeft, 31);
-            _statusFilter.Width = Math.Max(180, _toolbar.ClientSize.Width - statusLeft - 32);
-        }
-
         public frmUserManagement(IUserManagementService service, PermissionSet permissions) : this()
         {
             if (service == null)
@@ -148,7 +112,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _editUserMenuItem.Visible = _canEdit;
             _toggleLockMenuItem.Visible = _canManage;
             UpdateActionButtons();
-            LayoutHeader();
         }
 
         private async void ReloadUsers(bool resetPage = false)

@@ -66,6 +66,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             {
                 if (components != null)
                     components.Dispose();
+                _printPreviewDialog?.Dispose();
                 _printDocument.Dispose();
             }
             base.Dispose(disposing);
@@ -175,6 +176,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 true);
         }
 
+        // Receipt rows are generated and sized from the current invoice data at runtime.
         private void AddReceiptLabel(string text, float size, bool bold, Color color, bool centered = false)
         {
             using (var font = new Font("Segoe UI", size, bold ? FontStyle.Bold : FontStyle.Regular))
@@ -198,6 +200,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             }
         }
 
+        // Receipt separators are generated alongside the data-dependent receipt rows.
         private void AddReceiptSeparator()
         {
             _receiptContent.Controls.Add(new Label
@@ -258,16 +261,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         public void OpenPrintPreview(IWin32Window owner)
         {
-            using (var preview = new PrintPreviewDialog
-            {
-                Document = _printDocument,
-                Width = 900,
-                Height = 700,
-                StartPosition = FormStartPosition.CenterParent
-            })
-            {
-                preview.ShowDialog(owner);
-            }
+            _printPreviewDialog.ShowDialog(owner);
         }
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)

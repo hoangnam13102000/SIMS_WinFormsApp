@@ -141,7 +141,6 @@ namespace SIMS_WinFormsApp.Views.Shell
 
         private void ConfigureFloatingButton(IconButton button, IconChar icon)
         {
-            button.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             button.BackColor = AppColors.Blue;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
@@ -156,8 +155,8 @@ namespace SIMS_WinFormsApp.Views.Shell
             button.Text = string.Empty;
             button.UseVisualStyleBackColor = false;
             button.Cursor = Cursors.Hand;
-            button.Size = new Size(48, 48);
             SetCircularRegion(button);
+            // The clipping region follows the control's runtime size so the button stays circular.
             button.SizeChanged += (sender, args) =>
                 SetCircularRegion(button);
         }
@@ -189,6 +188,7 @@ namespace SIMS_WinFormsApp.Views.Shell
 
             Rectangle workingArea = Screen.FromControl(_settingsButton).WorkingArea;
             Point anchor = _settingsButton.PointToScreen(Point.Empty);
+            // Popup position is relative to the live button and constrained to the current screen.
             int x = anchor.X + _settingsButton.Width - _settingsPopup.Width;
             int y = anchor.Y - _settingsPopup.Height - 10;
 
@@ -514,6 +514,7 @@ namespace SIMS_WinFormsApp.Views.Shell
             public NotificationDropdownRow(NotificationDto notification)
             {
                 Notification = notification ?? throw new ArgumentNullException(nameof(notification));
+                // Row content and its bounds are generated from each notification at runtime.
                 Size = new Size(400, 82);
                 BackColor = AppColors.White;
                 Margin = Padding.Empty;
