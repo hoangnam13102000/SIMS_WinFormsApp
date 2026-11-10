@@ -1,12 +1,16 @@
 using System;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
 using Newtonsoft.Json;
 using SIMS_WinFormsApp.DAL.Linq.Entities;
 using SIMS_WinFormsApp.Services.Session;
 
 namespace SIMS_WinFormsApp.DAL.Linq
 {
+    /// <summary>
+    /// Insert vào các bảng có trigger INSTEAD OF INSERT (InvoiceDetails, StockReconciliation).
+    /// Dùng ExecuteCommand / ExecuteQuery của LINQ to SQL (SimsDataContext) để trigger chạy đúng,
+    /// không dùng ADO.NET.
+    /// </summary>
     public static class TriggerInsertExecutor
     {
         public static void InsertInvoiceDetail(
@@ -16,34 +20,21 @@ namespace SIMS_WinFormsApp.DAL.Linq
             int quantity,
             decimal unitPrice)
         {
-            if (db == null)
-                throw new ArgumentNullException(nameof(db));
+            EnsureTransaction(db);
 
-            int invoiceDetailId;
-            using (SqlCommand command = CreateCommand(db))
-            {
-                command.CommandText =
-                    "SET NOCOUNT ON; " +
-                    "INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice) " +
-                    "VALUES (@InvoiceID, @ProductID, @Quantity, @UnitPrice); " +
-                    "SELECT TOP (1) InvoiceDetailID FROM InvoiceDetails " +
-                    "WHERE InvoiceID = @InvoiceID AND ProductID = @ProductID " +
-                    "AND Quantity = @Quantity AND UnitPrice = @UnitPrice " +
-                    "ORDER BY InvoiceDetailID DESC;";
-                command.Parameters.Add("@InvoiceID", SqlDbType.Int).Value = invoiceId;
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                command.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
-                SqlParameter unitPriceParameter = command.Parameters.Add("@UnitPrice", SqlDbType.Decimal);
-                unitPriceParameter.Precision = 18;
-                unitPriceParameter.Scale = 0;
-                unitPriceParameter.Value = unitPrice;
+            int invoiceDetailId = db.ExecuteQuery<int>(
+                "SET NOCOUNT ON; " +
+                "INSERT INTO InvoiceDetails (InvoiceID, ProductID, Quantity, UnitPrice) " +
+                "VALUES ({0}, {1}, {2}, {3}); " +
+                "SELECT TOP (1) InvoiceDetailID FROM InvoiceDetails " +
+                "WHERE InvoiceID = {0} AND ProductID = {1} " +
+                "AND Quantity = {2} AND UnitPrice = {3} " +
+                "ORDER BY InvoiceDetailID DESC;",
+                invoiceId, productId, quantity, unitPrice).FirstOrDefault();
 
-                object insertedId = command.ExecuteScalar();
-                if (insertedId == null || insertedId == DBNull.Value)
-                    throw new InvalidOperationException(
-                        "Không thể xác định mã chi tiết hóa đơn vừa được tạo.");
-                invoiceDetailId = Convert.ToInt32(insertedId);
-            }
+            if (invoiceDetailId <= 0)
+                throw new InvalidOperationException(
+                    "Không thể xác định mã chi tiết hóa đơn vừa được tạo.");
 
             if (UserSession.Instance.CurrentUser == null)
                 return;
@@ -79,45 +70,22 @@ namespace SIMS_WinFormsApp.DAL.Linq
             int createdBy,
             DateTime createdAt)
         {
-            if (db == null)
-                throw new ArgumentNullException(nameof(db));
+            EnsureTransaction(db);
 
-            using (SqlCommand command = CreateCommand(db))
-            {
-                command.CommandText =
-                    "INSERT INTO StockReconciliation " +
-                    "(ProductID, SystemStock, ActualStock, Note, CreatedBy, CreatedAt) " +
-                    "VALUES (@ProductID, @SystemStock, @ActualStock, @Note, @CreatedBy, @CreatedAt);";
-                command.Parameters.Add("@ProductID", SqlDbType.Int).Value = productId;
-                command.Parameters.Add("@SystemStock", SqlDbType.Int).Value = systemStock;
-                command.Parameters.Add("@ActualStock", SqlDbType.Int).Value = actualStock;
-                command.Parameters.Add("@Note", SqlDbType.NVarChar, 255).Value =
-                    (object)note ?? DBNull.Value;
-                command.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = createdBy;
-                command.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = createdAt;
-                command.ExecuteNonQuery();
-            }
+            db.ExecuteCommand(
+                "INSERT INTO StockReconciliation " +
+                "(ProductID, SystemStock, ActualStock, Note, CreatedBy, CreatedAt) " +
+                "VALUES ({0}, {1}, {2}, {3}, {4}, {5});",
+                productId, systemStock, actualStock, note, createdBy, createdAt);
         }
 
-        private static SqlCommand CreateCommand(SimsDataContext db)
+        private static void EnsureTransaction(SimsDataContext db)
         {
-            SqlConnection connection = db.Connection as SqlConnection;
-            SqlTransaction transaction = db.Transaction as SqlTransaction;
-            if (connection == null)
+            if (db == null)
+                throw new ArgumentNullException(nameof(db));
+            if (db.Transaction == null)
                 throw new InvalidOperationException(
-                    "Trigger inserts require a SQL Server connection.");
-            if (connection.State != ConnectionState.Open)
-                throw new InvalidOperationException(
-                    "Trigger inserts require an open database connection.");
-            if (transaction == null)
-                throw new InvalidOperationException(
-                    "Trigger inserts require the active database transaction.");
-
-            return new SqlCommand
-            {
-                Connection = connection,
-                Transaction = transaction
-            };
+                    "Thao tác này cần chạy trong transaction đang mở của SimsDataContext.");
         }
     }
 }
