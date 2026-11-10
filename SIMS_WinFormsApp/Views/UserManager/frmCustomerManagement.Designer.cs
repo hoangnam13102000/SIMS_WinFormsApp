@@ -23,7 +23,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private TextBox _searchBox;
         private Label _statusLabel;
         private ComboBox _statusFilter;
-        private Button _lockButton;
         private Button _refreshButton;
         private Panel _gridCard;
         private DataGridView _usersGrid;
@@ -51,7 +50,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitleLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
-            this._lockButton = new System.Windows.Forms.Button();
             this._refreshButton = new System.Windows.Forms.Button();
             this._toolbar = new System.Windows.Forms.Panel();
             this._searchLabel = new System.Windows.Forms.Label();
@@ -145,7 +143,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._headerPanel.Controls.Add(this._headerIconPanel);
             this._headerPanel.Controls.Add(this._subtitleLabel);
             this._headerPanel.Controls.Add(this._titleLabel);
-            this._headerPanel.Controls.Add(this._lockButton);
             this._headerPanel.Controls.Add(this._refreshButton);
             this._headerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._headerPanel.Location = new System.Drawing.Point(0, 0);
@@ -199,23 +196,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._titleLabel.TabIndex = 4;
             this._titleLabel.Text = "Quản lý khách hàng";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // _lockButton
-            // 
-            this._lockButton.BackColor = System.Drawing.Color.White;
-            this._lockButton.Enabled = false;
-            this._lockButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._lockButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._lockButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._lockButton.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this._lockButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(83)))), ((int)(((byte)(9)))));
-            this._lockButton.Location = new System.Drawing.Point(536, 28);
-            this._lockButton.Name = "_lockButton";
-            this._lockButton.Size = new System.Drawing.Size(110, 38);
-            this._lockButton.TabIndex = 7;
-            this._lockButton.Text = "Khóa";
-            this._lockButton.UseVisualStyleBackColor = false;
-            this._lockButton.Click += new System.EventHandler(this._lockButton_Click);
             // 
             // _refreshButton
             // 
@@ -355,7 +335,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             this._usersGrid.Size = new System.Drawing.Size(1021, 416);
             this._usersGrid.TabIndex = 0;
             this._usersGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.UsersGrid_CellDoubleClick);
-            this._usersGrid.SelectionChanged += new System.EventHandler(this.UsersGrid_SelectionChanged);
             // 
             // Username
             // 

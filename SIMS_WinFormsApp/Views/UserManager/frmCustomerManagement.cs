@@ -61,16 +61,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             ReloadUsers(true);
         }
 
-        private void _lockButton_Click(object sender, EventArgs e)
-        {
-            ToggleSelectedUserLock();
-        }
-
-        private void UsersGrid_SelectionChanged(object sender, EventArgs e)
-        {
-            UpdateActionButtons();
-        }
-
         private void UsersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count)
@@ -98,10 +88,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
         private void LayoutHeader()
         {
             _refreshButton.Location = new Point(_headerPanel.ClientSize.Width - 146, 28);
-            int right = _refreshButton.Left - 8;
-            _lockButton.Location = new Point(right - _lockButton.Width, 28);
-            _titleLabel.Width = Math.Max(180, _lockButton.Left - _titleLabel.Left - 16);
-            _lockButton.BringToFront();
+            _titleLabel.Width = Math.Max(180, _refreshButton.Left - _titleLabel.Left - 16);
             _refreshButton.BringToFront();
         }
 
@@ -139,7 +126,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _viewDetailsMenuItem.Visible = true;
             _editUserMenuItem.Visible = _canEdit;
             _toggleLockMenuItem.Visible = _canManage;
-            UpdateActionButtons();
         }
 
         private async void ReloadUsers(bool resetPage = false)
@@ -220,15 +206,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             _usersGrid.ClearSelection();
             _usersGrid.CurrentCell = null;
-            UpdateActionButtons();
-        }
-
-        private void UpdateActionButtons()
-        {
-            UserManagementRowDto user = SelectedUser();
-            bool hasSelection = user != null;
-            _lockButton.Enabled = hasSelection && _canManage;
-            _lockButton.Text = user == null || !user.IsLocked ? "Khóa" : "Mở khóa";
         }
 
         private void AddUserRow(string username, string fullName, string email, string role, string status, bool isLocked)

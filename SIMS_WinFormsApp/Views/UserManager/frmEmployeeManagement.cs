@@ -70,16 +70,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             AddEmployee();
         }
 
-        private void LockButton_Click(object sender, EventArgs e)
-        {
-            ToggleSelectedUserLock();
-        }
-
-        private void UsersGrid_SelectionChanged(object sender, EventArgs e)
-        {
-            UpdateActionButtons();
-        }
-
         private void UsersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= _usersGrid.Rows.Count) return;
@@ -144,7 +134,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _editUserMenuItem.Visible = _canEdit;
             _toggleLockMenuItem.Visible = _canManage;
             _importMenuItem.Visible = _canManage;
-            UpdateActionButtons();
         }
 
         private async void ReloadUsers(bool resetPage = false)
@@ -295,15 +284,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             _usersGrid.ClearSelection();
             _usersGrid.CurrentCell = null;
-            UpdateActionButtons();
-        }
-
-        private void UpdateActionButtons()
-        {
-            UserManagementRowDto user = SelectedUser();
-            bool hasSelection = user != null;
-            _lockButton.Enabled = hasSelection && _canManage;
-            _lockButton.Text = user == null || !user.IsLocked ? "Khóa" : "Mở khóa";
         }
 
         private void ExportUsers(ITableDataExporter exporter)
