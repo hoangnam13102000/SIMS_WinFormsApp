@@ -1,17 +1,19 @@
 using System;
-using SIMS_WinFormsApp.Models.DTOs.Sales;
+using System.Data.SqlClient;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
+using Microsoft.Reporting.WinForms;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
 using SIMS_WinFormsApp.UI.Theme;
+using SIMS_WinFormsApp.Views.Reports;
 
 namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 {
     public sealed partial class InvoiceDetailsDialog : Form
     {
         private readonly InvoiceDetails _invoice;
-        private int _nextLineToPrint;
         private Func<InvoiceDetails, bool> _returnRequestHandler;
 
         public InvoiceDetailsDialog()
@@ -23,8 +25,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         {
             _invoice = invoice ?? throw new ArgumentNullException(nameof(invoice));
             InitializeComponent();
-            _printDocument.BeginPrint += (sender, args) => _nextLineToPrint = 0;
-            _printDocument.PrintPage += PrintDocument_PrintPage;
             _closeButton.Click += CloseButton_Click;
             _printButton.Click += ShowPrintPreview;
             _returnButton.Click += ReturnButton_Click;
@@ -63,8 +63,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             {
                 if (components != null)
                     components.Dispose();
-                _printPreviewDialog?.Dispose();
-                _printDocument?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -258,105 +256,58 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
 
         public void OpenPrintPreview(IWin32Window owner)
         {
-            _printPreviewDialog.ShowDialog(owner);
-        }
-
-        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
-        {
-            float left = e.MarginBounds.Left;
-            float y = e.MarginBounds.Top;
-            using (var titleFont = new Font("Segoe UI", 15F, FontStyle.Bold))
-            using (var bodyFont = new Font("Segoe UI", 9F))
-            using (var boldFont = new Font("Segoe UI", 9F, FontStyle.Bold))
-            using (var smallFont = new Font("Segoe UI", 8F))
-            using (var linePen = new Pen(Color.LightGray))
+            try
             {
-                float width = e.MarginBounds.Width;
-                Image logo = Properties.Resources.logo_icon;
-                if (logo != null)
+                var sources = new[]
                 {
-                    const int logoSize = 48;
-                    e.Graphics.DrawImage(
-                        logo,
-                        left + (width - logoSize) / 2,
-                        y,
-                        logoSize,
-                        logoSize);
-                    y += logoSize + 4;
-                }
-
-                DrawCenteredPrintLine(e.Graphics, "SIMS", titleFont, Brushes.Black, left, ref y, width);
-                DrawCenteredPrintLine(e.Graphics, "HÓA ĐƠN BÁN HÀNG", boldFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Mã: " + _invoice.InvoiceCode, bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Ngày: " + _invoice.CreatedAt.ToString("dd/MM/yyyy HH:mm"), bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Khách hàng: " + _invoice.CustomerName, bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Nhân viên: " + _invoice.CashierName, bodyFont, Brushes.Black, left, ref y, width);
-                y += 6;
-                e.Graphics.DrawLine(linePen, left, y, e.MarginBounds.Right, y);
-                y += 8;
-                float itemAreaBottom = e.MarginBounds.Bottom - 145;
-                while (_nextLineToPrint < _invoice.Lines.Count)
+                    new ReportDataSource("InvoiceHeaderDataSet", new[] { _invoice }),
+                    new ReportDataSource("InvoiceLinesDataSet", _invoice.Lines)
+                };
+                using (var viewer = new frmReportViewer(
+                    "Hóa đơn bán hàng",
+                    "SIMS_WinFormsApp.Reports.InvoiceReport.rdlc",
+                    sources,
+                    null))
                 {
-                    InvoiceLine item = _invoice.Lines[_nextLineToPrint];
-                    string detail = item.Quantity + " x " + FormatMoney(item.UnitPrice) + "       " + FormatMoney(item.LineTotal);
-                    float itemHeight = e.Graphics.MeasureString(item.ProductName, boldFont, (int)width).Height +
-                                       e.Graphics.MeasureString(detail, smallFont, (int)width).Height + 8;
-                    if (y + itemHeight > itemAreaBottom && _nextLineToPrint > 0)
-                    {
-                        e.HasMorePages = true;
-                        return;
-                    }
-
-                    DrawPrintLine(e.Graphics, item.ProductName, boldFont, Brushes.Black, left, ref y, width);
-                    DrawPrintLine(e.Graphics, detail, smallFont, Brushes.Black, left, ref y, width);
-                    _nextLineToPrint++;
-                }
-                y += 6;
-                e.Graphics.DrawLine(linePen, left, y, e.MarginBounds.Right, y);
-                y += 8;
-                DrawPrintLine(e.Graphics, "Tạm tính: " + FormatMoney(_invoice.Subtotal), bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Giảm giá: " + FormatMoney(_invoice.DiscountAmount + _invoice.PointsDiscountAmount),
-                    bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "VAT (" + _invoice.VatRate.ToString("0.##") + "%): " + FormatMoney(_invoice.VatAmount),
-                    bodyFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "TỔNG: " + FormatMoney(_invoice.TotalAmount), titleFont, Brushes.Black, left, ref y, width);
-                DrawPrintLine(e.Graphics, "Thanh toán: " + GetPaymentName(_invoice.PaymentMethod), bodyFont, Brushes.Black, left, ref y, width);
-                if (_invoice.IsCancelled)
-                {
-                    DrawPrintLine(e.Graphics, "HÓA ĐƠN ĐÃ HỦY", boldFont, Brushes.Red, left, ref y, width);
-                    DrawPrintLine(e.Graphics, "Lý do: " + _invoice.CancelReason, bodyFont, Brushes.Black, left, ref y, width);
-                }
-                else
-                {
-                    DrawPrintLine(e.Graphics, "Cảm ơn quý khách!", bodyFont, Brushes.Black, left, ref y, width);
+                    viewer.ShowDialog(owner);
                 }
             }
-
-            e.HasMorePages = false;
+            catch (SqlException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (InvalidOperationException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (FileNotFoundException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (FileLoadException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (TypeLoadException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (BadImageFormatException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
+            catch (LocalProcessingException exception)
+            {
+                ShowRdlcError(exception.Message);
+            }
         }
 
-        private static void DrawPrintLine(Graphics graphics, string text, Font font, Brush brush, float x, ref float y, float width)
+        private void ShowRdlcError(string details)
         {
-            string value = text ?? string.Empty;
-            float height = graphics.MeasureString(value, font, (int)width).Height;
-            graphics.DrawString(value, font, brush, new RectangleF(x, y, width, height + 2));
-            y += height + 3;
-        }
-
-        private static void DrawCenteredPrintLine(
-            Graphics graphics,
-            string text,
-            Font font,
-            Brush brush,
-            float x,
-            ref float y,
-            float width)
-        {
-            string value = text ?? string.Empty;
-            float height = graphics.MeasureString(value, font, (int)width).Height;
-            using (var format = new StringFormat { Alignment = StringAlignment.Center })
-                graphics.DrawString(value, font, brush, new RectangleF(x, y, width, height + 2), format);
-            y += height + 3;
+            MessageBox.Show(this,
+                "Không thể mở báo cáo RDLC. Hãy kiểm tra thư viện ReportViewer và mẫu báo cáo đã được cài đặt/nhúng.\r\n\r\n"
+                + details,
+                "Lỗi báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private static string GetPaymentName(string method)

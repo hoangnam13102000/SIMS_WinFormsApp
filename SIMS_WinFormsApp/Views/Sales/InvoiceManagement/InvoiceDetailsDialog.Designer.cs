@@ -8,8 +8,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
     partial class InvoiceDetailsDialog
     {
         private IContainer components = null;
-        private System.Drawing.Printing.PrintDocument _printDocument;
-        private PrintPreviewDialog _printPreviewDialog;
         private TableLayoutPanel _root;
         private Label _invoiceHeading;
         private Panel _detailsCard;
@@ -65,8 +63,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.components = new System.ComponentModel.Container();
-            this._printDocument = new System.Drawing.Printing.PrintDocument();
-            this._printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._invoiceHeading = new System.Windows.Forms.Label();
             this._detailsCard = new System.Windows.Forms.Panel();
@@ -120,10 +116,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             this._printButton = new System.Windows.Forms.Button();
             this._returnButton = new System.Windows.Forms.Button();
             this._receiptLogo = new System.Windows.Forms.PictureBox();
-            this._printPreviewDialog.Document = this._printDocument;
-            this._printPreviewDialog.Height = 700;
-            this._printPreviewDialog.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this._printPreviewDialog.Width = 900;
             this._root.SuspendLayout();
             this._detailsCard.SuspendLayout();
             this._detailsLayout.SuspendLayout();

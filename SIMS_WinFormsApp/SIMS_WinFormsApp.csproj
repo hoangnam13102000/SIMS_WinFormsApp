@@ -59,6 +59,9 @@
     <EmbeddedResource Include="Reports\InventoryReport.rdlc">
       <LogicalName>SIMS_WinFormsApp.Reports.InventoryReport.rdlc</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\InvoiceReport.rdlc">
+      <LogicalName>SIMS_WinFormsApp.Reports.InvoiceReport.rdlc</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reports\RevenueReport.rdlc">
       <LogicalName>SIMS_WinFormsApp.Reports.RevenueReport.rdlc</LogicalName>
     </EmbeddedResource>
