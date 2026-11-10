@@ -1,3 +1,4 @@
+using SIMS_WinFormsApp.DAL.Linq;
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -39,8 +40,14 @@ namespace SIMS_WinFormsApp.Infrastructure.Configuration
         {
             try
             {
-                using (var connection = new SqlConnection(connectionString))
-                    connection.Open();
+                using (var context = new SimsDataContext(connectionString))
+                {
+                    if (!context.DatabaseExists())
+                    {
+                        error = "Không kết nối được hoặc không tìm thấy cơ sở dữ liệu. Kiểm tra lại server, tên database và tài khoản.";
+                        return false;
+                    }
+                }
                 error = null;
                 return true;
             }

@@ -1,4 +1,3 @@
-using System.Data.SqlClient;
 using SIMS_WinFormsApp.DAL.Linq;
 
 namespace SIMS_WinFormsApp.Infrastructure.Configuration
@@ -11,12 +10,6 @@ namespace SIMS_WinFormsApp.Infrastructure.Configuration
         {
             _connectionStringProvider = connectionStringProvider;
         }
-
-        public SqlConnection CreateConnection()
-        {
-            return new SqlConnection(_connectionStringProvider.GetConnectionString());
-        }
-
         public SimsDataContext CreateDataContext()
         {
             return new SimsDataContext(_connectionStringProvider.GetConnectionString());
