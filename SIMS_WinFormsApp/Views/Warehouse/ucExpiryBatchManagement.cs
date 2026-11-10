@@ -16,7 +16,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private static readonly CultureInfo VietnameseCulture = CultureInfo.GetCultureInfo("vi-VN");
         private readonly ExpiryBatchManagementService _service;
         private readonly bool _canDispose;
-        private readonly Timer _searchTimer;
         private bool _isLoading;
         private bool _reloadRequested;
         private int? _filterProductId;
@@ -36,38 +35,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             DataGridViewCodeCopy.Attach(_grid, "BatchCode");
             _canDispose = canDispose;
             _service = AppComposition.CreateExpiryBatchManagementService();
-            _searchTimer = new Timer(components) { Interval = 300 };
-            _searchTimer.Tick += async (sender, args) =>
-            {
-                _searchTimer.Stop();
-                await LoadBatchesAsync();
-            };
-            _filterCombo.SelectedIndexChanged += async (sender, args) => await LoadBatchesAsync();
-            _searchBox.TextChanged += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                _searchTimer.Start();
-            };
-            _refreshButton.Click += async (sender, args) => await LoadBatchesAsync();
             _disposeButton.Enabled = false;
             _disposeButton.Visible = _canDispose;
-            _disposeButton.Click += (sender, args) =>
-            {
-                ExpiryBatchDto selected = GetSelectedBatch();
-                if (selected != null && selected.IsExpired)
-                    DisposeBatchRequested?.Invoke(selected.BatchId);
-            };
             _clearProductFilterButton.Visible = false;
-            _clearProductFilterButton.Click += async (sender, args) =>
-            {
-                _filterProductId = null;
-                _clearProductFilterButton.Visible = false;
-                _filterCombo.SelectedIndex = 0;
-                _searchBox.Clear();
-                _searchTimer.Stop();
-                await LoadBatchesAsync();
-            };
-            _grid.SelectionChanged += (sender, args) => UpdateDisposeButton();
             Load += async (sender, args) => await LoadBatchesAsync();
             VisibleChanged += async (sender, args) =>
             {
@@ -188,6 +158,45 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             return _grid.CurrentRow == null
                 ? null
                 : _grid.CurrentRow.Tag as ExpiryBatchDto;
+        }
+
+        private void _searchBox_TextChanged(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private async void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+            await LoadBatchesAsync();
+        }
+
+        private async void _refreshButton_Click(object sender, EventArgs e)
+        {
+            await LoadBatchesAsync();
+        }
+
+        private void _disposeButton_Click(object sender, EventArgs e)
+        {
+            ExpiryBatchDto selected = GetSelectedBatch();
+            if (selected != null && selected.IsExpired)
+                DisposeBatchRequested?.Invoke(selected.BatchId);
+        }
+
+        private void _clearProductFilterButton_Click(object sender, EventArgs e)
+        {
+            _filterProductId = null;
+            _clearProductFilterButton.Visible = false;
+            _filterCombo.SelectedIndex = 0;
+            _searchBox.Clear();
+            _searchTimer.Stop();
+            _ = LoadBatchesAsync();
+        }
+
+        private void _grid_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateDisposeButton();
         }
     }
 }

@@ -26,7 +26,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly IInventoryService _service;
         private readonly IUserSession _session;
         private readonly StockAlertPresenter _presenter;
-        private readonly Timer _searchTimer;
         private bool _initialized;
         private bool _suppressEvents;
         private bool _fromDateActive;
@@ -47,9 +46,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _session = session ?? UserSession.Instance;
             _presenter = new StockAlertPresenter(
                 this, _service, _session, AppComposition.CreateDialogService(), alertsSeen);
-            _searchTimer = new Timer(components);
-            _searchTimer.Interval = 300;
-            _searchTimer.Tick += new EventHandler(this.SearchTimer_Tick);
 
             _searchBox.HandleCreated += new EventHandler(this.SearchBox_HandleCreated);
             if (_searchBox.IsHandleCreated)

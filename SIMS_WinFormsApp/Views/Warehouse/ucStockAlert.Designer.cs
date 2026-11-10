@@ -68,6 +68,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._displayLabel = new System.Windows.Forms.Label();
             this._pageSizeCombo = new System.Windows.Forms.ComboBox();
             this._rowsLabel = new System.Windows.Forms.Label();
+            this._searchTimer = new System.Windows.Forms.Timer(this.components);
             this._headerCard.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._headerIcon)).BeginInit();
@@ -172,19 +173,19 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem,
             this._exportExcelItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(164, 68);
+            this._optionsMenu.Size = new System.Drawing.Size(147, 52);
             // 
             // _exportCsvItem
             // 
             this._exportCsvItem.Name = "_exportCsvItem";
-            this._exportCsvItem.Size = new System.Drawing.Size(163, 32);
+            this._exportCsvItem.Size = new System.Drawing.Size(146, 24);
             this._exportCsvItem.Text = "Xuất CSV";
             this._exportCsvItem.Click += new System.EventHandler(this.ExportCsvItem_Click);
             // 
             // _exportExcelItem
             // 
             this._exportExcelItem.Name = "_exportExcelItem";
-            this._exportExcelItem.Size = new System.Drawing.Size(163, 32);
+            this._exportExcelItem.Size = new System.Drawing.Size(146, 24);
             this._exportExcelItem.Text = "Xuất Excel";
             this._exportExcelItem.Click += new System.EventHandler(this.ExportExcelItem_Click);
             // 
@@ -211,7 +212,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._searchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._searchBox.Location = new System.Drawing.Point(16, 18);
             this._searchBox.Name = "_searchBox";
-            this._searchBox.Size = new System.Drawing.Size(260, 31);
+            this._searchBox.Size = new System.Drawing.Size(260, 27);
             this._searchBox.TabIndex = 0;
             // 
             // _categoryCombo
@@ -220,7 +221,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._categoryCombo.FormattingEnabled = true;
             this._categoryCombo.Location = new System.Drawing.Point(290, 18);
             this._categoryCombo.Name = "_categoryCombo";
-            this._categoryCombo.Size = new System.Drawing.Size(170, 33);
+            this._categoryCombo.Size = new System.Drawing.Size(170, 28);
             this._categoryCombo.TabIndex = 1;
             // 
             // _fromLabel
@@ -229,7 +230,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._fromLabel.Location = new System.Drawing.Point(476, 22);
             this._fromLabel.Name = "_fromLabel";
-            this._fromLabel.Size = new System.Drawing.Size(32, 25);
+            this._fromLabel.Size = new System.Drawing.Size(26, 20);
             this._fromLabel.TabIndex = 2;
             this._fromLabel.Text = "Từ";
             // 
@@ -240,7 +241,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._fromDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._fromDatePicker.Location = new System.Drawing.Point(510, 18);
             this._fromDatePicker.Name = "_fromDatePicker";
-            this._fromDatePicker.Size = new System.Drawing.Size(140, 31);
+            this._fromDatePicker.Size = new System.Drawing.Size(140, 27);
             this._fromDatePicker.TabIndex = 3;
             // 
             // _toLabel
@@ -249,7 +250,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._toLabel.Location = new System.Drawing.Point(666, 22);
             this._toLabel.Name = "_toLabel";
-            this._toLabel.Size = new System.Drawing.Size(44, 25);
+            this._toLabel.Size = new System.Drawing.Size(36, 20);
             this._toLabel.TabIndex = 4;
             this._toLabel.Text = "Đến";
             // 
@@ -260,7 +261,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this._toDatePicker.Location = new System.Drawing.Point(710, 18);
             this._toDatePicker.Name = "_toDatePicker";
-            this._toDatePicker.Size = new System.Drawing.Size(140, 31);
+            this._toDatePicker.Size = new System.Drawing.Size(140, 27);
             this._toDatePicker.TabIndex = 5;
             // 
             // _clearFilterLink
@@ -272,7 +273,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._clearFilterLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this._clearFilterLink.Location = new System.Drawing.Point(856, 21);
             this._clearFilterLink.Name = "_clearFilterLink";
-            this._clearFilterLink.Size = new System.Drawing.Size(96, 25);
+            this._clearFilterLink.Size = new System.Drawing.Size(77, 20);
             this._clearFilterLink.TabIndex = 6;
             this._clearFilterLink.TabStop = true;
             this._clearFilterLink.Text = "✕ Xóa lọc";
@@ -589,7 +590,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             50});
             this._pageSizeCombo.Location = new System.Drawing.Point(278, 5);
             this._pageSizeCombo.Name = "_pageSizeCombo";
-            this._pageSizeCombo.Size = new System.Drawing.Size(60, 33);
+            this._pageSizeCombo.Size = new System.Drawing.Size(60, 28);
             this._pageSizeCombo.TabIndex = 5;
             // 
             // _rowsLabel
@@ -601,9 +602,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._rowsLabel.Text = "dòng";
             this._rowsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // _searchTimer
+            // 
+            this._searchTimer.Interval = 300;
+            this._searchTimer.Tick += new System.EventHandler(this.SearchTimer_Tick);
+            // 
             // ucStockAlert
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.Controls.Add(this._gridCard);
@@ -673,5 +679,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private Label _displayLabel;
         private ComboBox _pageSizeCombo;
         private Label _rowsLabel;
+        private Timer _searchTimer;
     }
 }

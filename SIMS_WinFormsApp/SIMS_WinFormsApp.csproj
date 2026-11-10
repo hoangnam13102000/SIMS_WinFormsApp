@@ -197,7 +197,6 @@
     <Compile Include="Models\DTOs\RoleOptionDto.cs" />
     <Compile Include="Models\DTOs\StoreSettingsDto.cs" />
     <Compile Include="Models\DTOs\TablePageResult.cs" />
-    <Compile Include="Models\Enums\DateRangePreset.cs" />
     <Compile Include="Models\DTOs\UserDetailDto.cs" />
     <!-- MỚI: DTO cho cơ chế Export/Import -->
     <Compile Include="Models\DTOs\ImportRowResult.cs" />
@@ -442,9 +441,7 @@
     </Compile>
     <Compile Include="Views\Interfaces\IAddEmployeeView.cs" />
     <Compile Include="Views\Interfaces\IDashboardView.cs" />
-    <Compile Include="MVP\Presenters\DateRangeFilterPresenter.cs" />
     <Compile Include="Views\Interfaces\IEditUserAccountView.cs" />
-    <Compile Include="Views\Interfaces\IDateRangeFilterView.cs" />
     <Compile Include="Views\Interfaces\IPosView.cs" />
     <Compile Include="Views\Interfaces\IRolePermissionView.cs" />
     <Compile Include="Views\Interfaces\ISystemSettingsView.cs" />
@@ -905,6 +902,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucExpiredBatchDisposal.resx">
       <DependentUpon>ucExpiredBatchDisposal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Warehouse\ucExpiryBatchManagement.resx">
+      <DependentUpon>ucExpiryBatchManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Warehouse\ucStockDisposalManagement.resx">
       <DependentUpon>ucStockDisposalManagement.cs</DependentUpon>

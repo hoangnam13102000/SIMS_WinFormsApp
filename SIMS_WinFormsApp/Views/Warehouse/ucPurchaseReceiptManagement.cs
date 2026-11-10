@@ -28,7 +28,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private static readonly CultureInfo VietnameseCulture = CultureInfo.GetCultureInfo("vi-VN");
         private readonly IInventoryService _service;
         private readonly PurchaseReceiptListPresenter _presenter;
-        private readonly Timer _searchTimer;
         private bool _initialized;
         private bool _suppressDateEvents;
         private int _lastVisibleRowCapacity;
@@ -50,13 +49,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _service = service ?? AppComposition.CreateInventoryService();
             _presenter = new PurchaseReceiptListPresenter(this, _service);
             _grid.Resize += Grid_Resize;
-            _searchTimer = new Timer(components) { Interval = 300 };
-            _searchTimer.Tick += (sender, args) =>
-            {
-                _searchTimer.Stop();
-                SearchRequested?.Invoke(this, EventArgs.Empty);
-            };
-
             _searchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             _searchBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             _searchBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
@@ -505,5 +497,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
+
+        private void _searchTimer_Tick(object sender, EventArgs e)
+        {
+            _searchTimer.Stop();
+            SearchRequested?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

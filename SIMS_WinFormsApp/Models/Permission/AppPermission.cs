@@ -2,18 +2,9 @@
 
 namespace SIMS_WinFormsApp.Models.Permission
 {
-    /// <summary>
-    /// Toàn bộ "mã quyền" (permission code) của hệ thống SIMS.
-    /// Đây là KHOÁ/logic thuần (không có nhãn/mô tả hiển thị) - mirror 1:1 từ
-    /// enum AppPermission bên dự án Java (com.model.permission.AppPermission)
-    /// để 2 bản Java/C# luôn thống nhất danh sách chức năng được phân quyền.
-    /// <para>
-    /// Nhãn hiển thị (nhóm module, tên ngắn, mô tả) tách riêng trong
     /// <see cref="PermissionCatalog"/> - enum này chỉ đóng vai trò KHOÁ, dùng để
     /// tra cứu/so sánh và lưu xuống CSDL (PermissionCode = tên enum, xem
     /// <see cref="Repositories.Implementations.RolePermissionRepository"/>).
-    /// </para>
-    /// </summary>
     public enum AppPermission
     {
         DASHBOARD_VIEW,
