@@ -38,14 +38,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
 
             _view.SearchRequested += OnSearchRequested;
             _view.FiltersChanged += OnFiltersChanged;
-            _view.ClearFiltersRequested += OnClearFiltersRequested;
             _view.PageSizeChanged += OnPageSizeChanged;
             _view.PreviousPageRequested += OnPreviousPageRequested;
             _view.NextPageRequested += OnNextPageRequested;
             _view.CsvExportRequested += OnCsvExportRequested;
             _view.ExcelExportRequested += OnExcelExportRequested;
-            _view.PlanAlertRequested += OnPlanAlertRequested;
-            _view.ResolveAlertRequested += OnResolveAlertRequested;
         }
 
         private int PageCount => Math.Max(1, (int)Math.Ceiling(_alerts.Count / (double)PageSize));
@@ -96,13 +93,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
             ReloadAlerts();
         }
 
-        private void OnClearFiltersRequested(object sender, EventArgs e)
-        {
-            _view.ClearFilters();
-            _pageIndex = 0;
-            ReloadAlerts();
-        }
-
         private void OnPageSizeChanged(object sender, EventArgs e)
         {
             _pageIndex = 0;
@@ -127,77 +117,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
             DisplayCurrentPage();
         }
 
-        private void OnPlanAlertRequested(int alertId)
-        {
-            StockAlertListItemDto alert = FindAlert(alertId);
-            if (alert == null || !string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase))
-                return;
-
-            string message = "Đánh dấu \"" + alert.ProductName +
-                "\" đã được lên kế hoạch nhập hàng bổ sung?";
-            if (!_dialogs.Confirm(_view.Owner, "Lên kế hoạch nhập bổ sung", message))
-                return;
-
-            try
-            {
-                int updated = _service.MarkAlertPlanned(alert.AlertId);
-                if (updated == 0)
-                {
-                    _view.ShowError("Không thể cập nhật",
-                        "Cảnh báo đã được người khác cập nhật. Đang tải lại.");
-                    ReloadAlerts();
-                    return;
-                }
-
-                _view.ShowSuccess("Thành công", "Đã đánh dấu \"" + alert.ProductName +
-                    "\" đang được lên kế hoạch nhập bổ sung.");
-                ReloadAlerts();
-            }
-            catch (Exception exception)
-            {
-                _view.ShowError("Không thể cập nhật", exception.Message);
-                ReloadAlerts();
-            }
-        }
-
-        private void OnResolveAlertRequested(int alertId)
-        {
-            StockAlertListItemDto alert = FindAlert(alertId);
-            if (alert == null || string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase))
-                return;
-
-            string message = "Xác nhận \"" + alert.ProductName +
-                "\" đã được nhập hàng bổ sung / không còn cần xử lý?";
-            if (!_dialogs.Confirm(_view.Owner, "Đánh dấu đã xử lý", message))
-                return;
-
-            try
-            {
-                if (_session.CurrentUser == null)
-                {
-                    _view.ShowError("Không thể cập nhật", "Không tìm thấy người dùng đang đăng nhập.");
-                    return;
-                }
-
-                int updated = _service.ResolveAlert(alert.AlertId, _session.CurrentUser.UserId);
-                if (updated == 0)
-                {
-                    _view.ShowError("Không thể cập nhật",
-                        "Cảnh báo đã được người khác cập nhật. Đang tải lại.");
-                    ReloadAlerts();
-                    return;
-                }
-
-                _view.ShowSuccess("Thành công", "Đã xử lý xong \"" + alert.ProductName + "\".");
-                ReloadAlerts();
-            }
-            catch (Exception exception)
-            {
-                _view.ShowError("Không thể cập nhật", exception.Message);
-                ReloadAlerts();
-            }
-        }
-
         private void OnCsvExportRequested(object sender, EventArgs e)
         {
             Export(new CsvTableExporter());
@@ -208,7 +127,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
             Export(new ExcelTableExporter());
         }
 
-        private bool ReloadAlerts()
+        public void GoToFirstPage()
+        {
+            _pageIndex = 0;
+        }
+        public bool ReloadAlerts()
         {
             try
             {

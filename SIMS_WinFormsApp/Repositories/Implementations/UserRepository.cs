@@ -264,7 +264,11 @@ namespace SIMS_WinFormsApp.Repositories.Implementations
                     query = query.Where(x => x.r.RoleCode == RoleCodes.Customer);
                 else if (!string.IsNullOrWhiteSpace(roleFilter))
                     query = query.Where(x => x.r.RoleName.Contains(roleFilter));
-                if (!string.IsNullOrWhiteSpace(statusFilter))
+                if (statusFilter == "LOCKED")
+                    query = query.Where(x => x.u.IsLocked);
+                else if (statusFilter == "UNLOCKED")
+                    query = query.Where(x => !x.u.IsLocked);
+                else if (!string.IsNullOrWhiteSpace(statusFilter))
                     query = query.Where(x => x.u.Status == statusFilter);
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {

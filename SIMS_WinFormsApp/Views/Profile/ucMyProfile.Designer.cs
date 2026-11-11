@@ -398,7 +398,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtFullName.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.txtFullName.MaxLength = 100;
             this.txtFullName.Name = "txtFullName";
-            this.txtFullName.Size = new System.Drawing.Size(446, 31);
+            this.txtFullName.Size = new System.Drawing.Size(446, 27);
             this.txtFullName.TabIndex = 2;
             // 
             // lblPhoneField
@@ -421,7 +421,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtPhone.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.txtPhone.MaxLength = 15;
             this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(446, 31);
+            this.txtPhone.Size = new System.Drawing.Size(446, 27);
             this.txtPhone.TabIndex = 4;
             // 
             // lblEmailField
@@ -446,7 +446,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtEmail.MaxLength = 150;
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.ReadOnly = true;
-            this.txtEmail.Size = new System.Drawing.Size(446, 31);
+            this.txtEmail.Size = new System.Drawing.Size(446, 27);
             this.txtEmail.TabIndex = 6;
             // 
             // lblProfileError
@@ -552,7 +552,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtCurrentPassword.Location = new System.Drawing.Point(18, 90);
             this.txtCurrentPassword.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.txtCurrentPassword.Name = "txtCurrentPassword";
-            this.txtCurrentPassword.Size = new System.Drawing.Size(456, 31);
+            this.txtCurrentPassword.Size = new System.Drawing.Size(456, 27);
             this.txtCurrentPassword.TabIndex = 2;
             this.txtCurrentPassword.UseSystemPasswordChar = true;
             // 
@@ -575,7 +575,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtNewPassword.Location = new System.Drawing.Point(18, 156);
             this.txtNewPassword.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.txtNewPassword.Name = "txtNewPassword";
-            this.txtNewPassword.Size = new System.Drawing.Size(456, 31);
+            this.txtNewPassword.Size = new System.Drawing.Size(456, 27);
             this.txtNewPassword.TabIndex = 4;
             this.txtNewPassword.UseSystemPasswordChar = true;
             // 
@@ -598,7 +598,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.txtConfirmPassword.Location = new System.Drawing.Point(18, 222);
             this.txtConfirmPassword.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.txtConfirmPassword.Name = "txtConfirmPassword";
-            this.txtConfirmPassword.Size = new System.Drawing.Size(456, 31);
+            this.txtConfirmPassword.Size = new System.Drawing.Size(456, 27);
             this.txtConfirmPassword.TabIndex = 6;
             this.txtConfirmPassword.UseSystemPasswordChar = true;
             // 
@@ -628,6 +628,7 @@ namespace SIMS_WinFormsApp.Views.Profile
             this.btnChangePassword.TabIndex = 8;
             this.btnChangePassword.Text = "Đổi mật khẩu";
             this.btnChangePassword.UseVisualStyleBackColor = false;
+            this.btnChangePassword.Click += new System.EventHandler(this.btnChangePassword_Click);
             // 
             // ucMyProfile
             // 

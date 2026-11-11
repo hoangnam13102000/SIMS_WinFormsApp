@@ -17,14 +17,11 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 
         event EventHandler SearchRequested;
         event EventHandler FiltersChanged;
-        event EventHandler ClearFiltersRequested;
         event EventHandler PageSizeChanged;
         event EventHandler PreviousPageRequested;
         event EventHandler NextPageRequested;
         event EventHandler CsvExportRequested;
         event EventHandler ExcelExportRequested;
-        event Action<int> PlanAlertRequested;
-        event Action<int> ResolveAlertRequested;
 
         void BindCategories(IReadOnlyList<LookupItem> categories);
         void DisplayPage(IReadOnlyList<StockAlertListItemDto> rows, int totalCount, int pageNumber, int pageCount);

@@ -4,8 +4,8 @@
   <DataSources>
     <DataSource Name="SIMSDataSource">
       <ConnectionProperties>
-        <DataProvider>SQL</DataProvider>
-        <ConnectString>LocalReport</ConnectString>
+       <DataProvider>System.Data.DataSet</DataProvider>
+        <ConnectString>/* Local Connection */</ConnectString>
       </ConnectionProperties>
       <rd:DataSourceID>8a047cf2-d083-42c6-8240-4fc6a93800ea</rd:DataSourceID>
     </DataSource>
@@ -14,12 +14,36 @@
     <DataSet Name="InventorySummaryDataSet">
       <Query>
         <DataSourceName>SIMSDataSource</DataSourceName>
-        <CommandText>LocalReport</CommandText>
+      <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
+        <Field Name="BusinessName">
+          <DataField>BusinessName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DirectorName">
+          <DataField>DirectorName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ExpiredQuantity">
+          <DataField>ExpiredQuantity</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="InventoryManagerName">
+          <DataField>InventoryManagerName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LowStockProductCount">
+          <DataField>LowStockProductCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="ProductCount">
           <DataField>ProductCount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="SnapshotDate">
+          <DataField>SnapshotDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
         <Field Name="TotalQuantity">
           <DataField>TotalQuantity</DataField>
@@ -29,15 +53,12 @@
           <DataField>TotalStockValue</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
-        <Field Name="LowStockProductCount">
-          <DataField>LowStockProductCount</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="ExpiredQuantity">
-          <DataField>ExpiredQuantity</DataField>
-          <rd:TypeName>System.Int64</rd:TypeName>
-        </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>InventoryReportData</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.InventoryReportData, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
     <DataSet Name="InventoryDataSet">
       <Query>
@@ -45,6 +66,18 @@
         <CommandText>LocalReport</CommandText>
       </Query>
       <Fields>
+        <Field Name="CategoryName">
+          <DataField>CategoryName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ImportPrice">
+          <DataField>ImportPrice</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="MinStock">
+          <DataField>MinStock</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="ProductCode">
           <DataField>ProductCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -53,27 +86,20 @@
           <DataField>ProductName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="CategoryName">
-          <DataField>CategoryName</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="Stock">
           <DataField>Stock</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="MinStock">
-          <DataField>MinStock</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="ImportPrice">
-          <DataField>ImportPrice</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="StockValue">
           <DataField>StockValue</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>InventoryReportProduct</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.InventoryReportProduct, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
     <DataSet Name="ImportTrendDataSet">
       <Query>
@@ -90,6 +116,11 @@
           <rd:TypeName>System.Int64</rd:TypeName>
         </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>InventoryImportTrendPoint</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.InventoryImportTrendPoint, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
     <DataSet Name="DisposalSummaryDataSet">
       <Query>
@@ -110,6 +141,11 @@
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>StockDisposalReportData</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalReportData, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
     <DataSet Name="DisposalReasonsDataSet">
       <Query>
@@ -117,23 +153,28 @@
         <CommandText>LocalReport</CommandText>
       </Query>
       <Fields>
-        <Field Name="Reason">
-          <DataField>Reason</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="DisposalCount">
           <DataField>DisposalCount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="ProductQuantity">
-          <DataField>ProductQuantity</DataField>
-          <rd:TypeName>System.Int64</rd:TypeName>
         </Field>
         <Field Name="LossAmount">
           <DataField>LossAmount</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
+        <Field Name="ProductQuantity">
+          <DataField>ProductQuantity</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="Reason">
+          <DataField>Reason</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>StockDisposalReasonTotal</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalReasonTotal, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
     <DataSet Name="DisposalProductsDataSet">
       <Query>
@@ -141,6 +182,10 @@
         <CommandText>LocalReport</CommandText>
       </Query>
       <Fields>
+        <Field Name="LossAmount">
+          <DataField>LossAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Name">
           <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -149,11 +194,12 @@
           <DataField>Quantity</DataField>
           <rd:TypeName>System.Int64</rd:TypeName>
         </Field>
-        <Field Name="LossAmount">
-          <DataField>LossAmount</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
-        </Field>
       </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Services.Implementations.Reports</rd:DataSetName>
+        <rd:TableName>StockDisposalProductTotal</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalProductTotal, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
     </DataSet>
   </DataSets>
   <ReportSections>
@@ -1161,154 +1207,6 @@
             <ZIndex>7</ZIndex>
             <Style />
           </Textbox>
-          <Textbox Name="DisposalSummary">
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>="SỐ PHIẾU: " &amp; Format(First(Fields!DisposalCount.Value, "DisposalSummaryDataSet"), "N0") &amp; "        SỐ LƯỢNG: " &amp; Format(First(Fields!ProductQuantity.Value, "DisposalSummaryDataSet"), "N0") &amp; "        TỔNG THIỆT HẠI: " &amp; Format(First(Fields!TotalLoss.Value, "DisposalSummaryDataSet"), "N0") &amp; " đ"</Value>
-                    <Style>
-                      <FontFamily>Segoe UI</FontFamily>
-                      <FontSize>10pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <Top>12.9cm</Top>
-            <Left>0.2cm</Left>
-            <Height>0.55cm</Height>
-            <Width>18.8cm</Width>
-            <ZIndex>8</ZIndex>
-            <Style>
-              <BackgroundColor>#fff7ed</BackgroundColor>
-              <PaddingLeft>5pt</PaddingLeft>
-              <PaddingTop>3pt</PaddingTop>
-            </Style>
-          </Textbox>
-          <Textbox Name="DisposalReasonsTitle">
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>THEO LÝ DO</Value>
-                    <Style>
-                      <FontFamily>Segoe UI</FontFamily>
-                      <FontWeight>Bold</FontWeight>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <Top>13.65cm</Top>
-            <Left>0.2cm</Left>
-            <Height>0.4cm</Height>
-            <Width>9.3cm</Width>
-            <ZIndex>9</ZIndex>
-            <Style />
-          </Textbox>
-          <Textbox Name="DisposalProductsTitle">
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>THEO SẢN PHẨM</Value>
-                    <Style>
-                      <FontFamily>Segoe UI</FontFamily>
-                      <FontWeight>Bold</FontWeight>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <Top>13.65cm</Top>
-            <Left>9.9cm</Left>
-            <Height>0.4cm</Height>
-            <Width>9.1cm</Width>
-            <ZIndex>10</ZIndex>
-            <Style />
-          </Textbox>
-          <Tablix Name="DisposalReasonsTable">
-            <TablixBody>
-              <TablixColumns>
-                <TablixColumn><Width>3.8cm</Width></TablixColumn>
-                <TablixColumn><Width>1.3cm</Width></TablixColumn>
-                <TablixColumn><Width>1.5cm</Width></TablixColumn>
-                <TablixColumn><Width>2.7cm</Width></TablixColumn>
-              </TablixColumns>
-              <TablixRows>
-                <TablixRow>
-                  <Height>0.55cm</Height>
-                  <TablixCells>
-                    <TablixCell><CellContents><Textbox Name="DisposalReasonHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Lý do</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>3pt</PaddingLeft></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalCountHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Phiếu</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalQuantityHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>SL</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalLossHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Thiệt hại</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                  </TablixCells>
-                </TablixRow>
-                <TablixRow>
-                  <Height>0.55cm</Height>
-                  <TablixCells>
-                    <TablixCell><CellContents><Textbox Name="DisposalReasonDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Reason.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>3pt</PaddingLeft></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalCountDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Fields!DisposalCount.Value, "N0")</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalQuantityDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Fields!ProductQuantity.Value, "N0")</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalLossDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Fields!LossAmount.Value, "N0") &amp; " đ"</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                  </TablixCells>
-                </TablixRow>
-              </TablixRows>
-            </TablixBody>
-            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
-            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="DisposalReasonDetails" /></TablixMember></TablixMembers></TablixRowHierarchy>
-            <NoRowsMessage>Không có phiếu tiêu hủy trong kỳ.</NoRowsMessage>
-            <DataSetName>DisposalReasonsDataSet</DataSetName>
-            <Top>14.1cm</Top>
-            <Left>0.2cm</Left>
-            <Height>6.1cm</Height>
-            <Width>9.3cm</Width>
-            <ZIndex>11</ZIndex>
-            <Style><Border><Color>#cbd5e1</Color><Style>Solid</Style></Border><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style>
-          </Tablix>
-          <Tablix Name="DisposalProductsTable">
-            <TablixBody>
-              <TablixColumns>
-                <TablixColumn><Width>4.5cm</Width></TablixColumn>
-                <TablixColumn><Width>1.7cm</Width></TablixColumn>
-                <TablixColumn><Width>2.9cm</Width></TablixColumn>
-              </TablixColumns>
-              <TablixRows>
-                <TablixRow>
-                  <Height>0.55cm</Height>
-                  <TablixCells>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Sản phẩm</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>3pt</PaddingLeft></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductQuantityHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Số lượng</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductLossHeader"><Paragraphs><Paragraph><TextRuns><TextRun><Value>Thiệt hại</Value><Style><FontFamily>Segoe UI</FontFamily><FontWeight>Bold</FontWeight><Color>White</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#c2410c</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                  </TablixCells>
-                </TablixRow>
-                <TablixRow>
-                  <Height>0.55cm</Height>
-                  <TablixCells>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Name.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>3pt</PaddingLeft></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductQuantityDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Fields!Quantity.Value, "N0")</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                    <TablixCell><CellContents><Textbox Name="DisposalProductLossDetail"><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Fields!LossAmount.Value, "N0") &amp; " đ"</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><BackgroundColor>#fff7ed</BackgroundColor><TextAlign>Right</TextAlign><VerticalAlign>Middle</VerticalAlign><PaddingRight>3pt</PaddingRight></Style></Textbox></CellContents></TablixCell>
-                  </TablixCells>
-                </TablixRow>
-              </TablixRows>
-            </TablixBody>
-            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
-            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="DisposalProductDetails" /></TablixMember></TablixMembers></TablixRowHierarchy>
-            <NoRowsMessage>Không có sản phẩm tiêu hủy trong kỳ.</NoRowsMessage>
-            <DataSetName>DisposalProductsDataSet</DataSetName>
-            <Top>14.1cm</Top>
-            <Left>9.9cm</Left>
-            <Height>6.1cm</Height>
-            <Width>9.1cm</Width>
-            <ZIndex>12</ZIndex>
-            <Style><Border><Color>#cbd5e1</Color><Style>Solid</Style></Border><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style>
-          </Tablix>
           <Textbox Name="SignatureDirector">
             <Paragraphs>
               <Paragraph>
@@ -1331,7 +1229,7 @@
             <Left>0.2cm</Left>
             <Height>2.5cm</Height>
             <Width>6cm</Width>
-            <ZIndex>7</ZIndex>
+            <ZIndex>8</ZIndex>
             <Style>
               <VerticalAlign>Top</VerticalAlign>
             </Style>
@@ -1357,10 +1255,58 @@
             <Left>7cm</Left>
             <Height>2.5cm</Height>
             <Width>6cm</Width>
-            <ZIndex>8</ZIndex>
+            <ZIndex>9</ZIndex>
             <Style>
               <VerticalAlign>Top</VerticalAlign>
             </Style>
+          </Textbox>
+          <Textbox Name="DisposalSummary">
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>="SỐ PHIẾU: " &amp; Format(First(Fields!DisposalCount.Value, "DisposalSummaryDataSet"), "N0") &amp; "        SỐ LƯỢNG: " &amp; Format(First(Fields!ProductQuantity.Value, "DisposalSummaryDataSet"), "N0") &amp; "        TỔNG THIỆT HẠI: " &amp; Format(First(Fields!TotalLoss.Value, "DisposalSummaryDataSet"), "N0") &amp; " đ"</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>12.9cm</Top>
+            <Left>0.2cm</Left>
+            <Height>0.55cm</Height>
+            <Width>18.8cm</Width>
+            <ZIndex>10</ZIndex>
+            <Style>
+              <BackgroundColor>#fff7ed</BackgroundColor>
+              <PaddingLeft>5pt</PaddingLeft>
+              <PaddingTop>3pt</PaddingTop>
+            </Style>
+          </Textbox>
+          <Textbox Name="DisposalReasonsTitle">
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>THEO LÝ DO</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>13.65cm</Top>
+            <Left>0.2cm</Left>
+            <Height>0.4cm</Height>
+            <Width>9.3cm</Width>
+            <ZIndex>11</ZIndex>
+            <Style />
           </Textbox>
           <Textbox Name="SignaturePreparedBy">
             <Paragraphs>
@@ -1383,10 +1329,32 @@
             <Left>13.9cm</Left>
             <Height>2.5cm</Height>
             <Width>5cm</Width>
-            <ZIndex>9</ZIndex>
+            <ZIndex>12</ZIndex>
             <Style>
               <VerticalAlign>Top</VerticalAlign>
             </Style>
+          </Textbox>
+          <Textbox Name="DisposalProductsTitle">
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>THEO SẢN PHẨM</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>13.65cm</Top>
+            <Left>9.9cm</Left>
+            <Height>0.4cm</Height>
+            <Width>9.1cm</Width>
+            <ZIndex>13</ZIndex>
+            <Style />
           </Textbox>
           <Textbox Name="ReportDate">
             <Paragraphs>
@@ -1408,9 +1376,493 @@
             <Left>0.2cm</Left>
             <Height>0.4cm</Height>
             <Width>18cm</Width>
-            <ZIndex>10</ZIndex>
+            <ZIndex>14</ZIndex>
             <Style />
           </Textbox>
+          <Tablix Name="DisposalReasonsTable">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.8cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.3cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.5cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.7cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.55cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalReasonHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Lý do</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalCountHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Phiếu</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalQuantityHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>SL</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalLossHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Thiệt hại</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.55cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalReasonDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Reason.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalCountDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Fields!DisposalCount.Value, "N0")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalQuantityDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Fields!ProductQuantity.Value, "N0")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalLossDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Fields!LossAmount.Value, "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="DisposalReasonDetails" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <NoRowsMessage>Không có phiếu tiêu hủy trong kỳ.</NoRowsMessage>
+            <DataSetName>DisposalReasonsDataSet</DataSetName>
+            <Top>14.1cm</Top>
+            <Left>0.2cm</Left>
+            <Height>1.1cm</Height>
+            <Width>9.3cm</Width>
+            <ZIndex>15</ZIndex>
+            <Style>
+              <Border>
+                <Color>#cbd5e1</Color>
+                <Style>Solid</Style>
+              </Border>
+              <FontFamily>Segoe UI</FontFamily>
+              <FontSize>8pt</FontSize>
+            </Style>
+          </Tablix>
+          <Tablix Name="DisposalProductsTable">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>4.5cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.7cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.9cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.55cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Sản phẩm</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductQuantityHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Số lượng</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductLossHeader">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Thiệt hại</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#c2410c</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.55cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Name.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>3pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductQuantityDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Fields!Quantity.Value, "N0")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DisposalProductLossDetail">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Fields!LossAmount.Value, "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <BackgroundColor>#fff7ed</BackgroundColor>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingRight>3pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="DisposalProductDetails" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <NoRowsMessage>Không có sản phẩm tiêu hủy trong kỳ.</NoRowsMessage>
+            <DataSetName>DisposalProductsDataSet</DataSetName>
+            <Top>14.1cm</Top>
+            <Left>9.9cm</Left>
+            <Height>1.1cm</Height>
+            <Width>9.1cm</Width>
+            <ZIndex>16</ZIndex>
+            <Style>
+              <Border>
+                <Color>#cbd5e1</Color>
+                <Style>Solid</Style>
+              </Border>
+              <FontFamily>Segoe UI</FontFamily>
+              <FontSize>8pt</FontSize>
+            </Style>
+          </Tablix>
         </ReportItems>
         <Height>23.7cm</Height>
         <Style>

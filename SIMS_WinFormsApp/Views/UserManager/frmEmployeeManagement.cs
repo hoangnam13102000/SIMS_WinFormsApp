@@ -65,11 +65,6 @@ namespace SIMS_WinFormsApp.Views.UserManager
             _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
         }
 
-        private void AddButton_Click(object sender, EventArgs e)
-        {
-            AddEmployee();
-        }
-
         private void LockButton_Click(object sender, EventArgs e)
         {
             ToggleSelectedUserLock();
@@ -336,6 +331,17 @@ namespace SIMS_WinFormsApp.Views.UserManager
                 "Ngày sinh/Ngày vào làm định dạng dd/MM/yyyy. Giới tính: Nam/Nữ/Khác. Để trống Lương nếu chưa xác định.",
                 DefaultSpreadsheetImporters.All, handler.Handle);
             if (result == DialogResult.OK) ReloadUsers();
+        }
+
+        private void _addButton_Click(object sender, EventArgs e)
+        {
+
+            AddEmployee();
+        }
+
+        private void _statusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ReloadUsers(true);
         }
     }
 }

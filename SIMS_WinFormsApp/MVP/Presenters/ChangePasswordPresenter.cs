@@ -38,8 +38,11 @@ namespace SIMS_WinFormsApp.MVP.Presenters
             _view.SetLoading(true);
             try
             {
+                int userId = _view.CurrentUserId;
+                string currentPassword = _view.CurrentPassword;
+                string newPassword = _view.NewPassword;
                 var result = await Task.Run(() => _authService.ChangePassword(
-                    _view.CurrentUserId, _view.CurrentPassword, _view.NewPassword));
+                    userId, currentPassword, newPassword));
 
                 switch (result)
                 {

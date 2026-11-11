@@ -23,8 +23,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
         event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
         event EventHandler HoldCartRequested;
         event EventHandler ViewHeldCartsRequested;
-        event EventHandler CheckoutRequested;
-
         void BindCategories(IReadOnlyList<CategoryOptionDto> categories);
         void BindProducts(IReadOnlyList<ProductCatalogItemDto> products);
         void BindCart(IReadOnlyList<CartLineDto> lines);

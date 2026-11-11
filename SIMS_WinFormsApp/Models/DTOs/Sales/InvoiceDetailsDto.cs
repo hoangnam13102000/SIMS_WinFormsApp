@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SIMS_WinFormsApp.Models.DTOs.Sales
 {
-    internal sealed class InvoiceDetails
+    public sealed class InvoiceDetails
     {
         public int InvoiceId { get; set; }
         public string InvoiceCode { get; set; }
@@ -24,7 +24,7 @@ namespace SIMS_WinFormsApp.Models.DTOs.Sales
         public List<InvoiceLine> Lines { get; } = new List<InvoiceLine>();
     }
 
-    internal sealed class InvoiceLine
+    public sealed class InvoiceLine
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }

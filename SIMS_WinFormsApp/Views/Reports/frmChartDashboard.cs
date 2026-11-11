@@ -30,6 +30,8 @@ namespace SIMS_WinFormsApp.Views.Reports
             }
 
             _reportService = AppComposition.CreateRevenueReportService();
+            if (_periodFilter.SelectedIndex < 0)
+                _periodFilter.SelectedIndex = 0;   // mặc định xem theo Tuần
             _fromDate.Value = DateTime.Today.AddDays(-6);
             _toDate.Value = DateTime.Today;
             if (!SetInitialDateRange())

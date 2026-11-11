@@ -1,14 +1,18 @@
+using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using Microsoft.Reporting.WinForms;
 
 namespace SIMS_WinFormsApp.Views.Reports
 {
     public partial class frmReportViewer : Form
     {
+        private readonly string _embeddedReportName;
+        private readonly List<ReportDataSource> _dataSources = new List<ReportDataSource>();
+        private readonly IDictionary<string, string> _parameters;
+
         public frmReportViewer(
             string title,
             string embeddedReportName,
@@ -18,43 +22,59 @@ namespace SIMS_WinFormsApp.Views.Reports
             InitializeComponent();
             Text = string.IsNullOrWhiteSpace(title) ? "Báo cáo" : title;
 
+            // Constructor chỉ ghi nhớ dữ liệu, việc nạp báo cáo làm trong frmReportViewer_Load
+            _embeddedReportName = embeddedReportName;
+            if (dataSources != null)
+                _dataSources.AddRange(dataSources);
+            _parameters = parameters;
+        }
+
+        private void frmReportViewer_Load(object sender, EventArgs e)
+        {
+            // Chỉ bỏ // ở dòng dưới nếu KHÔNG tìm thấy ReportExport trong ⚡ của _reportViewer
+            // _reportViewer.ReportExport += ReportViewer_ReportExport;
+
+            // 1. Hiển thị dạng trang in, vừa chiều rộng (giống FrmInHoaDon)
+            _reportViewer.SetDisplayMode(DisplayMode.PrintLayout);
+            _reportViewer.ZoomMode = ZoomMode.PageWidth;
+
+            // 2. Nạp mẫu RDLC đã nhúng trong project
             using (Stream stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream(embeddedReportName))
+                .GetManifestResourceStream(_embeddedReportName))
             {
                 if (stream == null)
-                    throw new FileNotFoundException(
-                        "Không tìm thấy mẫu RDLC được nhúng: " + embeddedReportName,
-                        embeddedReportName);
-
-                _reportViewer.LocalReport.DataSources.Clear();
-                if (dataSources != null)
                 {
-                    foreach (ReportDataSource dataSource in dataSources)
-                    {
-                        if (dataSource != null)
-                            _reportViewer.LocalReport.DataSources.Add(dataSource);
-                    }
+                    MessageBox.Show(this, "Không tìm thấy mẫu RDLC: " + _embeddedReportName,
+                        "Lỗi báo cáo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                    return;
                 }
-
                 _reportViewer.LocalReport.LoadReportDefinition(stream);
             }
 
-            _reportViewer.ReportExport += ReportViewer_ReportExport;
+            // 3. Gắn dữ liệu cho từng DataSet (tên phải trùng tên DataSet trong file .rdlc)
+            _reportViewer.LocalReport.DataSources.Clear();
+            foreach (ReportDataSource dataSource in _dataSources)
+            {
+                if (dataSource != null)
+                    _reportViewer.LocalReport.DataSources.Add(dataSource);
+            }
 
-            if (parameters != null)
+            // 4. Truyền tham số (tên cửa hàng, từ ngày, đến ngày, người lập...)
+            if (_parameters != null)
             {
                 var reportParameters = new List<ReportParameter>();
-                foreach (KeyValuePair<string, string> parameter in parameters)
+                foreach (KeyValuePair<string, string> parameter in _parameters)
                 {
                     string value = string.IsNullOrWhiteSpace(parameter.Value)
                         ? GetParameterFallback(parameter.Key)
                         : parameter.Value;
                     reportParameters.Add(new ReportParameter(parameter.Key, value));
                 }
-
                 _reportViewer.LocalReport.SetParameters(reportParameters);
             }
 
+            // 5. Hiển thị báo cáo
             _reportViewer.RefreshReport();
         }
 

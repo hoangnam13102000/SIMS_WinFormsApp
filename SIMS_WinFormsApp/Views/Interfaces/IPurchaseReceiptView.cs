@@ -7,7 +7,6 @@ namespace SIMS_WinFormsApp.Views.Interfaces
 {
     public interface IPurchaseReceiptView
     {
-        event EventHandler SaveRequested;
         event EventHandler LinesChanged;
 
         int SelectedSupplierId { get; }

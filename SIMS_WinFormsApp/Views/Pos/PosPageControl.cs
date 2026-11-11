@@ -1,3 +1,8 @@
+using System.Data.SqlClient;
+using SIMS_WinFormsApp.Models.DTOs.Sales;
+using SIMS_WinFormsApp.Views.Dialogs;
+using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.Views.Sales.InvoiceManagement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +26,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         private bool _isBusy;
         private bool _bindingCart;
         private bool _bindingCategories;
+        public PosPresenter Presenter { get; set; }
 
         public event EventHandler ViewReady;
         public event EventHandler<string> ProductSearchChanged;
@@ -36,7 +42,6 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
         public event EventHandler<(bool UsePoints, int PointsToUse)> PointsRedemptionChanged;
         public event EventHandler HoldCartRequested;
         public event EventHandler ViewHeldCartsRequested;
-        public event EventHandler CheckoutRequested;
 
         public string SelectedPaymentMethod
         {
@@ -303,7 +308,99 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
 
         private void _checkoutButton_Click(object sender, EventArgs e)
         {
-            CheckoutRequested?.Invoke(this, EventArgs.Empty);
+
+            PosPresenter p = Presenter;
+            if (p == null) return;
+            IWin32Window owner = FindForm() ?? (IWin32Window)this;
+
+            // 1. Giỏ hàng phải có sản phẩm
+            if (p.Cart.IsEmpty)
+            {
+                AppToast.Warning(this, "Giỏ hàng đang trống", "Chưa có sản phẩm nào để thanh toán.");
+                return;
+            }
+
+            // 2. Phải còn phiên đăng nhập (để ghi nhân viên lập hóa đơn)
+            if (!p.UserSession.IsLoggedIn)
+            {
+                AppToast.Error(this, "Không thể thanh toán", "Phiên đăng nhập đã hết hạn.");
+                return;
+            }
+
+            InvoiceDetails receiptInvoice;
+            string invoiceCode;
+            SetBusy(true);
+            try
+            {
+                // 3. Tính tiền: tạm tính, giảm giá, điểm, VAT, tổng cộng
+                CartTotalsDto totals = p.Calculator.Calculate(p.Cart.Subtotal, p.PointsToRedeem);
+                string paymentMethod = SelectedPaymentMethod;
+
+                // 4. Lưu hóa đơn xuống database (Service dùng LINQ, trừ tồn kho theo lô)
+                receiptInvoice = p.CreateReceiptInvoice(paymentMethod, totals);
+                invoiceCode = p.InvoiceService.CreateInvoice(
+                    p.UserSession.CurrentUser.UserId,
+                    p.SelectedCustomer == null ? (int?)null : p.SelectedCustomer.CustomerId,
+                    paymentMethod,
+                    totals,
+                    p.Cart.Lines);
+                receiptInvoice.InvoiceCode = invoiceCode;
+            }
+            catch (SqlException ex)
+            {
+                ShowCheckoutError(owner, "Không thể lưu hóa đơn", ex, false);
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                ShowCheckoutError(owner, "Chưa thể thanh toán", ex, true);
+                return;
+            }
+            catch (ArgumentException ex)
+            {
+                ShowCheckoutError(owner, "Thông tin thanh toán không hợp lệ", ex, true);
+                return;
+            }
+            catch (Exception ex)
+            {
+                ShowCheckoutError(owner, "Không thể hoàn tất thanh toán", ex, false);
+                return;
+            }
+
+            // 5. Làm trống giỏ, sẵn sàng cho khách tiếp theo
+            p.ResetForNewSale();
+            SetBusy(false);
+            p.NotifyInvoiceCreated();
+
+            // 6. Hỏi có in hóa đơn không (in bằng RDLC InvoiceReport)
+            DialogResult printChoice = MessageBox.Show(owner,
+                "Hóa đơn " + invoiceCode + " đã được lưu thành công.\r\nBạn có muốn xem trước và in hóa đơn không?",
+                "Thanh toán thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (printChoice == DialogResult.Yes)
+            {
+                p.NotifyInvoiceViewed(invoiceCode);
+                using (var dialog = new InvoiceDetailsDialog(receiptInvoice))
+                    dialog.OpenPrintPreview(owner);
+            }
+            else
+            {
+                AppToast.Success(this, "Thanh toán thành công",
+                    "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
+            }
+        }
+
+        private void ShowCheckoutError(IWin32Window owner, string title, Exception exception, bool isWarning)
+        {
+            SetBusy(false);
+            Exception root = exception.GetBaseException();
+            string detail = isWarning && !(root is SqlException)
+                ? root.Message
+                : "Vui lòng thử lại. Nếu sự cố tiếp diễn, hãy liên hệ quản lý hoặc bộ phận kỹ thuật.";
+            string message = "Hóa đơn chưa được tạo." + Environment.NewLine + Environment.NewLine + detail;
+            if (isWarning)
+                DialogHelper.ShowWarning(owner, title, message);
+            else
+                DialogHelper.ShowError(owner, title, message);
         }
 
         private void PosPageControl_Load(object sender, EventArgs e)

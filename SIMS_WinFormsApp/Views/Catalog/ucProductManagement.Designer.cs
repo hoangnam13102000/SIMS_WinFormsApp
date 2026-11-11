@@ -8,10 +8,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
     {
         private System.ComponentModel.IContainer components = null;
         private ContextMenuStrip _optionsMenu;
-        private ToolStripMenuItem _exportCsvMenuItem;
-        private ToolStripMenuItem _exportExcelMenuItem;
-        private ToolStripMenuItem _importMenuItem;
-        private ToolStripMenuItem _refreshMenuItem;
         private TableLayoutPanel _root;
         private Panel _header;
         private Panel _headerIconPanel;
@@ -26,19 +22,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private ComboBox _statusComboBox;
         private ComboBox _categoryComboBox;
         private Button _addButton;
-        private Button _optionsButton;
-        private Button _refreshButton;
         private Panel _gridCard;
         private DataGridView _productsGrid;
-        private DataGridViewImageColumn _imageColumn;
-        private DataGridViewTextBoxColumn _codeColumn;
-        private DataGridViewTextBoxColumn _nameColumn;
-        private DataGridViewTextBoxColumn _categoryColumn;
-        private DataGridViewTextBoxColumn _priceColumn;
-        private DataGridViewTextBoxColumn _stockColumn;
-        private DataGridViewButtonColumn _expiredBatchesColumn;
-        private DataGridViewTextBoxColumn _statusColumn;
-        private DataGridViewImageColumn _actionsColumn;
         private TableLayoutPanel _paging;
         private FlowLayoutPanel _pagingInfo;
         private FlowLayoutPanel _pagingNavigation;
@@ -63,19 +48,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this._optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this._exportCsvMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._exportExcelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._refreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._header = new System.Windows.Forms.Panel();
+            this._toggleActiveButton = new System.Windows.Forms.Button();
+            this._editButton = new System.Windows.Forms.Button();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._subtitleLabel = new System.Windows.Forms.Label();
             this._titleLabel = new System.Windows.Forms.Label();
             this._addButton = new System.Windows.Forms.Button();
-            this._optionsButton = new System.Windows.Forms.Button();
-            this._refreshButton = new System.Windows.Forms.Button();
             this._toolbar = new System.Windows.Forms.Panel();
             this._searchLabel = new System.Windows.Forms.Label();
             this._searchTextBox = new System.Windows.Forms.TextBox();
@@ -93,7 +74,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._stockColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._expiredBatchesColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this._statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._actionsColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this._paging = new System.Windows.Forms.TableLayoutPanel();
             this._pagingInfo = new System.Windows.Forms.FlowLayoutPanel();
             this._resultsLabel = new System.Windows.Forms.Label();
@@ -102,7 +82,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton = new System.Windows.Forms.Button();
             this._pageLabel = new System.Windows.Forms.Label();
             this._previousButton = new System.Windows.Forms.Button();
-            this._optionsMenu.SuspendLayout();
             this._root.SuspendLayout();
             this._header.SuspendLayout();
             this._headerIconPanel.SuspendLayout();
@@ -118,41 +97,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // _optionsMenu
             // 
             this._optionsMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this._optionsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._exportCsvMenuItem,
-            this._exportExcelMenuItem,
-            this._importMenuItem,
-            this._refreshMenuItem});
             this._optionsMenu.Name = "_optionsMenu";
-            this._optionsMenu.Size = new System.Drawing.Size(187, 132);
-            // 
-            // _exportCsvMenuItem
-            // 
-            this._exportCsvMenuItem.Name = "_exportCsvMenuItem";
-            this._exportCsvMenuItem.Size = new System.Drawing.Size(186, 32);
-            this._exportCsvMenuItem.Text = "Xuất CSV";
-            this._exportCsvMenuItem.Click += new System.EventHandler(this.ExportCsvMenuItem_Click);
-            // 
-            // _exportExcelMenuItem
-            // 
-            this._exportExcelMenuItem.Name = "_exportExcelMenuItem";
-            this._exportExcelMenuItem.Size = new System.Drawing.Size(186, 32);
-            this._exportExcelMenuItem.Text = "Xuất Excel";
-            this._exportExcelMenuItem.Click += new System.EventHandler(this.ExportExcelMenuItem_Click);
-            // 
-            // _importMenuItem
-            // 
-            this._importMenuItem.Name = "_importMenuItem";
-            this._importMenuItem.Size = new System.Drawing.Size(186, 32);
-            this._importMenuItem.Text = "Nhập dữ liệu";
-            this._importMenuItem.Click += new System.EventHandler(this.ImportMenuItem_Click);
-            // 
-            // _refreshMenuItem
-            // 
-            this._refreshMenuItem.Name = "_refreshMenuItem";
-            this._refreshMenuItem.Size = new System.Drawing.Size(186, 32);
-            this._refreshMenuItem.Text = "Làm mới";
-            this._refreshMenuItem.Click += new System.EventHandler(this.RefreshMenuItem_Click);
+            this._optionsMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // _root
             // 
@@ -165,39 +111,77 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._root.Controls.Add(this._paging, 0, 3);
             this._root.Dock = System.Windows.Forms.DockStyle.Fill;
             this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._root.Name = "_root";
-            this._root.Padding = new System.Windows.Forms.Padding(24);
+            this._root.Padding = new System.Windows.Forms.Padding(21, 19, 21, 19);
             this._root.RowCount = 4;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 82F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 66F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
-            this._root.Size = new System.Drawing.Size(1100, 720);
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this._root.Size = new System.Drawing.Size(978, 576);
             this._root.TabIndex = 0;
             // 
             // _header
             // 
             this._header.BackColor = System.Drawing.Color.White;
+            this._header.Controls.Add(this._toggleActiveButton);
+            this._header.Controls.Add(this._editButton);
             this._header.Controls.Add(this._headerIconPanel);
             this._header.Controls.Add(this._subtitleLabel);
             this._header.Controls.Add(this._titleLabel);
             this._header.Controls.Add(this._addButton);
-            this._header.Controls.Add(this._optionsButton);
-            this._header.Controls.Add(this._refreshButton);
             this._header.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._header.Location = new System.Drawing.Point(24, 24);
-            this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._header.Location = new System.Drawing.Point(21, 19);
+            this._header.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             this._header.Name = "_header";
-            this._header.Size = new System.Drawing.Size(1052, 96);
+            this._header.Size = new System.Drawing.Size(936, 76);
             this._header.TabIndex = 0;
+            // 
+            // _toggleActiveButton
+            // 
+            this._toggleActiveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._toggleActiveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._toggleActiveButton.FlatAppearance.BorderSize = 0;
+            this._toggleActiveButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(78)))), ((int)(((byte)(216)))));
+            this._toggleActiveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._toggleActiveButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._toggleActiveButton.ForeColor = System.Drawing.Color.White;
+            this._toggleActiveButton.Location = new System.Drawing.Point(533, 22);
+            this._toggleActiveButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this._toggleActiveButton.Name = "_toggleActiveButton";
+            this._toggleActiveButton.Size = new System.Drawing.Size(152, 30);
+            this._toggleActiveButton.TabIndex = 7;
+            this._toggleActiveButton.Text = "Ngừng / mở bán";
+            this._toggleActiveButton.UseVisualStyleBackColor = false;
+            this._toggleActiveButton.Click += new System.EventHandler(this._toggleActiveButton_Click);
+            // 
+            // _editButton
+            // 
+            this._editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._editButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this._editButton.FlatAppearance.BorderSize = 0;
+            this._editButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(78)))), ((int)(((byte)(216)))));
+            this._editButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._editButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._editButton.ForeColor = System.Drawing.Color.White;
+            this._editButton.Location = new System.Drawing.Point(819, 22);
+            this._editButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this._editButton.Name = "_editButton";
+            this._editButton.Size = new System.Drawing.Size(89, 30);
+            this._editButton.TabIndex = 6;
+            this._editButton.Text = "Sửa";
+            this._editButton.UseVisualStyleBackColor = false;
+            this._editButton.Click += new System.EventHandler(this._editButton_Click);
             // 
             // _headerIconPanel
             // 
             this._headerIconPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(240)))), ((int)(((byte)(254)))));
             this._headerIconPanel.Controls.Add(this._headerIcon);
-            this._headerIconPanel.Location = new System.Drawing.Point(20, 20);
+            this._headerIconPanel.Location = new System.Drawing.Point(18, 16);
+            this._headerIconPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._headerIconPanel.Name = "_headerIconPanel";
-            this._headerIconPanel.Size = new System.Drawing.Size(56, 56);
+            this._headerIconPanel.Size = new System.Drawing.Size(50, 45);
             this._headerIconPanel.TabIndex = 0;
             // 
             // _headerIcon
@@ -207,10 +191,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._headerIcon.IconChar = FontAwesome.Sharp.IconChar.Tag;
             this._headerIcon.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this._headerIcon.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this._headerIcon.IconSize = 28;
-            this._headerIcon.Location = new System.Drawing.Point(14, 14);
+            this._headerIcon.IconSize = 22;
+            this._headerIcon.Location = new System.Drawing.Point(12, 11);
+            this._headerIcon.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._headerIcon.Name = "_headerIcon";
-            this._headerIcon.Size = new System.Drawing.Size(28, 28);
+            this._headerIcon.Size = new System.Drawing.Size(25, 22);
             this._headerIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this._headerIcon.TabIndex = 0;
             this._headerIcon.TabStop = false;
@@ -220,9 +205,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._subtitleLabel.AutoSize = true;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(96, 56);
+            this._subtitleLabel.Location = new System.Drawing.Point(85, 45);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(443, 25);
+            this._subtitleLabel.Size = new System.Drawing.Size(363, 21);
             this._subtitleLabel.TabIndex = 1;
             this._subtitleLabel.Text = "Danh sách sản phẩm, giá bán, tồn kho và trạng thái";
             // 
@@ -232,9 +217,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             | System.Windows.Forms.AnchorStyles.Right)));
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this._titleLabel.Location = new System.Drawing.Point(93, 4);
+            this._titleLabel.Location = new System.Drawing.Point(83, 3);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(577, 52);
+            this._titleLabel.Size = new System.Drawing.Size(274, 42);
             this._titleLabel.TabIndex = 2;
             this._titleLabel.Text = "Quản lý sản phẩm";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -248,41 +233,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._addButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._addButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._addButton.ForeColor = System.Drawing.Color.White;
-            this._addButton.Location = new System.Drawing.Point(666, 29);
+            this._addButton.Location = new System.Drawing.Point(712, 22);
+            this._addButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._addButton.Name = "_addButton";
-            this._addButton.Size = new System.Drawing.Size(152, 38);
+            this._addButton.Size = new System.Drawing.Size(84, 30);
             this._addButton.TabIndex = 3;
-            this._addButton.Text = "Thêm sản phẩm";
+            this._addButton.Text = "Thêm ";
             this._addButton.UseVisualStyleBackColor = false;
             this._addButton.Click += new System.EventHandler(this._addButton_Click);
-            // 
-            // _optionsButton
-            // 
-            this._optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._optionsButton.BackColor = System.Drawing.Color.White;
-            this._optionsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._optionsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._optionsButton.Location = new System.Drawing.Point(826, 29);
-            this._optionsButton.Name = "_optionsButton";
-            this._optionsButton.Size = new System.Drawing.Size(110, 38);
-            this._optionsButton.TabIndex = 4;
-            this._optionsButton.Text = "Tùy chọn";
-            this._optionsButton.UseVisualStyleBackColor = false;
-            this._optionsButton.Click += new System.EventHandler(this.OptionsButton_Click);
-            // 
-            // _refreshButton
-            // 
-            this._refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this._refreshButton.BackColor = System.Drawing.Color.White;
-            this._refreshButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this._refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this._refreshButton.Location = new System.Drawing.Point(944, 29);
-            this._refreshButton.Name = "_refreshButton";
-            this._refreshButton.Size = new System.Drawing.Size(92, 38);
-            this._refreshButton.TabIndex = 5;
-            this._refreshButton.Text = "Làm mới";
-            this._refreshButton.UseVisualStyleBackColor = false;
-            this._refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             // 
             // _toolbar
             // 
@@ -295,10 +253,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._toolbar.Controls.Add(this._categoryLabel);
             this._toolbar.Controls.Add(this._categoryComboBox);
             this._toolbar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._toolbar.Location = new System.Drawing.Point(24, 132);
-            this._toolbar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this._toolbar.Location = new System.Drawing.Point(21, 105);
+            this._toolbar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             this._toolbar.Name = "_toolbar";
-            this._toolbar.Size = new System.Drawing.Size(1052, 70);
+            this._toolbar.Size = new System.Drawing.Size(936, 56);
             this._toolbar.TabIndex = 1;
             // 
             // _searchLabel
@@ -306,19 +264,21 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._searchLabel.AutoSize = true;
             this._searchLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._searchLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._searchLabel.Location = new System.Drawing.Point(16, 8);
+            this._searchLabel.Location = new System.Drawing.Point(14, 6);
             this._searchLabel.Name = "_searchLabel";
-            this._searchLabel.Size = new System.Drawing.Size(123, 23);
+            this._searchLabel.Size = new System.Drawing.Size(108, 20);
             this._searchLabel.TabIndex = 0;
             this._searchLabel.Text = "Tìm sản phẩm";
+            this._searchLabel.Click += new System.EventHandler(this._searchLabel_Click);
             // 
             // _searchTextBox
             // 
             this._searchTextBox.AccessibleName = "Tìm theo tên, mã hoặc danh mục";
             this._searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._searchTextBox.Location = new System.Drawing.Point(16, 31);
+            this._searchTextBox.Location = new System.Drawing.Point(14, 25);
+            this._searchTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._searchTextBox.Name = "_searchTextBox";
-            this._searchTextBox.Size = new System.Drawing.Size(360, 34);
+            this._searchTextBox.Size = new System.Drawing.Size(320, 30);
             this._searchTextBox.TabIndex = 1;
             this._searchTextBox.TextChanged += new System.EventHandler(this.SearchTextBox_TextChanged);
             // 
@@ -327,9 +287,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._statusLabel.AutoSize = true;
             this._statusLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._statusLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._statusLabel.Location = new System.Drawing.Point(400, 8);
+            this._statusLabel.Location = new System.Drawing.Point(356, 6);
             this._statusLabel.Name = "_statusLabel";
-            this._statusLabel.Size = new System.Drawing.Size(92, 23);
+            this._statusLabel.Size = new System.Drawing.Size(80, 20);
             this._statusLabel.TabIndex = 2;
             this._statusLabel.Text = "Trạng thái";
             // 
@@ -341,9 +301,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             "Tất cả trạng thái",
             "Đang hoạt động",
             "Vô hiệu hóa"});
-            this._statusComboBox.Location = new System.Drawing.Point(400, 31);
+            this._statusComboBox.Location = new System.Drawing.Point(356, 25);
+            this._statusComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._statusComboBox.Name = "_statusComboBox";
-            this._statusComboBox.Size = new System.Drawing.Size(160, 36);
+            this._statusComboBox.Size = new System.Drawing.Size(143, 31);
             this._statusComboBox.TabIndex = 3;
             this._statusComboBox.SelectedIndexChanged += new System.EventHandler(this.StatusComboBox_SelectedIndexChanged);
             // 
@@ -352,9 +313,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._categoryLabel.AutoSize = true;
             this._categoryLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
             this._categoryLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._categoryLabel.Location = new System.Drawing.Point(580, 8);
+            this._categoryLabel.Location = new System.Drawing.Point(516, 6);
             this._categoryLabel.Name = "_categoryLabel";
-            this._categoryLabel.Size = new System.Drawing.Size(0, 23);
+            this._categoryLabel.Size = new System.Drawing.Size(0, 20);
             this._categoryLabel.TabIndex = 4;
             // 
             // _categoryComboBox
@@ -362,9 +323,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._categoryComboBox.AccessibleName = "Lọc theo danh mục";
             this._categoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._categoryComboBox.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this._categoryComboBox.Location = new System.Drawing.Point(580, 31);
+            this._categoryComboBox.Location = new System.Drawing.Point(516, 25);
+            this._categoryComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._categoryComboBox.Name = "_categoryComboBox";
-            this._categoryComboBox.Size = new System.Drawing.Size(160, 36);
+            this._categoryComboBox.Size = new System.Drawing.Size(143, 31);
             this._categoryComboBox.TabIndex = 5;
             this._categoryComboBox.SelectedIndexChanged += new System.EventHandler(this.CategoryComboBox_SelectedIndexChanged);
             // 
@@ -374,10 +336,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._gridCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._gridCard.Controls.Add(this._productsGrid);
             this._gridCard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._gridCard.Location = new System.Drawing.Point(24, 214);
+            this._gridCard.Location = new System.Drawing.Point(21, 171);
             this._gridCard.Margin = new System.Windows.Forms.Padding(0);
             this._gridCard.Name = "_gridCard";
-            this._gridCard.Size = new System.Drawing.Size(1052, 438);
+            this._gridCard.Size = new System.Drawing.Size(936, 351);
             this._gridCard.TabIndex = 2;
             // 
             // _productsGrid
@@ -406,8 +368,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._priceColumn,
             this._stockColumn,
             this._expiredBatchesColumn,
-            this._statusColumn,
-            this._actionsColumn});
+            this._statusColumn});
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -428,7 +389,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._productsGrid.RowHeadersWidth = 62;
             this._productsGrid.RowTemplate.Height = 84;
             this._productsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._productsGrid.Size = new System.Drawing.Size(1050, 436);
+            this._productsGrid.Size = new System.Drawing.Size(934, 349);
             this._productsGrid.TabIndex = 0;
             this._productsGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnGridCellMouseClick);
             // 
@@ -505,16 +466,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._statusColumn.Name = "_statusColumn";
             this._statusColumn.ReadOnly = true;
             // 
-            // _actionsColumn
-            // 
-            this._actionsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this._actionsColumn.HeaderText = "Thao tác";
-            this._actionsColumn.MinimumWidth = 8;
-            this._actionsColumn.Name = "_actionsColumn";
-            this._actionsColumn.ReadOnly = true;
-            this._actionsColumn.ToolTipText = "Xem, sửa hoặc đổi trạng thái sản phẩm";
-            this._actionsColumn.Width = 120;
-            // 
             // _paging
             // 
             this._paging.BackColor = System.Drawing.Color.White;
@@ -524,12 +475,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._paging.Controls.Add(this._pagingInfo, 0, 0);
             this._paging.Controls.Add(this._pagingNavigation, 1, 0);
             this._paging.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._paging.Location = new System.Drawing.Point(24, 652);
+            this._paging.Location = new System.Drawing.Point(21, 522);
             this._paging.Margin = new System.Windows.Forms.Padding(0);
             this._paging.Name = "_paging";
             this._paging.RowCount = 1;
             this._paging.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._paging.Size = new System.Drawing.Size(1052, 44);
+            this._paging.Size = new System.Drawing.Size(936, 35);
             this._paging.TabIndex = 3;
             // 
             // _pagingInfo
@@ -537,10 +488,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._pagingInfo.Controls.Add(this._resultsLabel);
             this._pagingInfo.Controls.Add(this._pageSizeComboBox);
             this._pagingInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._pagingInfo.Location = new System.Drawing.Point(3, 3);
+            this._pagingInfo.Location = new System.Drawing.Point(3, 2);
+            this._pagingInfo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._pagingInfo.Name = "_pagingInfo";
-            this._pagingInfo.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this._pagingInfo.Size = new System.Drawing.Size(604, 38);
+            this._pagingInfo.Padding = new System.Windows.Forms.Padding(11, 0, 0, 0);
+            this._pagingInfo.Size = new System.Drawing.Size(536, 31);
             this._pagingInfo.TabIndex = 0;
             this._pagingInfo.WrapContents = false;
             // 
@@ -549,10 +501,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._resultsLabel.AccessibleName = "Số sản phẩm đang hiển thị";
             this._resultsLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._resultsLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._resultsLabel.Location = new System.Drawing.Point(12, 0);
-            this._resultsLabel.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this._resultsLabel.Location = new System.Drawing.Point(11, 0);
+            this._resultsLabel.Margin = new System.Windows.Forms.Padding(0, 0, 9, 0);
             this._resultsLabel.Name = "_resultsLabel";
-            this._resultsLabel.Size = new System.Drawing.Size(190, 44);
+            this._resultsLabel.Size = new System.Drawing.Size(169, 35);
             this._resultsLabel.TabIndex = 0;
             this._resultsLabel.Text = "Hiển thị 0 sản phẩm";
             this._resultsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -565,10 +517,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             "10 dòng",
             "20 dòng",
             "50 dòng"});
-            this._pageSizeComboBox.Location = new System.Drawing.Point(212, 8);
-            this._pageSizeComboBox.Margin = new System.Windows.Forms.Padding(0, 8, 0, 0);
+            this._pageSizeComboBox.Location = new System.Drawing.Point(189, 6);
+            this._pageSizeComboBox.Margin = new System.Windows.Forms.Padding(0, 6, 0, 0);
             this._pageSizeComboBox.Name = "_pageSizeComboBox";
-            this._pageSizeComboBox.Size = new System.Drawing.Size(94, 28);
+            this._pageSizeComboBox.Size = new System.Drawing.Size(84, 24);
             this._pageSizeComboBox.TabIndex = 1;
             this._pageSizeComboBox.SelectedIndexChanged += new System.EventHandler(this.PageSizeComboBox_SelectedIndexChanged);
             // 
@@ -579,10 +531,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._pagingNavigation.Controls.Add(this._previousButton);
             this._pagingNavigation.Dock = System.Windows.Forms.DockStyle.Fill;
             this._pagingNavigation.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this._pagingNavigation.Location = new System.Drawing.Point(613, 3);
+            this._pagingNavigation.Location = new System.Drawing.Point(545, 2);
+            this._pagingNavigation.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._pagingNavigation.Name = "_pagingNavigation";
-            this._pagingNavigation.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this._pagingNavigation.Size = new System.Drawing.Size(436, 38);
+            this._pagingNavigation.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this._pagingNavigation.Size = new System.Drawing.Size(388, 31);
             this._pagingNavigation.TabIndex = 1;
             this._pagingNavigation.WrapContents = false;
             // 
@@ -595,10 +548,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._nextButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
             this._nextButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this._nextButton.Location = new System.Drawing.Point(398, 5);
+            this._nextButton.Location = new System.Drawing.Point(354, 4);
             this._nextButton.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this._nextButton.Name = "_nextButton";
-            this._nextButton.Size = new System.Drawing.Size(36, 34);
+            this._nextButton.Size = new System.Drawing.Size(32, 27);
             this._nextButton.TabIndex = 0;
             this._nextButton.UseVisualStyleBackColor = false;
             this._nextButton.Click += new System.EventHandler(this.NextButton_Click);
@@ -610,10 +563,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._pageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this._pageLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._pageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this._pageLabel.Location = new System.Drawing.Point(276, 5);
-            this._pageLabel.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            this._pageLabel.Location = new System.Drawing.Point(245, 4);
+            this._pageLabel.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this._pageLabel.Name = "_pageLabel";
-            this._pageLabel.Size = new System.Drawing.Size(112, 34);
+            this._pageLabel.Size = new System.Drawing.Size(100, 27);
             this._pageLabel.TabIndex = 1;
             this._pageLabel.Text = "Trang 1 / 1";
             this._pageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -627,10 +580,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._previousButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._previousButton.Font = new System.Drawing.Font("Segoe UI Symbol", 16F);
             this._previousButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this._previousButton.Location = new System.Drawing.Point(230, 5);
+            this._previousButton.Location = new System.Drawing.Point(204, 4);
             this._previousButton.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this._previousButton.Name = "_previousButton";
-            this._previousButton.Size = new System.Drawing.Size(36, 34);
+            this._previousButton.Size = new System.Drawing.Size(32, 27);
             this._previousButton.TabIndex = 2;
             this._previousButton.UseVisualStyleBackColor = false;
             this._previousButton.Click += new System.EventHandler(this.PreviousButton_Click);
@@ -638,15 +591,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             // ucProductManagement
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.Controls.Add(this._root);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "ucProductManagement";
-            this.Size = new System.Drawing.Size(1100, 720);
+            this.Size = new System.Drawing.Size(978, 576);
             this.Load += new System.EventHandler(this.ProductManagement_Load);
             this.VisibleChanged += new System.EventHandler(this.ProductManagement_VisibleChanged);
-            this._optionsMenu.ResumeLayout(false);
             this._root.ResumeLayout(false);
             this._header.ResumeLayout(false);
             this._header.PerformLayout();
@@ -663,5 +616,15 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         }
 
+        private Button _editButton;
+        private Button _toggleActiveButton;
+        private DataGridViewImageColumn _imageColumn;
+        private DataGridViewTextBoxColumn _codeColumn;
+        private DataGridViewTextBoxColumn _nameColumn;
+        private DataGridViewTextBoxColumn _categoryColumn;
+        private DataGridViewTextBoxColumn _priceColumn;
+        private DataGridViewTextBoxColumn _stockColumn;
+        private DataGridViewButtonColumn _expiredBatchesColumn;
+        private DataGridViewTextBoxColumn _statusColumn;
     }
 }

@@ -306,8 +306,12 @@ namespace SIMS_WinFormsApp.Views.Profile
             txtCurrentPassword.Clear();
             txtNewPassword.Clear();
             txtConfirmPassword.Clear();
-            AppToast.Success(this, "Đổi mật khẩu thành công.");
         }
         #endregion
+
+        private void btnChangePassword_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

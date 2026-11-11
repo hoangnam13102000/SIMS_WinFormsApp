@@ -10,8 +10,7 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
-using SIMS_WinFormsApp.MVP.Presenters.Inventory;
-using SIMS_WinFormsApp.Services.Implementations.Import;
+using SIMS_WinFormsApp.Services.Implementations.Export;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Controls;
@@ -19,6 +18,7 @@ using SIMS_WinFormsApp.UI.Theme;
 using SIMS_WinFormsApp.Views.Interfaces;
 using SIMS_WinFormsApp.Views.SystemManagement;
 using SIMS_WinFormsApp.Views.Toast;
+using SIMS_WinFormsApp.MVP.Presenters.Inventory;
 
 namespace SIMS_WinFormsApp.Views.Warehouse
 {
@@ -78,8 +78,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         public event EventHandler PageSizeChanged;
         public event EventHandler PreviousPageRequested;
         public event EventHandler NextPageRequested;
-        public event EventHandler CreateRequested;
-        public event EventHandler CsvExportRequested;
         public event EventHandler ExcelExportRequested;
         public event Action<string> ReceiptCodeCopyRequested;
         public event Action<int> DetailRequested;
@@ -205,21 +203,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             AppToast.Error(this, title, message);
         }
 
-        public void OpenCreateForm()
-        {
-            using (var form = new frmPurchaseReceipt(_service, UserSession.Instance))
-            {
-                if (form.ShowDialog(FindForm()) == DialogResult.OK)
-                {
-                    _presenter.RefreshAfterCreate();
-                    string message = string.IsNullOrEmpty(form.CreatedReceiptCode)
-                        ? "Đã lập phiếu nhập mới. Tồn kho đã được cộng thêm."
-                        : "Đã lập phiếu nhập " + form.CreatedReceiptCode + ". Tồn kho đã được cộng thêm.";
-                    AppToast.Success(this, "Nhập hàng thành công", message);
-                }
-            }
-        }
-
         private void ClearSearchButton_Click(object sender, EventArgs e)
         {
             _searchBox.Clear();
@@ -242,8 +225,22 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         }
 
         private void CreateButton_Click(object sender, EventArgs e)
-        {
-            CreateRequested?.Invoke(this, EventArgs.Empty);
+        {// 1. Mở form lập phiếu nhập dạng hộp thoại
+            using (var form = new frmPurchaseReceipt(_service, UserSession.Instance))
+            {
+                // 2. Người dùng bấm Hủy hoặc đóng form -> không làm gì
+                if (form.ShowDialog(FindForm()) != DialogResult.OK)
+                    return;
+
+                // 3. Lưu thành công -> tải lại danh sách phiếu nhập, về trang 1
+                _presenter.RefreshAfterCreate();
+
+                // 4. Thông báo kèm mã phiếu
+                string message = string.IsNullOrEmpty(form.CreatedReceiptCode)
+                    ? "Đã lập phiếu nhập mới. Tồn kho đã được cộng thêm."
+                    : "Đã lập phiếu nhập " + form.CreatedReceiptCode + ". Tồn kho đã được cộng thêm.";
+                AppToast.Success(this, "Nhập hàng thành công", message);
+            }
         }
 
         private void OptionsButton_Click(object sender, EventArgs e)
@@ -253,30 +250,65 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void ExportCsvMenuItem_Click(object sender, EventArgs e)
         {
-            CsvExportRequested?.Invoke(this, EventArgs.Empty);
+            // 1. Lấy toàn bộ phiếu nhập đang lọc (tất cả các trang, không chỉ trang đang xem)
+            IReadOnlyList<PurchaseReceiptListItemDto> receipts = _presenter.Receipts;
+
+            // 2. Tiêu đề cột trong file Excel
+            string[] headers =
+            {
+        "Mã phiếu", "Nhà cung cấp", "Người tạo", "Ngày tạo", "Số SP", "Tổng tiền", "Trạng thái"
+    };
+
+            // 3. Mỗi phiếu nhập thành 1 dòng
+            List<object[]> rows = receipts.Select(receipt => new object[]
+            {
+        receipt.ReceiptCode,
+        receipt.SupplierName,
+        receipt.CreatedByName,
+        receipt.CreatedAt.ToString("dd/MM/yyyy", VietnameseCulture),
+        receipt.ItemCount,
+        receipt.TotalAmount.ToString("N0", VietnameseCulture),
+        string.Equals(receipt.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase) ? "Hoàn tất"
+            : string.Equals(receipt.Status, "CANCELLED", StringComparison.OrdinalIgnoreCase) ? "Đã hủy"
+            : (receipt.Status ?? string.Empty)
+            }).ToList();
+
+            // 4. Hỏi nơi lưu (SaveFileDialog), ghi file .xlsx, báo thành công / lỗi
+            TableExportRunner.Run(FindForm(), new ExcelTableExporter(), "phiếu nhập kho",
+                () => headers,
+                () => rows);
         }
 
         private void ExportExcelMenuItem_Click(object sender, EventArgs e)
         {
-            ExcelExportRequested?.Invoke(this, EventArgs.Empty);
-        }
 
-        private void ImportMenuItem_Click(object sender, EventArgs e)
-        {
-            ImportReceipts();
-        }
+            // 1. Lấy toàn bộ phiếu nhập đang lọc (tất cả các trang, không chỉ trang đang xem)
+            IReadOnlyList<PurchaseReceiptListItemDto> receipts = _presenter.Receipts;
 
-        private void ImportReceipts()
-        {
-            var importer = new PurchaseReceiptImportRowHandler(_service, UserSession.Instance);
-            DialogResult result = frmImportData.Show(
-                FindForm(),
-                "Phiếu nhập kho",
-                PurchaseReceiptImportRowHandler.ExpectedColumns,
-                "Mỗi dòng tạo 1 phiếu nhập. Nhà cung cấp ghi đúng tên đã có. Sản phẩm ghi mã (VD SP_0001) hoặc đúng tên. Số lượng > 0, giá nhập là số. Ngày sản xuất/Hạn sử dụng dạng dd/MM/yyyy, có thể để trống; hạn sử dụng phải sau hôm nay và sau ngày sản xuất.",
-                DefaultSpreadsheetImporters.All,
-                importer.Handle);
-            if (result == DialogResult.OK) _presenter.RefreshAfterCreate();
+            // 2. Tiêu đề cột trong file Excel
+            string[] headers =
+            {
+        "Mã phiếu", "Nhà cung cấp", "Người tạo", "Ngày tạo", "Số SP", "Tổng tiền", "Trạng thái"
+    };
+
+            // 3. Mỗi phiếu nhập thành 1 dòng
+            List<object[]> rows = receipts.Select(receipt => new object[]
+            {
+        receipt.ReceiptCode,
+        receipt.SupplierName,
+        receipt.CreatedByName,
+        receipt.CreatedAt.ToString("dd/MM/yyyy", VietnameseCulture),
+        receipt.ItemCount,
+        receipt.TotalAmount.ToString("N0", VietnameseCulture),
+        string.Equals(receipt.Status, "COMPLETED", StringComparison.OrdinalIgnoreCase) ? "Hoàn tất"
+            : string.Equals(receipt.Status, "CANCELLED", StringComparison.OrdinalIgnoreCase) ? "Đã hủy"
+            : (receipt.Status ?? string.Empty)
+            }).ToList();
+
+            // 4. Hỏi nơi lưu (SaveFileDialog), ghi file .xlsx, báo thành công / lỗi
+            TableExportRunner.Run(FindForm(), new ExcelTableExporter(), "phiếu nhập kho",
+                () => headers,
+                () => rows);
         }
 
         public void OpenDetail(PurchaseReceiptListItemDto receipt)

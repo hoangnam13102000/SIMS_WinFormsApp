@@ -10,7 +10,6 @@ namespace SIMS_WinFormsApp.Models
         {
             if (string.IsNullOrWhiteSpace(username)) throw new ArgumentException("Username is required.", nameof(username));
             if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentException("Full name is required.", nameof(fullName));
-            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email is required.", nameof(email));
             Username = username;
             FullName = fullName;
             Email = email;

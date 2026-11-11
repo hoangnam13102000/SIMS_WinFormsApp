@@ -28,6 +28,7 @@ namespace SIMS_WinFormsApp.UI.Controls.Pos
                 invoiceViewed);
 
             view.Disposed += (s, e) => presenter.Dispose();
+            view.Presenter = presenter;
 
             return view;
         }

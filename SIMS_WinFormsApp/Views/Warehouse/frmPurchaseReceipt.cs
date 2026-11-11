@@ -31,7 +31,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private readonly List<SupplierOption> _supplierOptions = new List<SupplierOption>();
         private readonly List<ProductOption> _productOptions = new List<ProductOption>();
 
-        public event EventHandler SaveRequested;
         public event EventHandler LinesChanged;
         public string CreatedReceiptCode { get; private set; }
 
@@ -61,10 +60,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             NumberInputFormatter.Attach(_priceTextBox);
             NumberInputFormatter.SetMaximumDigits(_priceTextBox, 18);
             ConfigureEntryControls();
-
-            _linesGrid.CellClick += LinesGrid_CellClick;
-            _linesGrid.CellPainting += LinesGrid_CellPainting;
-            _linesGrid.CellToolTipTextNeeded += LinesGrid_CellToolTipTextNeeded;
             _presenter.Initialize();
         }
 
@@ -75,13 +70,116 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void AddLineButton_Click(object sender, EventArgs e)
         {
-            AddLineFromInputs();
+            // 1. Kiểm tra đã chọn sản phẩm
+            ProductOption product = _productComboBox.SelectedItem as ProductOption;
+            if (product == null)
+            {
+                ShowValidationError("Vui lòng chọn sản phẩm.", _productComboBox);
+                return;
+            }
+
+            // 2. Kiểm tra số lượng là số nguyên > 0
+            int quantity;
+            if (!int.TryParse(_quantityTextBox.Text.Trim(), NumberStyles.Integer,
+                CultureInfo.InvariantCulture, out quantity) || quantity <= 0)
+            {
+                ShowValidationError("Số lượng phải là số nguyên lớn hơn 0.", _quantityTextBox);
+                return;
+            }
+
+            // 3. Kiểm tra giá nhập >= 0
+            string priceDigits = NumberInputFormatter.DigitsOnly(_priceTextBox.Text);
+            decimal importPrice;
+            if (string.IsNullOrWhiteSpace(priceDigits) ||
+                !decimal.TryParse(priceDigits, NumberStyles.None, CultureInfo.InvariantCulture, out importPrice) ||
+                importPrice < 0m)
+            {
+                ShowValidationError("Nhập giá ≥ 0.", _priceTextBox);
+                return;
+            }
+
+            // 4. Bắt buộc có số lô
+            string lotNumber = _lotNumberTextBox.Text.Trim();
+            if (lotNumber.Length == 0)
+            {
+                ShowValidationError(
+                    "Vui lòng ghi lại số lô in trên bao bì/phiếu giao của nhà cung cấp trước khi thêm dòng.",
+                    _lotNumberTextBox);
+                return;
+            }
+
+            // 5. Hạn sử dụng phải sau ngày sản xuất
+            DateTime? manufactureDate = _manufactureDateBox.Value;
+            DateTime? expiryDate = _expiryDateBox.Value;
+            if (manufactureDate.HasValue && expiryDate.HasValue && expiryDate.Value.Date <= manufactureDate.Value.Date)
+            {
+                ShowValidationError("Hạn sử dụng phải sau ngày sản xuất.", _expiryDateBox);
+                return;
+            }
+
+            // 6. Thêm dòng vào lưới, xóa ô nhập, cập nhật tổng tiền
+            AddLine(product, quantity, importPrice, lotNumber, manufactureDate, expiryDate);
+            ClearEntryFields();
+            LinesChanged?.Invoke(this, EventArgs.Empty);
+            _productComboBox.Focus();
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            // Create: validate the form -> PurchaseReceiptPresenter -> CreatePurchaseReceipt service.
-            SaveReceipt();
+            // 1. Kiểm tra đã chọn nhà cung cấp
+            if (SelectedSupplierId <= 0)
+            {
+                ShowValidationError("Vui lòng chọn nhà cung cấp.", _supplierComboBox);
+                return;
+            }
+
+            // 2. Kiểm tra phiếu có ít nhất 1 dòng
+            IReadOnlyList<PurchaseLineDto> lines = ReadLines();
+            if (lines.Count == 0)
+            {
+                ShowValidationError("Thêm ít nhất 1 dòng sản phẩm trước khi lưu phiếu.", _productComboBox);
+                return;
+            }
+
+            // 3. Hỏi xác nhận
+            SupplierOption supplier = _supplierComboBox.SelectedItem as SupplierOption;
+            string confirmMessage = "Lập phiếu nhập " + lines.Count.ToString(CultureInfo.InvariantCulture) +
+                " dòng từ \"" + (supplier == null ? string.Empty : supplier.Name) + "\"?";
+            if (!_dialogService.Confirm(this, "Xác nhận lập phiếu nhập", confirmMessage))
+                return;
+
+            // 4. Kiểm tra người đang đăng nhập
+            if (_session.CurrentUser == null)
+            {
+                AppToast.Error(this, "Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.");
+                return;
+            }
+
+            // 5. Tạo phiếu nhập và lưu xuống database (InventoryService -> LINQ to SQL)
+            var receipt = new PurchaseReceiptDto
+            {
+                SupplierId = SelectedSupplierId,
+                CreatedBy = _session.CurrentUser.UserId,
+                Lines = new List<PurchaseLineDto>(lines)
+            };
+            CatalogSaveResult result = _service.CreatePurchaseReceipt(receipt);
+            if (result == null || !result.Success)
+            {
+                AppToast.Error(this, result == null ? "Không lưu được phiếu nhập." : result.Message);
+                return;
+            }
+
+            // 6. Lấy mã phiếu vừa tạo (message dạng "Đã lưu phiếu nhập PN_000123")
+            const string prefix = "Đã lưu phiếu nhập ";
+            CreatedReceiptCode = result.Message != null && result.Message.StartsWith(prefix, StringComparison.Ordinal)
+                ? result.Message.Substring(prefix.Length)
+                : result.Message;
+
+            // 7. Xóa lưới, đóng form và báo OK cho màn hình danh sách
+            ResetLines();
+            ShowTotal(0m);
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
@@ -203,56 +301,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             Height = Math.Min(Height, Screen.FromControl(this).WorkingArea.Height - 40);
         }
 
-        private void AddLineFromInputs()
-        {
-            ProductOption product = _productComboBox.SelectedItem as ProductOption;
-            if (product == null)
-            {
-                ShowValidationError("Vui lòng chọn sản phẩm.", _productComboBox);
-                return;
-            }
-
-            int quantity;
-            if (!int.TryParse(_quantityTextBox.Text.Trim(), NumberStyles.Integer,
-                CultureInfo.InvariantCulture, out quantity) || quantity <= 0)
-            {
-                ShowValidationError("Số lượng phải là số nguyên lớn hơn 0.", _quantityTextBox);
-                return;
-            }
-
-            string priceDigits = NumberInputFormatter.DigitsOnly(_priceTextBox.Text);
-            decimal importPrice;
-            if (string.IsNullOrWhiteSpace(priceDigits) ||
-                !decimal.TryParse(priceDigits, NumberStyles.None, CultureInfo.InvariantCulture, out importPrice) ||
-                importPrice < 0m)
-            {
-                ShowValidationError("Nhập giá ≥ 0.", _priceTextBox);
-                return;
-            }
-
-            string lotNumber = _lotNumberTextBox.Text.Trim();
-            if (lotNumber.Length == 0)
-            {
-                ShowValidationError(
-                    "Vui lòng ghi lại số lô in trên bao bì/phiếu giao của nhà cung cấp trước khi thêm dòng.",
-                    _lotNumberTextBox);
-                return;
-            }
-
-            DateTime? manufactureDate = _manufactureDateBox.Value;
-            DateTime? expiryDate = _expiryDateBox.Value;
-            if (manufactureDate.HasValue && expiryDate.HasValue && expiryDate.Value.Date <= manufactureDate.Value.Date)
-            {
-                ShowValidationError("Hạn sử dụng phải sau ngày sản xuất.", _expiryDateBox);
-                return;
-            }
-
-            AddLine(product, quantity, importPrice, lotNumber, manufactureDate, expiryDate);
-            ClearEntryFields();
-            LinesChanged?.Invoke(this, EventArgs.Empty);
-            _productComboBox.Focus();
-        }
-
         private void AddLine(
             ProductOption product,
             int quantity,
@@ -283,28 +331,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _lotNumberTextBox.Clear();
             _manufactureDateBox.Value = null;
             _expiryDateBox.Value = null;
-        }
-
-        private void SaveReceipt()
-        {
-            if (SelectedSupplierId <= 0)
-            {
-                ShowValidationError("Vui lòng chọn nhà cung cấp.", _supplierComboBox);
-                return;
-            }
-
-            IReadOnlyList<PurchaseLineDto> lines = ReadLines();
-            if (lines.Count == 0)
-            {
-                ShowValidationError("Thêm ít nhất 1 dòng sản phẩm trước khi lưu phiếu.", _productComboBox);
-                return;
-            }
-
-            SupplierOption supplier = _supplierComboBox.SelectedItem as SupplierOption;
-            string message = "Lập phiếu nhập " + lines.Count.ToString(CultureInfo.InvariantCulture) +
-                " dòng từ \"" + (supplier == null ? string.Empty : supplier.Name) + "\"?";
-            if (_dialogService.Confirm(this, "Xác nhận lập phiếu nhập", message))
-                SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void FillDemoData()
@@ -363,7 +389,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 DateTime manufactureDate = DateTime.Today.AddDays(-Randomizer.Next(1, 61));
                 _manufactureDateBox.Value = manufactureDate;
                 _expiryDateBox.Value = manufactureDate.AddDays(Randomizer.Next(90, 366));
-                AddLineFromInputs();
+                AddLineButton_Click(_addLineButton, EventArgs.Empty);
             }
             _productComboBox.Focus();
         }
@@ -376,37 +402,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 textBox.SelectAll();
             else if (control == _productComboBox)
                 _productComboBox.DroppedDown = true;
-        }
-
-        private void LinesGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex != _linesGrid.Columns["RemoveLine"].Index)
-                return;
-
-            _linesGrid.Rows.RemoveAt(e.RowIndex);
-            UpdateLineCountAndEmptyState();
-            LinesChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void LinesGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex != _removeColumn.Index)
-                return;
-
-            e.PaintBackground(e.CellBounds, true);
-            Bitmap deleteIcon = IconBitmapCache.Get(
-                IconChar.Xmark, AppColors.Error, new Size(16, 16));
-            int x = e.CellBounds.Left + (e.CellBounds.Width - deleteIcon.Width) / 2;
-            int y = e.CellBounds.Top + (e.CellBounds.Height - deleteIcon.Height) / 2;
-            e.Graphics.DrawImageUnscaled(deleteIcon, x, y);
-            e.Handled = true;
-        }
-
-        private void LinesGrid_CellToolTipTextNeeded(
-            object sender, DataGridViewCellToolTipTextNeededEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex == _removeColumn.Index)
-                e.ToolTipText = "Xóa dòng này";
         }
 
         private void UpdateLineCountAndEmptyState()
@@ -460,6 +455,38 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             }
 
             public override string ToString() => Name ?? string.Empty;
+        }
+
+        private void _removeLineButton_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra đã chọn dòng
+            if (_linesGrid.SelectedRows.Count == 0)
+            {
+                ShowMessage("Vui lòng chọn dòng cần xóa.", true);
+                return;
+            }
+            DataGridViewRow row = _linesGrid.SelectedRows[0];
+
+            // 2. Hỏi xác nhận
+            ProductOption product = row.Tag as ProductOption;
+            string name = product != null ? product.Name : "dòng này";
+            if (!_dialogService.Confirm(this, "Xóa dòng", "Xóa \"" + name + "\" khỏi phiếu nhập?"))
+                return;
+
+            // 3. Xóa dòng khỏi lưới
+            _linesGrid.Rows.Remove(row);
+
+            // 4. Cập nhật số dòng và tổng tiền
+            UpdateLineCountAndEmptyState();
+            LinesChanged?.Invoke(this, EventArgs.Empty);
+            _removeLineButton.Enabled = _linesGrid.SelectedRows.Count > 0;
+        }
+
+        private void _linesGrid_SelectionChanged(object sender, EventArgs e)
+        {
+
+            // Chỉ bật nút Xóa dòng khi đang chọn 1 dòng
+            _removeLineButton.Enabled = _linesGrid.SelectedRows.Count > 0;
         }
     }
 }

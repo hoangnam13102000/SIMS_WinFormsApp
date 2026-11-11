@@ -264,9 +264,12 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 _onInvoiceViewed?.Invoke(invoiceId);
                 using (var dialog = new InvoiceDetailsDialog(invoice))
                 {
-                    if (_canCreateReturns)
-                        dialog.ReturnRequestHandler = CreateReturnRequest;
-                    dialog.ShowDialog(this);
+                    dialog.ReturnDataService = _returnDataService;
+                    dialog.CurrentUserId = _currentUserId;
+                    dialog.CanApproveReturns = _canApproveReturns;
+                    dialog.CanCreateReturns = _canCreateReturns;
+                    if (dialog.ShowDialog(this) == DialogResult.OK)
+                        ReloadInvoices();
                 }
             }
             catch (Exception ex)
@@ -281,30 +284,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             return _dataService.GetInvoiceDetails(invoiceId, _canViewAll, _currentUserId);
         }
 
-        private bool CreateReturnRequest(InvoiceDetails invoice)
-        {
-            try
-            {
-                using (var dialog = new InvoiceReturnDialog(
-                    _returnDataService,
-                    invoice,
-                    _currentUserId,
-                    _canApproveReturns))
-                {
-                    if (dialog.ShowDialog(this) != DialogResult.OK)
-                        return false;
-                }
-
-                ReloadInvoices();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, "Không thể mở yêu cầu trả hàng.\r\n" + ex.Message,
-                    "Lỗi trả hàng", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-        }
+      
 
         private static string FormatMoney(decimal amount)
         {

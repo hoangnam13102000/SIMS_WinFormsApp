@@ -10,8 +10,6 @@ using SIMS_WinFormsApp.Views.UserManager;
 using SIMS_WinFormsApp.Views.SystemManagement;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 using SIMS_WinFormsApp.MVP.Presenters.Catalog;
-using SIMS_WinFormsApp.Services.Implementations.Export;
-using SIMS_WinFormsApp.Services.Implementations.Import;
 using SIMS_WinFormsApp.Services.Implementations.Catalog;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.UI.Controls;
@@ -61,8 +59,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _canManageProducts = canManageProducts;
             _showExpiredBatches = showExpiredBatches;
             _expiredBatchesColumn.Visible = _showExpiredBatches != null;
-            _importMenuItem.Visible = _canManageProducts;
             _addButton.Enabled = _canManageProducts;
+            _editButton.Enabled = _canEditProducts;
+            _toggleActiveButton.Enabled = _canEditProducts;
             if (service == null) return;
 
             _service = service;
@@ -133,10 +132,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             DrawPagingArrow(e.Graphics, _nextButton.ClientRectangle, true, _nextButton.Enabled);
         }
 
-        private void OptionsButton_Click(object sender, EventArgs e)
-        {
-            _optionsMenu.Show(_optionsButton, 0, _optionsButton.Height);
-        }
 
         private void RefreshButton_Click(object sender, EventArgs e)
         {
@@ -154,26 +149,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
         {
             if (_presenter == null || _pageIndex + 1 >= PageCount) return;
             _pageIndex++;
-            LoadPage();
-        }
-
-        private void ExportCsvMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportProducts(new CsvTableExporter());
-        }
-
-        private void ExportExcelMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportProducts(new ExcelTableExporter());
-        }
-
-        private void ImportMenuItem_Click(object sender, EventArgs e)
-        {
-            ImportProducts();
-        }
-
-        private void RefreshMenuItem_Click(object sender, EventArgs e)
-        {
             LoadPage();
         }
 
@@ -234,12 +209,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
                         CatalogFormat.Money(row.SellPrice),
                         CatalogFormat.StockSummary(row),
                         row.ExpiredStock > 0 ? "Xem lô (" + row.ExpiredStock.ToString("N0") + ")" : "—",
-                        CatalogFormat.ProductStatus(row),
-                        _canEditProducts
-                            ? IconBitmapCache.GetActionStrip(
-                                row.IsActive ? IconChar.CircleXmark : IconChar.CircleCheck,
-                                row.IsActive ? AppColors.Error : AppColors.Success)
-                            : IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)));
+                        (row.IsActive ? "✓ " : "✕ ") + CatalogFormat.ProductStatus(row));
+
+                    // Quy ước màu cột Trạng thái: xanh = đang bán, đỏ = ngừng bán
+                    DataGridViewCell statusCell = _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index];
+                    statusCell.Style.ForeColor = row.IsActive ? AppColors.Success : AppColors.Error;
+                    statusCell.Style.SelectionForeColor = statusCell.Style.ForeColor;
+
                     if (imageUnavailable)
                         _productsGrid.Rows[rowIndex].Cells[_imageColumn.Index].ToolTipText =
                             "Không tìm thấy hoặc không thể đọc ảnh sản phẩm.";
@@ -252,9 +228,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
                     }
                     if (row.IsActive && row.SellableStock <= 0)
                     {
-                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].Style.ForeColor =
-                            Color.FromArgb(185, 28, 28);
-                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].ToolTipText =
+                        statusCell.ToolTipText =
                             "Sản phẩm đang hoạt động nhưng hiện không có lô nào đủ điều kiện bán.";
                     }
                     if (row.StockBatchDifference != 0)
@@ -266,11 +240,8 @@ namespace SIMS_WinFormsApp.Views.Catalog
                             row.StockBatchDifference.ToString("+0;-0;0") +
                             ". Kiểm kê hiện chỉ cập nhật tồn tổng, không tự điều chỉnh số lượng từng lô. " +
                             "Cần đối chiếu thực tế và xử lý lô liên quan.";
-                        _productsGrid.Rows[rowIndex].Cells[_statusColumn.Index].Style.ForeColor =
-                            Color.FromArgb(185, 28, 28);
                     }
                 }
-
                 _productsGrid.ClearSelection();
                 _productsGrid.CurrentCell = null;
 
@@ -337,35 +308,23 @@ namespace SIMS_WinFormsApp.Views.Catalog
         private void ViewSelectedProduct()
         {
             ProductRowDto row = SelectedProduct();
-            if (row == null) return;
+            if (row == null || _service == null) return;
 
-            EditProduct(_presenter.Get(row.ProductId), true, row.CategoryName);
+            ProductEditDto product = _service.GetProduct(row.ProductId);
+            if (product == null)
+            {
+                AppToast.Warning(this, "Không tìm thấy sản phẩm.");
+                return;
+            }
+
+            IReadOnlyList<LookupItem> categories =
+                EnsureLookup(_service.GetCategoryOptions(), product.CategoryId, row.CategoryName);
+            ProductEditDto ignored;
+            frmProductEditor.TryEdit(FindForm(), product, categories, true, out ignored);
         }
 
         // Edit: mở form sửa -> Presenter.Save -> Service.SaveProduct -> Repository.UpdateProduct.
-        private void EditSelectedProduct()
-        {
-            ProductRowDto row = SelectedProduct();
-            if (row == null || !_canEditProducts) return;
 
-            EditProduct(_presenter.Get(row.ProductId), false, row.CategoryName);
-        }
-
-        private void SetSelectedProductActive()
-        {
-            ProductRowDto row = SelectedProduct();
-            if (row == null || !_canEditProducts) return;
-
-            bool activate = !row.IsActive;
-            string action = activate ? "mở bán lại" : "ngừng bán";
-            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
-                "Bạn có chắc muốn " + action + " sản phẩm '" + row.Name + "' không?"))
-                return;
-
-            CatalogSaveResult result = _presenter.SetActive(row.ProductId, activate);
-            Notify(result);
-            if (result != null && result.Success) LoadPage();
-        }
 
         private Image GetProductThumbnail(string imagePath, out bool unavailable)
         {
@@ -410,99 +369,14 @@ namespace SIMS_WinFormsApp.Views.Catalog
 
         private void OnGridCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            // Chỉ xử lý click trái vào cột "Hàng hết hạn": mở danh sách lô hết hạn
             if (e.Button != MouseButtons.Left || _presenter == null || e.RowIndex < 0 ||
-                e.RowIndex >= _presenter.CurrentRows.Count)
+                e.RowIndex >= _presenter.CurrentRows.Count || e.ColumnIndex != _expiredBatchesColumn.Index)
                 return;
 
             ProductRowDto row = _presenter.CurrentRows[e.RowIndex];
-            if (e.ColumnIndex == _expiredBatchesColumn.Index)
-            {
-                if (row.ExpiredStock > 0)
-                    _showExpiredBatches?.Invoke(row.ProductId);
-                return;
-            }
-            if (e.ColumnIndex != _actionsColumn.Index) return;
-
-            _productsGrid.CurrentCell = _productsGrid.Rows[e.RowIndex].Cells[0];
-            _productsGrid.Rows[e.RowIndex].Selected = true;
-            if (!_canEditProducts)
-            {
-                ViewSelectedProduct();
-                return;
-            }
-
-            const int iconSize = 24;
-            const int gap = 8;
-            int stripWidth = iconSize * 3 + gap * 2;
-            int offset = e.X - (_actionsColumn.Width - stripWidth) / 2;
-            int actionIndex = offset / (iconSize + gap);
-            if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
-
-            if (actionIndex == 0)
-                ViewSelectedProduct();
-            else if (actionIndex == 1)
-                EditSelectedProduct();
-            else if (actionIndex == 2)
-                SetSelectedProductActive();
-        }
-
-        private void EditProduct(ProductEditDto draft, bool readOnly = false, string categoryName = null)
-        {
-            if (draft == null)
-            {
-                AppToast.Warning(this, "Không tìm thấy sản phẩm.");
-                return;
-            }
-
-            IWin32Window owner = FindForm();
-            IReadOnlyList<LookupItem> categories = EnsureLookup(_presenter.Categories(), draft.CategoryId, categoryName);
-            if (readOnly)
-            {
-                ProductEditDto ignored;
-                frmProductEditor.TryEdit(owner, draft, categories, true, out ignored);
-                return;
-            }
-
-            ProductEditDto edited;
-            while (frmProductEditor.TryEdit(owner, draft, categories, false, out edited))
-            {
-                CatalogSaveResult result = _presenter.Save(edited);
-                if (result != null && result.Success)
-                {
-                    Notify(result);
-                    _pageIndex = 0;
-                    LoadPage();
-                    return;
-                }
-
-                DialogHelper.ShowWarning(owner ?? this,
-                    result == null ? "Không lưu được sản phẩm." : result.Message);
-                draft = edited;
-            }
-        }
-
-        private void ImportProducts()
-        {
-            var importer = new ProductImportRowHandler(_service);
-            DialogResult result = frmImportData.Show(
-                FindForm(),
-                "Sản phẩm",
-                ProductImportRowHandler.ExpectedColumns,
-                "Giá nhập và giá bán là số. Ảnh là đường dẫn file trên máy, có thể để trống. Danh mục và nhà cung cấp chưa có sẽ được tạo theo tên.",
-                DefaultSpreadsheetImporters.All,
-                importer.Handle);
-            if (result == DialogResult.OK) LoadPage();
-        }
-
-        private void ExportProducts(ITableDataExporter exporter)
-        {
-            string[] headers =
-            {
-                "Mã", "Tên sản phẩm", "Danh mục", "Giá bán",
-                "Tồn kho và số lượng có thể bán", "Trạng thái"
-            };
-            TableExportRunner.Run(
-                FindForm(), exporter, "Sản phẩm", () => headers, _presenter.ExportRows);
+            if (row.ExpiredStock > 0)
+                _showExpiredBatches?.Invoke(row.ProductId);
         }
 
         private static IReadOnlyList<LookupItem> EnsureLookup(
@@ -518,20 +392,121 @@ namespace SIMS_WinFormsApp.Views.Catalog
             return list;
         }
 
-        private void Notify(CatalogSaveResult result)
-        {
-            if (result != null && result.Success)
-                AppToast.Success(this, result.Message);
-            else
-                AppToast.Warning(this, result == null ? "Không lưu được dữ liệu." : result.Message);
-        }
 
         private void _addButton_Click(object sender, EventArgs e)
         {
-            if (!_canManageProducts || _presenter == null)
+            // 1. Kiểm tra quyền
+            if (!_canManageProducts || _service == null)
                 return;
 
-            EditProduct(_presenter.NewDraft());
+            // 2. Sản phẩm mới: mặc định tồn tối thiểu 5, đang bán
+            ProductEditDto draft = new ProductEditDto { MinStock = 5, IsActive = true };
+            IReadOnlyList<LookupItem> categories = _service.GetCategoryOptions();
+            IWin32Window owner = FindForm();
+
+            // 3. Mở form nhập; bấm "Lưu thay đổi" thì ghi xuống DB
+            ProductEditDto edited;
+            while (frmProductEditor.TryEdit(owner, draft, categories, false, out edited))
+            {
+                CatalogSaveResult result = _service.SaveProduct(edited);   // INSERT qua LINQ to SQL
+                if (result != null && result.Success)
+                {
+                    // 4. Thành công: báo, về trang 1, tải lại lưới
+                    AppToast.Success(this, result.Message);
+                    _pageIndex = 0;
+                    LoadPage();
+                    return;
+                }
+
+                // 5. Lỗi (trùng tên...): báo lỗi, mở lại form với dữ liệu vừa nhập
+                DialogHelper.ShowWarning(owner ?? this,
+                    result == null ? "Không lưu được sản phẩm." : result.Message);
+                draft = edited;
+            }
+        }
+
+        private void _editButton_Click(object sender, EventArgs e)
+        {
+
+            // 1. Kiểm tra quyền và dòng đang chọn trên lưới
+            if (!_canEditProducts || _service == null)
+                return;
+            ProductRowDto row = SelectedProduct();
+            if (row == null)
+            {
+                AppToast.Warning(this, "Vui lòng chọn sản phẩm cần sửa.");
+                return;
+            }
+
+            // 2. Lấy đầy đủ thông tin sản phẩm từ DB
+            ProductEditDto draft = _service.GetProduct(row.ProductId);
+            if (draft == null)
+            {
+                AppToast.Warning(this, "Không tìm thấy sản phẩm.");
+                return;
+            }
+            IReadOnlyList<LookupItem> categories =
+                EnsureLookup(_service.GetCategoryOptions(), draft.CategoryId, row.CategoryName);
+            IWin32Window owner = FindForm();
+
+            // 3. Mở form sửa; bấm "Lưu thay đổi" thì cập nhật DB
+            ProductEditDto edited;
+            while (frmProductEditor.TryEdit(owner, draft, categories, false, out edited))
+            {
+                CatalogSaveResult result = _service.SaveProduct(edited);   // UPDATE qua LINQ to SQL
+                if (result != null && result.Success)
+                {
+                    // 4. Thành công: báo, tải lại lưới
+                    AppToast.Success(this, result.Message);
+                    _pageIndex = 0;
+                    LoadPage();
+                    return;
+                }
+
+                // 5. Lỗi: báo, mở lại form với dữ liệu vừa sửa
+                DialogHelper.ShowWarning(owner ?? this,
+                    result == null ? "Không lưu được sản phẩm." : result.Message);
+                draft = edited;
+            }
+        }
+
+        private void _toggleActiveButton_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra quyền và dòng đang chọn
+            if (!_canEditProducts || _service == null)
+                return;
+            ProductRowDto row = SelectedProduct();
+            if (row == null)
+            {
+                AppToast.Warning(this, "Vui lòng chọn sản phẩm.");
+                return;
+            }
+
+            // 2. Đang bán thì ngừng bán, đang ngừng thì mở bán lại (xóa mềm)
+            bool activate = !row.IsActive;
+            string action = activate ? "mở bán lại" : "ngừng bán";
+            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
+                "Bạn có chắc muốn " + action + " sản phẩm '" + row.Name + "' không?"))
+                return;
+
+            // 3. Cập nhật trạng thái xuống DB
+            CatalogSaveResult result = _service.SetProductActive(row.ProductId, activate);
+
+            // 4. Báo kết quả, tải lại lưới
+            if (result != null && result.Success)
+            {
+                AppToast.Success(this, result.Message);
+                LoadPage();
+            }
+            else
+            {
+                AppToast.Warning(this, result == null ? "Không lưu được dữ liệu." : result.Message);
+            }
+        }
+
+        private void _searchLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -84,8 +84,17 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             _view.HoldCartRequested += OnHoldCartRequested;
             _view.ViewHeldCartsRequested += OnViewHeldCartsRequested;
-            _view.CheckoutRequested += OnCheckoutRequested;
+
         }
+        // ===== Cho nút Thanh toán (PosPageControl) dùng =====
+        public PosCart Cart => _cart;
+        public CartCalculator Calculator => _calculator;
+        public CustomerLookupDto SelectedCustomer => _selectedCustomer;
+        public int PointsToRedeem => _usePoints ? _pointsToUse : 0;
+        public IInvoiceService InvoiceService => _invoiceService;
+        public IUserSession UserSession => _userSession;
+        public void NotifyInvoiceCreated() => _invoiceCreated?.Invoke();
+        public void NotifyInvoiceViewed(string invoiceCode) => _invoiceViewed?.Invoke(invoiceCode);
 
         #region Khởi tạo trang
         private void OnViewReady(object sender, EventArgs e)
@@ -377,102 +386,8 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             AppToast.Success(owner as Control, "Đã mở lại giỏ hàng đã giữ.");
         }
 
-        private void OnCheckoutRequested(object sender, EventArgs e)
-        {
-            IWin32Window owner = _ownerWindowProvider();
-            if (_cart.IsEmpty)
-            {
-                AppToast.Warning(owner as Control, "Giỏ hàng đang trống", "Chưa có sản phẩm nào để thanh toán.");
-                return;
-            }
 
-            if (!_userSession.IsLoggedIn)
-            {
-                AppToast.Error(owner as Control, "Không thể thanh toán", "Phiên đăng nhập đã hết hạn.");
-                return;
-            }
-
-            InvoiceDetails receiptInvoice;
-            string invoiceCode;
-            _view.SetBusy(true);
-            try
-            {
-                var totals = _calculator.Calculate(_cart.Subtotal, _usePoints ? _pointsToUse : 0);
-                string paymentMethod = _view.SelectedPaymentMethod;
-                receiptInvoice = CreateReceiptInvoice(paymentMethod, totals);
-                invoiceCode = _invoiceService.CreateInvoice(
-                    _userSession.CurrentUser.UserId,
-                    _selectedCustomer == null ? (int?)null : _selectedCustomer.CustomerId,
-                    paymentMethod,
-                    totals,
-                    _cart.Lines);
-                receiptInvoice.InvoiceCode = invoiceCode;
-            }
-            catch (SqlException exception)
-            {
-                ReportCheckoutFailure(owner, "Không thể lưu hóa đơn", exception, false);
-                return;
-            }
-            catch (InvalidOperationException exception)
-            {
-                ReportCheckoutFailure(owner, "Chưa thể thanh toán", exception, true);
-                return;
-            }
-            catch (ArgumentException exception)
-            {
-                ReportCheckoutFailure(owner, "Thông tin thanh toán không hợp lệ", exception, true);
-                return;
-            }
-            catch (Exception exception)
-            {
-                ReportCheckoutFailure(owner, "Không thể hoàn tất thanh toán", exception, false);
-                return;
-            }
-
-            ResetForNewSale();
-            _view.SetBusy(false);
-            _invoiceCreated?.Invoke();
-            DialogResult printChoice = MessageBox.Show(
-                owner,
-                "Hóa đơn " + invoiceCode + " đã được lưu thành công.\r\nBạn có muốn xem trước và in hóa đơn không?",
-                "Thanh toán thành công",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-            if (printChoice == DialogResult.Yes)
-            {
-                _invoiceViewed?.Invoke(invoiceCode);
-                using (var dialog = new InvoiceDetailsDialog(receiptInvoice))
-                    dialog.OpenPrintPreview(owner);
-            }
-            else
-            {
-                AppToast.Success(owner as Control, "Thanh toán thành công",
-                    "Hóa đơn " + invoiceCode + " đã được lưu. Giỏ hàng đã sẵn sàng cho giao dịch mới.");
-            }
-        }
-
-        private void ReportCheckoutFailure(
-            IWin32Window owner,
-            string title,
-            Exception exception,
-            bool isWarning)
-        {
-            _view.SetBusy(false);
-            System.Diagnostics.Debug.WriteLine("[PosPresenter] Checkout failed: " + exception);
-
-            Exception root = exception.GetBaseException();
-            string failureMessage = isWarning && !(root is SqlException)
-                ? root.Message
-                : "Vui lòng thử lại. Nếu sự cố tiếp diễn, hãy liên hệ quản lý hoặc bộ phận kỹ thuật.";
-            string message = "Hóa đơn chưa được tạo." + Environment.NewLine +
-                Environment.NewLine + failureMessage;
-            if (isWarning)
-                DialogHelper.ShowWarning(owner, title, message);
-            else
-                DialogHelper.ShowError(owner, title, message);
-        }
-
-        private InvoiceDetails CreateReceiptInvoice(string paymentMethod, CartTotalsDto totals)
+        internal InvoiceDetails CreateReceiptInvoice(string paymentMethod, CartTotalsDto totals)
         {
             decimal taxableAmount = Math.Max(0m, totals.Subtotal - totals.DiscountAmount);
             decimal vatRate = taxableAmount == 0m
@@ -510,7 +425,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
             return invoice;
         }
 
-        private void ResetForNewSale()
+        internal void ResetForNewSale()
         {
             _cart.Clear();
             _selectedCustomer = null;
@@ -542,7 +457,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Pos
 
             _view.HoldCartRequested -= OnHoldCartRequested;
             _view.ViewHeldCartsRequested -= OnViewHeldCartsRequested;
-            _view.CheckoutRequested -= OnCheckoutRequested;
         }
     }
 }

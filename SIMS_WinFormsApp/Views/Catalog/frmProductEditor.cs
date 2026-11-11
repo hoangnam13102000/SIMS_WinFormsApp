@@ -215,8 +215,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             combo.SelectedIndex = combo.Items.Count == 0 ? -1 : 0;
         }
 
-        private void SaveAndClose()
+        private void _saveButton_Click(object sender, EventArgs e)
         {
+
             if (_model == null || _readOnly) return;
             if (_nameTextBox.Text.Trim().Length > 150)
             {
@@ -271,11 +272,6 @@ namespace SIMS_WinFormsApp.Views.Catalog
             _model.IsActive = _statusComboBox.SelectedIndex == 0;
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private void _saveButton_Click(object sender, EventArgs e)
-        {
-            SaveAndClose();
         }
 
         private static bool TryParseMoney(string text, out decimal value)

@@ -10,6 +10,7 @@ using SIMS_WinFormsApp.Infrastructure.Composition;
 using SIMS_WinFormsApp.Models.DTOs.Catalog;
 using SIMS_WinFormsApp.Models.DTOs.Inventory;
 using SIMS_WinFormsApp.MVP.Presenters.Inventory;
+using SIMS_WinFormsApp.Services;
 using SIMS_WinFormsApp.Services.Interfaces;
 using SIMS_WinFormsApp.Services.Session;
 using SIMS_WinFormsApp.UI.Theme;
@@ -55,10 +56,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _fromDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
             _toDatePicker.ValueChanged += new EventHandler(this.FilterControl_Changed);
             _pageSizeCombo.SelectedIndexChanged += new EventHandler(this.PageSizeCombo_SelectedIndexChanged);
-            _grid.CellClick += new DataGridViewCellEventHandler(this.Grid_CellClick);
             _grid.CellMouseClick += new DataGridViewCellMouseEventHandler(this.Grid_CellMouseClick);
-            _grid.CellMouseEnter += new DataGridViewCellEventHandler(this.Grid_CellMouseEnter);
-            _grid.CellMouseLeave += new DataGridViewCellEventHandler(this.Grid_CellMouseLeave);
             _grid.CellFormatting += new DataGridViewCellFormattingEventHandler(this.Grid_CellFormatting);
             _grid.CellToolTipTextNeeded += new DataGridViewCellToolTipTextNeededEventHandler(this.Grid_CellToolTipTextNeeded);
             DataGridViewCodeCopy.Attach(_grid, false, "colProductCode");
@@ -92,14 +90,11 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         public event EventHandler SearchRequested;
         public event EventHandler FiltersChanged;
-        public event EventHandler ClearFiltersRequested;
         public event EventHandler PageSizeChanged;
         public event EventHandler PreviousPageRequested;
         public event EventHandler NextPageRequested;
         public event EventHandler CsvExportRequested;
         public event EventHandler ExcelExportRequested;
-        public event Action<int> PlanAlertRequested;
-        public event Action<int> ResolveAlertRequested;
 
         public void BindCategories(IReadOnlyList<LookupItem> categories)
         {
@@ -140,8 +135,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             _grid.Rows.Clear();
             foreach (StockAlertListItemDto alert in rows ?? Array.Empty<StockAlertListItemDto>())
             {
-                bool canPlan = string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase);
-                bool canResolve = !string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase);
                 int rowIndex = _grid.Rows.Add(
                     alert.AlertId,
                     alert.ProductCode,
@@ -149,29 +142,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                     GetAlertTypeText(alert.AlertType),
                     string.IsNullOrWhiteSpace(alert.ReportedByName) ? "Hệ thống" : alert.ReportedByName,
                     alert.CreatedAt.ToString("dd/MM/yyyy HH:mm", VietnameseCulture),
-                    GetStatusText(alert.Status),
-                    null,
-                    null);
-                DataGridViewRow row = _grid.Rows[rowIndex];
-                row.Tag = alert;
-                row.Cells[colPlan.Index].Value = IconBitmapCache.Get(
-                    IconChar.CalendarPlus,
-                    canPlan ? Color.FromArgb(37, 99, 235) : Color.FromArgb(203, 213, 225),
-                    new Size(18, 18));
-                row.Cells[colResolve.Index].Value = IconBitmapCache.Get(
-                    IconChar.CircleCheck,
-                    canResolve ? Color.FromArgb(22, 163, 74) : Color.FromArgb(203, 213, 225),
-                    new Size(18, 18));
-                row.Cells[colPlan.Index].ToolTipText = canPlan
-                    ? "Đã lên kế hoạch nhập bổ sung"
-                    : string.Empty;
-                row.Cells[colResolve.Index].ToolTipText = canResolve
-                    ? "Đánh dấu đã xử lý xong"
-                    : string.Empty;
+                    GetStatusText(alert.Status));
+                _grid.Rows[rowIndex].Tag = alert;
             }
 
             _grid.ClearSelection();
             _grid.CurrentCell = null;
+            UpdateActionButtons();
             _totalLabel.Text = "Tổng cộng: " + totalCount.ToString("N0", VietnameseCulture) + " cảnh báo";
             _pageLabel.Text = pageNumber.ToString(CultureInfo.InvariantCulture);
             _pageInfoLabel.Text = "Trang " + pageNumber.ToString(CultureInfo.InvariantCulture) +
@@ -195,7 +172,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         public void SetClearFilterVisible(bool visible)
         {
-            _clearFilterLink.Visible = visible;
+            _clearFilterButton.Visible = visible;
         }
 
         public void ClearFilters()
@@ -311,7 +288,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
 
         private void UpdateClearFilterVisibility()
         {
-            _clearFilterLink.Visible = HasActiveFilters();
+            _clearFilterButton.Visible = HasActiveFilters();
         }
 
         private bool HasActiveFilters()
@@ -319,11 +296,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             CategoryOption category = _categoryCombo.SelectedItem as CategoryOption;
             return _searchBox.TextLength > 0 || (category != null && category.Id.HasValue) ||
                 _fromDateActive || _toDateActive;
-        }
-
-        private void ClearFilterLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            ClearFiltersRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void PageSizeCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -356,21 +328,123 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             ExcelExportRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void Grid_CellClick(object sender, DataGridViewCellEventArgs e)
+        // ---------- Nút Lên kế hoạch / Đã xử lý ----------
+
+        private StockAlertListItemDto GetSelectedAlert()
         {
-            if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
-                return;
+            if (_grid.SelectedRows.Count == 0)
+                return null;
+            return _grid.SelectedRows[0].Tag as StockAlertListItemDto;
+        }
 
-            StockAlertListItemDto alert = _grid.Rows[e.RowIndex].Tag as StockAlertListItemDto;
+        private void UpdateActionButtons()
+        {
+            StockAlertListItemDto alert = GetSelectedAlert();
+            _planButton.Enabled = alert != null &&
+                string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase);
+            _resolveButton.Enabled = alert != null &&
+                !string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void _grid_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateActionButtons();
+        }
+
+        private void _planButton_Click(object sender, EventArgs e)
+        {
+            // 1. Lấy cảnh báo đang chọn
+            StockAlertListItemDto alert = GetSelectedAlert();
             if (alert == null)
+            {
+                ShowError("Chưa chọn cảnh báo", "Vui lòng chọn 1 dòng trong bảng.");
+                return;
+            }
+
+            // 2. Chỉ cảnh báo "Mới" mới lên kế hoạch được
+            if (!string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowError("Không thể lên kế hoạch", "Chỉ cảnh báo ở trạng thái \"Mới\" mới lên kế hoạch được.");
+                return;
+            }
+
+            // 3. Hỏi xác nhận
+            IDialogService dialogs = AppComposition.CreateDialogService();
+            string message = "Đánh dấu \"" + alert.ProductName +
+                "\" đã được lên kế hoạch nhập hàng bổ sung?";
+            if (!dialogs.Confirm(FindForm(), "Lên kế hoạch nhập bổ sung", message))
                 return;
 
-            if (e.ColumnIndex == colPlan.Index &&
-                string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase))
-                PlanAlertRequested?.Invoke(alert.AlertId);
-            else if (e.ColumnIndex == colResolve.Index &&
-                !string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase))
-                ResolveAlertRequested?.Invoke(alert.AlertId);
+            // 4. Cập nhật CSDL (Status: NEW -> PLANNED)
+            try
+            {
+                int updated = _service.MarkAlertPlanned(alert.AlertId);
+
+                // 5. Báo kết quả
+                if (updated == 0)
+                    ShowError("Không thể cập nhật", "Cảnh báo đã được người khác cập nhật. Đang tải lại.");
+                else
+                    ShowSuccess("Thành công", "Đã đánh dấu \"" + alert.ProductName +
+                        "\" đang được lên kế hoạch nhập bổ sung.");
+            }
+            catch (Exception ex)
+            {
+                ShowError("Không thể cập nhật", ex.Message);
+            }
+
+            // 6. Tải lại bảng
+            _presenter.ReloadAlerts();
+        }
+
+        private void _resolveButton_Click(object sender, EventArgs e)
+        {
+            // 1. Lấy cảnh báo đang chọn
+            StockAlertListItemDto alert = GetSelectedAlert();
+            if (alert == null)
+            {
+                ShowError("Chưa chọn cảnh báo", "Vui lòng chọn 1 dòng trong bảng.");
+                return;
+            }
+
+            // 2. Cảnh báo đã xử lý thì không xử lý lại
+            if (string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowError("Không thể cập nhật", "Cảnh báo này đã được xử lý.");
+                return;
+            }
+
+            // 3. Kiểm tra người đăng nhập
+            if (_session.CurrentUser == null)
+            {
+                ShowError("Không thể cập nhật", "Không tìm thấy người dùng đang đăng nhập.");
+                return;
+            }
+
+            // 4. Hỏi xác nhận
+            IDialogService dialogs = AppComposition.CreateDialogService();
+            string message = "Xác nhận \"" + alert.ProductName +
+                "\" đã được nhập hàng bổ sung / không còn cần xử lý?";
+            if (!dialogs.Confirm(FindForm(), "Đánh dấu đã xử lý", message))
+                return;
+
+            // 5. Cập nhật CSDL (Status -> RESOLVED, ghi ResolvedBy, ResolvedAt)
+            try
+            {
+                int updated = _service.ResolveAlert(alert.AlertId, _session.CurrentUser.UserId);
+
+                // 6. Báo kết quả
+                if (updated == 0)
+                    ShowError("Không thể cập nhật", "Cảnh báo đã được người khác cập nhật. Đang tải lại.");
+                else
+                    ShowSuccess("Thành công", "Đã xử lý xong \"" + alert.ProductName + "\".");
+            }
+            catch (Exception ex)
+            {
+                ShowError("Không thể cập nhật", ex.Message);
+            }
+
+            // 7. Tải lại bảng
+            _presenter.ReloadAlerts();
         }
 
         private void Grid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -382,28 +456,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             StockAlertListItemDto alert = _grid.Rows[e.RowIndex].Tag as StockAlertListItemDto;
             if (alert != null)
                 CopyProductCode(alert.ProductCode);
-        }
-
-        private void Grid_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.RowIndex >= _grid.Rows.Count)
-            {
-                _grid.Cursor = Cursors.Default;
-                return;
-            }
-
-            StockAlertListItemDto alert = _grid.Rows[e.RowIndex].Tag as StockAlertListItemDto;
-            bool enabled = alert != null &&
-                ((e.ColumnIndex == colPlan.Index &&
-                    string.Equals(alert.Status, "NEW", StringComparison.OrdinalIgnoreCase)) ||
-                 (e.ColumnIndex == colResolve.Index &&
-                    !string.Equals(alert.Status, "RESOLVED", StringComparison.OrdinalIgnoreCase)));
-            _grid.Cursor = enabled ? Cursors.Hand : Cursors.Default;
-        }
-
-        private void Grid_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            _grid.Cursor = Cursors.Default;
         }
 
         private void Grid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -524,6 +576,37 @@ namespace SIMS_WinFormsApp.Views.Warehouse
                 Id = id;
                 Name = name;
             }
+        }
+
+        private void _clearFilterButton_Click(object sender, EventArgs e)
+        {
+            // 1. Dừng tìm kiếm đang chờ
+            _searchTimer.Stop();
+
+            // 2. Xóa bộ lọc (tạm tắt sự kiện để không tải lại nhiều lần)
+            _suppressEvents = true;
+            try
+            {
+                _searchBox.Clear();
+                _categoryCombo.SelectedIndex = _categoryCombo.Items.Count > 0 ? 0 : -1;
+                _fromDatePicker.Checked = false;
+                _toDatePicker.Checked = false;
+                _fromDateActive = false;
+                _toDateActive = false;
+                _fromDatePicker.CustomFormat = " ";
+                _toDatePicker.CustomFormat = " ";
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+
+            // 3. Ẩn nút Xóa lọc
+            _clearFilterButton.Visible = false;
+
+            // 4. Về trang 1 và tải lại bảng
+            _presenter.GoToFirstPage();
+            _presenter.ReloadAlerts();
         }
     }
 }

@@ -14,18 +14,6 @@
         <elementListCompartment Id="85bf1d7f-d51e-4638-b478-c6f3c30c3019" absoluteBounds="13.015, 46.585, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="de619040-e61f-45a5-b6c7-6179fc557df4" absoluteBounds="6.25, 36.875, 2, 2.3478011067708309">
-      <DataClassMoniker Name="/SimsDataContext/ChatConversationEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="2a75ac9d-b319-44de-9d00-8b3394c73f2c" absoluteBounds="6.265, 37.335, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="3516e353-4e55-4b1c-83b2-15b11b159a87" absoluteBounds="9, 36.375, 2, 3.1170068359375023">
-      <DataClassMoniker Name="/SimsDataContext/ChatMessageEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="93f28bd6-d715-4fcf-8d68-28258b48bfd5" absoluteBounds="9.015, 36.835, 1.9700000000000002, 2.5570068359375" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="4d5a81e0-c25c-4169-ae59-6c0ac3964f6b" absoluteBounds="6.25, 20.625, 2, 1.5785953776041666">
       <DataClassMoniker Name="/SimsDataContext/CustomerEntity" />
       <nestedChildShapes>
@@ -36,12 +24,6 @@
       <DataClassMoniker Name="/SimsDataContext/EmployeeEntity" />
       <nestedChildShapes>
         <elementListCompartment Id="f3c66bb5-d1e3-41bc-b688-1b03663eff48" absoluteBounds="6.265, 28.71, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="d65602fc-5176-44c4-8e07-7f5fe5b701d2" absoluteBounds="6.25, 31.125, 2, 2.155499674479163">
-      <DataClassMoniker Name="/SimsDataContext/ExceptionReportEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="66d91a4b-d46d-4993-ad64-c425adf02ce8" absoluteBounds="6.265, 31.585, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
     <classShape Id="967380cc-6f43-4883-b992-959b1d30f687" absoluteBounds="17.75, 32.5, 2, 3.5016097005208309">
@@ -68,10 +50,10 @@
         <elementListCompartment Id="49fcb1e1-06f2-431e-993f-e2351a0c14b7" absoluteBounds="11.765, 42.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" absoluteBounds="9, 40.375, 2, 4.6554182942708309">
+    <classShape Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" absoluteBounds="9, 40.375, 2, 4.2708154296875023">
       <DataClassMoniker Name="/SimsDataContext/InvoiceEntity" />
       <nestedChildShapes>
-        <elementListCompartment Id="17c39b45-f771-4afe-89b1-5340b333ce06" absoluteBounds="9.015, 40.835, 1.9700000000000002, 4.095418294270833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="17c39b45-f771-4afe-89b1-5340b333ce06" absoluteBounds="9.015, 40.835, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
     <classShape Id="568f71a1-a67c-45a2-9031-42da80a4fa8f" absoluteBounds="0.75, 28.625, 2, 1.3862939453125023">
@@ -84,12 +66,6 @@
       <DataClassMoniker Name="/SimsDataContext/ProductEntity" />
       <nestedChildShapes>
         <elementListCompartment Id="3d0b4492-56ba-446b-9f39-8b2b3d8805e8" absoluteBounds="15.765, 45.085, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="0bd1cfea-7875-4369-ae05-94abc5a4d353" absoluteBounds="6.25, 60.5, 2, 4.2708154296875023">
-      <DataClassMoniker Name="/SimsDataContext/PromotionEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="0f2d0fc5-9758-414c-9d06-a724c71eabbf" absoluteBounds="6.265, 60.96, 1.9700000000000002, 3.7108154296875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
     <classShape Id="dce7b5c4-38ed-42c2-9c9d-bd581309f0be" absoluteBounds="15, 33.125, 2, 2.3478011067708309">
@@ -158,34 +134,10 @@
         <elementListCompartment Id="bcb5f735-8dfd-4c8e-971a-ebcb63a6d4e1" absoluteBounds="9.265, 30.585, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="ae43bbbf-ff52-444f-9314-9f4498f4e6ba" absoluteBounds="20.5, 32, 2, 2.1554996744791595">
-      <DataClassMoniker Name="/SimsDataContext/StockReconciliationBatchAdjustmentEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="1c3bf11e-d089-4705-910a-3227e642a1e6" absoluteBounds="20.515, 32.46, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="bc4f5f25-3886-4b28-a81f-17e798fc3398" absoluteBounds="17.125, 26.125, 2, 1.1939925130208335">
       <DataClassMoniker Name="/SimsDataContext/StoreConfigEntity" />
       <nestedChildShapes>
         <elementListCompartment Id="574fa082-6a1d-4e4a-9015-3d7149b92266" absoluteBounds="17.14, 26.585, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="f10f168c-7354-4cb5-8a3e-e4590aa0547d" absoluteBounds="18.5, 45.875, 2, 1.7708968098958309">
-      <DataClassMoniker Name="/SimsDataContext/SupplierProductEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="3136dd7b-518c-4a78-beda-549de72ae227" absoluteBounds="18.515, 46.335, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="b4004bd8-fe30-4a18-a33b-eaa905cf8077" absoluteBounds="23.5, 32.25, 2, 2.1554996744791595">
-      <DataClassMoniker Name="/SimsDataContext/SupplierReturnDetailEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="6e1275cc-9b8f-4d56-b5ea-2260a10aeb97" absoluteBounds="23.515, 32.71, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="0da145ec-8f0b-45e6-8b87-704ec09d7ead" absoluteBounds="12.25, 33, 2, 2.5401025390625023">
-      <DataClassMoniker Name="/SimsDataContext/SupplierReturnEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="d5584af9-e7fb-49c3-a181-0b8839a3945f" absoluteBounds="12.265, 33.46, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
     <classShape Id="f92f3725-f72a-461c-bba8-5bc177e56c1c" absoluteBounds="6.5, 46.125, 2, 2.3478011067708309">
@@ -200,257 +152,189 @@
         <elementListCompartment Id="fc98adec-f33e-4965-8390-2e0bb7de3718" absoluteBounds="3.515, 32.96, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="c92e3e30-ce30-4a2e-b5dd-0799f86ac5ae" absoluteBounds="6.25, 25.5, 2, 1.9631982421875023">
-      <DataClassMoniker Name="/SimsDataContext/UserTwoFactorEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="fd56849e-170a-44c9-a340-8e75411b6b53" absoluteBounds="6.265, 25.96, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <classShape Id="1d0ba453-22a4-4601-a2f0-a3bf67705add" absoluteBounds="6.25, 23, 2, 1.7708968098958309">
-      <DataClassMoniker Name="/SimsDataContext/UserTwoFactorBackupCodeEntity" />
-      <nestedChildShapes>
-        <elementListCompartment Id="b0bb9ed4-b0de-4540-ae4c-938bf6901311" absoluteBounds="6.265, 23.46, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
-    <associationConnector edgePoints="[(4.5 : 36.0016097005208); (4.5 : 50.8662019856771); (6.25 : 50.8662019856771)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(4.5 : 36.0016097005208); (4.5 : 50.8662019856771); (6.25 : 50.8662019856771)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_AuditLogEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="543cf9d9-e712-4231-8833-b8882355a35f" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.0312525 : 36.0016097005208); (5.0312525 : 38.0489005533854); (5.21354541666667 : 38.0489005533854 : JumpStart); (5.51302520833333 : 38.0489005533854 : JumpEnd); (6.25 : 38.0489005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ChatConversationEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="de619040-e61f-45a5-b6c7-6179fc557df4" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(3.9687475 : 36.0016097005208); (3.9687475 : 37.4306977766927); (4.15104041666667 : 37.4306977766927 : JumpStart); (4.31770708333333 : 37.4306977766927 : JumpEnd); (4.41666666666667 : 37.4306977766927 : JumpStart); (4.58333333333333 : 37.4306977766927 : JumpEnd); (4.68229291666667 : 37.4306977766927 : JumpStart); (4.84895958333333 : 37.4306977766927 : JumpEnd); (4.94791916666667 : 37.4306977766927 : JumpStart); (5.11458583333333 : 37.4306977766927 : JumpEnd); (5.21354541666667 : 37.4306977766927 : JumpStart); (5.51302520833333 : 37.4306977766927 : JumpEnd); (6.25 : 37.4306977766927)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ChatConversationEntity1" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="de619040-e61f-45a5-b6c7-6179fc557df4" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.29687875 : 36.0016097005208); (5.29687875 : 38.6671033300781); (5.34635854166667 : 38.6671033300781 : JumpStart); (5.51302520833333 : 38.6671033300781 : JumpEnd); (6.25 : 38.6671033300781)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ChatConversationEntity2" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="de619040-e61f-45a5-b6c7-6179fc557df4" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 38.0489005533854); (8.29166416666667 : 38.0489005533854 : JumpStart); (8.52083583333333 : 38.0489005533854 : JumpEnd); (8.54166666666667 : 38.0489005533854 : JumpStart); (8.70833333333333 : 38.0489005533854 : JumpEnd); (9 : 38.0489005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/ChatConversationEntity/ChatConversationEntity_ChatMessageEntity" />
-      <nodes>
-        <classShapeMoniker Id="de619040-e61f-45a5-b6c7-6179fc557df4" />
-        <classShapeMoniker Id="3516e353-4e55-4b1c-83b2-15b11b159a87" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 35.7348046875); (8.29166416666667 : 35.7348046875 : JumpStart); (8.52083583333333 : 35.7348046875 : JumpEnd); (8.54166666666667 : 35.7348046875 : JumpStart); (8.70833333333333 : 35.7348046875 : JumpEnd); (9.09375 : 35.7348046875); (9.09375 : 36.375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ChatMessageEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="3516e353-4e55-4b1c-83b2-15b11b159a87" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.44 : 32.5); (5.875 : 32.065); (5.875 : 21.4142976888021); (6.25 : 21.4142976888021)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.44 : 32.5); (5.875 : 32.065); (5.875 : 21.4142976888021); (6.25 : 21.4142976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_CustomerEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="4d5a81e0-c25c-4169-ae59-6c0ac3964f6b" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 32.5553836153846); (6.1875 : 31.8678836153846); (6.1875 : 29.3277498372396); (6.25 : 29.3277498372396)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 32.5553836153846); (6.1875 : 31.8678836153846); (6.1875 : 29.3277498372396); (6.25 : 29.3277498372396)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_EmployeeEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="5f0f1a15-5b16-4ccb-b1bc-e59af3411e1e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 32.9691941449319); (6.25 : 32.9691941449319)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ExceptionReportEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="d65602fc-5176-44c4-8e07-7f5fe5b701d2" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 32.7510413801583); (6.25 : 32.7510413801583)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ExceptionReportEntity1" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="d65602fc-5176-44c4-8e07-7f5fe5b701d2" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 45.21875); (18.125 : 45.21875); (18.125 : 36.0016097005208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.75 : 45.21875); (18.125 : 45.21875); (18.125 : 36.0016097005208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_InventoryBatchEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17 : 34.2989005533854); (17.75 : 34.2989005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17 : 34.2989005533854); (17.75 : 34.2989005533854)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/PurchaseReceiptDetailEntity/PurchaseReceiptDetailEntity_InventoryBatchEntity" />
       <nodes>
         <classShapeMoniker Id="dce7b5c4-38ed-42c2-9c9d-bd581309f0be" />
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.40625 : 46.125); (8.40625 : 35.8682071940104); (8.54166666666667 : 35.8682071940104 : JumpStart); (8.70833333333333 : 35.8682071940104 : JumpEnd); (9.01041666666667 : 35.8682071940104 : JumpStart); (9.17708333333333 : 35.8682071940104 : JumpEnd); (11.9166666666667 : 35.8682071940104 : JumpStart); (12.0833333333333 : 35.8682071940104 : JumpEnd); (14.5416666666667 : 35.8682071940104 : JumpStart); (14.8333333333333 : 35.8682071940104 : JumpEnd); (17.2916666666667 : 35.8682071940104 : JumpStart); (17.4583333333333 : 35.8682071940104 : JumpEnd); (17.75 : 35.8682071940104)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.40625 : 46.125); (8.40625 : 35.8682071940104); (8.54166666666667 : 35.8682071940104 : JumpStart); (8.70833333333333 : 35.8682071940104 : JumpEnd); (11.9166666666667 : 35.8682071940104 : JumpStart); (12.0833333333333 : 35.8682071940104 : JumpEnd); (14.5416666666667 : 35.8682071940104 : JumpStart); (14.8333333333333 : 35.8682071940104 : JumpEnd); (17.2916666666667 : 35.8682071940104 : JumpStart); (17.4583333333333 : 35.8682071940104 : JumpEnd); (17.75 : 35.8682071940104)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/SupplierEntity/SupplierEntity_InventoryBatchEntity" />
       <nodes>
         <classShapeMoniker Id="f92f3725-f72a-461c-bba8-5bc177e56c1c" />
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(4.76562625 : 36.0016097005208); (4.76562625 : 39.7107568359375); (5.34635854166667 : 39.7107568359375 : JumpStart); (5.51302520833333 : 39.7107568359375 : JumpEnd); (8.29166416666667 : 39.7107568359375 : JumpStart); (8.52083583333333 : 39.7107568359375 : JumpEnd); (8.54166666666667 : 39.7107568359375 : JumpStart); (8.70833333333333 : 39.7107568359375 : JumpEnd); (11.9166666666667 : 39.7107568359375 : JumpStart); (12.0833333333333 : 39.7107568359375 : JumpEnd); (12.25 : 39.7107568359375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(4.76562625 : 36.0016097005208); (4.76562625 : 39.7107568359375); (5.34635854166667 : 39.7107568359375 : JumpStart); (5.51302520833333 : 39.7107568359375 : JumpEnd); (8.35416916666667 : 39.7107568359375 : JumpStart); (8.52083583333333 : 39.7107568359375 : JumpEnd); (8.54166666666667 : 39.7107568359375 : JumpStart); (8.70833333333333 : 39.7107568359375 : JumpEnd); (11.9166666666667 : 39.7107568359375 : JumpStart); (12.0833333333333 : 39.7107568359375 : JumpEnd); (12.25 : 39.7107568359375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_InventoryTransactionEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="cc0e5750-8519-441f-b137-2147a35604d3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(16.75 : 44.625); (16.75 : 43.6362939453125); (14.4583333333333 : 43.6362939453125 : JumpStart); (14.2916666666667 : 43.6362939453125 : JumpEnd); (14.25 : 43.6362939453125); (14.25 : 40.1170068359375); (14.5 : 40.1170068359375); (14.5 : 38.3085034179688); (14.25 : 38.3085034179688)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(16.75 : 44.625); (16.75 : 43.6362939453125); (14.4583333333333 : 43.6362939453125 : JumpStart); (14.2916666666667 : 43.6362939453125 : JumpEnd); (14.25 : 43.6362939453125); (14.25 : 40.1170068359375); (14.5 : 40.1170068359375); (14.5 : 38.3085034179688); (14.25 : 38.3085034179688)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_InventoryTransactionEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="cc0e5750-8519-441f-b137-2147a35604d3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.9374975 : 36.0016097005208); (17.9374975 : 42.6931469726563); (16.5 : 42.6931469726563)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.9374975 : 36.0016097005208); (17.9374975 : 42.6931469726563); (16.5 : 42.6931469726563)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InventoryBatchEntity/InventoryBatchEntity_InvoiceDetailBatchEntity" />
       <nodes>
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
         <classShapeMoniker Id="ef075f34-f6f5-40b3-acc1-1f2b2e72e00e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(13.75 : 42.6931469726563); (13.9166666666667 : 42.6931469726563 : JumpStart); (14.4583333333333 : 42.6931469726563 : JumpEnd); (14.5 : 42.6931469726563)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(13.75 : 42.6931469726563); (14.5 : 42.6931469726563)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InvoiceDetailEntity/InvoiceDetailEntity_InvoiceDetailBatchEntity" />
       <nodes>
         <classShapeMoniker Id="e7dacf59-c1e3-403c-a587-7275e87652d3" />
         <classShapeMoniker Id="ef075f34-f6f5-40b3-acc1-1f2b2e72e00e" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(11 : 42.7315991210938); (11.75 : 42.7315991210938)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(11 : 42.7315991210938); (11.75 : 42.7315991210938)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InvoiceEntity/InvoiceEntity_InvoiceDetailEntity" />
       <nodes>
         <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
         <classShapeMoniker Id="e7dacf59-c1e3-403c-a587-7275e87652d3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.2812525 : 44.625); (17.2812525 : 43.5425439453125); (14.4583333333333 : 43.5425439453125 : JumpStart); (13.9166666666667 : 43.5425439453125 : JumpEnd); (13.75 : 43.5425439453125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.2812525 : 44.625); (17.2812525 : 43.5425439453125); (14.2083333333333 : 43.5425439453125 : JumpStart); (13.9166666666667 : 43.5425439453125 : JumpEnd); (13.75 : 43.5425439453125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_InvoiceDetailEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="e7dacf59-c1e3-403c-a587-7275e87652d3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(4.23437375 : 36.0016097005208); (4.23437375 : 43.7203597005208); (4.41666666666667 : 43.7203597005208 : JumpStart); (4.58333333333333 : 43.7203597005208 : JumpEnd); (8.29166416666667 : 43.7203597005208 : JumpStart); (8.52083583333333 : 43.7203597005208 : JumpEnd); (9 : 43.7203597005208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(4.23437375 : 36.0016097005208); (4.23437375 : 43.7203597005208); (4.41666666666667 : 43.7203597005208 : JumpStart); (4.58333333333333 : 43.7203597005208 : JumpEnd); (8.32291666666667 : 43.7203597005208 : JumpStart); (8.52083583333333 : 43.7203597005208 : JumpEnd); (9 : 43.7203597005208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_InvoiceEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 22.2035953776042); (8.625 : 22.5785953776042); (8.625 : 42.0164278502604); (9 : 42.0164278502604)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.25 : 22.2035953776042); (8.625 : 22.5785953776042); (8.625 : 42.0164278502604); (9 : 42.0164278502604)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/CustomerEntity/CustomerEntity_InvoiceEntity" />
       <nodes>
         <classShapeMoniker Id="4d5a81e0-c25c-4169-ae59-6c0ac3964f6b" />
         <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(15 : 46.8181469726563); (15.75 : 46.8181469726563)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(15 : 46.8181469726563); (15.75 : 46.8181469726563)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/CategoryEntity/CategoryEntity_ProductEntity" />
       <nodes>
         <classShapeMoniker Id="8971f6d9-9459-41ad-ba6a-5280c6f8eb36" />
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(3.70312125 : 36.0016097005208); (3.70312125 : 62.6354077148438); (6.25 : 62.6354077148438)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_PromotionEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="0bd1cfea-7875-4369-ae05-94abc5a4d353" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(16.218748 : 44.625); (16.218748 : 43.8862939453125); (16.0364553333333 : 43.8862939453125 : JumpStart); (15.8697886666667 : 43.8862939453125 : JumpEnd); (14.2083333333333 : 43.8862939453125 : JumpStart); (14.0416666666667 : 43.8862939453125 : JumpEnd); (14 : 43.8862939453125); (14 : 40.3670068359375); (14.0416666666667 : 40.3670068359375 : JumpStart); (14.4583333333333 : 40.3670068359375 : JumpEnd); (14.75 : 40.3670068359375); (14.75 : 34.2989005533854); (15 : 34.2989005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(16.218748 : 44.625); (16.218748 : 43.8862939453125); (14.2083333333333 : 43.8862939453125 : JumpStart); (14.0416666666667 : 43.8862939453125 : JumpEnd); (14 : 43.8862939453125); (14 : 40.3670068359375); (14.0416666666667 : 40.3670068359375 : JumpStart); (14.2083333333333 : 40.3670068359375 : JumpEnd); (14.75 : 40.3670068359375); (14.75 : 34.2989005533854); (15 : 34.2989005533854)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_PurchaseReceiptDetailEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="dce7b5c4-38ed-42c2-9c9d-bd581309f0be" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(11.25 : 35.4039602129407); (11.625 : 35.7789602129407); (11.625 : 35.7228011067708); (11.9166666666667 : 35.7228011067708 : JumpStart); (12.0833333333333 : 35.7228011067708 : JumpEnd); (14.5416666666667 : 35.7228011067708 : JumpStart); (14.7083333333333 : 35.7228011067708 : JumpEnd); (14.75 : 35.7228011067708); (15 : 35.4728011067708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(11.25 : 35.4039602129407); (11.625 : 35.7789602129407); (11.625 : 35.7228011067708); (11.9166666666667 : 35.7228011067708 : JumpStart); (12.0833333333333 : 35.7228011067708 : JumpEnd); (14.75 : 35.7228011067708); (15 : 35.4728011067708)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/PurchaseReceiptEntity/PurchaseReceiptEntity_PurchaseReceiptDetailEntity" />
       <nodes>
         <classShapeMoniker Id="ddc73f2e-bab4-4255-97f8-9a5c7f9e5484" />
         <classShapeMoniker Id="dce7b5c4-38ed-42c2-9c9d-bd581309f0be" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 34.3742496744792); (8.54166666666667 : 34.3742496744792 : JumpStart); (8.70833333333333 : 34.3742496744792 : JumpEnd); (9.04166666666667 : 34.3742496744792 : JumpStart); (9.20833333333333 : 34.3742496744792 : JumpEnd); (9.25 : 34.3742496744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 34.3742496744792); (9.25 : 34.3742496744792)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_PurchaseReceiptEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="ddc73f2e-bab4-4255-97f8-9a5c7f9e5484" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.4375025 : 46.125); (8.4375025 : 34.9211271744792); (8.54166666666667 : 34.9211271744792 : JumpStart); (8.70833333333333 : 34.9211271744792 : JumpEnd); (9.04166666666667 : 34.9211271744792 : JumpStart); (9.20833333333333 : 34.9211271744792 : JumpEnd); (9.25 : 34.9211271744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.4375025 : 46.125); (8.4375025 : 34.9211271744792); (9.25 : 34.9211271744792)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/SupplierEntity/SupplierEntity_PurchaseReceiptEntity" />
       <nodes>
         <classShapeMoniker Id="f92f3725-f72a-461c-bba8-5bc177e56c1c" />
         <classShapeMoniker Id="ddc73f2e-bab4-4255-97f8-9a5c7f9e5484" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(19.75 : 35.7508048502604); (21.25 : 35.7508048502604)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(19.75 : 35.7508048502604); (21.25 : 35.7508048502604)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InventoryBatchEntity/InventoryBatchEntity_ReturnExchangeDetailBatchEntity" />
       <nodes>
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
         <classShapeMoniker Id="2ddadca5-9974-4ec9-8d79-5793b9fc0afa" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(20.15625 : 37.75); (20.15625 : 36.4752018229167); (21.25 : 36.4752018229167)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(20.15625 : 37.75); (20.15625 : 36.4752018229167); (21.25 : 36.4752018229167)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ReturnExchangeDetailEntity/ReturnExchangeDetailEntity_ReturnExchangeDetailBatchEntity" />
       <nodes>
         <classShapeMoniker Id="5a744622-83d1-48ea-8971-93b00f8b7bb3" />
         <classShapeMoniker Id="2ddadca5-9974-4ec9-8d79-5793b9fc0afa" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 44.6865374615385); (18.0660744349011 : 44.3704630266373 : JumpStart); (18.1839255650989 : 44.2526118964396 : JumpEnd); (18.3125 : 44.1240374615385); (18.3125 : 38.7315991210938); (18.5 : 38.7315991210938)]" fixedFrom="NotFixed" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.75 : 44.6865374615385); (18.3125 : 44.1240374615385); (18.3125 : 38.7315991210938); (18.5 : 38.7315991210938)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_ReturnExchangeDetailEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="5a744622-83d1-48ea-8971-93b00f8b7bb3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 38.1782995605469); (17.8541641666667 : 38.1782995605469 : JumpStart); (18.0208308333333 : 38.1782995605469 : JumpEnd); (18.0416666666667 : 38.1782995605469 : JumpStart); (18.2083333333333 : 38.1782995605469 : JumpEnd); (18.2916666666667 : 38.1782995605469 : JumpStart); (18.4583333333333 : 38.1782995605469 : JumpEnd); (18.5 : 38.1782995605469)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.75 : 38.1782995605469); (18.5 : 38.1782995605469)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ReturnExchangeEntity/ReturnExchangeEntity_ReturnExchangeDetailEntity" />
       <nodes>
         <classShapeMoniker Id="7e392b8c-b12c-4f69-8aca-3992e4dfa834" />
         <classShapeMoniker Id="5a744622-83d1-48ea-8971-93b00f8b7bb3" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 35.6627018229167); (8.29166416666667 : 35.6627018229167 : JumpStart); (8.52083583333333 : 35.6627018229167 : JumpEnd); (8.54166666666667 : 35.6627018229167 : JumpStart); (8.70833333333333 : 35.6627018229167 : JumpEnd); (11.4254082766426 : 35.6627018229167 : JumpStart); (11.5920749433093 : 35.6627018229167 : JumpEnd); (11.9166666666667 : 35.6627018229167 : JumpStart); (12.0833333333333 : 35.6627018229167 : JumpEnd); (14.5416666666667 : 35.6627018229167 : JumpStart); (14.8934326171875 : 35.6627018229167 : JumpEnd); (17.375 : 35.6627018229167); (17.375 : 37)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 35.6627018229167); (8.35416916666667 : 35.6627018229167 : JumpStart); (8.52083583333333 : 35.6627018229167 : JumpEnd); (11.4254082766427 : 35.6627018229167 : JumpStart); (11.5920749433093 : 35.6627018229167 : JumpEnd); (11.9166666666667 : 35.6627018229167 : JumpStart); (12.0833333333333 : 35.6627018229167 : JumpEnd); (14.7267659505208 : 35.6627018229167 : JumpStart); (14.8934326171874 : 35.6627018229167 : JumpEnd); (17.375 : 35.6627018229167); (17.375 : 37)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ReturnExchangeEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="7e392b8c-b12c-4f69-8aca-3992e4dfa834" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 35.9661609472656); (8.29166416666667 : 35.9661609472656 : JumpStart); (8.52083583333333 : 35.9661609472656 : JumpEnd); (8.54166666666667 : 35.9661609472656 : JumpStart); (8.70833333333333 : 35.9661609472656 : JumpEnd); (9.01041666666667 : 35.9661609472656 : JumpStart); (9.17708333333333 : 35.9661609472656 : JumpEnd); (11.9166666666667 : 35.9661609472656 : JumpStart); (12.0833333333333 : 35.9661609472656 : JumpEnd); (14.5416666666667 : 35.9661609472656 : JumpStart); (14.8333333333333 : 35.9661609472656 : JumpEnd); (17.1874975 : 35.9661609472656); (17.1874975 : 37)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 35.9661609472656); (8.35416916666667 : 35.9661609472656 : JumpStart); (8.52083583333333 : 35.9661609472656 : JumpEnd); (11.9166666666667 : 35.9661609472656 : JumpStart); (12.0833333333333 : 35.9661609472656 : JumpEnd); (14.5416666666667 : 35.9661609472656 : JumpStart); (14.8333333333333 : 35.9661609472656 : JumpEnd); (17.1874975 : 35.9661609472656); (17.1874975 : 37)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_ReturnExchangeEntity1" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="7e392b8c-b12c-4f69-8aca-3992e4dfa834" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(11 : 40.375); (11.375 : 40); (11.375 : 40.8766097005208); (13.9166666666667 : 40.8766097005208 : JumpStart); (14.4583333333333 : 40.8766097005208 : JumpEnd); (15.375 : 40.8766097005208); (15.75 : 40.5016097005208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(11 : 40.375); (11.375 : 40); (11.375 : 40.8766097005208); (13.9166666666667 : 40.8766097005208 : JumpStart); (14.2083333333333 : 40.8766097005208 : JumpEnd); (14.2916666666667 : 40.8766097005208 : JumpStart); (14.4583333333333 : 40.8766097005208 : JumpEnd); (15.375 : 40.8766097005208); (15.75 : 40.5016097005208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InvoiceEntity/InvoiceEntity_ReturnExchangeEntity" />
       <nodes>
         <classShapeMoniker Id="b99a1f1e-0d82-4dfc-83cf-79ae9891fca9" />
         <classShapeMoniker Id="7e392b8c-b12c-4f69-8aca-3992e4dfa834" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 29.8806469726563); (3.5 : 29.8806469726563)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(2.75 : 29.8806469726563); (3.5 : 29.8806469726563)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/PermissionEntity/PermissionEntity_RolePermissionEntity" />
       <nodes>
         <classShapeMoniker Id="568f71a1-a67c-45a2-9031-42da80a4fa8f" />
@@ -464,151 +348,74 @@
         <classShapeMoniker Id="953e43b5-a2ca-450e-aec4-2cd644d4a5e8" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(15.953122 : 44.625); (15.953122 : 43.7612939453125); (14.375 : 43.7612939453125); (14.375 : 40.2420068359375); (14.625 : 40.2420068359375); (14.625 : 30.3373527018229); (14.25 : 30.3373527018229)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(15.953122 : 44.625); (15.953122 : 43.7612939453125); (14.375 : 43.7612939453125); (14.375 : 40.2420068359375); (14.625 : 40.2420068359375); (14.625 : 30.3373527018229); (14.25 : 30.3373527018229)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_StockAlertEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="d5185eda-a6c7-400e-87e7-87eca93fba70" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 33.8273721744792); (8.54166666666667 : 33.8273721744792 : JumpStart); (8.70833333333333 : 33.8273721744792 : JumpEnd); (9 : 33.8273721744792); (9 : 32.75); (11.9166666666667 : 32.75 : JumpStart); (12.0833333333333 : 32.75 : JumpEnd); (12.6354146666667 : 32.75 : JumpStart); (12.8020813333333 : 32.75 : JumpEnd); (13.25 : 32.75); (13.25 : 31.7997054036458)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 33.8273721744792); (9 : 33.8273721744792); (9 : 32.75); (11.9166666666667 : 32.75 : JumpStart); (12.0833333333333 : 32.75 : JumpEnd); (13.25 : 32.75); (13.25 : 31.7997054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_StockAlertEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="d5185eda-a6c7-400e-87e7-87eca93fba70" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 35.2606619986979); (8.35416916666667 : 35.2606619986979 : JumpStart); (8.52083583333333 : 35.2606619986979 : JumpEnd); (8.54166666666667 : 35.2606619986979 : JumpStart); (8.70833333333333 : 35.2606619986979 : JumpEnd); (9.125 : 35.2606619986979); (9.125 : 32.875); (11.9166666666667 : 32.875 : JumpStart); (12.0833333333333 : 32.875 : JumpEnd); (12.718748 : 32.875); (12.718748 : 31.7997054036458)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.5 : 35.2606619986979); (8.35416916666667 : 35.2606619986979 : JumpStart); (8.52083583333333 : 35.2606619986979 : JumpEnd); (8.54166666666667 : 35.2606619986979 : JumpStart); (8.70833333333333 : 35.2606619986979 : JumpEnd); (9.125 : 35.2606619986979); (9.125 : 32.875); (11.9166666666667 : 32.875 : JumpStart); (12.0833333333333 : 32.875 : JumpEnd); (12.718748 : 32.875); (12.718748 : 31.7997054036458)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_StockAlertEntity1" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="d5185eda-a6c7-400e-87e7-87eca93fba70" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(18.375 : 36.0016097005208); (18.375 : 40.1530989583333); (21.5 : 40.1530989583333)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(18.375 : 36.0016097005208); (18.375 : 40.1530989583333); (21.5 : 40.1530989583333)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/InventoryBatchEntity/InventoryBatchEntity_StockDisposalDetailEntity" />
       <nodes>
         <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
         <classShapeMoniker Id="3a39d66d-8e5d-41f2-83af-51c2c49fe772" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 41.0082144251302); (8.29166416666667 : 41.0082144251302 : JumpStart); (8.52083583333333 : 41.0082144251302 : JumpEnd); (8.54166666666667 : 41.0082144251302 : JumpStart); (8.70833333333333 : 41.0082144251302 : JumpEnd); (8.75 : 41.0082144251302); (8.75 : 40); (11.9166666666667 : 40 : JumpStart); (12.0833333333333 : 40 : JumpEnd); (14.4166666666667 : 40 : JumpStart); (14.8333333333333 : 40 : JumpEnd); (15.5 : 40); (15.5 : 40.6554996744792); (15.5127766927083 : 40.6554996744792 : JumpStart); (15.679443359375 : 40.6554996744792 : JumpEnd); (17.8541641666667 : 40.6554996744792 : JumpStart); (18.0208308333333 : 40.6554996744792 : JumpEnd); (18.0416666666667 : 40.6554996744792 : JumpStart); (18.2083333333333 : 40.6554996744792 : JumpEnd); (18.2291666666667 : 40.6554996744792 : JumpStart); (18.3958333333333 : 40.6554996744792 : JumpEnd); (21.8854141666667 : 40.6554996744792 : JumpStart); (22.0520808333333 : 40.6554996744792 : JumpEnd); (22.5 : 40.6554996744792); (22.5 : 40.5304996744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(8.25 : 41.0082144251302); (8.35416916666667 : 41.0082144251302 : JumpStart); (8.52083583333333 : 41.0082144251302 : JumpEnd); (8.75 : 41.0082144251302); (8.75 : 40); (11.9166666666667 : 40 : JumpStart); (12.0833333333333 : 40 : JumpEnd); (14.5416666666667 : 40 : JumpStart); (14.8333333333333 : 40 : JumpEnd); (15.5 : 40); (15.5 : 40.6554996744792); (17.8541641666667 : 40.6554996744792 : JumpStart); (18.0208308333333 : 40.6554996744792 : JumpEnd); (18.2291666666667 : 40.6554996744792 : JumpStart); (18.3958333333333 : 40.6554996744792 : JumpEnd); (21.8854141666667 : 40.6554996744792 : JumpStart); (22.0520808333333 : 40.6554996744792 : JumpEnd); (22.5 : 40.6554996744792); (22.5 : 40.5304996744792)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/StockDisposalEntity/StockDisposalEntity_StockDisposalDetailEntity" />
       <nodes>
         <classShapeMoniker Id="268584f7-9a60-4c11-bc42-2593f42fd502" />
         <classShapeMoniker Id="3a39d66d-8e5d-41f2-83af-51c2c49fe772" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 48.3021061197917); (18.0416666666667 : 48.3021061197917 : JumpStart); (18.2083333333333 : 48.3021061197917 : JumpEnd); (21.9687475 : 48.3021061197917); (21.9687475 : 40.5304996744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(17.75 : 48.3021061197917); (21.9687475 : 48.3021061197917); (21.9687475 : 40.5304996744792)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_StockDisposalDetailEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="3a39d66d-8e5d-41f2-83af-51c2c49fe772" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.429691875 : 36.0016097005208); (5.429691875 : 41.1739005533854); (6.25 : 41.1739005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.429691875 : 36.0016097005208); (5.429691875 : 41.1739005533854); (6.25 : 41.1739005533854)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_StockDisposalEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="268584f7-9a60-4c11-bc42-2593f42fd502" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(4.45259415384615 : 32.5); (4.45259415384615 : 31.2989005533854); (5.75 : 31.2989005533854); (5.75 : 30.875); (5.79166666666667 : 30.875 : JumpStart); (6.27083333333333 : 30.875 : JumpEnd); (8.54166666666667 : 30.875 : JumpStart); (8.70833333333333 : 30.875 : JumpEnd); (8.875 : 30.875); (8.875 : 31.2989005533854); (9.25 : 31.2989005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(4.45259415384615 : 32.5); (4.45259415384615 : 31.2989005533854); (5.75 : 31.2989005533854); (5.75 : 30.875); (5.79166666666667 : 30.875 : JumpStart); (5.95833333333333 : 30.875 : JumpEnd); (6.10416666666667 : 30.875 : JumpStart); (6.27083333333333 : 30.875 : JumpEnd); (8.54166666666667 : 30.875 : JumpStart); (8.70833333333333 : 30.875 : JumpEnd); (8.875 : 30.875); (8.875 : 31.2989005533854); (9.25 : 31.2989005533854)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_StockReconciliationEntity" />
       <nodes>
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
         <classShapeMoniker Id="34db56cc-db67-4364-8eae-bc74c0203ce1" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(16.484374 : 44.625); (16.484374 : 44.0112939453125); (16.3020813333333 : 44.0112939453125 : JumpStart); (16.1354146666667 : 44.0112939453125 : JumpEnd); (16.0364553333333 : 44.0112939453125 : JumpStart); (15.8697886666667 : 44.0112939453125 : JumpEnd); (14.125 : 44.0112939453125); (14.125 : 40.2420068359375); (12 : 40.2420068359375); (12 : 31.2989005533854); (11.25 : 31.2989005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(16.484374 : 44.625); (16.484374 : 44.0112939453125); (14.125 : 44.0112939453125); (14.125 : 40.2420068359375); (12 : 40.2420068359375); (12 : 31.2989005533854); (11.25 : 31.2989005533854)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_StockReconciliationEntity" />
       <nodes>
         <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
         <classShapeMoniker Id="34db56cc-db67-4364-8eae-bc74c0203ce1" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(19.75 : 33.3277498372396); (20.5 : 33.3277498372396)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/InventoryBatchEntity/InventoryBatchEntity_StockReconciliationBatchAdjustmentEntity" />
-      <nodes>
-        <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
-        <classShapeMoniker Id="ae43bbbf-ff52-444f-9314-9f4498f4e6ba" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(11.25 : 32.2364005533854); (11.9166666666667 : 32.2364005533854 : JumpStart); (12.0833333333333 : 32.2364005533854 : JumpEnd); (12.6354146666667 : 32.2364005533854 : JumpStart); (12.8020813333333 : 32.2364005533854 : JumpEnd); (13.1666666666667 : 32.2364005533854 : JumpStart); (13.3333333333333 : 32.2364005533854 : JumpEnd); (14.5416666666667 : 32.2364005533854 : JumpStart); (14.8333333333333 : 32.2364005533854 : JumpEnd); (20.5 : 32.2364005533854)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/StockReconciliationEntity/StockReconciliationEntity_StockReconciliationBatchAdjustmentEntity" />
-      <nodes>
-        <classShapeMoniker Id="34db56cc-db67-4364-8eae-bc74c0203ce1" />
-        <classShapeMoniker Id="ae43bbbf-ff52-444f-9314-9f4498f4e6ba" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 46.7604484049479); (18.5 : 46.7604484049479)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_SupplierProductEntity" />
-      <nodes>
-        <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
-        <classShapeMoniker Id="f10f168c-7354-4cb5-8a3e-e4590aa0547d" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(7.5 : 48.4728011067708); (7.5 : 49.1458154296875); (9.91666666666667 : 49.1458154296875 : JumpStart); (10.0833333333333 : 49.1458154296875 : JumpEnd); (18.125 : 49.1458154296875); (18.125 : 47.2344246074219); (18.5 : 47.2344246074219)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/SupplierEntity/SupplierEntity_SupplierProductEntity" />
-      <nodes>
-        <classShapeMoniker Id="f92f3725-f72a-461c-bba8-5bc177e56c1c" />
-        <classShapeMoniker Id="f10f168c-7354-4cb5-8a3e-e4590aa0547d" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(19.75 : 34.3117496744792); (23.5 : 34.3117496744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/InventoryBatchEntity/InventoryBatchEntity_SupplierReturnDetailEntity" />
-      <nodes>
-        <classShapeMoniker Id="967380cc-6f43-4883-b992-959b1d30f687" />
-        <classShapeMoniker Id="b4004bd8-fe30-4a18-a33b-eaa905cf8077" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(17.75 : 45.5468775); (21.8854141666667 : 45.5468775 : JumpStart); (22.0520808333333 : 45.5468775 : JumpEnd); (24.53125 : 45.5468775); (24.53125 : 34.4054996744792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/ProductEntity/ProductEntity_SupplierReturnDetailEntity" />
-      <nodes>
-        <classShapeMoniker Id="bb4ceee6-693a-4df7-9232-fc36bb375e8a" />
-        <classShapeMoniker Id="b4004bd8-fe30-4a18-a33b-eaa905cf8077" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(14.25 : 33.6494507766927); (14.5416666666667 : 33.6494507766927 : JumpStart); (14.7083333333333 : 33.6494507766927 : JumpEnd); (14.75 : 33.6494507766927); (14.75 : 31.75); (24.5 : 31.75); (24.5 : 32.25)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/SupplierReturnEntity/SupplierReturnEntity_SupplierReturnDetailEntity" />
-      <nodes>
-        <classShapeMoniker Id="0da145ec-8f0b-45e6-8b87-704ec09d7ead" />
-        <classShapeMoniker Id="b4004bd8-fe30-4a18-a33b-eaa905cf8077" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 35.5040511067708); (8.35416916666667 : 35.5040511067708 : JumpStart); (8.52083583333333 : 35.5040511067708 : JumpEnd); (8.54166666666667 : 35.5040511067708 : JumpStart); (8.70833333333333 : 35.5040511067708 : JumpEnd); (11.2667575604968 : 35.5040511067708 : JumpStart); (11.4334242271635 : 35.5040511067708 : JumpEnd); (11.9166666666667 : 35.5040511067708 : JumpStart); (12.0833333333333 : 35.5040511067708 : JumpEnd); (12.25 : 35.5040511067708)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_SupplierReturnEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="0da145ec-8f0b-45e6-8b87-704ec09d7ead" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(8.3749975 : 46.125); (8.3749975 : 35.5220768229167); (8.54166666666667 : 35.5220768229167 : JumpStart); (8.70833333333333 : 35.5220768229167 : JumpEnd); (11.2847832766426 : 35.5220768229167 : JumpStart); (11.4514499433093 : 35.5220768229167 : JumpEnd); (11.9166666666667 : 35.5220768229167 : JumpStart); (12.0833333333333 : 35.5220768229167 : JumpEnd); (12.25 : 35.5220768229167)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/SupplierEntity/SupplierEntity_SupplierReturnEntity" />
-      <nodes>
-        <classShapeMoniker Id="f92f3725-f72a-461c-bba8-5bc177e56c1c" />
-        <classShapeMoniker Id="0da145ec-8f0b-45e6-8b87-704ec09d7ead" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 32.7892976888021); (3.5 : 32.7892976888021)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(2.75 : 32.7892976888021); (3.5 : 32.7892976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/SimsDataContext/RoleEntity/RoleEntity_UserEntity" />
       <nodes>
         <classShapeMoniker Id="6e8ee582-da98-417f-b86a-84e72ae8fb52" />
         <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 32.5169220769231); (6.09375 : 31.9231720769231); (6.09375 : 26.4815991210938); (6.25 : 26.4815991210938)]" fixedFrom="NotFixed" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_UserTwoFactorEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="c92e3e30-ce30-4a2e-b5dd-0799f86ac5ae" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 32.5092297692308); (6.03125 : 31.9779797692308); (6.03125 : 23.8854484049479); (6.25 : 23.8854484049479)]" fixedFrom="NotFixed" fixedTo="Algorithm">
-      <AssociationMoniker Name="/SimsDataContext/UserEntity/UserEntity_UserTwoFactorBackupCodeEntity" />
-      <nodes>
-        <classShapeMoniker Id="e9065622-c139-4abc-aa78-b83a04ed7335" />
-        <classShapeMoniker Id="1d0ba453-22a4-4601-a2f0-a3bf67705add" />
       </nodes>
     </associationConnector>
   </nestedChildShapes>

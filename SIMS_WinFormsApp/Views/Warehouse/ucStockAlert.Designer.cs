@@ -19,14 +19,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
             this._headerCard = new System.Windows.Forms.Panel();
+            this._resolveButton = new System.Windows.Forms.Button();
+            this._planButton = new System.Windows.Forms.Button();
             this._headerIconPanel = new System.Windows.Forms.Panel();
             this._headerIcon = new FontAwesome.Sharp.IconPictureBox();
             this._titleLabel = new System.Windows.Forms.Label();
@@ -36,13 +38,13 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._exportCsvItem = new System.Windows.Forms.ToolStripMenuItem();
             this._exportExcelItem = new System.Windows.Forms.ToolStripMenuItem();
             this._filterCard = new System.Windows.Forms.Panel();
+            this._clearFilterButton = new System.Windows.Forms.Button();
             this._searchBox = new System.Windows.Forms.TextBox();
             this._categoryCombo = new System.Windows.Forms.ComboBox();
             this._fromLabel = new System.Windows.Forms.Label();
             this._fromDatePicker = new System.Windows.Forms.DateTimePicker();
             this._toLabel = new System.Windows.Forms.Label();
             this._toDatePicker = new System.Windows.Forms.DateTimePicker();
-            this._clearFilterLink = new System.Windows.Forms.LinkLabel();
             this._totalLabel = new System.Windows.Forms.Label();
             this._gridCard = new System.Windows.Forms.Panel();
             this._grid = new System.Windows.Forms.DataGridView();
@@ -53,9 +55,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colReporter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._emptyLabel = new System.Windows.Forms.Label();
             this.colPlan = new System.Windows.Forms.DataGridViewImageColumn();
             this.colResolve = new System.Windows.Forms.DataGridViewImageColumn();
-            this._emptyLabel = new System.Windows.Forms.Label();
             this._gapHeader = new System.Windows.Forms.Panel();
             this._gapFilter = new System.Windows.Forms.Panel();
             this._gapPager = new System.Windows.Forms.Panel();
@@ -84,6 +86,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._headerCard.BackColor = System.Drawing.Color.White;
             this._headerCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._headerCard.Controls.Add(this._resolveButton);
+            this._headerCard.Controls.Add(this._planButton);
             this._headerCard.Controls.Add(this._headerIconPanel);
             this._headerCard.Controls.Add(this._titleLabel);
             this._headerCard.Controls.Add(this._subtitleLabel);
@@ -93,6 +97,34 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._headerCard.Name = "_headerCard";
             this._headerCard.Size = new System.Drawing.Size(1252, 88);
             this._headerCard.TabIndex = 0;
+            // 
+            // _resolveButton
+            // 
+            this._resolveButton.BackColor = System.Drawing.Color.GreenYellow;
+            this._resolveButton.Location = new System.Drawing.Point(833, 25);
+            this._resolveButton.Name = "_resolveButton";
+            this._resolveButton.Size = new System.Drawing.Size(114, 38);
+            this._resolveButton.TabIndex = 5;
+            this._resolveButton.Text = "Đã xử lý";
+            this._resolveButton.UseVisualStyleBackColor = false;
+            this._resolveButton.Click += new System.EventHandler(this._resolveButton_Click);
+            // 
+            // _planButton
+            // 
+            this._planButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this._planButton.BackColor = System.Drawing.Color.Blue;
+            this._planButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this._planButton.Enabled = false;
+            this._planButton.FlatAppearance.BorderSize = 0;
+            this._planButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._planButton.ForeColor = System.Drawing.Color.Transparent;
+            this._planButton.Location = new System.Drawing.Point(966, 25);
+            this._planButton.Name = "_planButton";
+            this._planButton.Size = new System.Drawing.Size(115, 38);
+            this._planButton.TabIndex = 4;
+            this._planButton.Text = "Lên kế hoạch";
+            this._planButton.UseVisualStyleBackColor = false;
+            this._planButton.Click += new System.EventHandler(this._planButton_Click);
             // 
             // _headerIconPanel
             // 
@@ -127,7 +159,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
             this._titleLabel.Location = new System.Drawing.Point(80, 12);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(1006, 36);
+            this._titleLabel.Size = new System.Drawing.Size(264, 36);
             this._titleLabel.TabIndex = 1;
             this._titleLabel.Text = "Cảnh báo tồn kho";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -140,9 +172,9 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._subtitleLabel.AutoEllipsis = true;
             this._subtitleLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._subtitleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this._subtitleLabel.Location = new System.Drawing.Point(80, 52);
+            this._subtitleLabel.Location = new System.Drawing.Point(72, 48);
             this._subtitleLabel.Name = "_subtitleLabel";
-            this._subtitleLabel.Size = new System.Drawing.Size(1006, 20);
+            this._subtitleLabel.Size = new System.Drawing.Size(385, 32);
             this._subtitleLabel.TabIndex = 2;
             this._subtitleLabel.Text = "Sản phẩm hết hoặc sắp hết hàng cần nhập thêm";
             this._subtitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -193,19 +225,33 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // 
             this._filterCard.BackColor = System.Drawing.Color.White;
             this._filterCard.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._filterCard.Controls.Add(this._clearFilterButton);
             this._filterCard.Controls.Add(this._searchBox);
             this._filterCard.Controls.Add(this._categoryCombo);
             this._filterCard.Controls.Add(this._fromLabel);
             this._filterCard.Controls.Add(this._fromDatePicker);
             this._filterCard.Controls.Add(this._toLabel);
             this._filterCard.Controls.Add(this._toDatePicker);
-            this._filterCard.Controls.Add(this._clearFilterLink);
             this._filterCard.Controls.Add(this._totalLabel);
             this._filterCard.Dock = System.Windows.Forms.DockStyle.Top;
             this._filterCard.Location = new System.Drawing.Point(16, 116);
             this._filterCard.Name = "_filterCard";
             this._filterCard.Size = new System.Drawing.Size(1252, 60);
             this._filterCard.TabIndex = 1;
+            // 
+            // _clearFilterButton
+            // 
+            this._clearFilterButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this._clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this._clearFilterButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this._clearFilterButton.Location = new System.Drawing.Point(872, 15);
+            this._clearFilterButton.Name = "_clearFilterButton";
+            this._clearFilterButton.Size = new System.Drawing.Size(87, 31);
+            this._clearFilterButton.TabIndex = 8;
+            this._clearFilterButton.Text = "Xóa lọc";
+            this._clearFilterButton.UseVisualStyleBackColor = true;
+            this._clearFilterButton.Visible = false;
+            this._clearFilterButton.Click += new System.EventHandler(this._clearFilterButton_Click);
             // 
             // _searchBox
             // 
@@ -264,22 +310,6 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._toDatePicker.Size = new System.Drawing.Size(140, 27);
             this._toDatePicker.TabIndex = 5;
             // 
-            // _clearFilterLink
-            // 
-            this._clearFilterLink.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this._clearFilterLink.AutoSize = true;
-            this._clearFilterLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this._clearFilterLink.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this._clearFilterLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this._clearFilterLink.Location = new System.Drawing.Point(856, 21);
-            this._clearFilterLink.Name = "_clearFilterLink";
-            this._clearFilterLink.Size = new System.Drawing.Size(77, 20);
-            this._clearFilterLink.TabIndex = 6;
-            this._clearFilterLink.TabStop = true;
-            this._clearFilterLink.Text = "✕ Xóa lọc";
-            this._clearFilterLink.Visible = false;
-            this._clearFilterLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ClearFilterLink_LinkClicked);
-            // 
             // _totalLabel
             // 
             this._totalLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -307,22 +337,22 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.AllowUserToAddRows = false;
             this._grid.AllowUserToDeleteRows = false;
             this._grid.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle36.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this._grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle36;
             this._grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grid.BackgroundColor = System.Drawing.Color.White;
             this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._grid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle37.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle37.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle37.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle37.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle37.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle37.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle37.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle37;
             this._grid.ColumnHeadersHeight = 38;
             this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this._grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -332,18 +362,16 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this.colAlertType,
             this.colReporter,
             this.colCreatedAt,
-            this.colStatus,
-            this.colPlan,
-            this.colResolve});
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this._grid.DefaultCellStyle = dataGridViewCellStyle7;
+            this.colStatus});
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle40.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle40.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle40.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle40.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
+            dataGridViewCellStyle40.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(219)))), ((int)(((byte)(234)))), ((int)(((byte)(254)))));
+            dataGridViewCellStyle40.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle40.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this._grid.DefaultCellStyle = dataGridViewCellStyle40;
             this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this._grid.EnableHeadersVisualStyles = false;
             this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
@@ -357,6 +385,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._grid.Size = new System.Drawing.Size(1250, 410);
             this._grid.TabIndex = 0;
+            this._grid.SelectionChanged += new System.EventHandler(this._grid_SelectionChanged);
             // 
             // colAlertId
             // 
@@ -390,8 +419,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colAlertType
             // 
             this.colAlertType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colAlertType.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colAlertType.DefaultCellStyle = dataGridViewCellStyle38;
             this.colAlertType.FillWeight = 13F;
             this.colAlertType.HeaderText = "Loại cảnh báo";
             this.colAlertType.MinimumWidth = 6;
@@ -422,38 +451,14 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             // colStatus
             // 
             this.colStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.colStatus.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colStatus.DefaultCellStyle = dataGridViewCellStyle39;
             this.colStatus.FillWeight = 14F;
             this.colStatus.HeaderText = "Trạng thái";
             this.colStatus.MinimumWidth = 6;
             this.colStatus.Name = "colStatus";
             this.colStatus.ReadOnly = true;
             this.colStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colPlan
-            // 
-            this.colPlan.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.NullValue = null;
-            this.colPlan.DefaultCellStyle = dataGridViewCellStyle5;
-            this.colPlan.HeaderText = "Thao tác";
-            this.colPlan.MinimumWidth = 6;
-            this.colPlan.Name = "colPlan";
-            this.colPlan.ReadOnly = true;
-            this.colPlan.Width = 56;
-            // 
-            // colResolve
-            // 
-            this.colResolve.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.NullValue = null;
-            this.colResolve.DefaultCellStyle = dataGridViewCellStyle6;
-            this.colResolve.HeaderText = "";
-            this.colResolve.MinimumWidth = 6;
-            this.colResolve.Name = "colResolve";
-            this.colResolve.ReadOnly = true;
-            this.colResolve.Width = 56;
             // 
             // _emptyLabel
             // 
@@ -468,6 +473,30 @@ namespace SIMS_WinFormsApp.Views.Warehouse
             this._emptyLabel.Text = "Chưa có cảnh báo nào";
             this._emptyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this._emptyLabel.Visible = false;
+            // 
+            // colPlan
+            // 
+            this.colPlan.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle41.NullValue = null;
+            this.colPlan.DefaultCellStyle = dataGridViewCellStyle41;
+            this.colPlan.HeaderText = "Thao tác";
+            this.colPlan.MinimumWidth = 6;
+            this.colPlan.Name = "colPlan";
+            this.colPlan.Visible = false;
+            this.colPlan.Width = 56;
+            // 
+            // colResolve
+            // 
+            this.colResolve.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle42.NullValue = null;
+            this.colResolve.DefaultCellStyle = dataGridViewCellStyle42;
+            this.colResolve.HeaderText = "";
+            this.colResolve.MinimumWidth = 6;
+            this.colResolve.Name = "colResolve";
+            this.colResolve.Visible = false;
+            this.colResolve.Width = 56;
             // 
             // _gapHeader
             // 
@@ -653,7 +682,7 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private DateTimePicker _fromDatePicker;
         private Label _toLabel;
         private DateTimePicker _toDatePicker;
-        private LinkLabel _clearFilterLink;
+        private Button _clearFilterButton;
         private Label _totalLabel;
         private Panel _gridCard;
         private DataGridView _grid;
@@ -680,5 +709,8 @@ namespace SIMS_WinFormsApp.Views.Warehouse
         private ComboBox _pageSizeCombo;
         private Label _rowsLabel;
         private Timer _searchTimer;
+        private Button _planButton;
+        private Button _resolveButton;
+        
     }
 }

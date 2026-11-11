@@ -72,11 +72,22 @@ namespace SIMS_WinFormsApp.DAL.Linq
         {
             EnsureTransaction(db);
 
-            db.ExecuteCommand(
-                "INSERT INTO StockReconciliation " +
-                "(ProductID, SystemStock, ActualStock, Note, CreatedBy, CreatedAt) " +
-                "VALUES ({0}, {1}, {2}, {3}, {4}, {5});",
-                productId, systemStock, actualStock, note, createdBy, createdAt);
+            if (note == null)
+            {
+                db.ExecuteCommand(
+                    "INSERT INTO StockReconciliation " +
+                    "(ProductID, SystemStock, ActualStock, Note, CreatedBy, CreatedAt) " +
+                    "VALUES ({0}, {1}, {2}, NULL, {3}, {4});",
+                    productId, systemStock, actualStock, createdBy, createdAt);
+            }
+            else
+            {
+                db.ExecuteCommand(
+                    "INSERT INTO StockReconciliation " +
+                    "(ProductID, SystemStock, ActualStock, Note, CreatedBy, CreatedAt) " +
+                    "VALUES ({0}, {1}, {2}, {3}, {4}, {5});",
+                    productId, systemStock, actualStock, note, createdBy, createdAt);
+            }
         }
 
         private static void EnsureTransaction(SimsDataContext db)

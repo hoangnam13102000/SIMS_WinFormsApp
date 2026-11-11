@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="_optionsMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+    <value>22, 23</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="_exportCsvMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -137,15 +137,6 @@
         JQAAFiUBSVIk8AAAAGhJREFUOE/NjAEKgDAMA/s7X+Aj/P8DlEELoWZrxlQ8KKRbevYa236cvfFKzag8
         JVNEkkwVlbJPRMiUKJdHfzdyOXbMDcyUXAgBe/fIYYVHRCFZEqEAcwMzpSw4kkgdP+nDjvJ49deYXVX3
         nTnLRU7RAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="_importMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAW
-        JQAAFiUBSVIk8AAAAMtJREFUOE9joCmYv2z9f/fQTBS8cv32/5t37P8PVUIYXL95B8MQmEE1rVP+T5m9
-        jDjDzl28itcgEJsow/AZtPfgcTANwiCXQ7VgB7gMAmGQi2AYZChUC3aAbhC2gAdhkKugWrADdINAXsAW
-        AVgNAimE+R0dg6L8xctXGIaB5KDaEQDkCpjfQTEC4iNjkEEgnJBTi98gZADSiGwzKFBBhuRVdKCIk2UQ
-        uiEgTLJBuDBBg0AAmwvQ8f0HjwgbBAKgWIIFNjqGKhkZgIEBAJKVfYcF5QCNAAAAAElFTkSuQmCC
 </value>
   </data>
   <metadata name="_toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

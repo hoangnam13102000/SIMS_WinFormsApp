@@ -104,15 +104,16 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._root.Controls.Add(this._footer, 0, 4);
             this._root.Dock = System.Windows.Forms.DockStyle.Fill;
             this._root.Location = new System.Drawing.Point(0, 0);
+            this._root.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._root.Name = "_root";
-            this._root.Padding = new System.Windows.Forms.Padding(24, 18, 24, 18);
+            this._root.Padding = new System.Windows.Forms.Padding(21, 14, 21, 14);
             this._root.RowCount = 5;
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
-            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
-            this._root.Size = new System.Drawing.Size(1020, 760);
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
+            this._root.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
+            this._root.Size = new System.Drawing.Size(907, 608);
             this._root.TabIndex = 0;
             // 
             // _titleLabel
@@ -120,9 +121,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._titleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._titleLabel.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
             this._titleLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this._titleLabel.Location = new System.Drawing.Point(27, 18);
+            this._titleLabel.Location = new System.Drawing.Point(24, 14);
             this._titleLabel.Name = "_titleLabel";
-            this._titleLabel.Size = new System.Drawing.Size(966, 48);
+            this._titleLabel.Size = new System.Drawing.Size(859, 38);
             this._titleLabel.TabIndex = 0;
             this._titleLabel.Text = "Thông tin sản phẩm";
             this._titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -132,18 +133,19 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._codePanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
             this._codePanel.Controls.Add(this._codeLabel);
             this._codePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._codePanel.Location = new System.Drawing.Point(27, 69);
+            this._codePanel.Location = new System.Drawing.Point(24, 54);
+            this._codePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._codePanel.Name = "_codePanel";
-            this._codePanel.Size = new System.Drawing.Size(966, 26);
+            this._codePanel.Size = new System.Drawing.Size(859, 22);
             this._codePanel.TabIndex = 1;
             // 
             // _codeLabel
             // 
             this._codeLabel.AutoSize = true;
             this._codeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this._codeLabel.Location = new System.Drawing.Point(10, 8);
+            this._codeLabel.Location = new System.Drawing.Point(9, 6);
             this._codeLabel.Name = "_codeLabel";
-            this._codeLabel.Size = new System.Drawing.Size(105, 20);
+            this._codeLabel.Size = new System.Drawing.Size(88, 16);
             this._codeLabel.TabIndex = 0;
             this._codeLabel.Text = "Mã sản phẩm";
             // 
@@ -155,20 +157,21 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._body.Controls.Add(this._detailsGroup, 0, 0);
             this._body.Controls.Add(this._imageGroup, 1, 0);
             this._body.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._body.Location = new System.Drawing.Point(27, 101);
+            this._body.Location = new System.Drawing.Point(24, 80);
+            this._body.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._body.Name = "_body";
-            this._body.Size = new System.Drawing.Size(966, 504);
+            this._body.Size = new System.Drawing.Size(859, 405);
             this._body.TabIndex = 2;
             // 
             // _detailsGroup
             // 
             this._detailsGroup.Controls.Add(this._fields);
             this._detailsGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._detailsGroup.Location = new System.Drawing.Point(0, 6);
-            this._detailsGroup.Margin = new System.Windows.Forms.Padding(0, 6, 10, 6);
+            this._detailsGroup.Location = new System.Drawing.Point(0, 5);
+            this._detailsGroup.Margin = new System.Windows.Forms.Padding(0, 5, 9, 5);
             this._detailsGroup.Name = "_detailsGroup";
-            this._detailsGroup.Padding = new System.Windows.Forms.Padding(12);
-            this._detailsGroup.Size = new System.Drawing.Size(685, 504);
+            this._detailsGroup.Padding = new System.Windows.Forms.Padding(11, 10, 11, 10);
+            this._detailsGroup.Size = new System.Drawing.Size(609, 403);
             this._detailsGroup.TabIndex = 0;
             this._detailsGroup.TabStop = false;
             this._detailsGroup.Text = "Thông tin sản phẩm";
@@ -203,24 +206,25 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._fields.Controls.Add(this._minStockLabel, 2, 12);
             this._fields.Controls.Add(this._minStockTextBox, 2, 13);
             this._fields.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._fields.Location = new System.Drawing.Point(12, 31);
+            this._fields.Location = new System.Drawing.Point(11, 25);
+            this._fields.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._fields.Name = "_fields";
             this._fields.RowCount = 14;
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
             this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this._fields.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this._fields.Size = new System.Drawing.Size(661, 461);
+            this._fields.Size = new System.Drawing.Size(587, 368);
             this._fields.TabIndex = 0;
             // 
             // _nameLabel
@@ -230,7 +234,7 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._nameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this._nameLabel.Location = new System.Drawing.Point(3, 0);
             this._nameLabel.Name = "_nameLabel";
-            this._nameLabel.Size = new System.Drawing.Size(655, 24);
+            this._nameLabel.Size = new System.Drawing.Size(581, 19);
             this._nameLabel.TabIndex = 0;
             this._nameLabel.Text = "Tên sản phẩm";
             this._nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -239,10 +243,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._nameTextBox, 4);
             this._nameTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._nameTextBox.Location = new System.Drawing.Point(0, 24);
-            this._nameTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._nameTextBox.Location = new System.Drawing.Point(0, 19);
+            this._nameTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._nameTextBox.Name = "_nameTextBox";
-            this._nameTextBox.Size = new System.Drawing.Size(651, 26);
+            this._nameTextBox.Size = new System.Drawing.Size(578, 22);
             this._nameTextBox.TabIndex = 1;
             // 
             // _categoryLabel
@@ -250,9 +254,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._categoryLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._categoryLabel, 4);
             this._categoryLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._categoryLabel.Location = new System.Drawing.Point(3, 54);
+            this._categoryLabel.Location = new System.Drawing.Point(3, 43);
             this._categoryLabel.Name = "_categoryLabel";
-            this._categoryLabel.Size = new System.Drawing.Size(655, 24);
+            this._categoryLabel.Size = new System.Drawing.Size(581, 19);
             this._categoryLabel.TabIndex = 2;
             this._categoryLabel.Text = "Danh mục";
             this._categoryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -262,10 +266,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._fields.SetColumnSpan(this._categoryComboBox, 4);
             this._categoryComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this._categoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._categoryComboBox.Location = new System.Drawing.Point(0, 78);
-            this._categoryComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._categoryComboBox.Location = new System.Drawing.Point(0, 62);
+            this._categoryComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._categoryComboBox.Name = "_categoryComboBox";
-            this._categoryComboBox.Size = new System.Drawing.Size(651, 28);
+            this._categoryComboBox.Size = new System.Drawing.Size(578, 24);
             this._categoryComboBox.TabIndex = 3;
             // 
             // _brandLabel
@@ -273,9 +277,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._brandLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._brandLabel, 2);
             this._brandLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._brandLabel.Location = new System.Drawing.Point(3, 108);
+            this._brandLabel.Location = new System.Drawing.Point(3, 86);
             this._brandLabel.Name = "_brandLabel";
-            this._brandLabel.Size = new System.Drawing.Size(324, 24);
+            this._brandLabel.Size = new System.Drawing.Size(286, 19);
             this._brandLabel.TabIndex = 6;
             this._brandLabel.Text = "Thương hiệu";
             this._brandLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -284,10 +288,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._brandTextBox, 2);
             this._brandTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._brandTextBox.Location = new System.Drawing.Point(0, 132);
-            this._brandTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._brandTextBox.Location = new System.Drawing.Point(0, 105);
+            this._brandTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._brandTextBox.Name = "_brandTextBox";
-            this._brandTextBox.Size = new System.Drawing.Size(320, 26);
+            this._brandTextBox.Size = new System.Drawing.Size(283, 22);
             this._brandTextBox.TabIndex = 7;
             // 
             // _unitLabel
@@ -295,9 +299,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._unitLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._unitLabel, 2);
             this._unitLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._unitLabel.Location = new System.Drawing.Point(333, 108);
+            this._unitLabel.Location = new System.Drawing.Point(295, 86);
             this._unitLabel.Name = "_unitLabel";
-            this._unitLabel.Size = new System.Drawing.Size(325, 24);
+            this._unitLabel.Size = new System.Drawing.Size(289, 19);
             this._unitLabel.TabIndex = 8;
             this._unitLabel.Text = "Đơn vị tính";
             this._unitLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -306,10 +310,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._unitTextBox, 2);
             this._unitTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._unitTextBox.Location = new System.Drawing.Point(330, 132);
-            this._unitTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._unitTextBox.Location = new System.Drawing.Point(292, 105);
+            this._unitTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._unitTextBox.Name = "_unitTextBox";
-            this._unitTextBox.Size = new System.Drawing.Size(321, 26);
+            this._unitTextBox.Size = new System.Drawing.Size(286, 22);
             this._unitTextBox.TabIndex = 9;
             // 
             // _weightLabel
@@ -317,9 +321,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._weightLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._weightLabel, 2);
             this._weightLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._weightLabel.Location = new System.Drawing.Point(3, 162);
+            this._weightLabel.Location = new System.Drawing.Point(3, 129);
             this._weightLabel.Name = "_weightLabel";
-            this._weightLabel.Size = new System.Drawing.Size(324, 24);
+            this._weightLabel.Size = new System.Drawing.Size(286, 19);
             this._weightLabel.TabIndex = 10;
             this._weightLabel.Text = "Khối lượng / dung tích";
             this._weightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -328,10 +332,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._weightTextBox, 2);
             this._weightTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._weightTextBox.Location = new System.Drawing.Point(0, 186);
-            this._weightTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._weightTextBox.Location = new System.Drawing.Point(0, 148);
+            this._weightTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._weightTextBox.Name = "_weightTextBox";
-            this._weightTextBox.Size = new System.Drawing.Size(320, 26);
+            this._weightTextBox.Size = new System.Drawing.Size(283, 22);
             this._weightTextBox.TabIndex = 11;
             // 
             // _statusLabel
@@ -339,9 +343,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._statusLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._statusLabel, 2);
             this._statusLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._statusLabel.Location = new System.Drawing.Point(333, 162);
+            this._statusLabel.Location = new System.Drawing.Point(295, 129);
             this._statusLabel.Name = "_statusLabel";
-            this._statusLabel.Size = new System.Drawing.Size(325, 24);
+            this._statusLabel.Size = new System.Drawing.Size(289, 19);
             this._statusLabel.TabIndex = 12;
             this._statusLabel.Text = "Trạng thái";
             this._statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -354,10 +358,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._statusComboBox.Items.AddRange(new object[] {
             "Đang bán",
             "Ngừng bán"});
-            this._statusComboBox.Location = new System.Drawing.Point(330, 186);
-            this._statusComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._statusComboBox.Location = new System.Drawing.Point(292, 148);
+            this._statusComboBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._statusComboBox.Name = "_statusComboBox";
-            this._statusComboBox.Size = new System.Drawing.Size(321, 28);
+            this._statusComboBox.Size = new System.Drawing.Size(286, 24);
             this._statusComboBox.TabIndex = 13;
             // 
             // _descriptionLabel
@@ -365,9 +369,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._descriptionLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._descriptionLabel, 4);
             this._descriptionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._descriptionLabel.Location = new System.Drawing.Point(3, 216);
+            this._descriptionLabel.Location = new System.Drawing.Point(3, 172);
             this._descriptionLabel.Name = "_descriptionLabel";
-            this._descriptionLabel.Size = new System.Drawing.Size(655, 24);
+            this._descriptionLabel.Size = new System.Drawing.Size(581, 19);
             this._descriptionLabel.TabIndex = 14;
             this._descriptionLabel.Text = "Mô tả sản phẩm";
             this._descriptionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -376,12 +380,12 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._descriptionTextBox, 4);
             this._descriptionTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._descriptionTextBox.Location = new System.Drawing.Point(0, 240);
-            this._descriptionTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._descriptionTextBox.Location = new System.Drawing.Point(0, 191);
+            this._descriptionTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._descriptionTextBox.Multiline = true;
             this._descriptionTextBox.Name = "_descriptionTextBox";
             this._descriptionTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this._descriptionTextBox.Size = new System.Drawing.Size(651, 105);
+            this._descriptionTextBox.Size = new System.Drawing.Size(578, 85);
             this._descriptionTextBox.TabIndex = 15;
             // 
             // _importPriceLabel
@@ -389,9 +393,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._importPriceLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._importPriceLabel, 2);
             this._importPriceLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._importPriceLabel.Location = new System.Drawing.Point(3, 353);
+            this._importPriceLabel.Location = new System.Drawing.Point(3, 282);
             this._importPriceLabel.Name = "_importPriceLabel";
-            this._importPriceLabel.Size = new System.Drawing.Size(324, 24);
+            this._importPriceLabel.Size = new System.Drawing.Size(286, 19);
             this._importPriceLabel.TabIndex = 16;
             this._importPriceLabel.Text = "Giá nhập (VNĐ)";
             this._importPriceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -400,10 +404,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._importPriceTextBox, 2);
             this._importPriceTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._importPriceTextBox.Location = new System.Drawing.Point(0, 377);
-            this._importPriceTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._importPriceTextBox.Location = new System.Drawing.Point(0, 301);
+            this._importPriceTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._importPriceTextBox.Name = "_importPriceTextBox";
-            this._importPriceTextBox.Size = new System.Drawing.Size(320, 26);
+            this._importPriceTextBox.Size = new System.Drawing.Size(283, 22);
             this._importPriceTextBox.TabIndex = 17;
             // 
             // _sellPriceLabel
@@ -411,9 +415,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._sellPriceLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._sellPriceLabel, 2);
             this._sellPriceLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._sellPriceLabel.Location = new System.Drawing.Point(333, 353);
+            this._sellPriceLabel.Location = new System.Drawing.Point(295, 282);
             this._sellPriceLabel.Name = "_sellPriceLabel";
-            this._sellPriceLabel.Size = new System.Drawing.Size(325, 24);
+            this._sellPriceLabel.Size = new System.Drawing.Size(289, 19);
             this._sellPriceLabel.TabIndex = 18;
             this._sellPriceLabel.Text = "Giá bán (VNĐ)";
             this._sellPriceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -422,10 +426,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._sellPriceTextBox, 2);
             this._sellPriceTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._sellPriceTextBox.Location = new System.Drawing.Point(330, 377);
-            this._sellPriceTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._sellPriceTextBox.Location = new System.Drawing.Point(292, 301);
+            this._sellPriceTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._sellPriceTextBox.Name = "_sellPriceTextBox";
-            this._sellPriceTextBox.Size = new System.Drawing.Size(321, 26);
+            this._sellPriceTextBox.Size = new System.Drawing.Size(286, 22);
             this._sellPriceTextBox.TabIndex = 19;
             // 
             // _stockLabel
@@ -433,9 +437,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._stockLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._stockLabel, 2);
             this._stockLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._stockLabel.Location = new System.Drawing.Point(3, 407);
+            this._stockLabel.Location = new System.Drawing.Point(3, 325);
             this._stockLabel.Name = "_stockLabel";
-            this._stockLabel.Size = new System.Drawing.Size(324, 24);
+            this._stockLabel.Size = new System.Drawing.Size(286, 19);
             this._stockLabel.TabIndex = 20;
             this._stockLabel.Text = "Tồn kho";
             this._stockLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -444,10 +448,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._stockTextBox, 2);
             this._stockTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._stockTextBox.Location = new System.Drawing.Point(0, 431);
-            this._stockTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._stockTextBox.Location = new System.Drawing.Point(0, 344);
+            this._stockTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._stockTextBox.Name = "_stockTextBox";
-            this._stockTextBox.Size = new System.Drawing.Size(320, 26);
+            this._stockTextBox.Size = new System.Drawing.Size(283, 22);
             this._stockTextBox.TabIndex = 21;
             // 
             // _minStockLabel
@@ -455,9 +459,9 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._minStockLabel.AutoSize = true;
             this._fields.SetColumnSpan(this._minStockLabel, 2);
             this._minStockLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._minStockLabel.Location = new System.Drawing.Point(333, 407);
+            this._minStockLabel.Location = new System.Drawing.Point(295, 325);
             this._minStockLabel.Name = "_minStockLabel";
-            this._minStockLabel.Size = new System.Drawing.Size(325, 24);
+            this._minStockLabel.Size = new System.Drawing.Size(289, 19);
             this._minStockLabel.TabIndex = 22;
             this._minStockLabel.Text = "Tồn kho tối thiểu";
             this._minStockLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -466,10 +470,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._fields.SetColumnSpan(this._minStockTextBox, 2);
             this._minStockTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._minStockTextBox.Location = new System.Drawing.Point(330, 431);
-            this._minStockTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 10, 8);
+            this._minStockTextBox.Location = new System.Drawing.Point(292, 344);
+            this._minStockTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 9, 6);
             this._minStockTextBox.Name = "_minStockTextBox";
-            this._minStockTextBox.Size = new System.Drawing.Size(321, 26);
+            this._minStockTextBox.Size = new System.Drawing.Size(286, 22);
             this._minStockTextBox.TabIndex = 23;
             // 
             // _imageGroup
@@ -478,11 +482,11 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._imageGroup.Controls.Add(this._uploadImageButton);
             this._imageGroup.Controls.Add(this._preview);
             this._imageGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._imageGroup.Location = new System.Drawing.Point(705, 6);
-            this._imageGroup.Margin = new System.Windows.Forms.Padding(10, 6, 0, 6);
+            this._imageGroup.Location = new System.Drawing.Point(627, 5);
+            this._imageGroup.Margin = new System.Windows.Forms.Padding(9, 5, 0, 5);
             this._imageGroup.Name = "_imageGroup";
-            this._imageGroup.Padding = new System.Windows.Forms.Padding(12);
-            this._imageGroup.Size = new System.Drawing.Size(261, 504);
+            this._imageGroup.Padding = new System.Windows.Forms.Padding(11, 10, 11, 10);
+            this._imageGroup.Size = new System.Drawing.Size(232, 403);
             this._imageGroup.TabIndex = 1;
             this._imageGroup.TabStop = false;
             this._imageGroup.Text = "Ảnh sản phẩm";
@@ -491,9 +495,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._clearImageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._clearImageButton.Location = new System.Drawing.Point(16, 438);
+            this._clearImageButton.Location = new System.Drawing.Point(14, 350);
+            this._clearImageButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._clearImageButton.Name = "_clearImageButton";
-            this._clearImageButton.Size = new System.Drawing.Size(215, 34);
+            this._clearImageButton.Size = new System.Drawing.Size(191, 27);
             this._clearImageButton.TabIndex = 0;
             this._clearImageButton.Text = "Xóa ảnh";
             this._clearImageButton.Click += new System.EventHandler(this.ClearImage_Click);
@@ -502,9 +507,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._uploadImageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._uploadImageButton.Location = new System.Drawing.Point(16, 394);
+            this._uploadImageButton.Location = new System.Drawing.Point(14, 315);
+            this._uploadImageButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._uploadImageButton.Name = "_uploadImageButton";
-            this._uploadImageButton.Size = new System.Drawing.Size(215, 36);
+            this._uploadImageButton.Size = new System.Drawing.Size(191, 29);
             this._uploadImageButton.TabIndex = 1;
             this._uploadImageButton.Text = "Chọn ảnh...";
             this._uploadImageButton.Click += new System.EventHandler(this.UploadImage_Click);
@@ -515,9 +521,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._preview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._preview.Location = new System.Drawing.Point(16, 40);
+            this._preview.Location = new System.Drawing.Point(14, 32);
+            this._preview.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._preview.Name = "_preview";
-            this._preview.Size = new System.Drawing.Size(215, 344);
+            this._preview.Size = new System.Drawing.Size(191, 276);
             this._preview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this._preview.TabIndex = 2;
             this._preview.TabStop = false;
@@ -526,10 +533,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // 
             this._detailSummaryLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
             this._detailSummaryLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._detailSummaryLabel.Location = new System.Drawing.Point(27, 608);
+            this._detailSummaryLabel.Location = new System.Drawing.Point(24, 487);
             this._detailSummaryLabel.Name = "_detailSummaryLabel";
-            this._detailSummaryLabel.Padding = new System.Windows.Forms.Padding(10);
-            this._detailSummaryLabel.Size = new System.Drawing.Size(966, 86);
+            this._detailSummaryLabel.Padding = new System.Windows.Forms.Padding(9, 8, 9, 8);
+            this._detailSummaryLabel.Size = new System.Drawing.Size(859, 69);
             this._detailSummaryLabel.TabIndex = 3;
             this._detailSummaryLabel.Text = "Thông tin tồn kho và trạng thái";
             this._detailSummaryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -540,19 +547,20 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._footer.Controls.Add(this._saveButton);
             this._footer.Dock = System.Windows.Forms.DockStyle.Fill;
             this._footer.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this._footer.Location = new System.Drawing.Point(27, 697);
+            this._footer.Location = new System.Drawing.Point(24, 558);
+            this._footer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this._footer.Name = "_footer";
-            this._footer.Padding = new System.Windows.Forms.Padding(0, 8, 0, 0);
-            this._footer.Size = new System.Drawing.Size(966, 42);
+            this._footer.Padding = new System.Windows.Forms.Padding(0, 6, 0, 0);
+            this._footer.Size = new System.Drawing.Size(859, 34);
             this._footer.TabIndex = 4;
             // 
             // _closeButton
             // 
             this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._closeButton.Location = new System.Drawing.Point(866, 8);
-            this._closeButton.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            this._closeButton.Location = new System.Drawing.Point(770, 6);
+            this._closeButton.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this._closeButton.Name = "_closeButton";
-            this._closeButton.Size = new System.Drawing.Size(100, 34);
+            this._closeButton.Size = new System.Drawing.Size(89, 27);
             this._closeButton.TabIndex = 0;
             this._closeButton.Text = "Hủy";
             this._closeButton.Click += new System.EventHandler(this.CloseButton_Click);
@@ -563,10 +571,10 @@ namespace SIMS_WinFormsApp.Views.Catalog
             this._saveButton.FlatAppearance.BorderSize = 0;
             this._saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this._saveButton.ForeColor = System.Drawing.Color.White;
-            this._saveButton.Location = new System.Drawing.Point(718, 8);
-            this._saveButton.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            this._saveButton.Location = new System.Drawing.Point(639, 6);
+            this._saveButton.Margin = new System.Windows.Forms.Padding(7, 0, 0, 0);
             this._saveButton.Name = "_saveButton";
-            this._saveButton.Size = new System.Drawing.Size(140, 34);
+            this._saveButton.Size = new System.Drawing.Size(124, 27);
             this._saveButton.TabIndex = 1;
             this._saveButton.Text = "Lưu thay đổi";
             this._saveButton.UseVisualStyleBackColor = false;
@@ -575,12 +583,13 @@ namespace SIMS_WinFormsApp.Views.Catalog
             // frmProductEditor
             // 
             this.AcceptButton = this._saveButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._closeButton;
-            this.ClientSize = new System.Drawing.Size(1020, 760);
+            this.ClientSize = new System.Drawing.Size(907, 608);
             this.Controls.Add(this._root);
-            this.MinimumSize = new System.Drawing.Size(880, 660);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MinimumSize = new System.Drawing.Size(784, 537);
             this.Name = "frmProductEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Sản phẩm";

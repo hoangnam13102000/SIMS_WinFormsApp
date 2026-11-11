@@ -1,3 +1,4 @@
+using SIMS_WinFormsApp.Services.Implementations.Sales;
 using System;
 using SIMS_WinFormsApp.Models.DTOs.Sales;
 using System.Drawing;
@@ -12,7 +13,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
     {
         private readonly InvoiceDetails _invoice;
         private int _nextLineToPrint;
-        private Func<InvoiceDetails, bool> _returnRequestHandler;
 
         public InvoiceDetailsDialog()
             : this(CreateDesignerInvoice())
@@ -25,37 +25,23 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             InitializeComponent();
             _printDocument.BeginPrint += (sender, args) => _nextLineToPrint = 0;
             _printDocument.PrintPage += PrintDocument_PrintPage;
-            _closeButton.Click += CloseButton_Click;
-            _printButton.Click += ShowPrintPreview;
-            _returnButton.Click += ReturnButton_Click;
             _returnButton.Visible = false;
             PopulateInvoice();
             ApplyThemeColors();
         }
 
-        internal Func<InvoiceDetails, bool> ReturnRequestHandler
+        // Thông tin để mở hộp Trả hàng, do InvoiceManagementPage gán vào
+        internal IReturnManagementDataService ReturnDataService { get; set; }
+        internal int CurrentUserId { get; set; }
+        internal bool CanApproveReturns { get; set; }
+
+        // true: hiện nút Trả hàng (chỉ khi hóa đơn chưa bị hủy)
+        internal bool CanCreateReturns
         {
-            get => _returnRequestHandler;
-            set
-            {
-                _returnRequestHandler = value;
-                _returnButton.Visible = value != null && !_invoice.IsCancelled;
-            }
+            get => _returnButton.Visible;
+            set => _returnButton.Visible = value && !_invoice.IsCancelled;
         }
 
-        private void ReturnButton_Click(object sender, EventArgs e)
-        {
-            if (_returnRequestHandler != null && _returnRequestHandler(_invoice))
-            {
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-        }
-
-        private void CloseButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
 
         protected override void Dispose(bool disposing)
         {
@@ -246,14 +232,10 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _returnButton.FlatAppearance.BorderColor = AppColors.Accent;
         }
 
-        private void ShowPrintPreview(object sender, EventArgs e)
-        {
-            OpenPrintPreview(this);
-        }
 
         private void _receiptLogo_Click(object sender, EventArgs e)
         {
-            ShowPrintPreview(sender, e);
+            _printPreviewDialog.ShowDialog(this);
         }
 
         public void OpenPrintPreview(IWin32Window owner)
@@ -374,6 +356,57 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
         private static string FormatMoney(decimal amount)
         {
             return amount.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) + " đ";
+        }
+
+        private void _closeButton_Click(object sender, EventArgs e)
+        {
+            // Đóng hộp chi tiết hóa đơn
+            Close();
+        }
+
+        private void _printButton_Click(object sender, EventArgs e)
+        {
+            // Mở cửa sổ xem trước bản in (nội dung được vẽ trong PrintDocument_PrintPage)
+            _printPreviewDialog.ShowDialog(this);
+        }
+
+        private void _returnButton_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra quyền tạo yêu cầu trả hàng
+            if (ReturnDataService == null || CurrentUserId <= 0)
+            {
+                MessageBox.Show(this, "Bạn không có quyền tạo yêu cầu trả hàng.",
+                    "Trả hàng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 2. Hóa đơn đã hủy thì không trả hàng được
+            if (_invoice.IsCancelled)
+            {
+                MessageBox.Show(this, "Hóa đơn đã bị hủy, không thể trả hàng.",
+                    "Trả hàng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                // 3. Mở hộp Trả hàng / hoàn tiền cho hóa đơn này
+                using (var dialog = new InvoiceReturnDialog(
+                    ReturnDataService, _invoice, CurrentUserId, CanApproveReturns))
+                {
+                    if (dialog.ShowDialog(this) != DialogResult.OK)
+                        return;
+                }
+
+                // 4. Tạo xong: đóng hộp chi tiết, báo trang danh sách tải lại
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Không thể mở yêu cầu trả hàng.\r\n" + ex.Message,
+                    "Lỗi trả hàng", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

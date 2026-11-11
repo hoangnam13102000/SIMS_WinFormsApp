@@ -37,81 +37,10 @@ namespace SIMS_WinFormsApp.Views.UserManager
             }
             _pager = new UserManagementPager();
             _contentLayout.Controls.Add(_pager, 0, 3);
-            _headerPanel.SizeChanged += (sender, args) => LayoutHeader();
-            _toolbar.SizeChanged += (sender, args) => LayoutFilters();
-            LayoutHeader();
-            LayoutFilters();
             _pager.PageChanged += (sender, args) => ReloadUsers();
             _statusFilter.SelectedIndex = 0;
             AddUserRow("customer01", "Khách hàng mẫu", "customer@example.com", "Khách hàng", "Đang hoạt động", false);
             ClearUserSelection();
-            _searchBox.TextChanged += (sender, args) => ReloadUsers(true);
-            _statusFilter.SelectedIndexChanged += (sender, args) => ReloadUsers(true);
-            VisibleChanged += (sender, args) =>
-            {
-                if (Visible)
-                    ReloadUsers();
-            };
-            _usersGrid.CellMouseClick += UsersGrid_CellMouseClick;
-            _usersGrid.CellMouseDown += UsersGrid_CellMouseDown;
-        }
-
-        private void RefreshButton_Click(object sender, EventArgs e)
-        {
-            ReloadUsers(true);
-        }
-
-        private void _lockButton_Click(object sender, EventArgs e)
-        {
-            ToggleSelectedUserLock();
-        }
-
-        private void UsersGrid_SelectionChanged(object sender, EventArgs e)
-        {
-            UpdateActionButtons();
-        }
-
-        private void UsersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count)
-                return;
-
-            SelectUserRow(e.RowIndex);
-            ViewSelectedUser();
-        }
-
-        private void ViewDetailsMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowSelectedUser();
-        }
-
-        private void EditUserMenuItem_Click(object sender, EventArgs e)
-        {
-            EditSelectedUser();
-        }
-
-        private void ToggleLockMenuItem_Click(object sender, EventArgs e)
-        {
-            ToggleSelectedUserLock();
-        }
-
-        private void LayoutHeader()
-        {
-            _refreshButton.Location = new Point(_headerPanel.ClientSize.Width - 146, 28);
-            int right = _refreshButton.Left - 8;
-            _lockButton.Location = new Point(right - _lockButton.Width, 28);
-            _titleLabel.Width = Math.Max(180, _lockButton.Left - _titleLabel.Left - 16);
-            _lockButton.BringToFront();
-            _refreshButton.BringToFront();
-        }
-
-        private void LayoutFilters()
-        {
-            int statusLeft = Math.Max(252, _toolbar.ClientSize.Width - 340);
-            _searchBox.Width = Math.Max(140, statusLeft - 32);
-            _statusLabel.Location = new Point(statusLeft, 8);
-            _statusFilter.Location = new Point(statusLeft, 31);
-            _statusFilter.Width = Math.Max(180, _toolbar.ClientSize.Width - statusLeft - 32);
         }
 
         public frmCustomerManagement(IUserManagementService service, PermissionSet permissions) : this()
@@ -130,18 +59,112 @@ namespace SIMS_WinFormsApp.Views.UserManager
             permissions = permissions ?? PermissionSet.Empty;
             _canManage = permissions.Has(AppPermission.CUSTOMER_MANAGE);
             _canEdit = _canManage || permissions.Has(AppPermission.CUSTOMER_EDIT);
-
-            DataGridViewColumn actionsColumn = _usersGrid.Columns["Actions"];
-            actionsColumn.Visible = _canEdit || _canManage;
-            actionsColumn.ToolTipText = _canManage
-                ? "Xem, sửa hoặc khóa / mở khóa"
-                : _canEdit ? "Xem hoặc sửa" : "Xem chi tiết";
             _viewDetailsMenuItem.Visible = true;
             _editUserMenuItem.Visible = _canEdit;
             _toggleLockMenuItem.Visible = _canManage;
+            _editButton.Visible = _canEdit;
+            _lockButton.Visible = _canManage;
             UpdateActionButtons();
         }
 
+        // ===== XEM CHI TIẾT =====
+        private void _viewButton_Click(object sender, EventArgs e)
+        {
+            UserManagementRowDto user = SelectedUser();
+            if (user == null)
+            {
+                AppToast.Warning(this, "Vui lòng chọn một khách hàng.");
+                return;
+            }
+            if (_service == null) return;
+            frmUserAccountDetail.Show(this, UserDetailMapper.FromRow(user), _service);
+        }
+
+        // ===== SỬA =====
+        private void _editButton_Click(object sender, EventArgs e)
+        {
+            if (!_canEdit)
+            {
+                AppToast.Warning(this, "Bạn không có quyền sửa thông tin khách hàng.");
+                return;
+            }
+            UserManagementRowDto user = SelectedUser();
+            if (user == null)
+            {
+                AppToast.Warning(this, "Vui lòng chọn khách hàng cần sửa.");
+                return;
+            }
+            if (frmEditUserAccount.Show(this, UserDetailMapper.FromRow(user), _service) == DialogResult.OK)
+                ReloadUsers();
+        }
+
+        // ===== KHÓA / MỞ KHÓA =====
+        private void _lockButton_Click(object sender, EventArgs e)
+        {
+            if (!_canManage)
+            {
+                AppToast.Warning(this, "Bạn không có quyền khóa hoặc mở khóa khách hàng.");
+                return;
+            }
+            UserManagementRowDto user = SelectedUser();
+            if (user == null)
+            {
+                AppToast.Warning(this, "Vui lòng chọn khách hàng.");
+                return;
+            }
+            bool shouldLock = !user.IsLocked;
+            string action = shouldLock ? "khóa" : "mở khóa";
+            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
+                string.Format("Bạn có chắc muốn {0} tài khoản '{1}' không?", action, user.Username)))
+                return;
+            if (_service.SetAccountLocked(user.UserId, shouldLock) == SetAccountLockResult.Success)
+            {
+                AppToast.Success(this, "Đã " + action + " tài khoản " + user.Username + ".");
+                ReloadUsers();
+            }
+            else
+                AppToast.Warning(this, "Không tìm thấy tài khoản.");
+        }
+
+        // ===== TÌM KIẾM / LỌC / HIỆN FORM =====
+        private void _searchBox_TextChanged(object sender, EventArgs e)
+        {
+            ReloadUsers(true);
+        }
+
+        private void _statusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ReloadUsers(true);
+        }
+
+        private void _usersGrid_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible) ReloadUsers();
+        }
+
+        // ===== LƯỚI =====
+        private void UsersGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateActionButtons();
+        }
+
+        private void UsersGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= _currentRows.Count)
+                return;
+            SelectUserRow(e.RowIndex);
+            _viewButton_Click(sender, e);
+        }
+
+        private void UsersGrid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right || e.RowIndex < 0) return;
+            _usersGrid.ClearSelection();
+            _usersGrid.Rows[e.RowIndex].Selected = true;
+            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells[0];
+        }
+
+        // ===== TẢI DỮ LIỆU =====
         private async void ReloadUsers(bool resetPage = false)
         {
             if (_service == null || IsDisposed) return;
@@ -150,8 +173,8 @@ namespace SIMS_WinFormsApp.Views.UserManager
             IUserManagementService service = _service;
             int pageIndex = _pager.PageIndex;
             string searchTerm = _searchBox.Text;
-            string status = _statusFilter.SelectedIndex == 1 ? "ACTIVE" :
-                _statusFilter.SelectedIndex == 2 ? "INACTIVE" : null;
+            string status = _statusFilter.SelectedIndex == 1 ? "UNLOCKED" :
+            _statusFilter.SelectedIndex == 2 ? "LOCKED" : null;
 
             try
             {
@@ -182,34 +205,7 @@ namespace SIMS_WinFormsApp.Views.UserManager
             }
         }
 
-        private void UsersGrid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right || e.RowIndex < 0) return;
-            _usersGrid.ClearSelection();
-            _usersGrid.Rows[e.RowIndex].Selected = true;
-            _usersGrid.CurrentCell = _usersGrid.Rows[e.RowIndex].Cells[0];
-        }
-
-        private void UsersGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left || e.RowIndex < 0 || e.RowIndex >= _currentRows.Count ||
-                e.ColumnIndex < 0 ||
-                _usersGrid.Columns[e.ColumnIndex].Name != "Actions" || (!_canEdit && !_canManage)) return;
-            SelectUserRow(e.RowIndex);
-            const int iconSize = 24;
-            const int gap = 8;
-            int stripWidth = iconSize * 3 + gap * 2;
-            int offset = e.X - (_usersGrid.Columns[e.ColumnIndex].Width - stripWidth) / 2;
-            int actionIndex = offset / (iconSize + gap);
-            if (offset < 0 || actionIndex > 2 || offset % (iconSize + gap) >= iconSize) return;
-            if (actionIndex == 0)
-                ViewSelectedUser();
-            else if (actionIndex == 1 && _canEdit)
-                EditSelectedUser();
-            else if (actionIndex == 2 && _canManage)
-                ToggleSelectedUserLock();
-        }
-
+        // ===== HÀM PHỤ =====
         private void SelectUserRow(int rowIndex)
         {
             _usersGrid.CurrentCell = _usersGrid.Rows[rowIndex].Cells[0];
@@ -227,20 +223,20 @@ namespace SIMS_WinFormsApp.Views.UserManager
         {
             UserManagementRowDto user = SelectedUser();
             bool hasSelection = user != null;
+            _viewButton.Enabled = hasSelection;
+            _editButton.Enabled = hasSelection && _canEdit;
             _lockButton.Enabled = hasSelection && _canManage;
-            _lockButton.Text = user == null || !user.IsLocked ? "Khóa" : "Mở khóa";
+            _lockButton.Text = user != null && user.IsLocked ? "Mở khóa" : "Khóa";
+            _lockButton.ForeColor = user != null && user.IsLocked ? AppColors.Success : AppColors.Error;
         }
 
         private void AddUserRow(string username, string fullName, string email, string role, string status, bool isLocked)
         {
-            _usersGrid.Rows.Add(
-                username,
-                fullName,
-                email,
-                role,
-                status,
-                isLocked ? "Đang khóa" : "Bình thường",
-                IconBitmapCache.GetActionStrip(_canEdit, _canManage, isLocked));
+            int index = _usersGrid.Rows.Add(username, fullName, email, role, status,
+                isLocked ? "✕ Đang khóa" : "✓ Bình thường");
+            DataGridViewCell lockCell = _usersGrid.Rows[index].Cells["Lock"];
+            lockCell.Style.ForeColor = isLocked ? AppColors.Error : AppColors.Success;
+            lockCell.Style.SelectionForeColor = lockCell.Style.ForeColor;
         }
 
         private UserManagementRowDto SelectedUser()
@@ -249,47 +245,9 @@ namespace SIMS_WinFormsApp.Views.UserManager
             return index >= 0 && index < _currentRows.Count ? _currentRows[index] : null;
         }
 
-        private void ShowSelectedUser()
+        // TẠM: xóa hàm này sau khi đã xử lý nút button1 trong Designer
+        private void button1_Click(object sender, EventArgs e)
         {
-            UserManagementRowDto user = SelectedUser();
-            if (_service != null && user != null)
-                frmUserAccountDetail.Show(this, UserDetailMapper.FromRow(user), _service);
-        }
-
-        private void ViewSelectedUser()
-        {
-            ShowSelectedUser();
-        }
-
-        private void EditSelectedUser()
-        {
-            if (!_canEdit)
-            {
-                AppToast.Warning(this, "Bạn không có quyền sửa thông tin khách hàng.");
-                return;
-            }
-            UserManagementRowDto user = SelectedUser();
-            if (user != null && frmEditUserAccount.Show(this, UserDetailMapper.FromRow(user), _service) == DialogResult.OK)
-                ReloadUsers();
-        }
-
-        private void ToggleSelectedUserLock()
-        {
-            if (!_canManage)
-            {
-                AppToast.Warning(this, "Bạn không có quyền khóa hoặc mở khóa khách hàng.");
-                return;
-            }
-            UserManagementRowDto user = SelectedUser();
-            if (user == null) return;
-            bool shouldLock = !user.IsLocked;
-            if (!DialogHelper.Confirm(this, "Xác nhận thao tác",
-                string.Format("Bạn có chắc muốn {0} tài khoản '{1}' không?", shouldLock ? "khóa" : "mở khóa", user.Username)))
-                return;
-            if (_service.SetAccountLocked(user.UserId, shouldLock) == SetAccountLockResult.Success)
-                ReloadUsers();
-            else
-                AppToast.Warning(this, "Không tìm thấy tài khoản.");
         }
     }
 }

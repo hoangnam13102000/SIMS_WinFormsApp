@@ -17,6 +17,7 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
         private List<PurchaseReceiptListItemDto> _receipts = new List<PurchaseReceiptListItemDto>();
         private int _pageIndex;
         private bool _initialized;
+        public IReadOnlyList<PurchaseReceiptListItemDto> Receipts => _receipts;
 
         public PurchaseReceiptListPresenter(IPurchaseReceiptListView view, IInventoryService service)
         {
@@ -29,9 +30,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
             _view.PageSizeChanged += OnPageSizeChanged;
             _view.PreviousPageRequested += OnPreviousPageRequested;
             _view.NextPageRequested += OnNextPageRequested;
-            _view.CreateRequested += OnCreateRequested;
-            _view.CsvExportRequested += OnCsvExportRequested;
-            _view.ExcelExportRequested += OnExcelExportRequested;
             _view.ReceiptCodeCopyRequested += OnReceiptCodeCopyRequested;
             _view.DetailRequested += OnDetailRequested;
         }
@@ -108,21 +106,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
             DisplayCurrentPage();
         }
 
-        private void OnCreateRequested(object sender, EventArgs e)
-        {
-            _view.OpenCreateForm();
-        }
-
-        private void OnCsvExportRequested(object sender, EventArgs e)
-        {
-            Export(new CsvTableExporter());
-        }
-
-        private void OnExcelExportRequested(object sender, EventArgs e)
-        {
-            Export(new ExcelTableExporter());
-        }
-
         private void OnReceiptCodeCopyRequested(string receiptCode)
         {
             _view.CopyReceiptCode(receiptCode);
@@ -182,37 +165,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Inventory
                 .Take(PageSize)
                 .ToList();
             _view.DisplayPage(page, _receipts.Count, _pageIndex + 1, pageCount);
-        }
-
-        private void Export(ITableDataExporter exporter)
-        {
-            string[] headers =
-            {
-                "Mã phiếu", "Nhà cung cấp", "Người tạo", "Ngày tạo", "Số SP", "Tổng tiền", "Trạng thái"
-            };
-            List<object[]> rows = _receipts.Select(receipt => new object[]
-            {
-                receipt.ReceiptCode,
-                receipt.SupplierName,
-                receipt.CreatedByName,
-                receipt.CreatedAt.ToString("dd/MM/yyyy", VietnameseCulture),
-                receipt.ItemCount,
-                receipt.TotalAmount.ToString("N0", VietnameseCulture),
-                GetStatusLabel(receipt.Status)
-            }).ToList();
-
-            TableExportRunner.Run(_view.Owner, exporter, "phiếu nhập kho",
-                () => headers,
-                () => rows);
-        }
-
-        private static string GetStatusLabel(string status)
-        {
-            if (string.Equals(status, "COMPLETED", StringComparison.OrdinalIgnoreCase))
-                return "Hoàn tất";
-            if (string.Equals(status, "CANCELLED", StringComparison.OrdinalIgnoreCase))
-                return "Đã hủy";
-            return status ?? string.Empty;
         }
     }
 }

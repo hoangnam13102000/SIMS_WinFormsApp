@@ -6243,7 +6243,7 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities
 		
 		private string _Note;
 		
-		private int _ReportedBy;
+		private System.Nullable<int> _ReportedBy;
 		
 		private System.DateTime _CreatedAt;
 		
@@ -6275,7 +6275,7 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities
     partial void OnStockAtReportChanged();
     partial void OnNoteChanging(string value);
     partial void OnNoteChanged();
-    partial void OnReportedByChanging(int value);
+    partial void OnReportedByChanging(System.Nullable<int> value);
     partial void OnReportedByChanged();
     partial void OnCreatedAtChanging(System.DateTime value);
     partial void OnCreatedAtChanged();
@@ -6401,8 +6401,8 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReportedBy", DbType="Int NOT NULL")]
-		public int ReportedBy
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ReportedBy", DbType="Int")]
+		public System.Nullable<int> ReportedBy
 		{
 			get
 			{
@@ -6590,7 +6590,7 @@ namespace SIMS_WinFormsApp.DAL.Linq.Entities
 					}
 					else
 					{
-						this._ReportedBy = default(int);
+						this._ReportedBy = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Users");
 				}

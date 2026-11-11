@@ -53,6 +53,9 @@
     <EmbeddedResource Include="Views\Dialogs\frmMessageDialog.resx">
       <DependentUpon>frmMessageDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\frmReportViewer.resx">
+      <DependentUpon>frmReportViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Reports\ucInventoryReport.resx">
       <DependentUpon>ucInventoryReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -83,6 +86,16 @@
     <None Include="DAL\Linq\Sims.dbml.layout">
       <DependentUpon>Sims.dbml</DependentUpon>
     </None>
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.InventoryImportTrendPoint.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.InventoryReportData.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.InventoryReportProduct.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.RevenueCategoryTotal.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.RevenueProductTotal.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.RevenueReportData.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.RevenueTrendPoint.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalProductTotal.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalReasonTotal.datasource" />
+    <None Include="Properties\DataSources\SIMS_WinFormsApp.Services.Implementations.Reports.StockDisposalReportData.datasource" />
     <None Include="Resources\Auth\auth_brand_preview.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

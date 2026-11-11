@@ -8,7 +8,7 @@ namespace SIMS_WinFormsApp.Services.Security
         private const string Prefix = "PBKDF2";
         private const int SaltSize = 16;
         private const int KeySize = 32;
-        private const int DefaultIterations = 100000;
+        private const int DefaultIterations = 10000;
 
         public string Hash(string plainPassword)
         {

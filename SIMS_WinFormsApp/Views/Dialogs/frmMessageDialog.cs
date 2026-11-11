@@ -62,6 +62,8 @@ namespace SIMS_WinFormsApp.Views.Dialogs
             int safeDefaultIndex = Math.Max(0, Math.Min(defaultButtonIndex, buttonTexts.Length - 1));
             AcceptButton = buttons[safeDefaultIndex];
             _closeResult = closeResult;
+            int messageHeight = lblMessage.GetPreferredSize(new Size(472, 0)).Height + lblMessage.Margin.Vertical;
+            ClientSize = new Size(520, 72 + messageHeight + 64);
         }
 
         private DialogResult _closeResult = DialogResult.Cancel;

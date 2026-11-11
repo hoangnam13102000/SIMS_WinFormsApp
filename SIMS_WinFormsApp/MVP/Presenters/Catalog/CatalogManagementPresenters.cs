@@ -43,11 +43,6 @@ namespace SIMS_WinFormsApp.MVP.Presenters.Catalog
             };
         }
 
-        public ProductEditDto Get(int productId) => _service.GetProduct(productId);
-        public ProductEditDto NewDraft() => new ProductEditDto { MinStock = 5, IsActive = true };
-        public CatalogSaveResult Save(ProductEditDto dto) => _service.SaveProduct(dto);
-        public CatalogSaveResult SetActive(int productId, bool active) => _service.SetProductActive(productId, active);
-        public IReadOnlyList<LookupItem> Categories() => _service.GetCategoryOptions();
         public IReadOnlyList<LookupItem> CategoryFilterOptions() => _service.GetAllCategoryOptions();
         public IReadOnlyList<object[]> ExportRows()
         {
