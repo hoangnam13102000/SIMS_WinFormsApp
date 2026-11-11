@@ -59,25 +59,13 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                 _searchBox.KeyDown += SearchBox_KeyDown;
                 _exportButton.Click += (sender, args) => ReloadInvoices();
                 _refreshButton.Click += (sender, args) => ReloadInvoices();
-                _invoicesGrid.CellClick += InvoicesGrid_CellClick;
-                _invoicesGrid.CellMouseMove += InvoicesGrid_CellMouseMove;
-                _invoicesGrid.CellDoubleClick += (sender, args) =>
-                {
-                    if (args.RowIndex >= 0 &&
-                        args.ColumnIndex != _invoicesGrid.Columns["Actions"].Index)
-                        ShowSelectedInvoice();
-                };
             }
             else
             {
                 _invoicesGrid.Rows.Add(1, "HD-20261028-0001", DateTime.Today.ToString("dd/MM/yyyy HH:mm"),
-                    "Khách hàng mẫu", "Nhân viên mẫu", "250.000 đ", "Hoàn thành",
-                    IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)),
-                    IconBitmapCache.Get(IconChar.Print, AppColors.Accent, new Size(24, 24)));
+                    "Khách hàng mẫu", "Nhân viên mẫu", "250.000 đ", "Hoàn thành");
                 _invoicesGrid.Rows.Add(2, "HD-20261028-0002", DateTime.Today.ToString("dd/MM/yyyy HH:mm"),
-                    "Khách lẻ", "Nhân viên mẫu", "75.000 đ", "Đã hủy",
-                    IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)),
-                    IconBitmapCache.Get(IconChar.Print, AppColors.Accent, new Size(24, 24)));
+                    "Khách lẻ", "Nhân viên mẫu", "75.000 đ", "Đã hủy");
             }
         }
 
@@ -134,10 +122,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             _refreshButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(29, 78, 216);
             _refreshButton.BackColor = AppColors.Accent;
             _refreshButton.ForeColor = AppColors.White;
-            _invoicesGrid.Columns["Actions"].DefaultCellStyle.BackColor = AppColors.White;
-            _invoicesGrid.Columns["Actions"].DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
-            _invoicesGrid.Columns["Print"].DefaultCellStyle.BackColor = AppColors.White;
-            _invoicesGrid.Columns["Print"].DefaultCellStyle.SelectionBackColor = AppColors.AccentSelectionBg;
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
@@ -179,13 +163,9 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     int rowIndex = _invoicesGrid.Rows.Add(
                         row.InvoiceId, row.InvoiceCode, row.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
                         row.CustomerName, row.CashierName, FormatMoney(row.TotalAmount),
-                        cancelled ? "Đã hủy" : "Hoàn thành",
-                        IconBitmapCache.Get(IconChar.Eye, AppColors.TableViewAction, new Size(24, 24)),
-                        IconBitmapCache.Get(IconChar.Print, AppColors.Accent, new Size(24, 24)));
+                        cancelled ? "Đã hủy" : "Hoàn thành");
                     _invoicesGrid.Rows[rowIndex].Cells["Status"].Style.ForeColor =
                         cancelled ? AppColors.Error : AppColors.Success;
-                    _invoicesGrid.Rows[rowIndex].Cells["Actions"].ToolTipText = "Xem chi tiết hóa đơn";
-                    _invoicesGrid.Rows[rowIndex].Cells["Print"].ToolTipText = "In hóa đơn";
                 }
             }
             catch (Exception ex)
@@ -195,63 +175,22 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             }
         }
 
-        private void InvoicesGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0)
-                return;
+        // ---------- Nút Xem chi tiết / In hóa đơn ----------
 
-            _invoicesGrid.CurrentCell = _invoicesGrid.Rows[e.RowIndex].Cells["Invoice"];
-            if (e.ColumnIndex == _invoicesGrid.Columns["Actions"].Index)
-                ShowSelectedInvoice();
-            else if (e.ColumnIndex == _invoicesGrid.Columns["Print"].Index)
-                PrintSelectedInvoice();
-        }
-
-        private void InvoicesGrid_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private void _viewButton_Click(object sender, EventArgs e)
         {
-            _invoicesGrid.Cursor = e.RowIndex >= 0 &&
-                (e.ColumnIndex == _invoicesGrid.Columns["Actions"].Index ||
-                 e.ColumnIndex == _invoicesGrid.Columns["Print"].Index)
-                ? Cursors.Hand
-                : Cursors.Default;
-        }
-
-        private void PrintSelectedInvoice()
-        {
+            // 1. Kiểm tra đã chọn hóa đơn
             if (_invoicesGrid.CurrentRow == null || _dataService == null)
+            {
+                MessageBox.Show(this, "Vui lòng chọn 1 hóa đơn trong bảng.",
+                    "Chưa chọn hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
+            }
 
             int invoiceId = Convert.ToInt32(_invoicesGrid.CurrentRow.Cells["InvoiceId"].Value);
             try
             {
-                InvoiceDetails invoice = LoadInvoiceDetails(invoiceId);
-                if (invoice == null)
-                {
-                    MessageBox.Show(this, "Hóa đơn không còn tồn tại hoặc bạn không có quyền in.",
-                        "Không tìm thấy hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ReloadInvoices();
-                    return;
-                }
-
-                _onInvoiceViewed?.Invoke(invoiceId);
-                using (var dialog = new InvoiceDetailsDialog(invoice))
-                    dialog.OpenPrintPreview(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, "Không thể tải hóa đơn để in.\r\n" + ex.Message,
-                    "Lỗi in hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void ShowSelectedInvoice()
-        {
-            if (_invoicesGrid.CurrentRow == null || _dataService == null)
-                return;
-
-            int invoiceId = Convert.ToInt32(_invoicesGrid.CurrentRow.Cells["InvoiceId"].Value);
-            try
-            {
+                // 2. Lấy chi tiết hóa đơn từ CSDL
                 InvoiceDetails invoice = LoadInvoiceDetails(invoiceId);
                 if (invoice == null)
                 {
@@ -261,6 +200,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     return;
                 }
 
+                // 3. Đánh dấu đã xem, mở hộp Chi tiết hóa đơn
                 _onInvoiceViewed?.Invoke(invoiceId);
                 using (var dialog = new InvoiceDetailsDialog(invoice))
                 {
@@ -268,6 +208,8 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
                     dialog.CurrentUserId = _currentUserId;
                     dialog.CanApproveReturns = _canApproveReturns;
                     dialog.CanCreateReturns = _canCreateReturns;
+
+                    // 4. Có tạo yêu cầu trả hàng thì tải lại danh sách
                     if (dialog.ShowDialog(this) == DialogResult.OK)
                         ReloadInvoices();
                 }
@@ -279,12 +221,52 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             }
         }
 
+        private void _printButton_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra đã chọn hóa đơn
+            if (_invoicesGrid.CurrentRow == null || _dataService == null)
+            {
+                MessageBox.Show(this, "Vui lòng chọn 1 hóa đơn trong bảng.",
+                    "Chưa chọn hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int invoiceId = Convert.ToInt32(_invoicesGrid.CurrentRow.Cells["InvoiceId"].Value);
+            try
+            {
+                // 2. Lấy chi tiết hóa đơn từ CSDL
+                InvoiceDetails invoice = LoadInvoiceDetails(invoiceId);
+                if (invoice == null)
+                {
+                    MessageBox.Show(this, "Hóa đơn không còn tồn tại hoặc bạn không có quyền in.",
+                        "Không tìm thấy hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ReloadInvoices();
+                    return;
+                }
+
+                // 3. Đánh dấu đã xem, mở báo cáo hóa đơn (RDLC)
+                _onInvoiceViewed?.Invoke(invoiceId);
+                using (var dialog = new InvoiceDetailsDialog(invoice))
+                    dialog.OpenPrintPreview(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Không thể tải hóa đơn để in.\r\n" + ex.Message,
+                    "Lỗi in hóa đơn", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void _invoicesGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Nhấp đúp 1 dòng = bấm nút Xem chi tiết
+            if (e.RowIndex >= 0)
+                _viewButton_Click(sender, e);
+        }
+
         private InvoiceDetails LoadInvoiceDetails(int invoiceId)
         {
             return _dataService.GetInvoiceDetails(invoiceId, _canViewAll, _currentUserId);
         }
-
-      
 
         private static string FormatMoney(decimal amount)
         {

@@ -8,8 +8,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
     partial class InvoiceDetailsDialog
     {
         private IContainer components = null;
-        private System.Drawing.Printing.PrintDocument _printDocument;
-        private PrintPreviewDialog _printPreviewDialog;
+
         private TableLayoutPanel _root;
         private Label _invoiceHeading;
         private Panel _detailsCard;
@@ -64,8 +63,6 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InvoiceDetailsDialog));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            this._printDocument = new System.Drawing.Printing.PrintDocument();
-            this._printPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
             this._root = new System.Windows.Forms.TableLayoutPanel();
             this._invoiceHeading = new System.Windows.Forms.Label();
             this._detailsCard = new System.Windows.Forms.Panel();
@@ -131,19 +128,7 @@ namespace SIMS_WinFormsApp.Views.Sales.InvoiceManagement
             ((System.ComponentModel.ISupportInitialize)(this._receiptLogo)).BeginInit();
             this._actionsPanel.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // _printPreviewDialog
-            // 
-            this._printPreviewDialog.AutoScrollMargin = new System.Drawing.Size(0, 0);
-            this._printPreviewDialog.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this._printPreviewDialog.ClientSize = new System.Drawing.Size(882, 653);
-            this._printPreviewDialog.Document = this._printDocument;
-            this._printPreviewDialog.Enabled = true;
-            this._printPreviewDialog.Icon = ((System.Drawing.Icon)(resources.GetObject("_printPreviewDialog.Icon")));
-            this._printPreviewDialog.Name = "_printPreviewDialog";
-            this._printPreviewDialog.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this._printPreviewDialog.Visible = false;
-            // 
+             // 
             // _root
             // 
             this._root.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));

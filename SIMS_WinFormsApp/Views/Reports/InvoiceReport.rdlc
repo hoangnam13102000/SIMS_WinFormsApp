@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="SIMSDataSource">
+      <ConnectionProperties>
+		  <DataProvider>System.Data.DataSet</DataProvider>
+		  <ConnectString>/* Local Connection */</ConnectString>
+      </ConnectionProperties>
+      <rd:DataSourceID>e0c51164-3a61-42f3-a998-8a5244b27a55</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="InvoiceHeaderDataSet">
+      <Query>
+        <DataSourceName>SIMSDataSource</DataSourceName>
+		  <CommandText>/* Local Query */</CommandText>
+
+	  </Query>
+      <Fields>
+        <Field Name="CancelledAt">
+          <DataField>CancelledAt</DataField>
+          <rd:TypeName>System.Nullable`1[[System.DateTime, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]</rd:TypeName>
+        </Field>
+        <Field Name="CancelReason">
+          <DataField>CancelReason</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CashierName">
+          <DataField>CashierName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CreatedAt">
+          <DataField>CreatedAt</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="CustomerName">
+          <DataField>CustomerName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DiscountAmount">
+          <DataField>DiscountAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="InvoiceCode">
+          <DataField>InvoiceCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="InvoiceId">
+          <DataField>InvoiceId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="IsCancelled">
+          <DataField>IsCancelled</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="PaymentMethod">
+          <DataField>PaymentMethod</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PointsDiscountAmount">
+          <DataField>PointsDiscountAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="PointsUsed">
+          <DataField>PointsUsed</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Subtotal">
+          <DataField>Subtotal</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="TotalAmount">
+          <DataField>TotalAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="VatAmount">
+          <DataField>VatAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="VatRate">
+          <DataField>VatRate</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Models.DTOs.Sales</rd:DataSetName>
+        <rd:TableName>InvoiceDetails</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Models.DTOs.Sales.InvoiceDetails, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
+    </DataSet>
+    <DataSet Name="InvoiceLinesDataSet">
+      <Query>
+        <DataSourceName>SIMSDataSource</DataSourceName>
+        <CommandText>LocalReport</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="LineTotal">
+          <DataField>LineTotal</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="ProductId">
+          <DataField>ProductId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ProductName">
+          <DataField>ProductName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Quantity">
+          <DataField>Quantity</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="UnitPrice">
+          <DataField>UnitPrice</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>SIMS_WinFormsApp.Models.DTOs.Sales</rd:DataSetName>
+        <rd:TableName>InvoiceLine</rd:TableName>
+        <rd:ObjectDataSourceType>SIMS_WinFormsApp.Models.DTOs.Sales.InvoiceLine, SIMS_WinFormsApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="InvoiceLayout">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>7.6cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>1.8cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Rectangle Name="LogoContainer">
+                          <ReportItems>
+                            <Image Name="ReceiptLogo">
+                              <Source>Embedded</Source>
+                              <Value>ReceiptLogo</Value>
+                              <MIMEType>image/png</MIMEType>
+                              <Sizing>FitProportional</Sizing>
+                              <Top>0cm</Top>
+                              <Left>2.9cm</Left>
+                              <Height>1.8cm</Height>
+                              <Width>1.8cm</Width>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                                <VerticalAlign>Middle</VerticalAlign>
+                              </Style>
+                            </Image>
+                          </ReportItems>
+                          <KeepTogether>true</KeepTogether>
+                          <Style />
+                        </Rectangle>
+                      </CellContents>
+                      <DataElementOutput>NoOutput</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.6cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="StoreName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>SIMS</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>15pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#0f172a</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.45cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ReportTitle">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>HÓA ĐƠN BÁN HÀNG</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.45cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="InvoiceCode">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Mã hóa đơn: " &amp; First(Fields!InvoiceCode.Value, "InvoiceHeaderDataSet")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#1e64c8</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CreatedAt">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(First(Fields!CreatedAt.Value, "InvoiceHeaderDataSet"), "dd/MM/yyyy HH:mm")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#64748b</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.06cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="HeaderSeparator">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>#e2e8f0</BackgroundColor>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>NoOutput</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CustomerName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Khách hàng: " &amp; First(Fields!CustomerName.Value, "InvoiceHeaderDataSet")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#1e293b</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CashierName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Nhân viên: " &amp; First(Fields!CashierName.Value, "InvoiceHeaderDataSet")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#1e293b</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.06cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductSeparator">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>#e2e8f0</BackgroundColor>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>NoOutput</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.9cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductLine">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ProductName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#1e293b</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                                <PaddingBottom>1pt</PaddingBottom>
+                              </Style>
+                            </Paragraph>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=CStr(Fields!Quantity.Value) &amp; " x " &amp; Format(Fields!UnitPrice.Value, "N0") &amp; " đ     " &amp; Format(Fields!LineTotal.Value, "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.06cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalsSeparator">
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>#e2e8f0</BackgroundColor>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>NoOutput</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Subtotal">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Tạm tính: " &amp; Format(First(Fields!Subtotal.Value, "InvoiceHeaderDataSet"), "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Discount">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Giảm giá: " &amp; Format(First(Fields!DiscountAmount.Value, "InvoiceHeaderDataSet") + First(Fields!PointsDiscountAmount.Value, "InvoiceHeaderDataSet"), "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VatAmount">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="VAT (" &amp; Format(First(Fields!VatRate.Value, "InvoiceHeaderDataSet"), "0.##") &amp; "%): " &amp; Format(First(Fields!VatAmount.Value, "InvoiceHeaderDataSet"), "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.5cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalCaption">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>TỔNG THANH TOÁN</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#1e293b</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.65cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalAmount">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(First(Fields!TotalAmount.Value, "InvoiceHeaderDataSet"), "N0") &amp; " đ"</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>15pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#1e64c8</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.4cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PaymentMethod">
+                          <CanGrow>true</CanGrow>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Thanh toán: " &amp; Switch(First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet") = "CASH", "Tiền mặt", First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet") = "BANK_TRANSFER", "Chuyển khoản", First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet") = "PAYPAL", "PayPal", First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet") = "CARD", "Thẻ", True, IIF(IsNothing(First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet")), "", CStr(First(Fields!PaymentMethod.Value, "InvoiceHeaderDataSet"))))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#475569</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.5cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Footer">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(First(Fields!IsCancelled.Value, "InvoiceHeaderDataSet"), "HÓA ĐƠN ĐÃ HỦY", "Cảm ơn quý khách!")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>=IIF(First(Fields!IsCancelled.Value, "InvoiceHeaderDataSet"), "#DC2626", "#15803D")</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember>
+                  <Group Name="InvoiceLinesDetails" />
+                </TablixMember>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <KeepTogether>true</KeepTogether>
+            <NoRowsMessage>Không có dữ liệu hóa đơn.</NoRowsMessage>
+            <DataSetName>InvoiceLinesDataSet</DataSetName>
+            <Top>0.1cm</Top>
+            <Left>0.2cm</Left>
+            <Height>8.83cm</Height>
+            <Width>7.6cm</Width>
+            <Style>
+              <FontFamily>Segoe UI</FontFamily>
+              <FontSize>8pt</FontSize>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>8.93cm</Height>
+        <Style />
+      </Body>
+      <Width>7.8cm</Width>
+      <Page>
+        <PageHeight>100cm</PageHeight>
+        <PageWidth>8cm</PageWidth>
+        <InteractiveHeight>0cm</InteractiveHeight>
+        <InteractiveWidth>0cm</InteractiveWidth>
+        <LeftMargin>0.2cm</LeftMargin>
+        <RightMargin>0.2cm</RightMargin>
+        <TopMargin>0.2cm</TopMargin>
+        <BottomMargin>0.2cm</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="ReceiptLogo">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>iVBORw0KGgoAAAANSUhEUgAAAEQAAABBCAYAAABo3gIBAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABRXSURBVHhe7ZsHVFXH1sf3xSQW1CjGEpOXaMxLbKBgQUWxYYtBATWiCHYTg91osIICIkqzEaR3LtIFKdJsYIkp5ntJNM8v76VYqAKKgJr7f2tOgctwL6LGrHwv33+tWbdw5pxzf2fvPXtmNkT/r/8bAqDgv/tL6y8LBEC7hdsSHUxsg7PGLQ2LdfDOmMEf85fRr5WVXcyWBV942cQDpO8EHUNn9JzkjXmbYrbyx/4lZLk2Irz1MDdQ/0/RSn+r0KjfFvQ088Fqt+Pm/PH/1bp+/Va3t6fuq6Z+DtDR34JW+tvqm2KwM8YtCkjk+/zXSFOAzC/4V9/XJ+wB9WdAmHUwGJKVGDhixPzPzvB9nkWa7uFPpaIitDewOnCT+m1tBIRZy4tDXfHeypAAvs+ziAH500NZ6ZyyuevEA0LcoIEOoAGsbUd/C+9a34RLA/njn0XqMP7UcOZviXPpY37ont5YT3Qb7wGjub7/djyc/h5/3O+tPzWUC1dv9d7glW2z/UiulUql6sj//Xnpd4eiUqn03I9/N9bucOF6m4MFO6z35W22Cr+2yvJ01YfmeRUrzPOqlsrt/Zw7y1ibkV+1nLVpeRX2VoV1Sw9+U9WXP+/vKZVK1WH9paqx03MqVlnkVy13uXLPiD+mRdJGDkCnj3zPrxztkHby7x/Fl3RbloB2i46jzYJktF2Vh3bhFWiT+ABt4mvRJqFOrUmfE8XPrRMfoG3yb+geX1lrllnmzF+H19M8zeV+55a96/3tL51iKtH6WK1wT11jyzEo/W7qps+fEIymi687cnbtEPu4n1+2VoJmhoHMg0AzQ0AzgkF2CSCf66CQ26DAm1K7JTX5s9r3QbdAwbdBYWVoexwwPVEUqOmaMghNf2tO
+Sz8r3Nnd/gRoUyEo4Dbo6A2Q/w1Q0G1QbC26JVbWWeUUL+X7tUjf/njzzYkbk/L0ZkWAJviCJh0CTf8MZB4Aej8AND8W5HVNgnFD/NFBzTU1IEIrQsfU32B7rrLFwbQ5QIsPnV3XdWU6yCoCtD5PfAAMRoB0b6yFlUMvqQYrLt6dyPdvVntCz002WBJ1U2HmBxrrJcKYcgT0nh/ovaMg2zgJxi3pguwpsMZDuAkKlhuDIbfb4lOLf4ihaWW+/PXV1RwEWR8fLVzVfUUKaHYk6IMI0IY8EX79vUn3wiBFV+Pt+OLvVCpVa/48GnUg9tLYd+YF15KJN8jUAzTBGzTpIGjKYRHK3CgofH4QLcP/V/EpqF+Uh1H/ngPCmrIG+ikl8fw9yFJ3HXUw6u/X+Bd+9OqHx0FW4aC5DEgkaEO+eJ3AXzXc2y3oJtVh/umqmfUX0qbEU9f6DVgQXEkj9oFGu4PGeoLGe4PMDopWYnsM5HlVhHD0F5D/Lw0mycNoAkQdCrOQW9BJfAST9DJX/j5kPc46NgScW/nqsiQxps0OawCy8ZQERIP1su/jH2BwWlkQf75GAtBqwsfh52mkB2iEK2j0PtFCxnuJQCYegM7286DQ2yDfn0Cf/SwFrCLR/GU/lZ5C/cXrY4fU5Pfh5egeX/5w81d3B/D30hJt8D+36G9L40DmwSDL4AYgc6NAm06rxTbOQti1ldXok1icy5+zkda4n9jYkVnB0F2gEXtAJu4NQJjLMCgfRIE8roGCSvBSVBU6RRThlahbNXoRtx7pHrsLir4HCi4WW4jUhPcljVtUNV5O/Q0zckvX8/fREjkEFSx+baES9F4AaGagBCSUA6JuIU2BvJVQlMeft14AOhvM8ysmQ2fQcGfRQkz2gkz3g8Z5gswOiPFj4hG0s8/DwMifv5h+smTjxksVwwJ/vP/m7iuV7849XTXTKLU8o0d8eW13ZdGDHrFFNa8qb9f0jC2q7qEsqu6pZK/F9187
+VlbVP7Xq/Oy8srn8fbREn/ifW/TGwljQZD/Q9KOgGQxIEAfkjOiWWoHcY0BO8eeu1+p96Z+0H38AZOQEGsYBGe8JmnQAZHYYXW2iMcv9pDuAF/hzyEosUvUJ/LH23ZifavrE/1TzVsatml4p/67pzV7Tbte8daFU9Trfp6XaHlhg/YZNuIo9GJrqKwEJUAMSIQb9zeceA4RZSHE+f35BLHANX+B3hQxdQEN2qQFhLrMfNMELNOEAus6PxEeHT63h+/9Rcg07a9XbJhw07hDIjKUBvmIaYO4PsgwEzQ6RgESDGBAWqzTlR/UWogVIcMLnRq9N8QQN2tkAxLixy7SZEQTbfVk+fN8/Sq4hBRZvzQt5SKY+oAk+EhCWF7FE8SjIIhA0SwIyJxqKLRfFH6/VQppxmWVOyfa6pp4gQ0fOQhgQD9BYH/RbGlnEVsr5vuryDi0wnfxheITxPN/PTewCTtlsiXfgj3kauYWfNe9jHfyQRnlKaQADwvIiGYh/A5DZUei6JO7R9LBvC15goyFLCfiEkQGJYS5Tcpq/lqDZG5WeL47cDzJ0Ag3ZDRrKgLiATNyEobf19ADM35vZrHUs2xHn0nuaD1oZuYIG7hRW0zuN9sI0+7BYADr88S2Vd1TBlHfmBtTQiP2g0ftB7MHJedHUw9JUQgJiEYKuKzNh71dg73VDNaZ9TGVT61AHkqgFyKQVocmKIW4iECNmIbtBxi6gkXtAI93xt+VxqvR/3THk+8nyCDlj0WvaQdC7DlAM3AKdgVvRaiBbSXdAu+HumLoiJJbv0xL5xV2c2M86qIaGu4NGig+nIS9io97hBgsxD8Iry5Kw/LOCtazv7KxSyw6xd5sHklCief12jF1QDhntkSxkF2jobtFtWJsVidedCx9lfF/5Lt9P1nT7sCTF4N1Q6Isw5CZvL7Q3dsf79pFhj8s61XVEeWH8AOuAKhrmDjJmD2avmDkLo546EF/QtKPQW5QEG+9TO+X+tqcq
+5rQXgHAw6mNIMy4zelFQVhMg7HVmMMihAD3dLj6MunxD64KOia3/JdJ3hEJ/KxRqQOTGVth1R+zH+/YRkXxfTYpIvzzCwDrgrnBPw1w0A2FpAAMy2Rd6C2Jh653vpH6O+acq5ugeuydBkLNlefrA5lDNAbELPEmGriIQw91icH3/qDgfcChAD9fCBzFfF7/D95M1dWVIKrMQ0t+iAcgWYUWduY9gKR9HxDQXU4ISL4/Wn+tfIdwPi2cCEFfQKA0WMvEgutrEYIl3rjt/Hpb06R6rbgqksYVodhkRiAtosBMUg5xEv1yfK6a/m8+ix54LDyOulGh1md1+uVbdzbxBfT/lgDAXamjU71PoGrtj+sfhSk1QorO+Njaa519Kg5ylEU9yXQZEjiFjJSDjfdBlbiQWe2Xv4M/DNCe34gPduGrJZTQAaS6GmCwMyBaeiIEjaPIR0Nps0Cd5oI15EpCLzVoIk9Xa8ND2bIbc71MORFNL0R22F9M+Ck1WqVRd5P6xGd+MHDTns0oy2C3mQyxjrgfiIlkIA+IhjDSd50TCbm/mvsZ30SDBQuqBaIghMUIeotllxjALGeQCmnQEtCYbtCEHtD4H9Mkp0KcFzEIexH9b+Xe+n7rYTNliTVRI+xHuAhRhtBE2oHhrEUefNkbOGDjD59dpK0JCTe38M96c4lnH4hDpbxeByPFMthAGZMw+kMl+6FmFYIF7hgt/D+qanVcxV4ghMpB6MDfUgGiJIWNt/bNoUgBo9UkRxtqTDUBYDHG7WPc4ILIs10eGdhgpQmEwWKDlY0orBmbAFlD/7XhhsDPIYBeo3zYRhoEMRC1JFIC4gUbshZ5FCBbsSffgr8trdk6FtRBDmgBRtxAtQMY7nEijdadB67NBa7JEIBtYDJGBXGoxECarddFhuoKlOHBAGlxJgDJQHJXqG9vwFoDsEIGwZQgZyPA90DP3x0LXE/v562nSrNyyee2acxkxqGpO3cfuyEqhdWdAazJB
+qxkQ5jZqQFgM+a75GMJr5prwaBEKH1MaxxdNQBSDdkAhA2FLEUOcoTfdH3YuaY+1DFmzcivmtYu7L0FQC6gtATJuUWA6mUeA1kjuwltIC4IqL5aEzVgTGa1rvFdyn6Yw1D83BrITChZUGRCjXegy9TAW7EpuMQwm5jIiEG6EYY2tpMXex1sJpZqBmC4KzCAjN9DMUHG4Za6jHlQFlynW6DKPyz4t1kZGdhilafSRQTQ0IebIFmLkCBrkiC5TfbHUNVXraKJNlvlagDDreBwQIVM1dBVzEKswcQmfBddP8uuBpPyj4m2+Hw+D/yx/N2t9dIhsKfJcRz2uyC6jo78NOoO2QzGYTQ534BWzA1i8O8WTP2dL1BQIW8dtDKS3NpeRM1XFYEfosEx1vlKEoW4hX2q2kJbKfHWEsr0w+jhwQKTGYEhAaMA2vGJ2CMudj+/lz9NSaQQiWAhzmVug2GrtQExs/XOEtVRDJygGO0GHJUR2saBPz0kx5EJt+g8Vffh+Tyqr9TGh7dkygzz6NGrboGOwDdR/C7qM88RSp4SnsgxZlkIMYam7FiDNzWVMbANyaDBL3R1BhrsEk1Ww6L44CbT1PHq4ndcYQ9Q3j/iNJG2atTEmoDNb0+jbEDeE2MEStr5b0G2izzPDYLISEjMtw24DkGYsZLCrMJepzxANHaFg4//yE+jpfulh/DclTWa7LYXAy3Zr/P43prDFJBdQf2YV2/CCkQvees8bH+5OcuOPfxpZsDxEGxBp2NXqMqPsAnIaZru7GuYQbBlg7AH02pz14NQvtU0s5Fl0WHnR1HJ9tHL0ooAfxy0Num6zJUEZnHp5DH/c06pJpqoJiLYVs5G2QXkiEDbus7UQCQjbrBruhtfnBKoSLvwyiO/H62ksRqVStWWN//5Z9XiXuYdeCUWaZ7tjlgSdqF8gYkuIzDLkzaqRe9F5ZiC2BZ9vtKnE/3j+8/PQh5/fHWeSW+c5PLvOx/bcvWZLKGax6b+w
+HqIhMZNW3ftoAzLNPtJXZ/g+zUBM3NFqoi+mbooP4/v9kZqeU762S0otdBJ/gyJJhU7HH2FcVrnWeY3FSTaX0TDsqgHRusi8cGvCmrajPUEsIRJS5sZAyMQDb1oHV33/fUlPvu8foYNXa3r3UBY9YsUu4g+6CQotQcc0FaxPV07nj2eyPnXHUje+RkrI1KFIn5XVeCdRy3pIcMKXw16d7AUy2KEBiLgw02qSH6ZuTtRax/E8Nf902dx2CTXiDxGaWFuiSPgNI9PKvPnjmby/r+nVTVn0gEJKJQhi+YVsKS8lP8LUbC0b7QBeMprne50GsaDKAWHrEGxhZowHOlqEYYFbzm6+//PWygsVkzsk3G9Iu0PE8otWScCEzDtaC/fGZ5Z6tj4OsVxDrm9jr3EP0C+p+H+a3Xhb4pS0q80Yr4Z1CB4I2zEz9UYny1DMcEz3A/Ayf47npZ9VqrbvJJQUKqKrJCAloNiH6JVQfmf/1zW9+eNlsVU80/RyP73EGryQ8Ag6cQ/RIekhBqRWfuX5j5omc7NG+uL7kp5vWxy6R2yCJyzMsM0qCUh9JZEXaJw32piHYIh9/D8XHzhrf+6HomdO6Vui2fl3lr2U/BAUVgq92Dvoe+L+1+sv3BnPH6dJqy7fnTApv8ZlfPY9nwWFdTbMI/hjNGre1vj9bdhmMnMbdQuRl//HeYEmsn1Vtifih/bWSryxNKbWaEPy12O2pmeYbs9KG70j68Rox5y0UU45qSYeF2JGJNyKGJVaGm6cUho+7HhpxNDU0qjhqaVRQ9LKY4zSKxPMciqd84vQnr8XdbHSi7eTyi+zlfJOxyqw9atay+c9xAtibjBqSfA1GurWkJg1AuIpFuAJG82HQVOPCLtmNCMCNEsJ+iAONC8RtCAFtDAVtDwTtOcaSFkHir4vtpgaodCOlPeF19aZwOiMimZntWMyyo68GFcn9O2fXHqJ//tzVUjKlRG9LX1VwuxXKxBp12yaVLDC6lbZ
+Lp9VKGi2VJ/BlhAWHAMtiAU5fgkKLgUFsgIWbgiMrUP/5LIk/j6YWNmkaXaVd7v4+2CjRef4Kqz7vMqEP+5JpCmB5D830TqPDPtXWc3FUHnHjG0yqwGRtxGnHQFNZwUrDEgQyIqVI7DSSAkIq1i0iwctSgA5fy0U6jZOkljNaA0Mj5cls40r5hrMv5N+Vf3NrvC+3TupVV++mPgQFFyCdim/wSyztH7v9veSJkAatdY7a8PrVoEQdt5ZcsY2iFhpVSMgzEKkCh51INZRoPkxIhAGY3EiaHE8yOuqWMEoVCvKhSy30THidnXv+KKrveKKrr0ZV3y9W0zxXd3EWqHAliLvolPKA0zKvrOLv0de/A/jP2tSi4EwbTqcu+Rdm5D7ZHpAHHrZKKPRQlh9hgRkjgYgS5JBixJBHldBkWWidbBCFrnKmCVNEeVCmSaF3xHq4Fk1Y7vkR+iTeu/H2afvLOPv7feSBKTJtqpWJZz+zsh09bErHcxDIJQzsZGmUQyRXIYBmRUKmhMhArGRXIYBWZoCWnIcCsfLUHh8Czp4XYTAgPjfwEthxeisLEXnmBJ0ibqtelVZctcg9c65uWerVwDNj0BM6k9Zfs815o6s8d/X/40/Z6MTafhbu4X7ch0GLom62ZGVT0/yA5mpVwGyskipkphVEc+LFoOpXZxoGQzIijTQihOg5amgVdkgz3+KlhJWAYPE4oJNX1QPZf+64XalTj+9hVWKWn4c/52mpn7ckwORBeAV+yNn15psSCrsvTCyusv8aLS1jgXNiQV9cAxkHQeySQTZpYAWp4KWpYNWZII+ygbZ54FW5YPWnAatPgPadAl0tAQvpgNj0oufaM9Fk/j75yGofccAtGrudz6Vvr1Z/ub2iEsz7LxPb5+0KydszM6sVJOdWZkjdmZnGTvlZBnvzs00dsnPGuZ6Kmuo65msoW5ns4a4ncsc6l6YNWzfxTTjfQWxQ4Kuxo/PqPD2+d+73fnza5P6D+Ef
+oIYf38gK1N4/GYwn7vAH6jE/lH8vuMJTg2B6qk7PWVqeOg+GuUHTWNBC/Qcaa+xZJJQvfAAAAABJRU5ErkJggg==</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>vi-VN</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>3c2b128d-8c48-4a14-87e0-a663440f4e3a</rd:ReportID>
+</Report>
